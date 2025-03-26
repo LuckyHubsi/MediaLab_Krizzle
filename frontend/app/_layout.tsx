@@ -27,13 +27,13 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
+  return ( // This is the root layout for the app that sets the theme and status bar
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="auto" /> 
     </ThemeProvider>
   );
 }

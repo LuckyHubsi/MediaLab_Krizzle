@@ -1,19 +1,19 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Image, Platform } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
+import { Collapsible } from '@/components/Collapsible';
+import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeScreen() {
+export default function TabTwoScreen() {
   return (
        <SafeAreaView>
-               <ThemedText type="title">Dashboard</ThemedText>
+               <ThemedText type="title">Archive</ThemedText>
                <ThemedText>Lorem ipsum</ThemedText>
        </SafeAreaView>
   );
 }
-
 
