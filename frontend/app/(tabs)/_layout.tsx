@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-
+import { FloatingAddButton } from '@/components/ui/floatingAddButton';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
@@ -47,13 +47,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person" color={color} />,
         }}
       />
-        <Tabs.Screen
-        name="addPage"
-        options={{
-          title: 'Add Page',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus" color={color} />,
-        }}
-      />
+     <Tabs.Screen
+  name="addPage"
+  options={{
+    title: '',
+    tabBarIcon: () => null, // Icon is handled inside the custom button
+    tabBarButton: (props) => <FloatingAddButton {...props} />,
+  }}
+/>
     </Tabs>
   );
 }
