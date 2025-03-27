@@ -8,7 +8,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function TabTwoScreen() {
+export default function TabFiveScreen() {
   return (
         <SafeAreaView>
                    <ThemedText type="title">Profile</ThemedText>

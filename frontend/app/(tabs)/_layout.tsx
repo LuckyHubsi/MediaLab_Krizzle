@@ -41,18 +41,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="settings"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person" color={color} />,
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
         }}
       />
      <Tabs.Screen
-  name="addPage"
-  options={{
-    title: '',
-    tabBarIcon: () => null, // Icon is handled inside the custom button
-    tabBarButton: (props) => <FloatingAddButton {...props} />,
+        name="addPage"
+        options={{
+           title: '',
+           tabBarIcon: () => null, // Icon is handled inside the custom button
+           tabBarButton: (props) => <FloatingAddButton {...props} />,
   }}
 />
     </Tabs>
