@@ -12,10 +12,12 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView>
-      <ThemedText fontSize="regular" fontWeight="bold">
-        Home
-      </ThemedText>
-      <IconSymbol name="person" size={32} color={color} />
+      <ThemedView>
+        <ThemedText fontSize="regular" fontWeight="bold">
+          Home
+        </ThemedText>
+        <IconSymbol name="person" size={32} color={color} />
+      </ThemedView>
     </SafeAreaView>
   );
 }
