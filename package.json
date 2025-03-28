@@ -18,7 +18,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
-    "expo": "~52.0.40",
+    "expo": "~52.0.41",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",
     "expo-font": "~13.0.4",
@@ -54,7 +54,7 @@
     "prettier": "^3.5.3",
     "prettier-eslint": "^16.3.0",
     "react-test-renderer": "18.3.1",
-    "typescript": "^4.9.5"
+    "typescript": "^5.8.2"
   },
   "private": true
 }
