@@ -46,8 +46,6 @@ export default function RootLayout() {
               return canGoBack ? (
                 <>
                   <ThemedText
-                    lightColor="black"
-                    darkColor="white"
                     fontSize="xl"
                     fontWeight="regular"
                     onPress={() => navigation.goBack()}
