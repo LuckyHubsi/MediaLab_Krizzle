@@ -3,10 +3,10 @@ import React from "react";
 import { Platform } from "react-native";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import { HapticTab } from "@/components/HapticTab";
-import { Icon } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -25,8 +25,7 @@ export default function TabLayout() {
         tabBarStyle: {
           position: Platform.OS === "ios" ? "absolute" : "relative",
           height: 65,
-          backgroundColor: Colors[colorScheme ?? "light"].background,
-          opacity: 0.8,
+          backgroundColor: "transparent",
           borderTopWidth: 0,
         },
       }}
@@ -36,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <Icon size={28} name="home" color={color} />
+            <MaterialIcons name="home-filled" size={24} color={color} />
           ),
         }}
       />
@@ -45,7 +44,7 @@ export default function TabLayout() {
         options={{
           title: "Archive",
           tabBarIcon: ({ color }) => (
-            <Icon size={28} name="archive" color={color} />
+            <MaterialIcons name="archive" size={24} color={color} />
           ),
         }}
       />
@@ -54,7 +53,7 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <Icon size={28} name="settings" color={color} />
+            <MaterialIcons name="settings" size={24} color={color} />
           ),
         }}
       />
