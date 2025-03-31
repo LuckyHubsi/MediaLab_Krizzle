@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
-import styles from "./HorizontalPicker.style";
+import styles from "./HorizontalPicker.styles";
 
 interface HorizontalPickerProps {
   title: string;
