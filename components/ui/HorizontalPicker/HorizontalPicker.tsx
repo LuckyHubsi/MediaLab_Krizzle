@@ -42,7 +42,7 @@ const HorizontalPicker: React.FC<HorizontalPickerProps> = ({
             {item.icon && (
               <MaterialIcons
                 name={item.icon}
-                size={32}
+                size={28}
                 color={selected === item.id ? "blue" : "black"}
               />
             )}
