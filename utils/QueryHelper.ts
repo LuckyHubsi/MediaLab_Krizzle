@@ -14,6 +14,18 @@ const executeQuery = async (query: string, params: any[] = []) => {
     return db.runAsync(query, params);
 };
   
+const fetchFirst = async <T>(query: string, params: any[] = []): Promise<T | null> => {
+    const db = await getDb();
+    try {
+        const result = db.getFirstAsync<T>(query, params);
+        return result;
+    } catch (error) {
+        console.error("Error fetching first item:", error);
+        return null;
+    }
+};
+  
 export {
-    executeQuery
+    executeQuery,
+    fetchAll
 }
