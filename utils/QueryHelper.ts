@@ -9,3 +9,11 @@ const getDb = async () => {
   return db;
 };
 
+const executeQuery = async (query: string, params: any[] = []) => {
+    const db = await getDb();
+    return db.runAsync(query, params);
+};
+  
+export {
+    executeQuery
+}
