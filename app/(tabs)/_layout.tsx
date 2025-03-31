@@ -3,7 +3,7 @@ import React from "react";
 import { Platform } from "react-native";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Icon } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -18,13 +18,17 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {},
-        }),
+        tabBarLabelStyle: {
+          fontFamily: "Lexend_400Regular",
+          fontSize: 12,
+        },
+        tabBarStyle: {
+          position: Platform.OS === "ios" ? "absolute" : "relative",
+          height: 65,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+          opacity: 0.8,
+          borderTopWidth: 0,
+        },
       }}
     >
       <Tabs.Screen
@@ -32,7 +36,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <Icon size={28} name="home" color={color} />
           ),
         }}
       />
@@ -41,7 +45,7 @@ export default function TabLayout() {
         options={{
           title: "Archive",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="tray.full.fill" color={color} />
+            <Icon size={28} name="archive" color={color} />
           ),
         }}
       />
@@ -50,7 +54,7 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="gear" color={color} />
+            <Icon size={28} name="settings" color={color} />
           ),
         }}
       />

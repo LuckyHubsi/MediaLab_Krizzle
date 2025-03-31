@@ -1,7 +1,7 @@
 import React from "react";
 
-import { GestureResponderEvent } from "react-native";
-import { IconSymbol } from "../../IconSymbol";
+import { GestureResponderEvent, useColorScheme } from "react-native";
+import { Icon } from "../../IconSymbol";
 import { StyledButtonContainer } from "./FloatingAddButton.styles";
 
 type FloatingAddButtonProps = {
@@ -11,9 +11,11 @@ type FloatingAddButtonProps = {
 export const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
   onPress,
 }) => {
+  const color = useColorScheme() === "dark" ? "black" : "white";
+
   return (
     <StyledButtonContainer onPress={onPress} activeOpacity={0.8}>
-      <IconSymbol name="plus" size={36} color="#000" />
+      <Icon name="add" size={40} color={color} />
     </StyledButtonContainer>
   );
 };

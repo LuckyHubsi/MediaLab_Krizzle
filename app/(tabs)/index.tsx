@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Icon } from "@/components/ui/IconSymbol";
 import { useColorScheme } from "@/hooks/useColorScheme"; // Add this import
 import { Colors } from "@/constants/Colors"; // Add this import
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +16,6 @@ export default function HomeScreen() {
         <ThemedText fontSize="regular" fontWeight="bold">
           Home
         </ThemedText>
-        <IconSymbol name="person" size={32} color={color} />
       </ThemedView>
     </SafeAreaView>
   );

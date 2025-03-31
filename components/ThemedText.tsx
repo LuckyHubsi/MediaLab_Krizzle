@@ -1,4 +1,8 @@
 import { Text, type TextProps, StyleSheet } from "react-native";
+import { Lexend_400Regular } from "@expo-google-fonts/lexend/400Regular";
+import { Lexend_300Light } from "@expo-google-fonts/lexend/300Light";
+import { Lexend_600SemiBold } from "@expo-google-fonts/lexend/600SemiBold";
+import { Lexend_700Bold } from "@expo-google-fonts/lexend/700Bold";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 
@@ -39,10 +43,10 @@ export function ThemedText({
 }
 
 const fontWeightStyles = {
-  light: { fontFamily: "Inter_300Light" },
-  regular: { fontFamily: "Inter_400Regular" },
-  semibold: { fontFamily: "Inter_600SemiBold" },
-  bold: { fontFamily: "Inter_700Bold" },
+  light: { fontFamily: "Lexend_300Light" },
+  regular: { fontFamily: "Lexend_400Regular" },
+  semibold: { fontFamily: "Lexend_600SemiBold" },
+  bold: { fontFamily: "Lexend_700Bold" },
 };
 
 const fontSizeStyles = {
