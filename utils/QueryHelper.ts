@@ -25,7 +25,20 @@ const fetchFirst = async <T>(query: string, params: any[] = []): Promise<T | nul
     }
 };
   
+const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
+    const db = await getDb();
+    try {
+        const result = await db.getAllAsync<T>(query, params);
+        return result;
+    } catch (error) {
+        console.error("Error fetching all items:", error);
+        return [];
+    }
+};
+
+
 export {
     executeQuery,
-    fetchAll
+    fetchAll,
+    fetchFirst,
 }
