@@ -62,17 +62,8 @@ export default function CreateNoteScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-      }}
-    >
-      <ThemedView
-        style={{
-          flex: 1,
-          padding: 20,
-        }}
-      >
+    <SafeAreaView>
+      <ThemedView>
         <WidgetPreview
           icon1={widgetDefaultIcon}
           icon2="favorite"

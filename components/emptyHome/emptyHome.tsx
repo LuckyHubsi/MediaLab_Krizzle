@@ -4,7 +4,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Button } from "../ui/Button/Button";
 import { ThemedText } from "../ThemedText";
-import { StyledEmptyHome } from "./emptyHome.styles"; // 👈 import styles
+import { StyledEmptyHome } from "./emptyHome.styles";
 import { ModalSelection } from "../ui/ModalSelection/ModalSelection";
 
 export const EmptyHome: FC = () => {

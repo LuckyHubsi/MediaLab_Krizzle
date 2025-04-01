@@ -7,6 +7,5 @@ export const StyledView = styled.View<{ backgroundColor: string }>`
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 12px;
 `;

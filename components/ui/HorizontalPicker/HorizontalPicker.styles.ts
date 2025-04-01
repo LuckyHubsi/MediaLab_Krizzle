@@ -10,8 +10,6 @@ export default StyleSheet.create({
     marginBottom: 8,
   },
   item: {
-    alignItems: "center",
-    justifyContent: "center",
     padding: 0,
     marginRight: 14,
     borderRadius: 33,

@@ -5,7 +5,6 @@ export default StyleSheet.create({
     padding: 10,
     backgroundColor: "#f0f0f0",
     borderRadius: 10,
-    flexDirection: "column",
     alignItems: "center",
   },
   previewLabel: {
