@@ -11,14 +11,16 @@ export default function HomeScreen() {
   const color = Colors[colorScheme ?? "light"].tint;
 
   return (
-    <ThemedView>
-      <ThemedText fontSize="xl" fontWeight="bold">
-        Home
-      </ThemedText>
-      <SearchBar
-        placeholder="Search"
-        onSearch={(query) => console.log(query)}
-      />
-    </ThemedView>
+    <SafeAreaView>
+      <ThemedView>
+        <ThemedText fontSize="xl" fontWeight="bold">
+          Home
+        </ThemedText>
+        <SearchBar
+          placeholder="Search"
+          onSearch={(query) => console.log(query)}
+        />
+      </ThemedView>
+    </SafeAreaView>
   );
 }

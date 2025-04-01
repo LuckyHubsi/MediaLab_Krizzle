@@ -17,7 +17,10 @@ export default function TabLayout() {
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          tabBarActiveTintColor:
+            Colors[colorScheme ?? "light"].tabBarActiveTintColor,
+          tabBarInactiveTintColor:
+            Colors[colorScheme ?? "light"].tabBarInactiveTintColor,
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
@@ -28,7 +31,8 @@ export default function TabLayout() {
           tabBarStyle: {
             position: Platform.OS === "ios" ? "absolute" : "relative",
             height: 65,
-            backgroundColor: "transparent",
+            backgroundColor:
+              Colors[colorScheme ?? "light"].tabBarBackgroundColor,
             borderTopWidth: 0,
             paddingRight: 75,
           },
@@ -65,7 +69,7 @@ export default function TabLayout() {
       <View
         style={{
           position: "absolute",
-          // bottom: Platform.OS === "ios" ? 30 : 20,
+
           right: 0,
           bottom: 0,
         }}
