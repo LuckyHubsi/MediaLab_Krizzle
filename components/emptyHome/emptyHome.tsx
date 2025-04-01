@@ -1,13 +1,15 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Image } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Button } from "../ui/Button/Button";
 import { ThemedText } from "../ThemedText";
 import { StyledEmptyHome } from "./emptyHome.styles"; // 👈 import styles
+import { ModalSelection } from "../ui/ModalSelection/ModalSelection";
 
 export const EmptyHome: FC = () => {
   const colorScheme = useColorScheme() ?? "light";
+  const [isModalVisible, setModalVisible] = useState(false);
 
   return (
     <StyledEmptyHome colorScheme={colorScheme}>
@@ -21,10 +23,14 @@ export const EmptyHome: FC = () => {
       <Button
         color={Colors[colorScheme].tint}
         size="medium"
-        onPress={() => console.log("Button clicked!")}
+        onPress={() => setModalVisible(true)}
       >
         Start
       </Button>
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </StyledEmptyHome>
   );
 };
