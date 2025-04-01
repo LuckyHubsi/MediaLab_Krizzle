@@ -1,14 +1,15 @@
 import { Image, StyleSheet, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { useColorScheme } from "@/hooks/useColorScheme"; // Add this import
-import { Colors } from "@/constants/Colors"; // Add this import
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { Button } from "@/components/ui/Button/Button";
+import { EmptyHome } from "@/components/emptyHome/emptyHome";
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme(); // light or dark
+  const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
 
   return (
@@ -21,13 +22,7 @@ export default function HomeScreen() {
           placeholder="Search"
           onSearch={(query) => console.log(query)}
         />
-        <Button
-          color={Colors[colorScheme || "light"].tint}
-          size="medium"
-          onPress={() => console.log("Button clicked!")}
-        >
-          Start
-        </Button>
+        <EmptyHome />
       </ThemedView>
     </SafeAreaView>
   );
