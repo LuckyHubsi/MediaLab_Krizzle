@@ -1,0 +1,72 @@
+import { StyleSheet } from "react-native";
+
+export default StyleSheet.create({
+  container: {
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  previewLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: "gray",
+    alignSelf: "flex-start",
+  },
+  widgetContainer: {
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+    padding: 10,
+    position: "relative",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  iconsContainer: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    flexDirection: "row",
+    gap: 5,
+  },
+  icon: {
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+  },
+  titleLine: {
+    position: "absolute",
+    left: 10,
+    right: 10,
+    bottom: 50,
+    height: 2,
+    backgroundColor: "black",
+  },
+  titleText: {
+    position: "absolute",
+    bottom: 5,
+    left: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  tagPill: {
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    backgroundColor: "#007AFF",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+  },
+  tagText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+});

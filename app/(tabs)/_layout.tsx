@@ -1,7 +1,8 @@
 import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
+import React, { useState } from "react";
+import { Platform, View } from "react-native";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
+import { ModalSelection } from "@/components/ui/ModalSelection/ModalSelection";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
@@ -10,6 +11,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const [isModalVisible, setModalVisible] = useState(false);
 
   return (
     <Tabs
@@ -65,6 +67,6 @@ export default function TabLayout() {
           tabBarButton: (props) => <FloatingAddButton {...props} />,
         }}
       />
-    </Tabs>
+    </View>
   );
 }

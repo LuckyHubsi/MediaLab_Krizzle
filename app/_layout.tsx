@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useNavigation } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -18,6 +18,7 @@ import {
   Lexend_600SemiBold,
   Lexend_700Bold,
 } from "@expo-google-fonts/lexend";
+import { ThemedText } from "@/components/ThemedText";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,6 +29,7 @@ export default function RootLayout() {
     Lexend_400Regular,
     Lexend_600SemiBold,
     Lexend_700Bold,
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -44,6 +46,30 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="createNote"
+          options={{
+            headerTitle: "",
+            headerLeft: ({ canGoBack }) => {
+              const navigation = useNavigation();
+              return canGoBack ? (
+                <>
+                  <ThemedText
+                    fontSize="xl"
+                    fontWeight="regular"
+                    onPress={() => navigation.goBack()}
+                  >
+                    {"<"} Create a Note
+                  </ThemedText>
+                </>
+              ) : null;
+            },
+            headerTintColor: "black",
+            headerBackTitleStyle: {
+              fontSize: 24,
+            },
+          }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
