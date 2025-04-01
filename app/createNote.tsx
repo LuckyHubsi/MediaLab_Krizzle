@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import { Alert, SafeAreaView } from "react-native";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import HorizontalPicker from "@/components/ui/HorizontalPicker/HorizontalPicker";
 import WidgetPreview from "@/components/ui/WidgetPreview/WidgetPreview";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";

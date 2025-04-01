@@ -51,7 +51,7 @@ const fontWeightStyles = {
 
 const fontSizeStyles = {
   regular: { fontSize: 16 },
-  xxl: { fontSize: 24 },
-  xl: { fontSize: 20 },
+  xxl: { fontSize: 32 },
+  xl: { fontSize: 28 },
   s: { fontSize: 14 },
 };
