@@ -5,4 +5,8 @@ export const StyledView = styled.View<{ backgroundColor: string }>`
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
     backgroundColor};
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 `;

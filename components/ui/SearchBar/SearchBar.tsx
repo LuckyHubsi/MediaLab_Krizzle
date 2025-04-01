@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors"; // ✅ make sure this is imported
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
 
 interface SearchBarProps {
@@ -11,6 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
 }) => {
   const [query, setQuery] = useState("");
+  const colorScheme = useColorScheme();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -23,14 +26,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <SearchContainer>
-      <SearchIcon name="magnify" size={24} />
+    <SearchContainer colorScheme={colorScheme}>
+      <SearchIcon colorScheme={colorScheme} />
       <SearchInput
+        colorScheme={colorScheme}
         type="text"
         value={query}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
         placeholder={placeholder}
+        placeholderTextColor={
+          Colors[colorScheme ?? "light"].searchBarPlaceholder
+        } // ✅ this line!
       />
     </SearchContainer>
   );

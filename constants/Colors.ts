@@ -12,6 +12,8 @@ export const Colors = {
     tabBarActiveTintColor: tintColorLight,
     tabBarInactiveTintColor: "#535353",
     tabBarBackgroundColor: "rgba(255, 255, 255, 0.85)",
+    searchBarBackground: "#EEE",
+    searchBarPlaceholder: "#687076",
   },
   dark: {
     text: "#ECEDEE",
@@ -23,5 +25,7 @@ export const Colors = {
     tabBarActiveTintColor: tintColorDark,
     tabBarInactiveTintColor: "#fff",
     tabBarBackgroundColor: "rgba(17, 17, 17, 0.85)",
+    searchBarBackground: "#2A2A2A",
+    searchBarPlaceholder: "#9BA1A6",
   },
 };
