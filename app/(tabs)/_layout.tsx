@@ -14,58 +14,67 @@ export default function TabLayout() {
   const [isModalVisible, setModalVisible] = useState(false);
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarLabelStyle: {
-          fontFamily: "Lexend_400Regular",
-          fontSize: 12,
-        },
-        tabBarStyle: {
-          position: Platform.OS === "ios" ? "absolute" : "relative",
-          height: 65,
-          backgroundColor: "transparent",
-          borderTopWidth: 0,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home-filled" size={24} color={color} />
-          ),
+    <View style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarBackground: TabBarBackground,
+          tabBarLabelStyle: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 12,
+          },
+          tabBarStyle: {
+            position: Platform.OS === "ios" ? "absolute" : "relative",
+            height: 65,
+            backgroundColor: "transparent",
+            borderTopWidth: 0,
+            paddingRight: 75,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="archive"
-        options={{
-          title: "Archive",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="archive" size={24} color={color} />
-          ),
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="home-filled" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="archive"
+          options={{
+            title: "Archive",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="archive" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Settings",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="settings" size={24} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+      <View
+        style={{
+          position: "absolute",
+          // bottom: Platform.OS === "ios" ? 30 : 20,
+          right: 0,
+          bottom: 0,
         }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="settings" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="addPage"
-        options={{
-          title: "",
-          tabBarIcon: () => null, // Icon is handled inside the custom button
-          tabBarButton: (props) => <FloatingAddButton {...props} />,
-        }}
+      >
+        <FloatingAddButton onPress={() => setModalVisible(true)} />
+      </View>
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
       />
     </View>
   );
