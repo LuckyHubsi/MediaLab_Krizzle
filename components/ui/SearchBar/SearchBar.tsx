@@ -13,7 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
 }) => {
   const [query, setQuery] = useState("");
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? "light";
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -25,22 +25,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
+  const themeColors = Colors[colorScheme];
+
   return (
-    <SearchContainer colorScheme={colorScheme}>
-      <SearchIcon colorScheme={colorScheme} />
+    <SearchContainer
+      style={{ backgroundColor: themeColors.searchBarBackground }}
+    >
+      <SearchIcon name="magnify" size={20} color={themeColors.icon} />
       <SearchInput
-        colorScheme={colorScheme}
-        type="text"
+        style={{ color: themeColors.text }}
+        placeholder={placeholder}
         value={query}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
-        placeholder={placeholder}
-        placeholderTextColor={
-          Colors[colorScheme ?? "light"].searchBarPlaceholder
-        } // ✅ this line!
+        placeholderTextColor={themeColors.searchBarPlaceholder}
       />
     </SearchContainer>
   );
 };
-
 export default SearchBar;
