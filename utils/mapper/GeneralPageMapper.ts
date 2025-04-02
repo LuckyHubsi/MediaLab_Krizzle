@@ -2,6 +2,11 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { GeneralPageModel } from "@/models/GeneralPageModel";
 
 export class GeneralPageMapper {
+    /**
+ 	* Converts a database model into a DTO for frontend communication.
+ 	* @param model - The GeneralPageModel instance.
+ 	* @returns A GeneralPageDTO representation.
+ 	*/
     static toDTO(model: GeneralPageModel): GeneralPageDTO {
         return {
             pageID: model.pageID ?? undefined,
@@ -16,6 +21,11 @@ export class GeneralPageMapper {
         };
     }
 
+    /**
+ 	* Converts a DTO into a database model for storage.
+ 	* @param dto - The GeneralPageDTO instance.
+ 	* @returns A GeneralPageModel representation.
+ 	*/
     static toModel(dto: GeneralPageDTO): GeneralPageModel {
         return new GeneralPageModel(
             dto.page_type,
