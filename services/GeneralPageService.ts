@@ -14,6 +14,45 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
     return rawData.map(row => GeneralPageMapper.toDTO(row));
 };
 
+/**
+ * Inserts a new note into the database and returns its ID.
+ *
+ * @param {GeneralPageDTO} generalPageDTO - The DTO representing the note to insert.
+ * @returns {Promise<number | null>} A promise that resolves to the inserted note's ID, or null if the insertion fails.
+ */
+const insertNoteAndReturnID = async (generalPageDTO: GeneralPageDTO): Promise<number | null> => {
+    try {
+        const generalPageModel = GeneralPageMapper.toModel(generalPageDTO);
+
+        await executeQuery(insertNewPage, [
+            generalPageModel.page_type,
+            generalPageModel.page_title,
+            generalPageModel.page_icon,
+            generalPageModel.page_color,
+            generalPageModel.date_created,
+            generalPageModel.date_modified,
+            generalPageModel.archived,
+            generalPageModel.pinned
+        ]);
+
+        // get inserted page ID
+        const result = await fetchFirst<{ id: number }>("SELECT last_insert_rowid() as id");
+
+        if (result?.id) {
+            console.log("Inserted Page ID:", result.id);
+            return result.id;
+        } else {
+            console.error("Failed to fetch inserted page ID");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error inserting note:", error);
+        return null;
+    }
+};
+
+
 export {
-    getAllGeneralPageData
+    getAllGeneralPageData,
+    insertNoteAndReturnID
 }
