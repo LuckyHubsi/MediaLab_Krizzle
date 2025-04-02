@@ -21,4 +21,5 @@ export const SearchInput = styled.TextInput`
   background-color: transparent;
   padding-vertical: 0px;
   flex: 1;
+  font-family: "Lexend_400Regular";
 `;

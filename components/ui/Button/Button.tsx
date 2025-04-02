@@ -1,7 +1,8 @@
 import React, { FC, PropsWithChildren } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { TouchableOpacity, Text } from "react-native";
-import { ButtonText, StyledButton } from "./Button.styles";
+import { StyledButton } from "./Button.styles";
+import { ThemedText } from "@/components/ThemedText";
 
 interface ButtonProps {
   size?: "small" | "medium" | "large";
@@ -19,7 +20,9 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 
   return (
     <StyledButton onPress={onPress} colorScheme={colorScheme}>
-      <ButtonText colorScheme={colorScheme}>{children}</ButtonText>
+      <ThemedText fontSize="regular" fontWeight="bold">
+        {children}
+      </ThemedText>
     </StyledButton>
   );
 };
