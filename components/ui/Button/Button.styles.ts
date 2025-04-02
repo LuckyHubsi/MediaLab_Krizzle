@@ -13,6 +13,7 @@ export const StyledButton = styled.TouchableOpacity<{
   padding-vertical: 18px;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].tint};
+  font-family: "Lexend_400Regular";
 `;
 
 export const ButtonText = styled.Text<{ colorScheme: "light" | "dark" }>`
@@ -20,4 +21,5 @@ export const ButtonText = styled.Text<{ colorScheme: "light" | "dark" }>`
     Colors[colorScheme].background};
   font-size: 16px;
   font-weight: bold;
+  font-family: "Lexend_400Regular";
 `;

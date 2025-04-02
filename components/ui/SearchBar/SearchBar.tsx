@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors } from "@/constants/Colors"; // ✅ make sure this is imported
+import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
 
 interface SearchBarProps {

@@ -8,4 +8,5 @@ export const StyledView = styled.View<{ backgroundColor: string }>`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  font-family: "Lexend_400Regular";
 `;
