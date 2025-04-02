@@ -1,19 +1,19 @@
-import { Tag } from './TagModel';
+import { Tag } from "./TagModel";
 
 export interface GeneralPage {
     pageID: number;
-    //pageType: PageType;
-    pageTitle: string;
-    //pageIcon: PageIcon;
-    //pageColor: PageColor;
-    dateCreated: Date;
-    dateModified: Date;
-    archived: boolean;
-    pinned: boolean;
-    pageTags: Tag[] | null;
+    page_type: string;
+    page_title: string;
+    page_icon: string;
+    page_color: string;
+    date_created: string;
+    date_modified: string;
+    archived: number;
+    pinned: number;
+    tag: Tag | null;
 }
 
 export class GeneralPage {
-    constructor(public pageID: number, public pageTitle: string, public dateCreated: Date, public dateModified: Date,
-    public archived: boolean, public pinned: boolean, public pageTags: Tag[] | null) {}
+    constructor(public pageID: number, public page_type: string, public page_title: string, public page_icon: string, public page_color: string,
+        public date_created: string, public date_modified: string, public archived: number, public pinned: number, public tag: Tag | null) {}
 }
