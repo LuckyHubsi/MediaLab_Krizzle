@@ -58,7 +58,7 @@ export default function CreateNoteScreen() {
   };
 
   const handleNext = () => {
-    console.log("Next clicked");
+    navigation.navigate("notePage");
   };
 
   return (
