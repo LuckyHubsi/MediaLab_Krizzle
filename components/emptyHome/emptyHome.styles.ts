@@ -1,9 +1,9 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 
-export const StyledEmptyHome = styled.View<{ colorScheme: "light" | "dark" }>`
+export const StyledEmptyHome = styled.View`
   flex: 1;
-  justify-content: center;
+  margin-top: 30%;
   align-items: center;
   padding: 20px;
   height: 100%;
