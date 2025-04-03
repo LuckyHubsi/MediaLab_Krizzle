@@ -19,10 +19,53 @@ const TextEditor: React.FC = () => {
     avoidIosKeyboard: true,
     initialContent: initialContent,
     dynamicHeight: true,
+    theme: {
+      toolbar: {
+        toolbarBody: {
+          backgroundColor: "black",
+        },
+        toolbarButton: {
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.dark.background
+              : Colors.light.background,
+        },
+        icon: {
+          tintColor:
+            colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
+        },
+        iconWrapper: {
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.dark.background
+              : Colors.light.background,
+        },
+        iconWrapperActive: {
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.dark.background
+              : Colors.light.background,
+        },
+        iconWrapperDisabled: {
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.dark.background
+              : Colors.light.background,
+        },
+        iconDisabled: {
+          tintColor:
+            colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
+        },
+        iconActive: {
+          tintColor:
+            colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
+        },
+      },
+    },
     // onChange: () => {
     //   console.log("Content changed:", initialContent);
     //   console.log("Content type:", typeof initialContent);
-    // },
+    // }
   });
 
   // // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
@@ -41,10 +84,10 @@ const TextEditor: React.FC = () => {
           flex: 1,
           padding: 20,
           top: 0,
-          /*backgroundColor:
+          backgroundColor:
             colorScheme === "dark"
               ? Colors.dark.background
-              : Colors.light.background,*/
+              : Colors.light.background,
         }}
       />
       <KeyboardAvoidingView
