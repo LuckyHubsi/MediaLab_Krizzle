@@ -1,6 +1,6 @@
 import { GeneralPageDTO } from '@/dto/GeneralPageDTO';
 import { GeneralPageModel } from '@/models/GeneralPageModel';
-import { generalPageSelectAllQuery, insertNewPage } from '@/queries/GeneralPageQuery';
+import { generalPageSelectAllQuery, insertNewPageQuery } from '@/queries/GeneralPageQuery';
 import { fetchAll, executeQuery, fetchFirst } from '@/utils/QueryHelper';
 import { GeneralPageMapper } from '@/utils/mapper/GeneralPageMapper';
 
@@ -24,7 +24,7 @@ const insertNoteAndReturnID = async (generalPageDTO: GeneralPageDTO): Promise<nu
     try {
         const generalPageModel = GeneralPageMapper.toModel(generalPageDTO);
 
-        await executeQuery(insertNewPage, [
+        await executeQuery(insertNewPageQuery, [
             generalPageModel.page_type,
             generalPageModel.page_title,
             generalPageModel.page_icon,
