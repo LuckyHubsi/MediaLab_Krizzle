@@ -5,11 +5,17 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
+import {
+  useEditorBridge,
+  RichText,
+  Toolbar,
+  editorHtml,
+} from "@10play/tentap-editor";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { customEditorHtml } from "./TextEditorCustomHtml";
 
 const TextEditor: React.FC = () => {
   const colorScheme = useColorScheme();
@@ -19,6 +25,10 @@ const TextEditor: React.FC = () => {
     avoidIosKeyboard: true,
     initialContent: initialContent,
     dynamicHeight: true,
+    customSource: customEditorHtml.replace(
+      "/*REPLACE_THEME*/",
+      `document.body.dataset.theme = '${colorScheme}';`,
+    ),
     theme: {
       toolbar: {
         toolbarBody: {
