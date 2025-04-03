@@ -72,10 +72,10 @@ const TextEditor: React.FC = () => {
         },
       },
     },
-    onChange: async () => {
-      const html = await editor.getHTML();
-      console.log("Editor HTML:", html);
-    },
+    // onChange: async () => {
+    //   const html = await editor.getHTML();
+    //   console.log("Editor HTML:", html);
+    // },
   });
 
   // // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
@@ -102,7 +102,7 @@ const TextEditor: React.FC = () => {
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        // // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
+        // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
         // keyboardVerticalOffset={keyboardVerticalOffset}
         style={{
           position: "absolute",
@@ -115,6 +115,6 @@ const TextEditor: React.FC = () => {
   );
 };
 
-const initialContent = "Type here...";
+const initialContent = "";
 
 export default TextEditor;
