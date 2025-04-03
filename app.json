@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.venii24.frontend"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e7b7b61a-6720-48e7-bc46-70a41120609c"
+      }
     }
   }
 }
