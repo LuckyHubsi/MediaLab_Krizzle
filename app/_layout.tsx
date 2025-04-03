@@ -70,7 +70,7 @@ export default function RootLayout() {
             },
           }}
         />
-        <Stack.Screen name="notePage" options={{ headerShown: true }} />
+        <Stack.Screen name="notePage" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

@@ -7,12 +7,7 @@ import { View } from "react-native";
 export default function NotesScreen() {
   return (
     <>
-      <ThemedView style={{ flex: 1 }}>
-        <ThemedText fontSize="xl" fontWeight="bold">
-          Note
-        </ThemedText>
-        <TextEditor />
-      </ThemedView>
+      <TextEditor />
     </>
   );
 }
