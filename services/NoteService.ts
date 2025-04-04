@@ -4,12 +4,12 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { executeQuery } from "@/utils/QueryHelper";
 
 /**
- * Inserts a new note into the database and returns its ID.
+ * Inserts a new note into the database.
  *
  * @param {NoteDTO} NoteDTO - The DTO representing the note to insert.
- * @returns {Promise<any>} A promise that resolves to void.
+ * @returns {Promise<number | null>} A promise that resolves to the inserted note's ID, or null if the insertion fails.
  */
-const insertNote = async (generalPageDTO: GeneralPageDTO): Promise<any> => {
+const insertNote = async (generalPageDTO: GeneralPageDTO): Promise<number | null> => {
     try {
         // first inserts the general page data and returns the pageID
         const pageID = await insertGeneralPageAndReturnID(generalPageDTO);
@@ -19,8 +19,11 @@ const insertNote = async (generalPageDTO: GeneralPageDTO): Promise<any> => {
             pageID
         ]);
 
+        return pageID;
+
     } catch (error) {
         console.error("Error inserting note:", error);
+        return null;
     }
 };
 
