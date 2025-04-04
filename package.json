@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@10play/tentap-editor": "^0.6.3",
     "@expo-google-fonts/lexend": "^0.3.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
@@ -35,7 +36,9 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-material-icons": "^1.0.3",
+    "react-native-pell-rich-editor": "^1.9.0",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
