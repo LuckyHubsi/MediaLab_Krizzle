@@ -4,13 +4,13 @@
 export class NoteModel {
     noteID?: number;
     note_content: string | null;
-    pageID: number;
+    pageID?: number;
 
 
     constructor(
         note_content: string | null,
-        pageID: number,
-        noteID?: number
+        noteID?: number,
+        pageID?: number,
     ) {
         this.noteID = noteID;
         this.note_content = note_content;

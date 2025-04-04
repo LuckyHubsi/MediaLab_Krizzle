@@ -3,5 +3,5 @@
  */
 export interface NoteDTO {
     noteID?: number;
-    note_content: string;
+    note_content: string | null;
 }
