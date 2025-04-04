@@ -1,4 +1,4 @@
-const generalPageSelectAllQuery: string = `
+const selectAllGeneralPageQuery: string = `
     SELECT * FROM general_page_data
 `;
 
@@ -7,6 +7,6 @@ const insertNewPageQuery: string = `
 `;
 
 export {
-    generalPageSelectAllQuery,
+    selectAllGeneralPageQuery,
     insertNewPageQuery
 }

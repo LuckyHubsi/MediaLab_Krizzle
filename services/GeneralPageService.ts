@@ -1,6 +1,6 @@
 import { GeneralPageDTO } from '@/dto/GeneralPageDTO';
 import { GeneralPageModel } from '@/models/GeneralPageModel';
-import { generalPageSelectAllQuery, insertNewPageQuery } from '@/queries/GeneralPageQuery';
+import { selectAllGeneralPageQuery, insertNewPageQuery } from '@/queries/GeneralPageQuery';
 import { fetchAll, executeQuery, fetchFirst } from '@/utils/QueryHelper';
 import { GeneralPageMapper } from '@/utils/mapper/GeneralPageMapper';
 
@@ -10,7 +10,7 @@ import { GeneralPageMapper } from '@/utils/mapper/GeneralPageMapper';
  * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
  */
 const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
-    const rawData = await fetchAll<GeneralPageModel>(generalPageSelectAllQuery);
+    const rawData = await fetchAll<GeneralPageModel>(selectAllGeneralPageQuery);
     return rawData.map(row => GeneralPageMapper.toDTO(row));
 };
 
