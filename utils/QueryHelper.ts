@@ -26,7 +26,6 @@ const executeQuery = async (query: string, params: any[] = []) => {
     return db.runAsync(query, params);
 };
   
-
 /**
  * Fetches the first result from an SQL query.
  *
@@ -65,9 +64,50 @@ const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
     }
 };
 
+/**
+ * Executes a function within a database transaction.
+ * The transaction is automatically rolled back if an error occurs.
+ *
+ * @template T - The return type of the function
+ * @param {() => Promise<T>} fn - The function to execute within the transaction
+ * @returns {Promise<T>} - Promise resolving to the return value of the function
+ */
+const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
+    const db = await getDb();
+    
+    try {
+        // Begin transaction
+        await db.runAsync('BEGIN TRANSACTION');
+        
+        // Execute the function
+        const result = await fn();
+        
+        // Commit transaction
+        await db.runAsync('COMMIT');
+        
+        return result;
+    } catch (error) {
+        // Roll back on error
+        console.error("Transaction error, rolling back:", error);
+        await db.runAsync('ROLLBACK');
+        throw error;
+    }
+};
+
+/**
+ * Gets the last inserted row ID
+ * 
+ * @returns {Promise<number | null>} The ID of the last inserted row or null if not available
+ */
+const getLastInsertId = async (): Promise<number | null> => {
+    const result = await fetchFirst<{ id: number }>("SELECT last_insert_rowid() as id");
+    return result?.id || null;
+};
 
 export {
     executeQuery,
     fetchAll,
     fetchFirst,
+    executeTransaction,
+    getLastInsertId
 }
