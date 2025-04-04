@@ -1,0 +1,52 @@
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import {
+  StyledChooseCard,
+  Circle,
+  EditButton,
+  Label,
+} from "./ChooseCard.styles";
+import { Ionicons } from "@expo/vector-icons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
+interface ChooseCardProps {
+  label: string;
+  selectedColor?: string;
+  selectedIcon?: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+}
+
+export const ChooseCard: React.FC<ChooseCardProps> = ({
+  label,
+  selectedColor,
+  selectedIcon,
+  onPress,
+}) => {
+  const colorScheme = useColorScheme() ?? "light";
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <StyledChooseCard colorScheme={colorScheme}>
+        {/* Edit Button (Pencil Icon) */}
+        <EditButton>
+          <MaterialIcons
+            name="edit"
+            size={20}
+            color={colorScheme === "light" ? "black" : "white"}
+          />
+        </EditButton>
+
+        {/* Center Circle with Color & Icon */}
+        <Circle style={{ backgroundColor: selectedColor ?? "transparent" }}>
+          {selectedIcon && (
+            <Ionicons name={selectedIcon} size={32} color="white" />
+          )}
+        </Circle>
+
+        {/* Label Below */}
+        <Label colorScheme={colorScheme}>{label}</Label>
+      </StyledChooseCard>
+    </TouchableOpacity>
+  );
+};

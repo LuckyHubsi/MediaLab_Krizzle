@@ -46,31 +46,9 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="createNote"
-          options={{
-            headerTitle: "",
-            headerLeft: ({ canGoBack }) => {
-              const navigation = useNavigation();
-              return canGoBack ? (
-                <>
-                  <ThemedText
-                    fontSize="xl"
-                    fontWeight="regular"
-                    onPress={() => navigation.goBack()}
-                  >
-                    {"<"} Create a Note
-                  </ThemedText>
-                </>
-              ) : null;
-            },
-            headerTintColor: "black",
-            headerBackTitleStyle: {
-              fontSize: 24,
-            },
-          }}
-        />
+        <Stack.Screen name="createNote" options={{ headerShown: false }} />
         <Stack.Screen name="notePage" options={{ headerShown: false }} />
+        <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
