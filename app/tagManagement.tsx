@@ -17,6 +17,7 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
+import { TouchableWithoutFeedback } from "react-native";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -72,7 +73,12 @@ export default function TagManagementScreen() {
             transparent
             onRequestClose={() => setModalVisible(false)}
           >
-            <View
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {
+                Keyboard.dismiss();
+                setModalVisible(false);
+              }}
               style={{
                 flex: 1,
                 backgroundColor: "rgba(0,0,0,0.5)",
@@ -80,41 +86,45 @@ export default function TagManagementScreen() {
                 alignItems: "center",
               }}
             >
-              <View
-                style={{
-                  width: "85%",
-                  backgroundColor: colorScheme === "light" ? "#fff" : "#1a1a1a",
-                  borderRadius: 20,
-                  padding: 20,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
-                <TextInput
-                  placeholder="New tag name"
-                  placeholderTextColor="#999"
+              <TouchableWithoutFeedback>
+                <View
                   style={{
-                    flex: 1,
-                    borderBottomWidth: 1,
-                    borderColor: "#ccc",
-                    color: colorScheme === "light" ? "#000" : "#fff",
-                    paddingVertical: 8,
-                    fontSize: 16,
+                    width: "85%",
+                    backgroundColor:
+                      colorScheme === "light" ? "#fff" : "#1a1a1a",
+                    borderRadius: 20,
+                    padding: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
                   }}
-                  value={newTag}
-                  onChangeText={setNewTag}
-                  onSubmitEditing={addTag}
-                />
-                <TouchableOpacity onPress={addTag}>
-                  <MaterialIcons
-                    name="arrow-upward"
-                    size={28}
-                    color={colorScheme === "light" ? "#000" : "#fff"}
+                >
+                  <TextInput
+                    placeholder="New tag name"
+                    placeholderTextColor="#999"
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 1,
+                      borderColor: "#ccc",
+                      color: colorScheme === "light" ? "#000" : "#fff",
+                      paddingVertical: 8,
+                      fontSize: 16,
+                    }}
+                    value={newTag}
+                    onChangeText={setNewTag}
+                    onSubmitEditing={addTag}
+                    autoFocus
                   />
-                </TouchableOpacity>
-              </View>
-            </View>
+                  <TouchableOpacity onPress={addTag}>
+                    <MaterialIcons
+                      name="arrow-upward"
+                      size={28}
+                      color={colorScheme === "light" ? "#000" : "#fff"}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </Modal>
         </View>
       </ThemedView>
