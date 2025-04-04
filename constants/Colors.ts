@@ -14,10 +14,13 @@ export const Colors = {
     tabBarBackgroundColor: "rgba(255, 255, 255, 0.85)",
     searchBarBackground: "#EEE",
     searchBarPlaceholder: "#687076",
+    cardBackground: "#FBFBFB",
+    cardShadowColor: "#000",
+    pillBackground: "#EAEAEA",
   },
   dark: {
     text: "#ECEDEE",
-    background: "#151718",
+    background: "#111111",
     tint: tintColorDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
@@ -27,5 +30,8 @@ export const Colors = {
     tabBarBackgroundColor: "rgba(17, 17, 17, 0.85)",
     searchBarBackground: "#2A2A2A",
     searchBarPlaceholder: "#9BA1A6",
+    cardBackground: "#242424",
+    cardShadowColor: "#FFF",
+    pillBackground: "#3D3D3D",
   },
 };

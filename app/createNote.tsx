@@ -1,92 +1,90 @@
 import React, { useState } from "react";
 import { useNavigation } from "expo-router";
-import { Alert, SafeAreaView } from "react-native";
+import { Alert, SafeAreaView, View } from "react-native";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import HorizontalPicker from "@/components/ui/HorizontalPicker/HorizontalPicker";
 import WidgetPreview from "@/components/ui/WidgetPreview/WidgetPreview";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { Card } from "@/components/ui/Card/Card";
+import { Header } from "@/components/ui/Header/Header";
+import { Button } from "@/components/ui/Button/Button";
+import { ThemedText } from "@/components/ThemedText";
+import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
+import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
+import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
-
-  const icons: {
-    id: string;
-    icon: "star" | "favorite" | "check-circle" | "home";
-  }[] = [
-    { id: "1", icon: "star" },
-    { id: "2", icon: "favorite" },
-    { id: "3", icon: "check-circle" },
-    { id: "4", icon: "home" },
-  ];
-
-  const colors: {
-    id: string;
-    color: string;
-  }[] = [
-    { id: "1", color: "red" },
-    { id: "2", color: "blue" },
-    { id: "3", color: "green" },
-    { id: "4", color: "yellow" },
-  ];
-
-  const [widgetDefaultIcon, setWidgetDefaultIcon] = useState(icons[0].icon);
-  const [widgetBackgroundColor, setWidgetBackgroundColor] = useState("white");
-
-  const handleIconSelect = (iconId: string) => {
-    const selectedIcon = icons.find((icon) => icon.id === iconId);
-    if (selectedIcon) {
-      setWidgetDefaultIcon(selectedIcon.icon);
-    }
-  };
-
-  const handleColorSelect = (colorId: string) => {
-    const selectedColor = colors.find((color) => color.id === colorId);
-    if (selectedColor) {
-      setWidgetBackgroundColor(selectedColor.color);
-    }
-  };
-
-  const handleDiscard = () => {
-    Alert.alert("Discard", "Are you sure you want to discard?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Discard",
-        style: "destructive",
-        onPress: () => navigation.goBack(),
-      },
-    ]);
-  };
 
   const handleNext = () => {
     navigation.navigate("notePage");
   };
 
+  const [title, setTitle] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
+  const tags = ["Work", "Personal", "Urgent", "Ideas"];
+
   return (
-    <SafeAreaView>
-      <ThemedView>
-        <WidgetPreview
-          icon1={widgetDefaultIcon}
-          icon2="favorite"
-          tag="Tags"
-          title="Title"
-          backgroundColor={widgetBackgroundColor}
-        />
-        <HorizontalPicker
-          title="Icon"
-          items={icons}
-          onSelect={handleIconSelect}
-        />
-        <HorizontalPicker
-          title="Color"
-          items={colors}
-          onSelect={handleColorSelect}
-        />
-        <BottomButtons
-          titleLeftButton="discard"
-          titleRightButton="create"
-          onDiscard={handleDiscard}
-          onNext={handleNext}
-        />
+    <SafeAreaView style={{ flex: 1 /*backgroundColor: "yellow"*/ }}>
+      <ThemedView style={{ flex: 1 /*backgroundColor: "red"*/ }}>
+        <View
+          style={{ flex: 1, alignItems: "center" /*backgroundColor: "blue"*/ }}
+        >
+          <Card>
+            <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+          </Card>
+
+          <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
+            <Card>
+              <TitleCard
+                placeholder="Add a title to your Note"
+                value={title}
+                onChangeText={setTitle}
+              />
+            </Card>
+            <Card>
+              <TagPicker
+                tags={tags}
+                selectedTag={selectedTag}
+                onSelectTag={setSelectedTag}
+                onViewAllPress={() => navigation.navigate("tagManagement")}
+              />
+            </Card>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+              }}
+            >
+              <ChooseCard
+                label="Choose Color"
+                selectedColor=""
+                onPress={() => alert("Open popup for selection!")}
+              />
+              <ChooseCard
+                label="Choose Icon"
+                selectedColor=""
+                selectedIcon="star"
+                onPress={() => alert("Open popup for selection!")}
+              />
+            </View>
+          </View>
+        </View>
+
+        <View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 20,
+            right: 20,
+            width: "100%",
+          }}
+        >
+          <Button onPress={handleNext}>
+            <ThemedText>Create</ThemedText>
+          </Button>
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
