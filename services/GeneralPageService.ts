@@ -23,6 +23,8 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
 const insertNoteAndReturnID = async (generalPageDTO: GeneralPageDTO): Promise<number | null> => {
     try {
         const generalPageModel = GeneralPageMapper.toModel(generalPageDTO);
+        generalPageModel.date_created = new Date().toISOString(),
+        generalPageModel.date_modified = generalPageModel.date_created,
 
         await executeQuery(insertNewPageQuery, [
             generalPageModel.page_type,

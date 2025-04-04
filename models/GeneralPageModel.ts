@@ -7,8 +7,8 @@ export class GeneralPageModel {
     page_title: string;
     page_icon: string;
     page_color: string;
-    date_created: string;
-    date_modified: string;
+    date_created?: string;
+    date_modified?: string;
     archived: number;
     pinned: number;
 
@@ -17,11 +17,11 @@ export class GeneralPageModel {
         page_title: string,
         page_icon: string,
         page_color: string,
-        date_created: string,
-        date_modified: string,
         archived: number,
         pinned: number,
-        pageID?: number
+        pageID?: number,
+        date_created?: string,
+        date_modified?: string,
     ) {
         this.pageID = pageID;
         this.page_type = page_type;
