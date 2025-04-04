@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { StyledHeader, BackIcon } from "./Header.styles";
+import { StyledHeader, BackIcon } from "./CustomStyledHeader.styles";
 //import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -13,7 +13,7 @@ interface HeaderProps {
   onIconPress?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const CustomStyledHeader: React.FC<HeaderProps> = ({
   title,
   iconName,
   onIconPress,
