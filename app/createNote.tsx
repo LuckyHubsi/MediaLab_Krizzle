@@ -11,6 +11,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
+import { Widget } from "@/components/ui/Widget/Widget";
+import { ScrollView } from "react-native";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -28,48 +30,60 @@ export default function CreateNoteScreen() {
     <SafeAreaView style={{ flex: 1 /*backgroundColor: "yellow"*/ }}>
       <ThemedView style={{ flex: 1 /*backgroundColor: "red"*/ }}>
         <View
-          style={{ flex: 1, alignItems: "center" /*backgroundColor: "blue"*/ }}
+          style={{
+            flex: 1,
+            alignItems: "center" /*backgroundColor: "blue"*/,
+          }}
         >
           <Card>
             <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+            <Widget
+              backgroundColor="#3D3D3D"
+              showPreviewLabel={true}
+              selectedIcon="star"
+              typeIcon="note"
+              title={title || "Title"}
+              tag={selectedTag ?? undefined}
+            />
           </Card>
-
-          <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
-            <Card>
-              <TitleCard
-                placeholder="Add a title to your Note"
-                value={title}
-                onChangeText={setTitle}
-              />
-            </Card>
-            <Card>
-              <TagPicker
-                tags={tags}
-                selectedTag={selectedTag}
-                onSelectTag={setSelectedTag}
-                onViewAllPress={() => navigation.navigate("tagManagement")}
-              />
-            </Card>
-            <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-              }}
-            >
-              <ChooseCard
-                label="Choose Color"
-                selectedColor=""
-                onPress={() => alert("Open popup for selection!")}
-              />
-              <ChooseCard
-                label="Choose Icon"
-                selectedColor=""
-                selectedIcon="star"
-                onPress={() => alert("Open popup for selection!")}
-              />
+          <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
+            <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
+              <Card>
+                <TitleCard
+                  placeholder="Add a title to your Note"
+                  value={title}
+                  onChangeText={setTitle}
+                />
+              </Card>
+              <Card>
+                <TagPicker
+                  tags={tags}
+                  selectedTag={selectedTag}
+                  onSelectTag={setSelectedTag}
+                  onViewAllPress={() => navigation.navigate("tagManagement")}
+                />
+              </Card>
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <ChooseCard
+                  label="Choose Color"
+                  selectedColor=""
+                  onPress={() => alert("Open popup for selection!")}
+                />
+                <ChooseCard
+                  label="Choose Icon"
+                  selectedColor=""
+                  selectedIcon="star"
+                  onPress={() => alert("Open popup for selection!")}
+                />
+              </View>
             </View>
-          </View>
+          </ScrollView>
         </View>
 
         <View
@@ -81,9 +95,7 @@ export default function CreateNoteScreen() {
             width: "100%",
           }}
         >
-          <Button onPress={handleNext}>
-            <ThemedText>Create</ThemedText>
-          </Button>
+          <Button onPress={handleNext}>Create</Button>
         </View>
       </ThemedView>
     </SafeAreaView>
