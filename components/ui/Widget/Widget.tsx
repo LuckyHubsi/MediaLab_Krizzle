@@ -1,10 +1,8 @@
-// components/WidgetCard.tsx
-
 import React from "react";
-import styled from "styled-components/native";
-import { Text, TouchableOpacity } from "react-native";
-import { CardContainer, IconsContainer, Label, Title } from "./Widget.style";
+import { TouchableOpacity, useWindowDimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
+import { IconsContainer, Icon, Title, Tag, CardSolid } from "./Widget.style";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -13,11 +11,11 @@ type Props = {
   label: string;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  color: ColorKey; // <== this is what fixes the error
-  onPress?: () => void; // Optional onPress handler
+  color: ColorKey;
+  onPress?: () => void;
 };
 
-export const Widget: React.FC<Props> = ({
+const Widget: React.FC<Props> = ({
   title,
   label,
   iconLeft,
@@ -25,18 +23,44 @@ export const Widget: React.FC<Props> = ({
   color,
   onPress,
 }) => {
-  const backgroundColor = Colors.widget[color];
+  const { width } = useWindowDimensions();
+  const columns = width >= 768 ? 3 : 2;
+  const spacing = 19 * (columns + 1);
+  const cardWidth = (width - spacing) / columns;
+
+  const background = Colors.widget[color];
+  const isGradient = Array.isArray(background);
+
+  const CardWrapper = isGradient ? LinearGradient : CardSolid;
+  const cardProps = isGradient
+    ? {
+        colors: background,
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+      }
+    : { backgroundColor: background };
 
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
-      <CardContainer backgroundColor={backgroundColor}>
-        <IconsContainer>
-          {iconLeft}
-          {iconRight}
-        </IconsContainer>
+      <CardWrapper
+        {...cardProps}
+        style={{
+          width: cardWidth,
+          aspectRatio: 1,
+          borderRadius: 33,
+          padding: 20,
+          justifyContent: "flex-end",
+        }}
+      >
+        {(iconLeft || iconRight) && (
+          <IconsContainer>
+            {iconLeft && <Icon>{iconLeft}</Icon>}
+            {iconRight && <Icon>{iconRight}</Icon>}
+          </IconsContainer>
+        )}
         <Title>{title}</Title>
-        <Label>{label}</Label>
-      </CardContainer>
+        <Tag>{label}</Tag>
+      </CardWrapper>
     </TouchableOpacity>
   );
 };

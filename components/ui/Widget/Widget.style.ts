@@ -1,16 +1,6 @@
 import styled from "styled-components/native";
-import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
-const cardWidth = (screenWidth - 4.5 * 12) / 2; // two items + 3 margins
 
-export const CardContainer = styled.View<{ backgroundColor: string }>`
-  width: ${cardWidth}px;
-  aspect-ratio: 1;
-  border-radius: 24px;
-  padding: 16px;
-  justify-content: flex-end;
-  background-color: ${(props: { backgroundColor: any }) =>
-    props.backgroundColor};
+export const CardSolid = styled.View<{ backgroundColor: string }>`
   elevation: 4;
   shadow-color: #000;
   shadow-offset: 0px 2px;
@@ -20,10 +10,19 @@ export const CardContainer = styled.View<{ backgroundColor: string }>`
 
 export const IconsContainer = styled.View`
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 20px;
+  right: 20px;
   flex-direction: row;
   gap: 6px;
+`;
+
+export const Icon = styled.View`
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  justify-content: center;
+  align-items: center;
 `;
 
 export const Title = styled.Text`
@@ -32,8 +31,13 @@ export const Title = styled.Text`
   font-size: 16px;
 `;
 
-export const Label = styled.Text`
-  color: white;
+export const Tag = styled.Text`
+  color: #111111;
   font-size: 12px;
   margin-top: 4px;
+  border-radius: 33px;
+  letter-spacing: -0.3px;
+  padding: 4px 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  align-self: flex-start;
 `;

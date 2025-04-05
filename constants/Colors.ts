@@ -51,79 +51,10 @@ export const Colors = {
     red: "#FF5667",
     green: "#118845",
     sage: "#49976B",
-    gradientGreen: `
-    linear-gradient(
-      to bottom right, rgba(52, 61, 232, 0.00) 7%, #1CA870 50%
-    ) bottom right / 50% 50% no-repeat,
-    linear-gradient(
-      to bottom left, rgba(52, 61, 232, 0.00) 7%, #1CA870 50%
-    ) bottom left / 50% 50% no-repeat,
-    linear-gradient(
-      to top left, rgba(52, 61, 232, 0.00) 7%, #1CA870 50%
-    ) top left / 50% 50% no-repeat,
-    linear-gradient(
-      to top right, rgba(52, 61, 232, 0.00) 7%, #1CA870 50%
-    ) top right / 50% 50% no-repeat,
-    #4AE7A8
-  `,
-    GradientPurple: `
-    linear-gradient(
-      to bottom right, rgba(232, 69, 210, 0.00) 14%, #664DBD 100%
-    ) bottom right / 50% 50% no-repeat,
-    linear-gradient(
-      to bottom left, rgba(232, 69, 210, 0.00) 14%, #664DBD 100%
-    ) bottom left / 50% 50% no-repeat,
-    linear-gradient(
-      to top left, rgba(232, 69, 210, 0.00) 14%, #664DBD 100%
-    ) top left / 50% 50% no-repeat,
-    linear-gradient(
-      to top right, rgba(232, 69, 210, 0.00) 14%, #664DBD 100%
-    ) top right / 50% 50% no-repeat,
-    #7645E8
-  `,
-    gradientPink: `linear-gradient(
-      to bottom right, #F46D6F 14%, #B81CA3 100%
-    ) bottom right / 50% 50% no-repeat,
-    linear-gradient(
-      to bottom left, #F46D6F 14%, #B81CA3 100%
-    ) bottom left / 50% 50% no-repeat,
-    linear-gradient(
-      to top left, #F46D6F 14%, #B81CA3 100%
-    ) top left / 50% 50% no-repeat,
-    linear-gradient(
-      to top right, #F46D6F 14%, #B81CA3 100%
-    ) top right / 50% 50% no-repeat,
-    #F46D6F
-  `,
-    gradientRed: `
-    linear-gradient(
-      to bottom right, #FA995D 14%, #E92529 100%
-    ) bottom right / 50% 50% no-repeat,
-    linear-gradient(
-      to bottom left, #FA995D 14%, #E92529 100%
-    ) bottom left / 50% 50% no-repeat,
-    linear-gradient(
-      to top left, #FA995D 14%, #E92529 100%
-    ) top left / 50% 50% no-repeat,
-    linear-gradient(
-      to top right, #FA995D 14%, #E92529 100%
-    ) top right / 50% 50% no-repeat,
-    #FF7D99
-  `,
-    gradientBlue: `
-    linear-gradient(
-      to bottom right, rgba(69, 153, 232, 0.00) 14%, #583FE7 100%
-    ) bottom right / 50% 50% no-repeat,
-    linear-gradient(
-      to bottom left, rgba(69, 153, 232, 0.00) 14%, #583FE7 100%
-    ) bottom left / 50% 50% no-repeat,
-    linear-gradient(
-      to top left, rgba(69, 153, 232, 0.00) 14%, #583FE7 100%
-    ) top left / 50% 50% no-repeat,
-    linear-gradient(
-      to top right, rgba(69, 153, 232, 0.00) 14%, #583FE7 100%
-    ) top right / 50% 50% no-repeat,
-    #4599E8
-  `,
+    gradientPink: ["#F46D6F", "#B81CA3"],
+    gradientRed: ["#FA995D", "#E92529"],
+    gradientBlue: ["#583FE7", "#4599E8"],
+    gradientGreen: ["#1CA870", "#4AE7A8"],
+    gradientPurple: ["#664DBD", "#E845D2"],
   },
 };
