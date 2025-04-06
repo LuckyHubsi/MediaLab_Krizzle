@@ -1,5 +1,5 @@
 import { AttributeDTO, isValidAttributeType } from '@/dto/AttributeDTO';
-import { AttributeType } from '@/utils/Enums';
+import { AttributeType } from '@/utils/enums/AttributeType';
 import { AttributeModel } from '@/models/AttributeModel';
 import { 
     attributeSelectByIdQuery,

@@ -1,4 +1,4 @@
-import { AttributeType } from "@/utils/Enums";
+import { AttributeType } from '@/utils/enums/AttributeType';
 
 /**
  * Represents an Attribute data structure
@@ -16,5 +16,5 @@ export interface AttributeDTO {
  * Type guard to validate attribute type
  */
 export function isValidAttributeType(type: AttributeType): boolean {
-    return ["Text", "Rating", "Date", "Multiselect"].includes(type);
+    return ["text", "rating", "date", "multiselect"].includes(type);
 }

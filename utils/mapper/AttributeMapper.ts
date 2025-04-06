@@ -1,6 +1,6 @@
 import { AttributeModel } from '@/models/AttributeModel';
 import { AttributeDTO, isValidAttributeType } from '@/dto/AttributeDTO';
-import { AttributeType } from '@/utils/Enums';
+import { AttributeType } from '@/utils/enums/AttributeType';
 
 export class AttributeMapper {
     static toDTO(model: AttributeModel): AttributeDTO {

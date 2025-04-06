@@ -1,4 +1,4 @@
-import { AttributeType } from "@/utils/Enums";
+import { AttributeType } from '@/utils/enums/AttributeType';
 
 /**
  * Represents an Attribute Entity Model used for database interactions.
