@@ -2,6 +2,10 @@ import { insertNoteQuery } from "@/queries/NoteQuery";
 import { insertGeneralPageAndReturnID } from "./GeneralPageService";
 import { executeQuery, fetchFirst } from "@/utils/QueryHelper";
 import { NoteDTO } from "@/dto/NoteDTO";
+import { NoteMapper } from "@/utils/mapper/NoteMapper";
+import { selectNoteByPageIDQuery } from "@/queries/GeneralPageQuery";
+import { NoteModel } from "@/models/NoteModel";
+import { PageType } from "@/utils/enums/PageType";
 
 /**
  * Inserts a new note into the database.
@@ -27,6 +31,24 @@ const insertNote = async (noteDTO: NoteDTO): Promise<number | null> => {
     }
 };
 
+/**
+ * Retrieves a note's data by its associated page ID.
+ * Fetches the NoteModel from the database and maps it to a NoteDTO if the page type is 'note'.
+ *
+ * @param pageID - The unique identifier of the page to retrieve.
+ * @returns A Promise that resolves to a NoteDTO if the page is a note, or null if not found or not a note.
+ */
+const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
+    const noteData = await fetchFirst<NoteModel>(selectNoteByPageIDQuery, [pageID]);
+
+    if (!noteData) return null;
+    if (noteData.page_type === PageType.Note) {
+        return NoteMapper.toDTO(noteData);
+    }
+    return null;
+}
+
 export {
-    insertNote
+    insertNote,
+    getNoteDataByPageID,
 }
