@@ -40,4 +40,5 @@ export const Tag = styled.Text`
   padding: 4px 10px;
   background-color: rgba(255, 255, 255, 0.7);
   align-self: flex-start;
+  font-weight: 400;
 `;

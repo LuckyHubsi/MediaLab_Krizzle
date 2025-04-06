@@ -11,12 +11,14 @@ import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { WidgetIcons } from "@/constants/Icons";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
+import React, { useState, useMemo } from "react";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
+  const [selectedTag, setSelectedTag] = useState("All");
 
   // const exampleWidgets = [
   //   {
@@ -85,15 +87,32 @@ export default function HomeScreen() {
   //   },
   // ];
 
-  const exampleWidgets = [
+  const widgets = [
     {
       id: "1",
       title: "Grocery lists",
-      label: "Lists",
+      tag: "Lists",
       color: "gradientPink",
       iconLeft: WidgetIcons.food,
       iconRight: WidgetIcons.note,
     },
+    {
+      id: "2",
+      title: "Books 2025",
+      tag: "Books",
+      color: "pink",
+      iconLeft: WidgetIcons.book,
+      iconRight: WidgetIcons.note,
+    },
+    {
+      id: "3",
+      title: "Café’s 2025",
+      tag: "Cafés",
+      color: "violet",
+      iconLeft: WidgetIcons.coffee,
+      iconRight: WidgetIcons.note,
+    },
+    // etc.
   ];
 
   const exampleWidgetsPinned = [
@@ -124,6 +143,11 @@ export default function HomeScreen() {
     },
   ];
 
+  const filteredWidgets = useMemo(() => {
+    if (selectedTag === "All") return widgets;
+    return widgets.filter((widget) => widget.tag === selectedTag);
+  }, [selectedTag]);
+
   return (
     <SafeAreaView>
       <ThemedView>
@@ -131,7 +155,7 @@ export default function HomeScreen() {
           Home
         </ThemedText>
 
-        {exampleWidgets.length > 0 ? (
+        {widgets.length > 0 ? (
           <>
             <SearchBar
               placeholder="Search"
@@ -139,10 +163,8 @@ export default function HomeScreen() {
             />
 
             <TagList
-              tags={["All", "Games", "Books", "Movies", "Cafés"]}
-              onSelect={(tag) => {
-                console.log("Selected tag:", tag);
-              }}
+              tags={["All", "Books", "Cafés", "Lists", "To-Dos"]}
+              onSelect={(tag) => setSelectedTag(tag)}
             />
 
             <ThemedText fontSize="regular" fontWeight="regular">
@@ -150,7 +172,7 @@ export default function HomeScreen() {
             </ThemedText>
 
             <FlatList
-              data={exampleWidgets}
+              data={filteredWidgets}
               keyExtractor={(item) => item.id}
               numColumns={columns}
               columnWrapperStyle={{
@@ -160,7 +182,7 @@ export default function HomeScreen() {
               renderItem={({ item }) => (
                 <Widget
                   title={item.title}
-                  label={item.label}
+                  label={item.tag}
                   iconLeft={item.iconLeft}
                   iconRight={item.iconRight}
                   color={item.color}
