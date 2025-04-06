@@ -87,7 +87,15 @@ const TextEditor: React.FC = () => {
   // const keyboardVerticalOffset = headerHeight + top;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor:
+          colorScheme === "dark"
+            ? Colors.dark.background
+            : Colors.light.background,
+      }}
+    >
       <RichText
         editor={editor}
         style={{
