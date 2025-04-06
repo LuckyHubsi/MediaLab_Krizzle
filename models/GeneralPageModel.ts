@@ -2,7 +2,6 @@ import { PageType } from "@/utils/enums/PageType";
 
 /**
  * Represents the internal model of a general page in the application.
- * This model supports both notes and collections, with optional metadata (like note_content).
  */
 export type GeneralPageModel = {
   pageID: number;                 // unique identifier for the page
