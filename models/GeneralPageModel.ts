@@ -1,36 +1,19 @@
-/**
- * Represents a General Page Entity Model used for database interactions.
- */
-export class GeneralPageModel {
-    readonly pageID?: number;
-    page_type: string;
-    page_title: string;
-    page_icon: string;
-    page_color: string;
-    date_created?: string;
-    date_modified?: string;
-    archived: number;
-    pinned: number;
+import { PageType } from "@/utils/enums/PageType";
 
-    constructor(
-        page_type: string,
-        page_title: string,
-        page_icon: string,
-        page_color: string,
-        archived: number,
-        pinned: number,
-        pageID?: number,
-        date_created?: string,
-        date_modified?: string,
-    ) {
-        this.pageID = pageID;
-        this.page_type = page_type;
-        this.page_title = page_title;
-        this.page_icon = page_icon;
-        this.page_color = page_color;
-        this.date_created = date_created;
-        this.date_modified = date_modified;
-        this.archived = archived;
-        this.pinned = pinned;
-    }
-}
+/**
+ * Represents the internal model of a general page in the application.
+ * This model supports both notes and collections, with optional metadata (like note_content).
+ */
+export type GeneralPageModel = {
+  pageID: number;                 // unique identifier for the page
+  page_type: PageType;            // type of the page ('note' or 'collection')
+  page_title: string;             // title of the page
+  page_icon?: string | null;      // optional icon associated with the page
+  page_color?: string | null;     // optional background or accent color for the page
+  date_created: string;           // ISO string representing when the page was created.
+  date_modified: string;          // ISO string representing the last modification time.
+  archived: 0 | 1;                // indicates if the page is archived (0 = false, 1 = true)
+  pinned: 0 | 1;                  // indicates if the page is pinned (0 = false, 1 = true)
+  tagID?: number | null;          // optional ID of the associated tag
+  tag_label?: string;             // optional label of the associated tag
+};
