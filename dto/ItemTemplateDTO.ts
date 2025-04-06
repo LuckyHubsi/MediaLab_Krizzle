@@ -3,7 +3,7 @@ import { AttributeDTO } from './AttributeDTO';
 /**
  * Represents an ItemTemplate data structure
  */
-export interface ItemTemplateDTO {
+export type ItemTemplateDTO = {
     itemTemplateID?: number;
     title: string;
     categories: string | null;

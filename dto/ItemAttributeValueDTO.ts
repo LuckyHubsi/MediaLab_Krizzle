@@ -3,7 +3,7 @@ import { AttributeDTO } from './AttributeDTO';
 /**
  * Represents an ItemAttributeValue data structure
  */
-export interface ItemAttributeValueDTO {
+export type ItemAttributeValueDTO = {
     valueID?: number;
     itemID: number;
     attributeID: number;

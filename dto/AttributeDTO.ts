@@ -3,7 +3,7 @@ import { AttributeType } from '@/utils/enums/AttributeType';
 /**
  * Represents an Attribute data structure
  */
-export interface AttributeDTO {
+export type AttributeDTO = {
     attributeID?: number;
     itemTemplateID: number;
     attributeLabel: string;
