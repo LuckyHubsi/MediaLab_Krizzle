@@ -1,9 +1,10 @@
-export interface Tag {
+/**
+ * Represents a tag used to categorize or label content.
+ *
+ * @property tagID - The unique identifier for the tag.
+ * @property tag_label - The human-readable label or name of the tag.
+ */
+export type TagModel = {
     tagID: number,
-    tagLabel: string,
-    //tagColor: TagColor
-}
-
-export class Tag {
-    constructor(public tagID: number, public tagLabel: string) {}
+    tag_label: string
 }
