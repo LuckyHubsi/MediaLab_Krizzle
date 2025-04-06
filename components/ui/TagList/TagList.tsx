@@ -27,7 +27,9 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect }) => {
             themeMode={themeMode}
             onPress={() => handlePress(tag)}
           >
-            <TagText active={tag === activeTag}>{tag}</TagText>
+            <TagText active={tag === activeTag} themeMode={themeMode}>
+              {tag}
+            </TagText>
           </TagButton>
         ))}
       </ScrollView>

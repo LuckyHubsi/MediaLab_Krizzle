@@ -1,11 +1,20 @@
 import styled from "styled-components/native";
+import { LinearGradient } from "expo-linear-gradient";
 
-export const CardSolid = styled.View<{ backgroundColor: string }>`
-  elevation: 4;
-  shadow-color: #000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.2;
-  shadow-radius: 4px;
+export const CardSolid = styled.View<{ cardWidth: number }>`
+  width: ${({ cardWidth }) => `${cardWidth}px`};
+  aspect-ratio: 1;
+  border-radius: 33px;
+  padding: 20px;
+  justify-content: flex-end;
+`;
+
+export const CardGradient = styled(LinearGradient)<{ cardWidth: number }>`
+  width: ${({ cardWidth }) => `${cardWidth}px`};
+  aspect-ratio: 1;
+  border-radius: 33px;
+  padding: 20px;
+  justify-content: flex-end;
 `;
 
 export const IconsContainer = styled.View`

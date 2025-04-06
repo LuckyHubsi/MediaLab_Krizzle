@@ -1,8 +1,14 @@
 import React from "react";
 import { TouchableOpacity, useWindowDimensions } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
-import { IconsContainer, Icon, Title, Tag, CardSolid } from "./Widget.style";
+import {
+  IconsContainer,
+  Icon,
+  Title,
+  Tag,
+  CardSolid,
+  CardGradient,
+} from "./Widget.style";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -31,27 +37,21 @@ const Widget: React.FC<Props> = ({
   const background = Colors.widget[color];
   const isGradient = Array.isArray(background);
 
-  const CardWrapper = isGradient ? LinearGradient : CardSolid;
+  const CardWrapper = isGradient ? CardGradient : CardSolid;
+
   const cardProps = isGradient
     ? {
         colors: background,
-        start: { x: 0, y: 0 },
-        end: { x: 1, y: 1 },
+        start: { x: 0.5, y: 0 },
+        end: { x: 0.5, y: 1 },
+        locations: [0.07, 0.5],
+        cardWidth,
       }
-    : { backgroundColor: background };
+    : { backgroundColor: background, cardWidth };
 
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
-      <CardWrapper
-        {...cardProps}
-        style={{
-          width: cardWidth,
-          aspectRatio: 1,
-          borderRadius: 33,
-          padding: 20,
-          justifyContent: "flex-end",
-        }}
-      >
+      <CardWrapper {...cardProps}>
         {(iconLeft || iconRight) && (
           <IconsContainer>
             {iconLeft && <Icon>{iconLeft}</Icon>}

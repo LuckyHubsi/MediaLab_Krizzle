@@ -26,8 +26,8 @@ export const TagText = styled(Text)<TagProps>`
     active
       ? "#fff"
       : themeMode === "dark"
-        ? Colors.light.pillBackground
-        : Colors.dark.text};
+        ? Colors.dark.text
+        : Colors.light.text};
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
