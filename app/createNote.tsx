@@ -12,8 +12,10 @@ import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
 import { Widget } from "@/components/ui/Widget/Widget";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
+import { Icons } from "@/constants/Icons";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -26,31 +28,25 @@ export default function CreateNoteScreen() {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#4599E8");
   const [selectedIcon, setSelectedIcon] =
-    useState<keyof typeof Ionicons.glyphMap>("star");
+    useState<keyof typeof MaterialIcons.glyphMap>("home");
 
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
 
   const tags = ["Work", "Personal", "Urgent", "Ideas"];
 
-  // Extract color keys for flat list
+  const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
+  const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
+
   const colorOptions = Object.entries(Colors.widget)
     .filter(
       ([key, val]) =>
         typeof val === "string" && !key.toLowerCase().includes("gradient"),
     )
-    .map(([_, value]) => value);
-
-  const iconOptions = [
-    "star",
-    "home",
-    "heart",
-    "book",
-    "bulb",
-    "alarm",
-    "checkmark",
-    "calendar",
-  ];
+    .map(([_, value]) => ({
+      color: value,
+      label: colorLabelMap[value] || "Unnamed",
+    }));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -82,7 +78,9 @@ export default function CreateNoteScreen() {
                 <TagPicker
                   tags={tags}
                   selectedTag={selectedTag}
-                  onSelectTag={setSelectedTag}
+                  onSelectTag={(tag) => {
+                    setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
+                  }}
                   onViewAllPress={() => navigation.navigate("tagManagement")}
                 />
               </Card>
@@ -92,25 +90,31 @@ export default function CreateNoteScreen() {
                   flexDirection: "row",
                   width: "100%",
                   justifyContent: "space-between",
+                  gap: 15,
                 }}
               >
-                <ChooseCard
-                  label="Choose Color"
-                  selectedColor={selectedColor}
-                  onPress={() => {
-                    setPopupType("color");
-                    setPopupVisible(true);
-                  }}
-                />
-                <ChooseCard
-                  label="Choose Icon"
-                  selectedColor={selectedColor}
-                  selectedIcon={selectedIcon}
-                  onPress={() => {
-                    setPopupType("icon");
-                    setPopupVisible(true);
-                  }}
-                />
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedColorLabel}
+                    selectedColor={selectedColor}
+                    onPress={() => {
+                      setPopupType("color");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedIconLabel}
+                    selectedColor={selectedColor}
+                    selectedIcon={selectedIcon}
+                    onPress={() => {
+                      setPopupType("icon");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
               </View>
             </View>
           </ScrollView>
@@ -119,13 +123,17 @@ export default function CreateNoteScreen() {
         <ChoosePopup
           visible={popupVisible}
           type={popupType}
-          items={popupType === "color" ? colorOptions : iconOptions}
+          items={
+            popupType === "color"
+              ? colorOptions.map((option) => option.color)
+              : Icons
+          }
           selectedItem={popupType === "color" ? selectedColor : selectedIcon}
           onSelect={(item) => {
             if (popupType === "color") {
               setSelectedColor(item);
             } else {
-              setSelectedIcon(item as keyof typeof Ionicons.glyphMap);
+              setSelectedIcon(item as keyof typeof MaterialIcons.glyphMap);
             }
           }}
           onClose={() => setPopupVisible(false)}

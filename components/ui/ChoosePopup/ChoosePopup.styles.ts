@@ -10,26 +10,21 @@ export const Backdrop = styled.View`
 export const Content = styled.View<{ colorScheme: "light" | "dark" }>`
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "#fff" : "#1A1A1A"};
-  width: 350px;
-  height: 500px;
-  border-radius: 20px;
+  width: 285px;
+  height: auto;
+  max-height: 500px;
+  border-radius: 33px;
   padding: 24px 0;
   gap: 20px;
   align-items: center;
 `;
 
-export const PopupTitle = styled.Text`
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  text-align: center;
-`;
-
 export const ItemsGrid = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 10px;
+  row-gap: 15px;
   padding: 0 20px;
 `;
 
@@ -38,11 +33,10 @@ export const ItemWrapper = styled.TouchableOpacity<{
 }>`
   flex-direction: row;
   align-items: center;
-  padding: 8px 12px;
+  padding: 5px 10px 5px 5px;
   border-radius: 33px;
   background-color: ${({ isSelected }: { isSelected: boolean }) =>
     isSelected ? "#4599E8" : "#EAEAEA"};
-  margin: 8px;
 `;
 
 export const ItemCircle = styled.View<{ backgroundColor: string }>`
@@ -71,6 +65,7 @@ export const ColorLabel = styled.Text<{
     colorScheme: "light" | "dark";
   }) =>
     isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
+  margin-left: 6px;
 `;
 
 export const DoneButton = styled.TouchableOpacity`

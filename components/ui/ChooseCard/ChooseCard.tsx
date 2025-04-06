@@ -7,13 +7,12 @@ import {
   EditButton,
   Label,
 } from "./ChooseCard.styles";
-import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface ChooseCardProps {
   label: string;
   selectedColor?: string;
-  selectedIcon?: keyof typeof Ionicons.glyphMap;
+  selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
 }
 
@@ -40,7 +39,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
         {/* Center Circle with Color & Icon */}
         <Circle style={{ backgroundColor: selectedColor ?? "transparent" }}>
           {selectedIcon && (
-            <Ionicons name={selectedIcon} size={32} color="white" />
+            <MaterialIcons name={selectedIcon} size={32} color="white" />
           )}
         </Circle>
 

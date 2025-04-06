@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
@@ -17,32 +16,12 @@ import {
   ItemWrapper,
   DoneButton,
   DoneButtonText,
-  PopupTitle,
   ItemsGrid,
   ColorLabel,
 } from "./ChoosePopup.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { ScrollView } from "react-native";
-
-// TESTING MAP FOR LABELS TO COLORS
-const colorNameMap: Record<string, string> = {
-  "#ffffff": "White",
-  "#111111": "Black",
-  "#585858": "Grey",
-  "#ABABAB": "Light Grey",
-  "#82A9CC": "Blue Grey",
-  "#7DB5EA": "Light Blue",
-  "#4599E8": "Blue",
-  "#1D7ED7": "Dark Blue",
-  "#6D2EFF": "Purple",
-  "#8559ED": "Violet",
-  "#D50BBA": "Pink",
-  "#ED59C8": "Rose",
-  "#E71341": "Dark Red",
-  "#FF5667": "Red",
-  "#118845": "Green",
-  "#49976B": "Sage",
-};
+import { colorLabelMap } from "@/constants/LabelMaps";
 
 interface ChoosePopupProps {
   visible: boolean;
@@ -76,18 +55,18 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
         <Backdrop>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
-            style={{ flex: 1 }}
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
             <TouchableOpacity activeOpacity={1} onPress={() => {}}>
               <Content colorScheme={colorScheme}>
-                <PopupTitle>
+                <ThemedText fontSize="regular" fontWeight="semibold">
                   {type === "color" ? "Choose a Color" : "Choose an Icon"}
-                </PopupTitle>
+                </ThemedText>
                 <ScrollView>
                   <ItemsGrid>
                     {items.map((item) => {
                       const isSelected = selectedItem === item;
-                      const label = colorNameMap[item] || item;
+                      const label = colorLabelMap[item] || item;
 
                       return (
                         <ItemWrapper
@@ -101,7 +80,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                             }
                           >
                             {type === "icon" && (
-                              <Ionicons
+                              <MaterialIcons
                                 name={item as any}
                                 size={26}
                                 color="#fff"

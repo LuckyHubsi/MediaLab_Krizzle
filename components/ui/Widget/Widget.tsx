@@ -9,12 +9,12 @@ import {
   TagPill,
   ContentWrapper,
 } from "./Widget.styles";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface WidgetProps {
   backgroundColor: string;
   showPreviewLabel?: boolean;
-  selectedIcon?: keyof typeof Ionicons.glyphMap;
+  selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   typeIcon: keyof typeof MaterialIcons.glyphMap; // "note" or "folder"
   title?: string;
   tag?: string;
@@ -35,7 +35,7 @@ export const Widget: React.FC<WidgetProps> = ({
         <View style={{ flexDirection: "row", gap: 8 }}>
           <IconWrapper>
             {selectedIcon && (
-              <Ionicons name={selectedIcon} size={20} color="white" />
+              <MaterialIcons name={selectedIcon} size={20} color="white" />
             )}
           </IconWrapper>
           <IconWrapper>
