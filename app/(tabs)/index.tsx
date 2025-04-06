@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
   const [selectedTag, setSelectedTag] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // const exampleWidgets = [
   //   {
@@ -112,7 +113,6 @@ export default function HomeScreen() {
       iconLeft: WidgetIcons.coffee,
       iconRight: WidgetIcons.note,
     },
-    // etc.
   ];
 
   const exampleWidgetsPinned = [
@@ -144,9 +144,14 @@ export default function HomeScreen() {
   ];
 
   const filteredWidgets = useMemo(() => {
-    if (selectedTag === "All") return widgets;
-    return widgets.filter((widget) => widget.tag === selectedTag);
-  }, [selectedTag]);
+    const lowerQuery = searchQuery.toLowerCase();
+
+    return widgets.filter((widget) => {
+      const matchesTag = selectedTag === "All" || widget.tag === selectedTag;
+      const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
+      return matchesTag && matchesTitle;
+    });
+  }, [widgets, selectedTag, searchQuery]);
 
   return (
     <SafeAreaView>
@@ -155,11 +160,13 @@ export default function HomeScreen() {
           Home
         </ThemedText>
 
-        {widgets.length > 0 ? (
+        {widgets.length === 0 ? (
+          <EmptyHome />
+        ) : (
           <>
             <SearchBar
               placeholder="Search"
-              onSearch={(query) => console.log(query)}
+              onSearch={(query) => setSearchQuery(query)}
             />
 
             <TagList
@@ -167,32 +174,42 @@ export default function HomeScreen() {
               onSelect={(tag) => setSelectedTag(tag)}
             />
 
-            <ThemedText fontSize="regular" fontWeight="regular">
-              Recent
-            </ThemedText>
+            {filteredWidgets.length > 0 ? (
+              <>
+                <ThemedText fontSize="regular" fontWeight="regular">
+                  Recent
+                </ThemedText>
 
-            <FlatList
-              data={filteredWidgets}
-              keyExtractor={(item) => item.id}
-              numColumns={columns}
-              columnWrapperStyle={{
-                justifyContent: "space-between",
-                marginBottom: 16,
-              }}
-              renderItem={({ item }) => (
-                <Widget
-                  title={item.title}
-                  label={item.tag}
-                  iconLeft={item.iconLeft}
-                  iconRight={item.iconRight}
-                  color={item.color}
-                  onPress={() => console.log("Pressed:", item.title)}
+                <FlatList
+                  data={filteredWidgets}
+                  keyExtractor={(item) => item.id}
+                  numColumns={columns}
+                  columnWrapperStyle={{
+                    justifyContent: "space-between",
+                    marginBottom: 16,
+                  }}
+                  renderItem={({ item }) => (
+                    <Widget
+                      title={item.title}
+                      label={item.tag}
+                      iconLeft={item.iconLeft}
+                      iconRight={item.iconRight}
+                      color={item.color}
+                      onPress={() => console.log("Pressed:", item.title)}
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            ) : (
+              <ThemedText
+                fontSize="regular"
+                fontWeight="regular"
+                style={{ textAlign: "center", marginTop: 25 }}
+              >
+                No entries for "{searchQuery}"
+              </ThemedText>
+            )}
           </>
-        ) : (
-          <EmptyHome />
         )}
       </ThemedView>
     </SafeAreaView>

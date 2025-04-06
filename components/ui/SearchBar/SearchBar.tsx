@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
@@ -14,33 +14,28 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const [query, setQuery] = useState("");
   const colorScheme = useColorScheme() ?? "light";
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      onSearch(query);
-    }
-  };
-
   const themeColors = Colors[colorScheme];
+
+  // Call onSearch live as user types
+  useEffect(() => {
+    onSearch(query);
+  }, [query]);
 
   return (
     <SearchContainer
       style={{ backgroundColor: themeColors.searchBarBackground }}
     >
-      <SearchIcon name="magnify" size={20} color={themeColors.icon} />
+      <SearchIcon name="magnify" size={20} color={themeColors.text} />
       <SearchInput
         style={{ color: themeColors.text }}
         placeholder={placeholder}
-        value={query}
-        onChange={handleInputChange}
-        onKeyPress={handleKeyPress}
         placeholderTextColor={themeColors.searchBarPlaceholder}
+        value={query}
+        onChangeText={setQuery} // ✅ for React Native
+        returnKeyType="search"
       />
     </SearchContainer>
   );
 };
+
 export default SearchBar;
