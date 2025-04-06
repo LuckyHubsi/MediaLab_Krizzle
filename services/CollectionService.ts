@@ -14,7 +14,7 @@ import {
     getLastInsertId
 } from '@/utils/QueryHelper';
 import { CollectionMapper } from '@/utils/mapper/CollectionMapper';
-import { getItemTemplateWithAttributesById } from './ItemTemplateService';
+// import { getItemTemplateWithAttributesById } from './ItemTemplateService';
 
 /**
  * Retrieves a single collection by its ID.
@@ -38,29 +38,29 @@ const getCollectionsByPageId = async (pageId: number): Promise<CollectionDTO[]> 
     return rawData.map(row => CollectionMapper.toDTO(row));
 };
 
-/**
- * Retrieves a collection by its ID and includes the associated item template with attributes.
- * 
- * @param {number} id - The ID of the collection to retrieve.
- * @returns {Promise<CollectionDTO | null>} A promise that resolves to a CollectionDTO object with itemTemplate property or null if not found.
- */
-const getCollectionWithTemplateById = async (id: number): Promise<CollectionDTO | null> => {
-    const collection = await getCollectionById(id);
+// /**
+//  * Retrieves a collection by its ID and includes the associated item template with attributes.
+//  * 
+//  * @param {number} id - The ID of the collection to retrieve.
+//  * @returns {Promise<CollectionDTO | null>} A promise that resolves to a CollectionDTO object with itemTemplate property or null if not found.
+//  */
+// const getCollectionWithTemplateById = async (id: number): Promise<CollectionDTO | null> => {
+//     const collection = await getCollectionById(id);
     
-    if (!collection) {
-        return null;
-    }
+//     if (!collection) {
+//         return null;
+//     }
     
-    // Get the associated item template with its attributes
-    if (collection.itemTemplateID) {
-        const itemTemplate = await getItemTemplateWithAttributesById(collection.itemTemplateID);
-        if (itemTemplate) {
-            collection.itemTemplate = itemTemplate;
-        }
-    }
+//     // Get the associated item template with its attributes
+//     if (collection.template.item_templateID) {
+//         const itemTemplate = await getItemTemplateWithAttributesById(collection.template.item_templateID);
+//         if (itemTemplate) {
+//             collection.template = itemTemplate;
+//         }
+//     }
     
-    return collection;
-};
+//     return collection;
+// };
 
 /**
  * Inserts a new collection into the database and returns its ID.
@@ -73,7 +73,7 @@ const insertCollectionAndReturnID = async (collectionDTO: CollectionDTO): Promis
 
         await executeQuery(insertCollection, [
             collectionDTO.pageID,
-            collectionDTO.itemTemplateID
+            collectionDTO.template.item_templateID
         ]);
 
         // get inserted collection ID
@@ -95,6 +95,6 @@ const insertCollectionAndReturnID = async (collectionDTO: CollectionDTO): Promis
 export {
     getCollectionById,
     getCollectionsByPageId,
-    getCollectionWithTemplateById,
+    // getCollectionWithTemplateById,
     insertCollectionAndReturnID
 }
