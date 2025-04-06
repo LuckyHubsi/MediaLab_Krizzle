@@ -8,11 +8,9 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 export default function NotesScreen() {
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
         <CustomStyledHeader title="Title" onIconPress={() => alert("Popup!")} />
-        <ThemedView>
-          <TextEditor />
-        </ThemedView>
+        <TextEditor />
       </SafeAreaView>
     </>
   );

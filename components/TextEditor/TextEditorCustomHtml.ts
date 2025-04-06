@@ -217,25 +217,24 @@ img.ProseMirror-separator {
   </head>
   <style>
     body {
-      margin-top: 0;
-      padding: 0;
-      line-height: 0.6;
+      margin: 0;
       font-family: Lexend, --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     }
-    body[data-theme='dark'] {
-      background-color: #111111;
-      color: #ECEDEE;
-    }
-    body[data-theme='light'] {
-       background-color: #FBFBFB;
-       color: #11181C;
-    }  
+      body[data-theme='dark'] {
+  background-color: #111111;
+  color: #ECEDEE;
+}
+body[data-theme='light'] {
+  background-color: #FBFBFB;
+  color: #11181C;
+}
+      
     #root > div:nth-of-type(1) {
       position: absolute;
       height: 100%;
       overflow: auto;
       width: 100%;
-      top: -15px;
+      top: -40px;
       bottom: 0;
     }
     #root > div.dynamic-height {
@@ -245,6 +244,7 @@ img.ProseMirror-separator {
     #root div .ProseMirror {
       height: 100%;
       overflow: auto;
+      padding: 20px;
     }
     #root div.dynamic-height .ProseMirror {
       height: unset;

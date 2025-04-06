@@ -91,6 +91,9 @@ const TextEditor: React.FC = () => {
       <RichText
         editor={editor}
         style={{
+          flex: 1,
+          padding: 20,
+          top: 0,
           backgroundColor:
             colorScheme === "dark"
               ? Colors.dark.background
