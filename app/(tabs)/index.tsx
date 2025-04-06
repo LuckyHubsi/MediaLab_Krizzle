@@ -1,4 +1,4 @@
-import { FlatList } from "react-native";
+import { FlatList, Image } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -12,6 +12,7 @@ import TagList from "@/components/ui/TagList/TagList";
 import { WidgetIcons } from "@/constants/Icons";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo } from "react";
+import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -156,6 +157,12 @@ export default function HomeScreen() {
   return (
     <SafeAreaView>
       <ThemedView>
+        <IconTopRight>
+          <Image
+            source={require("@/assets/images/kriz.png")}
+            style={{ width: 30, height: 32 }}
+          />
+        </IconTopRight>
         <ThemedText fontSize="xl" fontWeight="bold">
           Home
         </ThemedText>

@@ -42,9 +42,8 @@ const Widget: React.FC<Props> = ({
   const cardProps = isGradient
     ? {
         colors: background,
-        start: { x: 0.5, y: 0 },
-        end: { x: 0.5, y: 1 },
-        locations: [0.07, 0.5],
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
         cardWidth,
       }
     : { backgroundColor: background, cardWidth };
