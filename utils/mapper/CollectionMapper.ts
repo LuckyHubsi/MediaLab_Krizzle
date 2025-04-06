@@ -6,15 +6,7 @@ export class CollectionMapper {
         return {
             collectionID: model.collectionID,
             pageID: model.pageID,
-            itemTemplateID: model.itemTemplateID
+            itemTemplateID: model.item_templateID
         };
-    }
-
-    static toModel(dto: CollectionDTO): CollectionModel {
-        return new CollectionModel(
-            dto.pageID,
-            dto.itemTemplateID,
-            dto.collectionID
-        );
     }
 }

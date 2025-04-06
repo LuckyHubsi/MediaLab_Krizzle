@@ -56,12 +56,10 @@ const insertItemAttributeValueAndReturnID = async (valueDTO: ItemAttributeValueD
             valueDTO.value = validatedValue !== null ? validatedValue : '';
         }
         
-        const valueModel = ItemAttributeValueMapper.toModel(valueDTO);
-
         await executeQuery(insertItemAttributeValueQuery, [
-            valueModel.itemID,
-            valueModel.attributeID,
-            valueModel.value
+            valueDTO.itemID,
+            valueDTO.attributeID,
+            valueDTO.value
         ]);
 
         // get inserted value ID
@@ -105,13 +103,11 @@ const updateItemAttributeValueById = async (valueDTO: ItemAttributeValueDTO): Pr
             valueDTO.value = validatedValue !== null ? validatedValue : '';
         }
         
-        const valueModel = ItemAttributeValueMapper.toModel(valueDTO);
-
         await executeQuery(updateItemAttributeValue, [
-            valueModel.itemID,
-            valueModel.attributeID,
-            valueModel.value,
-            valueModel.valueID
+            valueDTO.itemID,
+            valueDTO.attributeID,
+            valueDTO.value,
+            valueDTO.valueID
         ]);
 
         return true;

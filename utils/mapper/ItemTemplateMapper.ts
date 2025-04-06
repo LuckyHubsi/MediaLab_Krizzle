@@ -9,12 +9,4 @@ export class ItemTemplateMapper {
             categories: model.categories
         };
     }
-
-    static toModel(dto: ItemTemplateDTO): ItemTemplateModel {
-        return new ItemTemplateModel(
-            dto.title,
-            dto.categories,
-            dto.itemTemplateID
-        );
-    }
 }

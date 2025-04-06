@@ -10,13 +10,4 @@ export class ItemAttributeValueMapper {
             value: model.value
         };
     }
-
-    static toModel(dto: ItemAttributeValueDTO): ItemAttributeValueModel {
-        return new ItemAttributeValueModel(
-            dto.itemID,
-            dto.attributeID,
-            dto.value,
-            dto.valueID
-        );
-    }
 }

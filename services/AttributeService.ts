@@ -48,15 +48,13 @@ const insertAttributeAndReturnID = async (attributeDTO: AttributeDTO): Promise<n
         if (!isValidAttributeType(attributeDTO.attributeType)) {
             attributeDTO.attributeType = AttributeType.Text;
         }
-        
-        const attributeModel = AttributeMapper.toModel(attributeDTO);
 
         await executeQuery(insertAttribute, [
-            attributeModel.itemTemplateID,
-            attributeModel.attributeLabel,
-            attributeModel.attributeType,
-            attributeModel.preview,
-            attributeModel.options
+            attributeDTO.itemTemplateID,
+            attributeDTO.attributeLabel,
+            attributeDTO.attributeType,
+            attributeDTO.preview ? 1 : 0,
+            attributeDTO.options
         ]);
 
         // get inserted attribute ID

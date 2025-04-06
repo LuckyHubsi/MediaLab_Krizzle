@@ -1,5 +1,5 @@
 import { AttributeDTO } from '@/dto/AttributeDTO';
-import { AttributeType } from './AttributeTypes';
+import { AttributeType } from './enums/AttributeType';
 import { ItemAttributeValueDTO } from '@/dto/ItemAttributeValueDTO';
 
 /**

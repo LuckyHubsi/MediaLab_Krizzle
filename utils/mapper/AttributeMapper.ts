@@ -1,6 +1,5 @@
 import { AttributeModel } from '@/models/AttributeModel';
 import { AttributeDTO, isValidAttributeType } from '@/dto/AttributeDTO';
-import { AttributeType } from '@/utils/enums/AttributeType';
 
 export class AttributeMapper {
     static toDTO(model: AttributeModel): AttributeDTO {
@@ -12,25 +11,5 @@ export class AttributeMapper {
             preview: model.preview === 1,
             options: model.options
         };
-    }
-
-    static toModel(dto: AttributeDTO): AttributeModel {
-        let attributeType: AttributeType;
-        
-        // Convert string to enum for Model
-        if (isValidAttributeType(dto.attributeType)) {
-            attributeType = AttributeType[dto.attributeType as keyof typeof AttributeType];
-        } else {
-            attributeType = AttributeType.Text; // Default to Text if invalid
-        }
-        
-        return new AttributeModel(
-            dto.itemTemplateID,
-            dto.attributeLabel,
-            attributeType,
-            dto.preview ? 1 : 0,
-            dto.options || null,
-            dto.attributeID
-        );
     }
 }

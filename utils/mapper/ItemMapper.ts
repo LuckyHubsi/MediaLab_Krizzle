@@ -10,13 +10,4 @@ export class ItemMapper {
             category: model.category
         };
     }
-
-    static toModel(dto: ItemDTO): ItemModel {
-        return new ItemModel(
-            dto.collectionID,
-            dto.pageID,
-            dto.category,
-            dto.itemID
-        );
-    }
 }

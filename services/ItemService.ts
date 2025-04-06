@@ -153,16 +153,16 @@ const createItemFromTemplate = async (collectionId: number, category: string | n
                 let defaultValue = '';
                 
                 switch (attr.attributeType) {
-                    case 'Rating':
+                    case 'rating':
                         defaultValue = '0'; // Default rating of 0
                         break;
-                    case 'Date':
+                    case 'date':
                         defaultValue = ''; // Empty date
                         break;
-                    case 'Multiselect':
+                    case 'multiselect':
                         defaultValue = '[]'; // Empty JSON array for multiselect (we might do it differently, I'unno)
                         break;
-                    case 'Text':
+                    case 'text':
                     default:
                         defaultValue = ''; // Empty text
                         break;
@@ -196,12 +196,11 @@ const createItemFromTemplate = async (collectionId: number, category: string | n
  */
 const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number | null> => {
     try {
-        const itemModel = ItemMapper.toModel(itemDTO);
 
         await executeQuery(insertItem, [
-            itemModel.collectionID,
-            itemModel.pageID,
-            itemModel.category
+            itemDTO.collectionID,
+            itemDTO.pageID,
+            itemDTO.category
         ]);
 
         // get inserted item ID
@@ -228,12 +227,11 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number | null> =
  */
 const insertItemAttributeValueAndReturnID = async (valueDTO: ItemAttributeValueDTO): Promise<number | null> => {
     try {
-        const valueModel = ItemAttributeValueMapper.toModel(valueDTO);
 
         await executeQuery(insertItemAttributeValueQuery, [
-            valueModel.itemID,
-            valueModel.attributeID,
-            valueModel.value
+            valueDTO.itemID,
+            valueDTO.attributeID,
+            valueDTO.value
         ]);
 
         // get inserted value ID
@@ -268,12 +266,11 @@ const updateItemWithAttributes = async (itemDTO: ItemDTO): Promise<boolean> => {
         // Use a transaction to ensure all operations succeed or fail together
         return await executeTransaction(async () => {
             // Update the item basic info
-            const itemModel = ItemMapper.toModel(itemDTO);
             await executeQuery(updateItem, [
-                itemModel.collectionID,
-                itemModel.pageID,
-                itemModel.category,
-                itemModel.itemID
+                itemDTO.collectionID,
+                itemDTO.pageID,
+                itemDTO.category,
+                itemDTO.itemID
             ]);
 
             // Update attribute values if provided
@@ -337,13 +334,11 @@ const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
             return false;
         }
 
-        const itemModel = ItemMapper.toModel(itemDTO);
-
         await executeQuery(updateItem, [
-            itemModel.collectionID,
-            itemModel.pageID,
-            itemModel.category,
-            itemModel.itemID
+            itemDTO.collectionID,
+            itemDTO.pageID,
+            itemDTO.category,
+            itemDTO.itemID
         ]);
 
         return true;

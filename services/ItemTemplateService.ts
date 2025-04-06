@@ -57,11 +57,10 @@ const getItemTemplateWithAttributesById = async (id: number): Promise<ItemTempla
  */
 const insertItemTemplateAndReturnID = async (itemTemplateDTO: ItemTemplateDTO): Promise<number | null> => {
     try {
-        const itemTemplateModel = ItemTemplateMapper.toModel(itemTemplateDTO);
 
         await executeQuery(insertItemTemplate, [
-            itemTemplateModel.title,
-            itemTemplateModel.categories
+            itemTemplateDTO.title,
+            itemTemplateDTO.categories
         ]);
 
         // get inserted item template ID

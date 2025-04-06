@@ -70,11 +70,10 @@ const getCollectionWithTemplateById = async (id: number): Promise<CollectionDTO 
  */
 const insertCollectionAndReturnID = async (collectionDTO: CollectionDTO): Promise<number | null> => {
     try {
-        const collectionModel = CollectionMapper.toModel(collectionDTO);
 
         await executeQuery(insertCollection, [
-            collectionModel.pageID,
-            collectionModel.itemTemplateID
+            collectionDTO.pageID,
+            collectionDTO.itemTemplateID
         ]);
 
         // get inserted collection ID
