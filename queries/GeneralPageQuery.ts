@@ -12,11 +12,15 @@ const selectNoteByPageIDQuery: string = `
     INNER JOIN note n ON p.pageID = n.pageID
     WHERE p.pageID = ?;
 `;
+
+const updateDateModifiedByPageIDQuery: string = `
+    UPDATE general_page_data SET date_modified = ? WHERE pageID = ?
 `;
 
 
 export {
     selectAllGeneralPageQuery,
     insertNewPageQuery,
-    selectNoteByPageIDQuery
+    selectNoteByPageIDQuery,
+    updateDateModifiedByPageIDQuery
 }
