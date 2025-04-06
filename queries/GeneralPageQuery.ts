@@ -1,5 +1,9 @@
 const selectAllGeneralPageQuery: string = `
-    SELECT * FROM general_page_data
+    SELECT p.*, t.tag_label
+    FROM general_page_data p
+    LEFT JOIN tag t ON p.tagID = t.tagID
+    WHERE p.archived = 0
+    ORDER BY p.date_modified DESC;
 `;
 
 const insertNewPageQuery: string = `
