@@ -1,19 +1,10 @@
+import { GeneralPageModel } from "./GeneralPageModel";
+
 /**
- * Represents a Note Entity Model used for database interactions.
+ * Represents the internal model of a textual note.
+ * This model supports both notes and collections, with optional metadata (like note_content).
  */
-export class NoteModel {
-    noteID?: number;
-    note_content: string | null;
-    pageID?: number;
-
-
-    constructor(
-        note_content: string | null,
-        noteID?: number,
-        pageID?: number,
-    ) {
-        this.noteID = noteID;
-        this.note_content = note_content;
-        this.pageID = pageID;
-    }
+export type NoteModel = GeneralPageModel & { 
+    noteID: number,                     // unique identifier for the note
+    note_content: string | null,        // textual content of the note (can be null if empty or not yet set)
 }
