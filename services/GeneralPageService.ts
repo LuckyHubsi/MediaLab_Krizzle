@@ -28,19 +28,15 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[] | null> => {
  */
 const insertGeneralPageAndReturnID = async (generalPageDTO: GeneralPageDTO): Promise<number | null> => {
     try {
-        const generalPageModel = GeneralPageMapper.toModel(generalPageDTO);
-        generalPageModel.date_created = new Date().toISOString(),
-        generalPageModel.date_modified = generalPageModel.date_created,
-
         await executeQuery(insertNewPageQuery, [
-            generalPageModel.page_type,
-            generalPageModel.page_title,
-            generalPageModel.page_icon,
-            generalPageModel.page_color,
-            generalPageModel.date_created,
-            generalPageModel.date_modified,
-            generalPageModel.archived,
-            generalPageModel.pinned
+            generalPageDTO.page_type,
+            generalPageDTO.page_title,
+            generalPageDTO.page_icon,
+            generalPageDTO.page_color,
+            new Date().toISOString(),
+            new Date().toISOString(),
+            generalPageDTO.archived ? 1 : 0,
+            generalPageDTO.pinned ? 1 : 0
         ]);
 
         // get inserted page ID
