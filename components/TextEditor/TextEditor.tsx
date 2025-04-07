@@ -72,10 +72,10 @@ const TextEditor: React.FC = () => {
         },
       },
     },
-    // onChange: async () => {
-    //   const html = await editor.getHTML();
-    //   console.log("Editor HTML:", html);
-    // },
+    onChange: async () => {
+      const html = await editor.getHTML();
+      console.log("Editor HTML:", html);
+    },
   });
 
   // // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
