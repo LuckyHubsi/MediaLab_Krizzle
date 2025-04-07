@@ -14,13 +14,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
+import { NoteDTO } from "@/dto/NoteDTO";
+import { PageType } from "@/utils/enums/PageType";
+import { insertNote } from "@/services/NoteService";
+import { TagDTO } from "@/dto/TagDTO";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
-
-  const handleNext = () => {
-    navigation.navigate("notePage");
-  };
 
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -45,6 +45,30 @@ export default function CreateNoteScreen() {
       color: value,
       label: colorLabelMap[value] || "Unnamed",
     }));
+
+  const handleNext = async () => {
+    let tagDTO: TagDTO | null = null;
+
+    if (selectedTag !== null) {
+      tagDTO = {
+        tag_label: selectedTag,
+      };
+    }
+
+    const noteDTO: NoteDTO = {
+      page_type: PageType.Note,
+      page_title: title,
+      page_icon: selectedIcon,
+      page_color: selectedColor,
+      archived: false,
+      pinned: false,
+      note_content: null,
+      tag: tagDTO,
+    };
+    const id = await insertNote(noteDTO);
+    console.log("Note created with ID:", id);
+    navigation.navigate("notePage");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
