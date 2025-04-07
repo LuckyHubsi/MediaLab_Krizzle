@@ -12,7 +12,7 @@ import TagList from "@/components/ui/TagList/TagList";
 import { WidgetIcons } from "@/constants/WidgetIcons";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo } from "react";
-import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
