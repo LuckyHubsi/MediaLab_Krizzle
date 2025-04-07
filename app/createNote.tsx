@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import { SafeAreaView, View, ScrollView } from "react-native";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import WidgetPreview from "@/components/ui/WidgetPreview/WidgetPreview";
-import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { WidgetPreview } from "@/components/ui/WidgetPreview/WidgetPreview";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import { Button } from "@/components/ui/Button/Button";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
-import { Widget } from "@/components/ui/Widget/Widget";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -54,11 +52,11 @@ export default function CreateNoteScreen() {
         <View style={{ flex: 1, alignItems: "center" }}>
           <Card>
             <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-            <Widget
+            <WidgetPreview
               backgroundColor={selectedColor}
               showPreviewLabel={true}
               selectedIcon={selectedIcon}
-              typeIcon="note"
+              typeIcon="description"
               title={title || "Title"}
               tag={selectedTag ?? undefined}
             />

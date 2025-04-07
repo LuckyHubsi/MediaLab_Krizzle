@@ -1,56 +1,53 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import {
+  Container,
+  Row,
+  PreviewText,
+  IconWrapper,
+  TitleText,
+  TagPill,
+  ContentWrapper,
+} from "./WidgetPreview.styles";
 import { MaterialIcons } from "@expo/vector-icons";
-import styles from "./WidgetPreview.style";
 
-interface WidgetPreviewProps {
-  icon1: keyof typeof MaterialIcons.glyphMap;
-  icon2: keyof typeof MaterialIcons.glyphMap;
-  tag: string;
-  title: string;
-  backgroundColor?: string;
+interface WidgetProps {
+  backgroundColor: string;
+  showPreviewLabel?: boolean;
+  selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+  typeIcon: keyof typeof MaterialIcons.glyphMap; // "note" or "folder"
+  title?: string;
+  tag?: string;
 }
 
-const WidgetPreview: React.FC<WidgetPreviewProps> = ({
-  icon1,
-  icon2,
-  tag,
-  title,
+export const WidgetPreview: React.FC<WidgetProps> = ({
   backgroundColor,
+  showPreviewLabel = false,
+  selectedIcon,
+  typeIcon,
+  title = "Title",
+  tag,
 }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.previewLabel}>Widget Preview</Text>
-
-      <View style={[styles.widgetContainer, { backgroundColor }]}>
-        {/* Top-right Icons */}
-        <View style={styles.iconsContainer}>
-          <MaterialIcons
-            name={icon1}
-            size={32}
-            style={styles.icon}
-            color="black"
-          />
-          <MaterialIcons
-            name={icon2}
-            size={32}
-            style={styles.icon}
-            color="black"
-          />
+    <Container backgroundColor={backgroundColor}>
+      <Row>
+        {showPreviewLabel && <PreviewText>Preview</PreviewText>}
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <IconWrapper>
+            {selectedIcon && (
+              <MaterialIcons name={selectedIcon} size={20} color="white" />
+            )}
+          </IconWrapper>
+          <IconWrapper>
+            <MaterialIcons name={typeIcon} size={20} color="white" />
+          </IconWrapper>
         </View>
+      </Row>
 
-        {/* Title Line */}
-        <View style={styles.titleLine}>
-          <Text style={styles.titleText}>{title}</Text>
-        </View>
-
-        {/* Bottom-left Tag */}
-        <View style={styles.tagPill}>
-          <Text style={styles.tagText}>{tag}</Text>
-        </View>
-      </View>
-    </View>
+      <ContentWrapper>
+        <TitleText>{title}</TitleText>
+        {tag && <TagPill>{tag}</TagPill>}
+      </ContentWrapper>
+    </Container>
   );
 };
-
-export default WidgetPreview;
