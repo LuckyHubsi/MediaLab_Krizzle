@@ -10,8 +10,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-
 import {
   Lexend_300Light,
   Lexend_400Regular,
@@ -19,6 +17,8 @@ import {
   Lexend_700Bold,
 } from "@expo-google-fonts/lexend";
 import { ThemedText } from "@/components/ThemedText";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { SQLiteProvider } from "expo-sqlite";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,15 +43,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="createNote" options={{ headerShown: false }} />
-        <Stack.Screen name="notePage" options={{ headerShown: false }} />
-        <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <SQLiteProvider
+      databaseName="krizzle_local.db"
+      assetSource={{ assetId: require("../assets/database/krizzle_local.db") }}
+    >
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="createNote" options={{ headerShown: false }} />
+          <Stack.Screen name="notePage" options={{ headerShown: false }} />
+          <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </SQLiteProvider>
   );
 }
