@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigation } from "expo-router";
-import { SafeAreaView, View, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { WidgetPreview } from "@/components/ui/WidgetPreview/WidgetPreview";
 import { Card } from "@/components/ui/Card/Card";
