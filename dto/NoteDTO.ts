@@ -5,5 +5,6 @@ import { GeneralPageDTO } from "./GeneralPageDTO";
  * Used for transferring tag data between the backend and frontend.
  */
 export type NoteDTO = GeneralPageDTO & {
+    noteID?: number,
     note_content: string | null;
 };
