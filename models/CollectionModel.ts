@@ -7,5 +7,6 @@ export type CollectionModel = GeneralPageModel & {
     collectionID: number;
     item_templateID: number;
     template_name: string;
+    categories: string,
     attributes: string;
 }

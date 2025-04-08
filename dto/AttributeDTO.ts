@@ -5,7 +5,7 @@ import { AttributeType } from '@/utils/enums/AttributeType';
  */
 export type AttributeDTO = {
     attributeID?: number;
-    itemTemplateID: number;
+    itemTemplateID?: number;
     attributeLabel: string;
     attributeType: AttributeType; // One of: "Text", "Rating", "Date", "Multiselect"
     preview: boolean;

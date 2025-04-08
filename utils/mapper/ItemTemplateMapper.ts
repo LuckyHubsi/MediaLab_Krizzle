@@ -4,8 +4,8 @@ import { ItemTemplateDTO } from '@/dto/ItemTemplateDTO';
 export class ItemTemplateMapper {
     static toDTO(model: ItemTemplateModel): ItemTemplateDTO {
         return {
-            itemTemplateID: model.itemTemplateID,
-            title: model.title,
+            item_templateID: model.itemTemplateID,
+            template_name: model.title,
             categories: model.categories
         };
     }

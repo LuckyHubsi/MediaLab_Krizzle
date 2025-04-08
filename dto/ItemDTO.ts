@@ -6,7 +6,6 @@ import { ItemAttributeValueDTO } from './ItemAttributeValueDTO';
 export type ItemDTO = {
     itemID?: number;
     collectionID: number;
-    pageID: number;
     category: string | null;
     attributeValues?: ItemAttributeValueDTO[];
 }

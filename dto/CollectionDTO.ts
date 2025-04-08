@@ -1,11 +1,10 @@
+import { GeneralPageDTO } from "./GeneralPageDTO";
 import { ItemTemplateDTO } from "./ItemTemplateDTO";
 
 /**
  * Represents a Collection data structure
  */
-export type CollectionDTO = {
+export type CollectionDTO = GeneralPageDTO & {
     collectionID?: number;
-    pageID: number;
-    itemTemplateID: number;
-    itemTemplate?: ItemTemplateDTO;
+    template: ItemTemplateDTO;
 }
