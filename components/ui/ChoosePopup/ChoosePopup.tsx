@@ -5,6 +5,7 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -20,13 +21,20 @@ import {
   ColorLabel,
 } from "./ChoosePopup.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { ScrollView } from "react-native";
 import { colorLabelMap } from "@/constants/LabelMaps";
+
+type ColorKey = keyof typeof Colors.widget;
+
+type PopupItem = {
+  id: string;
+  value: string; // this will be the color hex code or icon name
+  label?: string; // optional, for colors
+};
 
 interface ChoosePopupProps {
   visible: boolean;
   type: "color" | "icon";
-  items: string[]; // List of color hexes or icon names
+  items: PopupItem[];
   selectedItem: string | null;
   onSelect: (item: string) => void;
   onClose: () => void;
@@ -65,24 +73,26 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                 <ScrollView>
                   <ItemsGrid>
                     {items.map((item) => {
-                      const isSelected = selectedItem === item;
-                      const label = colorLabelMap[item] || item;
+                      const isSelected = selectedItem === item.value;
+                      const label = item.label || item.value;
 
                       return (
                         <ItemWrapper
-                          key={item}
+                          key={item.id}
                           isSelected={isSelected}
-                          onPress={() => onSelect(item)}
+                          onPress={() => onSelect(item.value)}
                         >
                           <ItemCircle
                             backgroundColor={
-                              type === "color" ? item : "rgba(255,255,255,0.1)"
+                              type === "color"
+                                ? item.value
+                                : "rgba(255,255,255,0.1)"
                             }
                           >
                             {type === "icon" && (
                               <MaterialIcons
-                                name={item as any}
-                                size={26}
+                                name={item.value as any}
+                                size={24}
                                 color="#fff"
                               />
                             )}
@@ -93,7 +103,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                     })}
                   </ItemsGrid>
                 </ScrollView>
-                <DoneButton onPress={onDone}>
+                <DoneButton onPress={() => onDone()}>
                   <DoneButtonText colorScheme={colorScheme}>
                     Done
                   </DoneButtonText>

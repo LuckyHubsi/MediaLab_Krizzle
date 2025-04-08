@@ -39,7 +39,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
         {/* Center Circle with Color & Icon */}
         <Circle style={{ backgroundColor: selectedColor ?? "transparent" }}>
           {selectedIcon && (
-            <MaterialIcons name={selectedIcon} size={32} color="white" />
+            <MaterialIcons name={selectedIcon} size={26} color="white" />
           )}
         </Circle>
 
