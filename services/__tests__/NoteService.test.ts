@@ -1,7 +1,7 @@
 import { PageType } from "@/utils/enums/PageType";
 import { insertGeneralPageAndReturnID } from "../GeneralPageService";
-import { insertNote } from "../NoteService";
-import { executeQuery } from "@/utils/QueryHelper";
+import { getNoteDataByPageID, insertNote } from "../NoteService";
+import { executeQuery, fetchFirst } from "@/utils/QueryHelper";
 
 // mock the QueryHelper functions
 jest.mock("@/utils/QueryHelper", () => ({
@@ -55,4 +55,39 @@ describe("NoteService", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("getNoteDataByPageID", () => {
+    it("should return NoteDTO when valid data and correct page_type", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue({
+        pageID: 1,
+        page_type: PageType.Note,
+        page_title: "Note Title",
+        note_content: "Content here",
+        date_created: "",
+        date_modified: "",
+        archived: 0,
+        pinned: 1,
+      });
+
+      const noteDTO = await getNoteDataByPageID(1);
+
+      expect(noteDTO?.note_content).toBe("Content here");
+      expect(noteDTO?.page_type).toBe(PageType.Note);
+    });
+
+    it("should return null when no data is found", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue(null);
+      const noteDTO = await getNoteDataByPageID(1);
+      expect(noteDTO).toBeNull();
+    });
+
+    it("should return null if page_type is not Note", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue({
+        page_type: PageType.Collection,
+      });
+      const noteDTO = await getNoteDataByPageID(1);
+      expect(noteDTO).toBeNull();
+    });
+  });
+
 });
