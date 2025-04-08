@@ -144,8 +144,6 @@ export default function HomeScreen() {
                   Recent
                 </ThemedText>
 
-                <Button onPress={resetDatabase}>TEST</Button>
-
                 <FlatList
                   data={filteredWidgets}
                   keyExtractor={(item) => item.id}
