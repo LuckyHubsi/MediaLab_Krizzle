@@ -2,8 +2,11 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { GeneralPageModel } from "@/models/GeneralPageModel";
 import { PageType } from "@/utils/enums/PageType";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
-import { fetchAll } from "@/utils/QueryHelper";
-import { getAllGeneralPageData } from "../GeneralPageService";
+import { executeQuery, fetchAll, fetchFirst } from "@/utils/QueryHelper";
+import {
+  getAllGeneralPageData,
+  insertGeneralPageAndReturnID,
+} from "../GeneralPageService";
 
 // mock the QueryHelper functions
 jest.mock("@/utils/QueryHelper", () => ({
@@ -89,6 +92,56 @@ describe("GeneralPageService", () => {
       expect(console.error).toHaveBeenCalledWith(
         "Error getting all pages note:",
         new Error("Database error"),
+      );
+    });
+  });
+
+  describe("insertGeneralPageAndReturnID", () => {
+    it("should return the inserted page ID", async () => {
+      (executeQuery as jest.Mock).mockResolvedValue(undefined);
+      (fetchFirst as jest.Mock).mockResolvedValue({ id: 1 });
+
+      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
+
+      expect(result).toBe(1);
+      expect(executeQuery).toHaveBeenCalledWith(expect.any(String), [
+        mockGeneralPageDTO.page_type,
+        mockGeneralPageDTO.page_title,
+        mockGeneralPageDTO.page_icon,
+        mockGeneralPageDTO.page_color,
+        expect.any(String),
+        expect.any(String),
+        mockGeneralPageDTO.archived ? 1 : 0,
+        mockGeneralPageDTO.pinned ? 1 : 0,
+      ]);
+      expect(fetchFirst).toHaveBeenCalledWith(
+        "SELECT last_insert_rowid() as id",
+      );
+    });
+
+    it("should return null on insertion failure", async () => {
+      (executeQuery as jest.Mock).mockRejectedValue(
+        new Error("Insertion error"),
+      );
+
+      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
+
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalledWith(
+        "Error inserting note:",
+        new Error("Insertion error"),
+      );
+    });
+
+    it("should return null if fetching inserted page ID fails", async () => {
+      (executeQuery as jest.Mock).mockResolvedValue(undefined);
+      (fetchFirst as jest.Mock).mockResolvedValue(null);
+
+      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
+
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalledWith(
+        "Failed to fetch inserted page ID",
       );
     });
   });
