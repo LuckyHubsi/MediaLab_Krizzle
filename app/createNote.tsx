@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import { SafeAreaView, View, ScrollView } from "react-native";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { WidgetPreview } from "@/components/ui/WidgetPreview/WidgetPreview";
+import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import { Button } from "@/components/ui/Button/Button";
@@ -12,7 +12,11 @@ import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
-import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
+import {
+  colorLabelMap,
+  colorKeyMap,
+  iconLabelMap,
+} from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { PageType } from "@/utils/enums/PageType";
@@ -24,9 +28,9 @@ export default function CreateNoteScreen() {
 
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("#4599E8");
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedIcon, setSelectedIcon] =
-    useState<keyof typeof MaterialIcons.glyphMap>("home");
+    useState<keyof typeof MaterialIcons.glyphMap>("");
 
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -36,15 +40,31 @@ export default function CreateNoteScreen() {
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
 
-  const colorOptions = Object.entries(Colors.widget)
-    .filter(
-      ([key, val]) =>
-        typeof val === "string" && !key.toLowerCase().includes("gradient"),
-    )
-    .map(([_, value]) => ({
-      color: value,
-      label: colorLabelMap[value] || "Unnamed",
-    }));
+  const colorOptions = Object.entries(Colors.widget).flatMap(([key, value]) => {
+    if (typeof value === "string") {
+      return [{ color: value, label: colorLabelMap[value], id: key }];
+    } else if (Array.isArray(value)) {
+      return value.map((v, index) => ({
+        color: v,
+        label: colorLabelMap[v],
+        id: `${key}-${index}`,
+      }));
+    }
+    return [];
+  });
+
+  const getWidgetColorKey = (
+    value: string,
+  ): keyof typeof Colors.widget | undefined => {
+    return Object.keys(Colors.widget).find(
+      (key) =>
+        (typeof Colors.widget[key as keyof typeof Colors.widget] === "string" &&
+          Colors.widget[key as keyof typeof Colors.widget] === value) ||
+        (Array.isArray(Colors.widget[key as keyof typeof Colors.widget]) &&
+          Array.isArray(Colors.widget[key as keyof typeof Colors.widget]) &&
+          Colors.widget[key as keyof typeof Colors.widget].includes(value)),
+    ) as keyof typeof Colors.widget | undefined;
+  };
 
   const handleNext = async () => {
     let tagDTO: TagDTO | null = null;
@@ -59,7 +79,7 @@ export default function CreateNoteScreen() {
       page_type: PageType.Note,
       page_title: title,
       page_icon: selectedIcon,
-      page_color: selectedColor,
+      page_color: getWidgetColorKey(selectedColor) ?? "blue",
       archived: false,
       pinned: false,
       note_content: null,
@@ -76,13 +96,20 @@ export default function CreateNoteScreen() {
         <View style={{ flex: 1, alignItems: "center" }}>
           <Card>
             <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-            <WidgetPreview
-              backgroundColor={selectedColor}
-              showPreviewLabel={true}
-              selectedIcon={selectedIcon}
-              typeIcon="description"
+            <Widget
               title={title || "Title"}
-              tag={selectedTag ?? undefined}
+              label={selectedTag ?? "No tag"}
+              iconLeft={
+                <MaterialIcons name={selectedIcon} size={20} color="black" />
+              }
+              iconRight={
+                <MaterialIcons name="description" size={20} color="black" />
+              }
+              color={
+                (getWidgetColorKey(
+                  selectedColor,
+                ) as keyof typeof Colors.widget) || "blue"
+              }
             />
           </Card>
 
@@ -147,15 +174,22 @@ export default function CreateNoteScreen() {
           type={popupType}
           items={
             popupType === "color"
-              ? colorOptions.map((option) => option.color)
-              : Icons
+              ? colorOptions.map((option, index) => ({
+                  id: `${option.color}-${index}`,
+                  value: option.color,
+                  label: option.label,
+                }))
+              : Icons.map((iconName, index) => ({
+                  id: `${iconName}-${index}`,
+                  value: iconName,
+                }))
           }
           selectedItem={popupType === "color" ? selectedColor : selectedIcon}
-          onSelect={(item) => {
+          onSelect={(itemValue) => {
             if (popupType === "color") {
-              setSelectedColor(item);
+              setSelectedColor(itemValue);
             } else {
-              setSelectedIcon(item as keyof typeof MaterialIcons.glyphMap);
+              setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
             }
           }}
           onClose={() => setPopupVisible(false)}

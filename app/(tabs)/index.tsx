@@ -6,153 +6,109 @@ import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import Widget from "@/components/ui/Widget/Widget";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
-import { WidgetIcons } from "@/constants/WidgetIcons";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
+import { Button } from "@/components/ui/Button/Button";
+import { resetDatabase } from "@/utils/DatabaseReset";
+import { getAllGeneralPageData } from "@/services/GeneralPageService";
+import { useFocusEffect } from "@react-navigation/native";
+
+export const getMaterialIcon = (name: string, size = 20, color = "black") => {
+  return <MaterialIcons name={name as any} size={size} color={color} />;
+};
+
+export const getIconForPageType = (type: string) => {
+  switch (type) {
+    case "note":
+      return getMaterialIcon("note");
+    case "collection":
+      return getMaterialIcon("folder");
+    default:
+      return undefined;
+  }
+};
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
+
+  interface Widget {
+    id: string;
+    title: string;
+    tag: string;
+    page_icon?: string;
+    page_type?: string;
+    color?: string;
+    [key: string]: any;
+  }
+
+  const [widgets, setWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // const exampleWidgets = [
-  //   {
-  //     id: "1",
-  //     title: "Grocery lists",
-  //     label: "Lists",
-  //     color: "gradientPink", // Ensure this matches the allowed ColorKey values
-  //     iconLeft: WidgetIcons.food,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "2",
-  //     title: "Daily To-Dost",
-  //     label: "To-Dos",
-  //     color: "gradientPurple", // Ensure this matches the allowed ColorKey values
-  //     iconLeft: WidgetIcons.checkbox,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "3",
-  //     title: "Café’s 2024",
-  //     label: "Cafés",
-  //     color: "gradientBlue",
-  //     iconLeft: WidgetIcons.coffee,
-  //     iconRight: WidgetIcons.collection,
-  //   },
-  //   {
-  //     id: "4",
-  //     title: "Books 2026",
-  //     label: "Books",
-  //     color: "gradientRed",
-  //     iconLeft: WidgetIcons.book,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "5",
-  //     title: "Grocery list",
-  //     label: "Lists",
-  //     color: "gradientGreen", // Ensure this matches the allowed ColorKey values
-  //     iconLeft: WidgetIcons.book,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "6",
-  //     title: "Daily To-Dos",
-  //     label: "To-Dos",
-  //     color: "lightBlue", // Ensure this matches the allowed ColorKey values
-  //     iconLeft: WidgetIcons.book,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "7",
-  //     title: "Café’s 2025",
-  //     label: "Cafés",
-  //     color: "violet",
-  //     iconLeft: WidgetIcons.book,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  //   {
-  //     id: "8",
-  //     title: "Books 2025",
-  //     label: "Books",
-  //     color: "pink",
-  //     iconLeft: WidgetIcons.book,
-  //     iconRight: WidgetIcons.note,
-  //   },
-  // ];
+  const getColorKeyFromValue = (
+    value: string,
+  ): keyof typeof Colors.widget | undefined => {
+    const colorKeys = Object.keys(Colors.widget);
 
-  const widgets = [
-    {
-      id: "1",
-      title: "Grocery lists",
-      tag: "Lists",
-      color: "gradientPink",
-      iconLeft: WidgetIcons.food,
-      iconRight: WidgetIcons.note,
-    },
-    {
-      id: "2",
-      title: "Books 2025",
-      tag: "Books",
-      color: "pink",
-      iconLeft: WidgetIcons.book,
-      iconRight: WidgetIcons.note,
-    },
-    {
-      id: "3",
-      title: "Café’s 2025",
-      tag: "Cafés",
-      color: "violet",
-      iconLeft: WidgetIcons.coffee,
-      iconRight: WidgetIcons.note,
-    },
-  ];
+    return colorKeys.find((key) => {
+      const currentColor = Colors.widget[key as keyof typeof Colors.widget];
+      return (
+        value === key || // if the value is already the color key like "rose"
+        (typeof currentColor === "string" && currentColor === value) || // hex match
+        (Array.isArray(currentColor) && currentColor.includes(value)) // match inside gradients
+      );
+    }) as keyof typeof Colors.widget | undefined;
+  };
 
-  const exampleWidgetsPinned = [
-    {
-      id: "1",
-      title: "Grocery lists",
-      label: "Lists",
-      color: "sage", // Ensure this matches the allowed ColorKey values
-      iconRight: (
-        <MaterialCommunityIcons name="clipboard-text" size={20} color="black" />
-      ),
-    },
-    {
-      id: "2",
-      title: "Daily To-Dost",
-      label: "To-Dos",
-      color: "gradientPurple", // Ensure this matches the allowed ColorKey values
-      iconLeft: (
-        <MaterialCommunityIcons
-          name="checkbox-marked-circle-outline"
-          size={20}
-          color="black"
-        />
-      ),
-      iconRight: (
-        <MaterialCommunityIcons name="clipboard-text" size={20} color="black" />
-      ),
-    },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      const fetchWidgets = async () => {
+        try {
+          const data = await getAllGeneralPageData();
+
+          const enrichedWidgets: Widget[] = (data || []).map((widget) => ({
+            id: String(widget.pageID),
+            title: widget.page_title,
+            tag: widget.tag?.tag_label || "Uncategorized",
+            color:
+              getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
+            iconLeft: widget.page_icon
+              ? getMaterialIcon(widget.page_icon)
+              : undefined,
+            iconRight: widget.page_type
+              ? getIconForPageType(widget.page_type)
+              : undefined,
+          }));
+
+          setWidgets(enrichedWidgets);
+        } catch (error) {
+          console.error("Error loading widgets:", error);
+        }
+      };
+
+      fetchWidgets();
+    }, []),
+  );
 
   const filteredWidgets = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
-
     return widgets.filter((widget) => {
       const matchesTag = selectedTag === "All" || widget.tag === selectedTag;
       const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
       return matchesTag && matchesTitle;
     });
   }, [widgets, selectedTag, searchQuery]);
+
+  useEffect(() => {
+    console.log("All widgets:", widgets);
+  }, [widgets]);
 
   return (
     <SafeAreaView>
@@ -163,6 +119,7 @@ export default function HomeScreen() {
             style={{ width: 30, height: 32 }}
           />
         </IconTopRight>
+
         <ThemedText fontSize="xl" fontWeight="bold">
           Home
         </ThemedText>
@@ -187,6 +144,8 @@ export default function HomeScreen() {
                   Recent
                 </ThemedText>
 
+                <Button onPress={resetDatabase}>TEST</Button>
+
                 <FlatList
                   data={filteredWidgets}
                   keyExtractor={(item) => item.id}
@@ -201,8 +160,10 @@ export default function HomeScreen() {
                       label={item.tag}
                       iconLeft={item.iconLeft}
                       iconRight={item.iconRight}
-                      color={item.color}
-                      onPress={() => console.log("Pressed:", item.title)}
+                      color={item.color as keyof typeof Colors.widget}
+                      onPress={() => {
+                        console.log("BackgroundColor: ", item.color);
+                      }}
                     />
                   )}
                 />

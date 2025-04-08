@@ -1,41 +1,35 @@
-export const colorLabelMap: Record<string, string> = {
-  "#ffffff": "White",
-  "#111111": "Black",
-  "#585858": "Grey",
-  "#ABABAB": "Light Grey",
-  "#82A9CC": "Blue Grey",
-  "#7DB5EA": "Light Blue",
-  "#4599E8": "Blue",
-  "#1D7ED7": "Dark Blue",
-  "#6D2EFF": "Purple",
-  "#8559ED": "Violet",
-  "#D50BBA": "Pink",
-  "#ED59C8": "Rose",
-  "#E71341": "Dark Red",
-  "#FF5667": "Red",
-  "#118845": "Green",
-  "#49976B": "Sage",
-};
+import { Colors } from "@/constants/Colors";
+import { Icons } from "@/constants/Icons";
 
-export const iconLabelMap: Record<string, string> = {
-  coffee: "Coffee Icon",
-  restaurant: "Restaurant Icon",
-  "auto-stories": "Auto Stories Icon",
-  "shopping-cart": "Shopping Cart Icon",
-  "directions-car": "Car Icon",
-  "sports-esports": "Sports Esports Icon",
-  extension: "Extension Icon",
-  flight: "Flight Icon",
-  "emoji-events": "Emoji Events Icon",
-  "sports-bar": "Sports Bar Icon",
-  "directions-run": "Directions Run Icon",
-  "bakery-dining": "Bakery Dining Icon",
-  celebration: "Celebration Icon",
-  leaderboard: "Leaderboard Icon",
-  "medical-services": "Medical Services Icon",
-  psychology: "Psychology Icon",
-  favorite: "Favorite Icon",
-  "diversity-1": "Diversity Icon",
-  "chat-bubble": "Chat Bubble Icon",
-  pets: "Pets Icon",
-};
+// Hex -> Human readable label
+export const colorLabelMap: Record<string, string> = {};
+// Human readable label -> widget key
+export const colorKeyMap: Record<string, keyof typeof Colors.widget> = {};
+
+Object.entries(Colors.widget).forEach(([key, value]) => {
+  const humanName = key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase());
+
+  if (typeof value === "string") {
+    colorLabelMap[value] = humanName;
+    colorKeyMap[humanName] = key as keyof typeof Colors.widget;
+  } else if (Array.isArray(value)) {
+    value.forEach((v) => {
+      colorLabelMap[v] = humanName;
+    });
+    colorKeyMap[humanName] = key as keyof typeof Colors.widget;
+  }
+});
+
+export const iconLabelMap: Record<string, string> = Icons.reduce(
+  (acc, icon) => {
+    acc[icon] =
+      icon
+        .split("-")
+        .map((w) => w[0].toUpperCase() + w.slice(1))
+        .join(" ") + " Icon";
+    return acc;
+  },
+  {} as Record<string, string>,
+);

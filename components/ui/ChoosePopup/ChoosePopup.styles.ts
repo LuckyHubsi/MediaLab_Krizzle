@@ -10,9 +10,9 @@ export const Backdrop = styled.View`
 export const Content = styled.View<{ colorScheme: "light" | "dark" }>`
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "#fff" : "#1A1A1A"};
-  width: 285px;
+  width: 80%;
   height: auto;
-  max-height: 500px;
+  max-height: 600px;
   border-radius: 33px;
   padding: 24px 0;
   gap: 20px;
@@ -57,14 +57,20 @@ export const ColorLabel = styled.Text<{
   font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.4px;
-  color: ${({
-    isSelected,
-    colorScheme,
-  }: {
-    isSelected: boolean;
-    colorScheme: "light" | "dark";
-  }) =>
-    isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
+  color: "black" {
+    /*  color: ${({
+      isSelected,
+      colorScheme,
+    }: {
+      isSelected: boolean;
+      colorScheme: "light" | "dark";
+    }) =>
+      isSelected
+        ? "#FBFBFB"
+        : colorScheme === "light"
+          ? "#585858"
+          : "#EAEAEA"};*/
+  }
   margin-left: 6px;
 `;
 
