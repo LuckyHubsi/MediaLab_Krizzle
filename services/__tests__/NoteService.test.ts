@@ -1,6 +1,10 @@
 import { PageType } from "@/utils/enums/PageType";
 import { insertGeneralPageAndReturnID } from "../GeneralPageService";
-import { getNoteDataByPageID, insertNote } from "../NoteService";
+import {
+  getNoteDataByPageID,
+  insertNote,
+  updateNoteContent,
+} from "../NoteService";
 import { executeQuery, fetchFirst } from "@/utils/QueryHelper";
 
 // mock the QueryHelper functions
@@ -90,4 +94,31 @@ describe("NoteService", () => {
     });
   });
 
+  describe("updateNoteContent", () => {
+    it("should update content and modified date and return true", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue({ pageID: 1 });
+
+      const result = await updateNoteContent(5, "New content");
+
+      expect(executeQuery).toHaveBeenCalledTimes(2);
+      expect(result).toBe(true);
+    });
+
+    it("should return false if pageID not found", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue(null);
+
+      const result = await updateNoteContent(5, "New content");
+      expect(result).toBe(false);
+    });
+
+    it("should return false if executeQuery throws", async () => {
+      (fetchFirst as jest.Mock).mockResolvedValue({ pageID: 1 });
+      (executeQuery as jest.Mock).mockImplementationOnce(() => {
+        throw new Error("DB error");
+      });
+
+      const result = await updateNoteContent(5, "New content");
+      expect(result).toBe(false);
+    });
+  });
 });
