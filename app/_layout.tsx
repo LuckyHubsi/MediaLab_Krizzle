@@ -1,21 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack, useNavigation } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { SQLiteProvider } from 'expo-sqlite';
+import {
+  Lexend_300Light,
+  Lexend_400Regular,
+  Lexend_600SemiBold,
+  Lexend_700Bold,
+} from "@expo-google-fonts/lexend";
+import { ThemedText } from "@/components/ThemedText";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { SQLiteProvider } from "expo-sqlite";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Lexend_300Light,
+    Lexend_400Regular,
+    Lexend_600SemiBold,
+    Lexend_700Bold,
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -28,14 +42,20 @@ export default function RootLayout() {
     return null;
   }
 
-  return ( // This is the root layout for the app that sets the theme and status bar
-    <SQLiteProvider databaseName="krizzle_local.db" assetSource={{ assetId: require('../assets/database/krizzle_local.db') }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+  return (
+    <SQLiteProvider
+      databaseName="krizzle_local.db"
+      assetSource={{ assetId: require("../assets/database/krizzle_local.db") }}
+    >
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="createNote" options={{ headerShown: false }} />
+          <Stack.Screen name="notePage" options={{ headerShown: false }} />
+          <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
-        <StatusBar style="auto" /> 
+        <StatusBar style="auto" />
       </ThemeProvider>
     </SQLiteProvider>
   );

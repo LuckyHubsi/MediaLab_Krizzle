@@ -1,26 +1,60 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = "#4599E8";
+const tintColorDark = "#4599E8";
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: "#11181C",
+    background: "#FBFBFB",
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#687076",
+    tabIconDefault: "#535353",
     tabIconSelected: tintColorLight,
+    tabBarActiveTintColor: tintColorLight,
+    tabBarInactiveTintColor: "#535353",
+    tabBarBackgroundColor: "rgba(255, 255, 255, 0.85)",
+    searchBarBackground: "#EEE",
+    searchBarPlaceholder: "#687076",
+    cardBackground: "#FBFBFB",
+    cardShadowColor: "#000",
+    pillBackground: "#EAEAEA",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: "#ECEDEE",
+    background: "#111111",
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
+    tabBarActiveTintColor: tintColorDark,
+    tabBarInactiveTintColor: "#fff",
+    tabBarBackgroundColor: "rgba(17, 17, 17, 0.85)",
+    searchBarBackground: "#2A2A2A",
+    searchBarPlaceholder: "#9BA1A6",
+    cardBackground: "#242424",
+    cardShadowColor: "#FFF",
+    pillBackground: "#3D3D3D",
+  },
+  widget: {
+    white: "#ffffff",
+    black: "#111111",
+    grey: "#585858",
+    lightGrey: "#ABABAB",
+    blueGrey: "#82A9CC",
+    lightBlue: "#7DB5EA",
+    blue: "#4599E8",
+    darkBlue: "#1D7ED7",
+    purple: "#6D2EFF",
+    violet: "#8559ED",
+    pink: "#D50BBA",
+    rose: "#ED59C8",
+    darkRed: "#E71341",
+    red: "#FF5667",
+    green: "#118845",
+    sage: "#49976B",
+    gradientPink: ["#F46D6F", "#B81CA3"],
+    gradientRed: ["#FA995D", "#E92529"],
+    gradientBlue: ["#583FE7", "#4599E8"],
+    gradientGreen: ["#1CA870", "#4AE7A8"],
+    gradientPurple: ["#664DBD", "#E845D2"],
   },
 };

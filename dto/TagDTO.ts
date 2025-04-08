@@ -6,6 +6,6 @@
  * @property tag_label - The label or name associated with the tag.
  */
 export type TagDTO = {
-    tagID: number;
+    tagID?: number;
     tag_label: string;
 };
