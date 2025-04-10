@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -88,7 +88,10 @@ export default function CreateNoteScreen() {
     };
     const id = await insertNote(noteDTO);
     console.log("Note created with ID:", id);
-    navigation.navigate("notePage");
+    navigation.navigate({
+      name: "notePage",
+      params: { title },
+    });
   };
 
   return (
