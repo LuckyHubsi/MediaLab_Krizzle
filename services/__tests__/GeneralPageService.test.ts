@@ -4,6 +4,7 @@ import { PageType } from "@/utils/enums/PageType";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
 import { executeQuery, fetchAll, fetchFirst } from "@/utils/QueryHelper";
 import {
+  deleteGeneralPage,
   getAllGeneralPageData,
   insertGeneralPageAndReturnID,
 } from "../GeneralPageService";
@@ -142,6 +143,30 @@ describe("GeneralPageService", () => {
       expect(result).toBeNull();
       expect(console.error).toHaveBeenCalledWith(
         "Failed to fetch inserted page ID",
+      );
+    });
+  });
+
+  describe("deleteGeneralPage", () => {
+    it("should call executeQuery with correct query and pageID", async () => {
+      const mockPageID = 1;
+      await deleteGeneralPage(mockPageID);
+
+      expect(executeQuery).toHaveBeenCalledWith(expect.any(String), [
+        mockPageID,
+      ]);
+    });
+
+    it("should log an error if deletion fails", async () => {
+      const mockPageID = 1;
+      const mockError = new Error("Delete failed");
+      (executeQuery as jest.Mock).mockRejectedValueOnce(mockError);
+
+      await deleteGeneralPage(mockPageID);
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Error deleting note:",
+        mockError,
       );
     });
   });
