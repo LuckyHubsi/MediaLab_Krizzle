@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button/Button";
 import { resetDatabase } from "@/utils/DatabaseReset";
 import { getAllGeneralPageData } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
+import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -51,6 +52,8 @@ export default function HomeScreen() {
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
 
   const getColorKeyFromValue = (
     value: string,
@@ -111,73 +114,94 @@ export default function HomeScreen() {
   }, [widgets]);
 
   return (
-    <SafeAreaView>
-      <ThemedView>
-        <IconTopRight>
-          <Image
-            source={require("@/assets/images/kriz.png")}
-            style={{ width: 30, height: 32 }}
-          />
-        </IconTopRight>
-
-        <ThemedText fontSize="xl" fontWeight="bold">
-          Home
-        </ThemedText>
-
-        {widgets.length === 0 ? (
-          <EmptyHome />
-        ) : (
-          <>
-            <SearchBar
-              placeholder="Search"
-              onSearch={(query) => setSearchQuery(query)}
+    <>
+      <SafeAreaView>
+        <ThemedView>
+          <IconTopRight>
+            <Image
+              source={require("@/assets/images/kriz.png")}
+              style={{ width: 30, height: 32 }}
             />
+          </IconTopRight>
 
-            <TagList
-              tags={["All", "Books", "Cafés", "Lists", "To-Dos"]}
-              onSelect={(tag) => setSelectedTag(tag)}
-            />
+          <ThemedText fontSize="xl" fontWeight="bold">
+            Home
+          </ThemedText>
 
-            {filteredWidgets.length > 0 ? (
-              <>
-                <ThemedText fontSize="regular" fontWeight="regular">
-                  Recent
+          {widgets.length === 0 ? (
+            <EmptyHome />
+          ) : (
+            <>
+              <SearchBar
+                placeholder="Search"
+                onSearch={(query) => setSearchQuery(query)}
+              />
+
+              <TagList
+                tags={["All", "Books", "Cafés", "Lists", "To-Dos"]}
+                onSelect={(tag) => setSelectedTag(tag)}
+              />
+
+              {filteredWidgets.length > 0 ? (
+                <>
+                  <ThemedText fontSize="regular" fontWeight="regular">
+                    Recent
+                  </ThemedText>
+
+                  <FlatList
+                    data={filteredWidgets}
+                    keyExtractor={(item) => item.id}
+                    numColumns={columns}
+                    columnWrapperStyle={{
+                      justifyContent: "space-between",
+                      marginBottom: 16,
+                    }}
+                    renderItem={({ item }) => (
+                      <Widget
+                        title={item.title}
+                        label={item.tag}
+                        iconLeft={item.iconLeft}
+                        iconRight={item.iconRight}
+                        color={item.color as keyof typeof Colors.widget}
+                        onPress={() => {
+                          console.log("BackgroundColor: ", item.color);
+                        }}
+                        onLongPress={() => {
+                          setWidgetToDelete(item);
+                          setShowDeleteModal(true);
+                        }}
+                      />
+                    )}
+                  />
+                </>
+              ) : (
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="regular"
+                  style={{ textAlign: "center", marginTop: 25 }}
+                >
+                  No entries for "{searchQuery}"
                 </ThemedText>
-
-                <FlatList
-                  data={filteredWidgets}
-                  keyExtractor={(item) => item.id}
-                  numColumns={columns}
-                  columnWrapperStyle={{
-                    justifyContent: "space-between",
-                    marginBottom: 16,
-                  }}
-                  renderItem={({ item }) => (
-                    <Widget
-                      title={item.title}
-                      label={item.tag}
-                      iconLeft={item.iconLeft}
-                      iconRight={item.iconRight}
-                      color={item.color as keyof typeof Colors.widget}
-                      onPress={() => {
-                        console.log("BackgroundColor: ", item.color);
-                      }}
-                    />
-                  )}
-                />
-              </>
-            ) : (
-              <ThemedText
-                fontSize="regular"
-                fontWeight="regular"
-                style={{ textAlign: "center", marginTop: 25 }}
-              >
-                No entries for "{searchQuery}"
-              </ThemedText>
-            )}
-          </>
-        )}
-      </ThemedView>
-    </SafeAreaView>
+              )}
+            </>
+          )}
+        </ThemedView>
+      </SafeAreaView>
+      <DeleteModal
+        visible={showDeleteModal}
+        title={widgetToDelete?.title}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          //here comes then deletion logic
+          if (widgetToDelete) {
+            setWidgets((prev) =>
+              prev.filter((w) => w.id !== widgetToDelete.id),
+            );
+            setWidgetToDelete(null);
+            setShowDeleteModal(false);
+          }
+        }}
+      />
+    </>
   );
 }
