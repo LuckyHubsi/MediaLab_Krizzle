@@ -21,10 +21,9 @@ const updateDateModifiedByPageIDQuery: string = `
     UPDATE general_page_data SET date_modified = ? WHERE pageID = ?
 `;
 
-
 export {
-    selectAllGeneralPageQuery,
-    insertNewPageQuery,
-    selectNoteByPageIDQuery,
-    updateDateModifiedByPageIDQuery
-}
+  selectAllGeneralPageQuery,
+  insertNewPageQuery,
+  selectNoteByPageIDQuery,
+  updateDateModifiedByPageIDQuery,
+};

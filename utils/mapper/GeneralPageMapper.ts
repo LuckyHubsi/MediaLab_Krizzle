@@ -6,7 +6,6 @@ import { GeneralPageModel } from "@/models/GeneralPageModel";
  * Utility class for converting general page data between different layers.
  */
 export class GeneralPageMapper {
-
   /**
    * Converts a GeneralPageModel into a GeneralPageDTO.
    *
@@ -20,7 +19,7 @@ export class GeneralPageMapper {
           tag_label: model.tag_label,
         }
       : null;
-  
+
     return {
       pageID: model.pageID,
       page_type: model.page_type,
