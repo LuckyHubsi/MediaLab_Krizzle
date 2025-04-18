@@ -1,21 +1,14 @@
 import React from "react";
-import {
-  KeyboardAvoidingView,
   Platform,
   useColorScheme,
-  View,
-} from "react-native";
-import {
-  useEditorBridge,
-  RichText,
-  Toolbar,
-  editorHtml,
-} from "@10play/tentap-editor";
+import { KeyboardAvoidingView, Platform, useColorScheme } from "react-native";
+import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { customEditorHtml } from "./TextEditorCustomHtml";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
 const TextEditor: React.FC = () => {
   const colorScheme = useColorScheme();
@@ -74,10 +67,16 @@ const TextEditor: React.FC = () => {
     },
     onChange: async () => {
       const html = await editor.getHTML();
-      console.log("Editor HTML:", html);
+      debouncedSave.debouncedFunction(html);
     },
   });
 
+  const saveNote = async (html: string) => {
+    console.log("Saving note:", html);
+    // updateNoteContent(id, html); // TODO: have id ready to be passed
+  };
+
+  const debouncedSave = useDebouncedCallback(saveNote, 1000);
   // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
   const { top } = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
