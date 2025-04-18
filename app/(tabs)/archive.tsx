@@ -3,7 +3,7 @@ import { StyleSheet, Image, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 export default function TabTwoScreen() {
   return (

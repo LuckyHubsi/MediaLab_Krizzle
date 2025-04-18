@@ -10,8 +10,4 @@ const selectPageIDByNoteIDQuery = `
     SELECT pageID FROM note WHERE noteID = ?
 `;
 
-export {
-    insertNoteQuery,
-    updateNoteContentQuery,
-    selectPageIDByNoteIDQuery
-}
+export { insertNoteQuery, updateNoteContentQuery, selectPageIDByNoteIDQuery };

@@ -11,7 +11,7 @@ import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { Button } from "@/components/ui/Button/Button";
 import { resetDatabase } from "@/utils/DatabaseReset";
 import { getAllGeneralPageData } from "@/services/GeneralPageService";

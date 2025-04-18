@@ -1,8 +1,9 @@
 import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
+type CardProps = { cardWidth: number };
 
-export const CardSolid = styled.View<{ cardWidth: number }>`
-  width: ${({ cardWidth }) => `${cardWidth}px`};
+export const CardSolid = styled.View<CardProps>`
+  width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
   aspect-ratio: 1;
   border-radius: 33px;
   padding: 20px;
@@ -10,7 +11,7 @@ export const CardSolid = styled.View<{ cardWidth: number }>`
 `;
 
 export const CardGradient = styled(LinearGradient)<{ cardWidth: number }>`
-  width: ${({ cardWidth }) => `${cardWidth}px`};
+  width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
   aspect-ratio: 1;
   border-radius: 33px;
   padding: 20px;
@@ -35,12 +36,14 @@ export const Icon = styled.View`
 `;
 
 export const Title = styled.Text`
+  font-family: Lexend_400Regular;
   color: white;
   font-weight: 700;
   font-size: 16px;
 `;
 
 export const Tag = styled.Text`
+  font-family: Lexend_400Regular;
   color: #111111;
   font-size: 12px;
   margin-top: 4px;
