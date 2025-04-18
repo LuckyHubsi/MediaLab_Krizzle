@@ -21,7 +21,7 @@ const updateDateModifiedByPageIDQuery: string = `
     UPDATE general_page_data SET date_modified = ? WHERE pageID = ?
 `;
 
-const deleteGeneralPageBYIDQuery: string = `
+const deleteGeneralPageByIDQuery: string = `
     DELETE FROM general_page_data WHERE pageID = ?
 `;
 
@@ -30,5 +30,5 @@ export {
   insertNewPageQuery,
   selectNoteByPageIDQuery,
   updateDateModifiedByPageIDQuery,
-  deleteGeneralPageBYIDQuery,
+  deleteGeneralPageByIDQuery,
 };
