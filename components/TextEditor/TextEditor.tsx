@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  AppState,
+  AppStateStatus,
+  KeyboardAvoidingView,
   Platform,
   useColorScheme,
-import { KeyboardAvoidingView, Platform, useColorScheme } from "react-native";
+} from "react-native";
 import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,6 +16,9 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
 const TextEditor: React.FC = () => {
   const colorScheme = useColorScheme();
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState,
+  );
 
   const editor = useEditorBridge({
     autofocus: false,
@@ -77,6 +84,29 @@ const TextEditor: React.FC = () => {
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (
+        appState.match(/active/) &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        editor.getHTML().then((html) => {
+          debouncedSave.flush(html);
+        });
+      }
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+    return () => {
+      subscription.remove();
+    };
+  }, [appState, debouncedSave, editor]);
+
   // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
   const { top } = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();

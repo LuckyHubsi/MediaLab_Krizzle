@@ -20,6 +20,14 @@ export const useDebouncedCallback = (
     }
   };
 
+  const flush = (...args: any[]) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      callback(...args);
+    }
+  };
+
   useEffect(() => {
     return () => cancel();
   }, []);
