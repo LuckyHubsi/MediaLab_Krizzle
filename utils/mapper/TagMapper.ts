@@ -5,7 +5,6 @@ import { TagModel } from "@/models/TagModel";
  * Utility class for converting tag-related data between different layers.
  */
 export class TagMapper {
-
   /**
    * Converts a TagModel into a TagDTO.
    *
