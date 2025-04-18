@@ -3,6 +3,7 @@ import { GeneralPageModel } from "@/models/GeneralPageModel";
 import {
   selectAllGeneralPageQuery,
   insertNewPageQuery,
+  deleteGeneralPageByIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { fetchAll, executeQuery, fetchFirst } from "@/utils/QueryHelper";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
@@ -60,4 +61,16 @@ const insertGeneralPageAndReturnID = async (
   }
 };
 
-export { getAllGeneralPageData, insertGeneralPageAndReturnID };
+const deleteGeneralPage = async (pageID: number): Promise<void> => {
+  try {
+    await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
+  } catch (error) {
+    console.error("Error deleting note:", error);
+  }
+};
+
+export {
+  getAllGeneralPageData,
+  insertGeneralPageAndReturnID,
+  deleteGeneralPage,
+};
