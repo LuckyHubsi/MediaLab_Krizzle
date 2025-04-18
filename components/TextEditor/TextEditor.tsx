@@ -78,13 +78,12 @@ const TextEditor: React.FC = () => {
     },
   });
 
-  // // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
-  // const { top } = useSafeAreaInsets();
-  // const { width, height } = useWindowDimensions();
-  // const isLandscape = width > height;
-  // const headerHeight = isLandscape ? 32 : 44;
-  // // const headerHeight = isLandscape ? 32 : 55;
-  // const keyboardVerticalOffset = headerHeight + top;
+  // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
+  const { top } = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const headerHeight = isLandscape ? 32 : 68;
+  const keyboardVerticalOffset = headerHeight + top;
 
   return (
     <SafeAreaView
@@ -110,11 +109,12 @@ const TextEditor: React.FC = () => {
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
-        // keyboardVerticalOffset={keyboardVerticalOffset}
+        keyboardVerticalOffset={keyboardVerticalOffset}
         style={{
           position: "absolute",
           bottom: 0,
+          left: 0,
+          right: 0,
         }}
       >
         <Toolbar editor={editor} />
