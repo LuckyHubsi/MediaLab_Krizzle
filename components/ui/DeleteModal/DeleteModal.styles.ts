@@ -1,36 +1,36 @@
 import styled from "styled-components/native";
 
+// Shared type for components that need light/dark mode styling
+type ThemeProps = {
+  colorScheme: "light" | "dark";
+};
+
 export const Overlay = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
+  font-family: Lexend_400Regular;
 `;
 
-export const ModalBox = styled.View`
+export const ModalBox = styled.View<ThemeProps>`
   width: 300px;
-  background-color: white;
+  background-color: ${({ colorScheme }: ThemeProps) =>
+    colorScheme === "light" ? "#FBFBFB" : "#242424"};
   border-radius: 12px;
   padding: 20px;
-  shadow-color: #000;
-  shadow-opacity: 0.25;
+  shadow-color: ${({ colorScheme }: ThemeProps) =>
+    colorScheme === "light" ? "#000" : "#FFF"};
+  shadow-opacity: 0.1;
   shadow-radius: 4px;
   elevation: 5;
-`;
-
-export const Title = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-export const Message = styled.Text`
-  margin-bottom: 20px;
+  gap: 12px;
 `;
 
 export const ButtonRow = styled.View`
   flex-direction: row;
   justify-content: flex-end;
+  gap: 12px;
 `;
 
 export const Action = styled.Pressable`
@@ -38,5 +38,6 @@ export const Action = styled.Pressable`
 `;
 
 export const ActionText = styled.Text<{ color?: string }>`
-  color: ${(props: { color: any }) => props.color || "#000"};
+  font-family: Lexend_400Regular;
+  color: ${({ color }: { color?: string }) => color || "#000"};
 `;

@@ -1,16 +1,15 @@
-// components/ui/DeleteModal/DeleteModal.tsx
-
 import React from "react";
 import { Modal } from "react-native";
 import {
   Overlay,
   ModalBox,
-  Title,
-  Message,
   ButtonRow,
   Action,
   ActionText,
 } from "./DeleteModal.styles";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { ThemedText } from "@/components/ThemedText";
 
 interface DeleteModalProps {
   visible: boolean;
@@ -25,6 +24,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onCancel,
   onConfirm,
 }) => {
+  const colorScheme = useColorScheme() ?? "light";
+  const themeColors = Colors[colorScheme];
+
   return (
     <Modal
       visible={visible}
@@ -33,12 +35,16 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       onRequestClose={onCancel}
     >
       <Overlay>
-        <ModalBox>
-          <Title>Delete "{title}"?</Title>
-          <Message>Are you sure you want to delete this widget?</Message>
+        <ModalBox colorScheme={colorScheme}>
+          <ThemedText fontSize="regular" fontWeight="semibold">
+            Delete "{title}"?
+          </ThemedText>
+          <ThemedText fontSize="s" fontWeight="regular">
+            Are you sure you want to delete this widget?
+          </ThemedText>
           <ButtonRow>
             <Action onPress={onCancel}>
-              <ActionText color="#888">Cancel</ActionText>
+              <ActionText color={themeColors.icon}>Cancel</ActionText>
             </Action>
             <Action onPress={onConfirm}>
               <ActionText color="red">Delete</ActionText>
