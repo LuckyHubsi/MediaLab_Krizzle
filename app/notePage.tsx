@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
 import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
@@ -18,6 +18,7 @@ export default function NotesScreen() {
   const { id, title } = useLocalSearchParams<{ id?: string; title?: string }>();
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
+  const latestNoteContentRef = useRef<string>("");
   const colorScheme = useColorScheme();
 
   useEffect(() => {
@@ -55,10 +56,16 @@ export default function NotesScreen() {
           iconName="more-horiz"
           backBehavior="goHome"
           onIconPress={() => setShowDeleteModal(true)}
+          otherBackBehavior={() =>
+            debouncedSave.flush(latestNoteContentRef.current)
+          }
         />
         <TextEditor
           initialContent={noteContent}
-          onChange={debouncedSave.debouncedFunction}
+          onChange={(html) => {
+            latestNoteContentRef.current = html;
+            debouncedSave.debouncedFunction(html);
+          }}
         />
       </SafeAreaView>
       <DeleteModal
