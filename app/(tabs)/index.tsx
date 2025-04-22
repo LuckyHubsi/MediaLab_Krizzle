@@ -14,7 +14,10 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { Button } from "@/components/ui/Button/Button";
 import { resetDatabase } from "@/utils/DatabaseReset";
-import { getAllGeneralPageData } from "@/services/GeneralPageService";
+import {
+  deleteGeneralPage,
+  getAllGeneralPageData,
+} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
 
@@ -191,14 +194,19 @@ export default function HomeScreen() {
         visible={showDeleteModal}
         title={widgetToDelete?.title}
         onCancel={() => setShowDeleteModal(false)}
-        onConfirm={() => {
-          //here comes then deletion logic
+        onConfirm={async () => {
           if (widgetToDelete) {
-            setWidgets((prev) =>
-              prev.filter((w) => w.id !== widgetToDelete.id),
-            );
-            setWidgetToDelete(null);
-            setShowDeleteModal(false);
+            try {
+              const widgetIdAsNumber = Number(widgetToDelete.id);
+              await deleteGeneralPage(widgetIdAsNumber);
+              setWidgets((prev) =>
+                prev.filter((w) => w.id !== widgetToDelete.id),
+              );
+              setWidgetToDelete(null);
+              setShowDeleteModal(false);
+            } catch (error) {
+              console.error("Error deleting page:", error);
+            }
           }
         }}
       />
