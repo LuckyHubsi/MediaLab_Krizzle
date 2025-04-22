@@ -3,8 +3,8 @@ import { Header } from "@/components/ui/Header/Header";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
-import { ThemedText } from "@/components/ThemedText";
 import Textfield from "@/components/ui/Textfield/Textfield";
+import DateField from "@/components/ui/DateField/DateField";
 
 export default function AddCollectionItem() {
   return (
@@ -17,6 +17,9 @@ export default function AddCollectionItem() {
           />
           {/* Get correct textfield title */}
           <Textfield title="Textfield Title" placeholderText="Add text here" />
+
+          {/* Get correct datefield title */}
+          <DateField title="Date Field" />
 
           {/* add correct function to discard/next */}
           <BottomButtons

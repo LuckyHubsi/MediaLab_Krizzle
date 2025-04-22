@@ -24,6 +24,7 @@ export const Colors = {
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
     textFieldBorder: "#585858",
+    placeholder: "#585858",
   },
   dark: {
     text: "#ECEDEE",
@@ -41,6 +42,7 @@ export const Colors = {
     cardShadowColor: "#FFF",
     pillBackground: "#3D3D3D",
     textFieldBorder: "#ffffff",
+    placeholder: "#ABABAB",
   },
   widget: {
     white: "#ffffff",
