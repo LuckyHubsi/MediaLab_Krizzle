@@ -48,6 +48,7 @@ const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
 
   if (!noteData) return null;
   if (noteData.page_type === PageType.Note) {
+    console.log(NoteMapper.toDTO(noteData));
     return NoteMapper.toDTO(noteData);
   }
   return null;
@@ -61,19 +62,17 @@ const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
  * @returns A Promise that resolves to `true` if the update was successful, or `false` if an error occurred.
  */
 const updateNoteContent = async (
-  noteID: number,
+  pageID: number,
   newNoteContent: string,
 ): Promise<boolean> => {
   try {
-    // get the pageID from the noteID
-    const pageID = await getPageIDForNote(noteID);
     if (!pageID) {
       console.error("Page ID not found for the given note ID");
       return false;
     }
 
     // update the note content
-    await executeQuery(updateNoteContentQuery, [noteID, newNoteContent]);
+    await executeQuery(updateNoteContentQuery, [newNoteContent, pageID]);
 
     // update the date_modified for the general page data
     await executeQuery(updateDateModifiedByPageIDQuery, [
