@@ -61,6 +61,12 @@ const insertGeneralPageAndReturnID = async (
   }
 };
 
+/**
+ * Deletes a page based on its ID from DB.
+ *
+ * @param {pageID} number - The pageID of the page to be deleted.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean, dependent on the success.
+ */
 const deleteGeneralPage = async (pageID: number): Promise<boolean> => {
   try {
     await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
