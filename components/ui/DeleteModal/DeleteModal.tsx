@@ -14,6 +14,7 @@ import { ThemedText } from "@/components/ThemedText";
 interface DeleteModalProps {
   visible: boolean;
   title?: string;
+  typeToDelete: string;
   onCancel: () => void;
   onConfirm: () => void;
   onclose: () => void;
@@ -22,6 +23,7 @@ interface DeleteModalProps {
 const DeleteModal: React.FC<DeleteModalProps> = ({
   visible,
   title,
+  typeToDelete,
   onCancel,
   onConfirm,
   onclose,
@@ -43,7 +45,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
               Delete "{title}"?
             </ThemedText>
             <ThemedText fontSize="s" fontWeight="regular">
-              Are you sure you want to delete this widget?
+              Are you sure you want to delete this {typeToDelete}?
             </ThemedText>
             <ButtonRow>
               <Action onPress={onCancel}>
