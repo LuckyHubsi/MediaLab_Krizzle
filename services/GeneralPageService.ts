@@ -65,7 +65,7 @@ const deleteGeneralPage = async (pageID: number): Promise<void> => {
   try {
     await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
   } catch (error) {
-    console.error("Error deleting note:", error);
+    console.error("Error deleting page:", error);
   }
 };
 
