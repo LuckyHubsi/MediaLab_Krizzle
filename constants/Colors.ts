@@ -23,6 +23,7 @@ export const Colors = {
     cardBackground: "#FBFBFB",
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
+    textFieldBorder: "#585858",
   },
   dark: {
     text: "#ECEDEE",
@@ -39,6 +40,7 @@ export const Colors = {
     cardBackground: "#242424",
     cardShadowColor: "#FFF",
     pillBackground: "#3D3D3D",
+    textFieldBorder: "#ffffff",
   },
   widget: {
     white: "#ffffff",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import {
   BottomButtonContainer,
   DiscardButton,
@@ -15,7 +15,7 @@ interface BottomButtonsProps {
   variant?: "discard" | "back";
 }
 
-const BottomButtons: React.FC<BottomButtonsProps> = ({
+const BottomButtons: FC<BottomButtonsProps> = ({
   titleLeftButton,
   titleRightButton,
   onDiscard,

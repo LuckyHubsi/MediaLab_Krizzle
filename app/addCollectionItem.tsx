@@ -3,6 +3,8 @@ import { Header } from "@/components/ui/Header/Header";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { ThemedText } from "@/components/ThemedText";
+import Textfield from "@/components/ui/Textfield/Textfield";
 
 export default function AddCollectionItem() {
   return (
@@ -13,16 +15,16 @@ export default function AddCollectionItem() {
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
           />
+          {/* Get correct textfield title */}
+          <Textfield title="Textfield Title" placeholderText="Add text here" />
+
+          {/* add correct function to discard/next */}
           <BottomButtons
             titleLeftButton={"Discard"}
             titleRightButton={"Add"}
             variant="discard"
-            onDiscard={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            onNext={function (): void {
-              throw new Error("Function not implemented.");
-            }}
+            onDiscard={function (): void {}}
+            onNext={function (): void {}}
           ></BottomButtons>
         </View>
       </ThemedView>
