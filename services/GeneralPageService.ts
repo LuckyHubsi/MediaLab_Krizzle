@@ -3,6 +3,7 @@ import { GeneralPageModel } from "@/models/GeneralPageModel";
 import {
   selectAllGeneralPageQuery,
   insertNewPageQuery,
+  deleteGeneralPageByIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { fetchAll, executeQuery, fetchFirst } from "@/utils/QueryHelper";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
@@ -60,4 +61,24 @@ const insertGeneralPageAndReturnID = async (
   }
 };
 
-export { getAllGeneralPageData, insertGeneralPageAndReturnID };
+/**
+ * Deletes a page based on its ID from DB.
+ *
+ * @param {pageID} number - The pageID of the page to be deleted.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean, dependent on the success.
+ */
+const deleteGeneralPage = async (pageID: number): Promise<boolean> => {
+  try {
+    await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
+    return true;
+  } catch (error) {
+    console.error("Error deleting page:", error);
+    return false;
+  }
+};
+
+export {
+  getAllGeneralPageData,
+  insertGeneralPageAndReturnID,
+  deleteGeneralPage,
+};

@@ -19,6 +19,7 @@ type Props = {
   iconRight?: React.ReactNode;
   color: ColorKey;
   onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 const Widget: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const Widget: React.FC<Props> = ({
   iconRight,
   color,
   onPress,
+  onLongPress,
 }) => {
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
@@ -48,8 +50,20 @@ const Widget: React.FC<Props> = ({
       }
     : { backgroundColor: background, cardWidth };
 
+  const handleLongPress = () => {
+    if (onLongPress) {
+      onLongPress();
+    } else {
+      console.log("Long press detected on widget:", title);
+    }
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onPress}
+      onLongPress={handleLongPress}
+    >
       <CardWrapper {...cardProps}>
         {(iconLeft || iconRight) && (
           <IconsContainer>

@@ -19,4 +19,5 @@ export const Icons = [
   "diversity-1",
   "chat-bubble",
   "pets",
+  "more-horiz",
 ];

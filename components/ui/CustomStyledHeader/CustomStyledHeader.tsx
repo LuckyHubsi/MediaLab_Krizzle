@@ -5,10 +5,11 @@ import { StyledHeader, BackIcon } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation, useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface HeaderProps {
   title: string;
-  iconName?: keyof typeof Ionicons.glyphMap;
+  iconName?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
 }
@@ -50,7 +51,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       {/* Optional right icon */}
       {iconName && onIconPress && (
         <BackIcon onPress={onIconPress}>
-          <Ionicons
+          <MaterialIcons
             name={iconName}
             size={24}
             color={colorScheme === "light" ? "black" : "white"}
