@@ -47,7 +47,7 @@ export default function CreateNoteScreen() {
     return {
       id: key,
       color: value,
-      value: key, // <== pass the key here
+      value: key,
       label,
     };
   });
@@ -84,12 +84,10 @@ export default function CreateNoteScreen() {
       note_content: null,
       tag: tagDTO,
     };
+
     const id = await insertNote(noteDTO);
     console.log("Note created with ID:", id);
-    navigation.navigate({
-      name: "notePage",
-      params: { title },
-    });
+    navigation.navigate("notePage", { id, title });
   };
 
   return (
@@ -189,7 +187,7 @@ export default function CreateNoteScreen() {
           selectedItem={popupType === "color" ? selectedColor : selectedIcon}
           onSelect={(itemValue) => {
             if (popupType === "color") {
-              setSelectedColor(itemValue); // now itemValue is the key like 'gradientPink'
+              setSelectedColor(itemValue);
             } else {
               setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
             }
