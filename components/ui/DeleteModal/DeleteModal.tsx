@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from "react-native";
+import { Modal, TouchableOpacity } from "react-native";
 import {
   Overlay,
   ModalBox,
@@ -16,6 +16,7 @@ interface DeleteModalProps {
   title?: string;
   onCancel: () => void;
   onConfirm: () => void;
+  onclose: () => void;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -23,6 +24,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   title,
   onCancel,
   onConfirm,
+  onclose,
 }) => {
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
@@ -34,24 +36,26 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       animationType="fade"
       onRequestClose={onCancel}
     >
-      <Overlay>
-        <ModalBox colorScheme={colorScheme}>
-          <ThemedText fontSize="regular" fontWeight="semibold">
-            Delete "{title}"?
-          </ThemedText>
-          <ThemedText fontSize="s" fontWeight="regular">
-            Are you sure you want to delete this widget?
-          </ThemedText>
-          <ButtonRow>
-            <Action onPress={onCancel}>
-              <ActionText color={themeColors.icon}>Cancel</ActionText>
-            </Action>
-            <Action onPress={onConfirm}>
-              <ActionText color="red">Delete</ActionText>
-            </Action>
-          </ButtonRow>
-        </ModalBox>
-      </Overlay>
+      <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onclose}>
+        <Overlay>
+          <ModalBox colorScheme={colorScheme}>
+            <ThemedText fontSize="regular" fontWeight="semibold">
+              Delete "{title}"?
+            </ThemedText>
+            <ThemedText fontSize="s" fontWeight="regular">
+              Are you sure you want to delete this widget?
+            </ThemedText>
+            <ButtonRow>
+              <Action onPress={onCancel}>
+                <ActionText color={themeColors.icon}>Cancel</ActionText>
+              </Action>
+              <Action onPress={onConfirm}>
+                <ActionText color="red">Delete</ActionText>
+              </Action>
+            </ButtonRow>
+          </ModalBox>
+        </Overlay>
+      </TouchableOpacity>
     </Modal>
   );
 };

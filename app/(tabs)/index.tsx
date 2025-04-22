@@ -210,6 +210,7 @@ export default function HomeScreen() {
             }
           }
         }}
+        onclose={() => setShowDeleteModal(false)}
       />
     </>
   );
