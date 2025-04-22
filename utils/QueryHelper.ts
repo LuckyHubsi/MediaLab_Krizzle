@@ -10,6 +10,7 @@ let db: SQLite.SQLiteDatabase | null = null;
 const getDb = async () => {
   if (!db) {
     db = await SQLite.openDatabaseAsync("krizzle_local.db");
+    await executeQuery("PRAGMA foreign_keys = ON;");
   }
   return db;
 };
