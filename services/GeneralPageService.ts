@@ -61,11 +61,13 @@ const insertGeneralPageAndReturnID = async (
   }
 };
 
-const deleteGeneralPage = async (pageID: number): Promise<void> => {
+const deleteGeneralPage = async (pageID: number): Promise<boolean> => {
   try {
     await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
+    return true;
   } catch (error) {
     console.error("Error deleting page:", error);
+    return false;
   }
 };
 

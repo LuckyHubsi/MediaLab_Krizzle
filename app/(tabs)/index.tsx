@@ -198,7 +198,8 @@ export default function HomeScreen() {
           if (widgetToDelete) {
             try {
               const widgetIdAsNumber = Number(widgetToDelete.id);
-              await deleteGeneralPage(widgetIdAsNumber);
+              const successfullyDeleted =
+                await deleteGeneralPage(widgetIdAsNumber);
               setWidgets((prev) =>
                 prev.filter((w) => w.id !== widgetToDelete.id),
               );
