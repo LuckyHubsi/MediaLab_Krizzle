@@ -76,7 +76,7 @@ const updateNoteContent = async (
 
     // update the date_modified for the general page data
     await executeQuery(updateDateModifiedByPageIDQuery, [
-      new Date().toISOString,
+      new Date().toISOString(),
       pageID,
     ]);
 
