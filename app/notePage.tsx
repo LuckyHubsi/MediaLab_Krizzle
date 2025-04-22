@@ -2,7 +2,7 @@ import TextEditor from "@/components/TextEditor/TextEditor";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View } from "react-native";
+import { AppState, AppStateStatus, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -20,6 +20,10 @@ export default function NotesScreen() {
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
   const colorScheme = useColorScheme();
+
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState,
+  );
 
   useEffect(() => {
     if (id) {
@@ -42,9 +46,27 @@ export default function NotesScreen() {
   const saveNote = async (html: string) => {
     if (!id) return;
     const success = await updateNoteContent(Number(id), html);
+    console.log("Saved note: ", success);
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (
+        appState.match(/active/) &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        debouncedSave.flush(latestNoteContentRef.current);
+      }
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+    return () => subscription.remove();
+  }, [appState, noteContent, debouncedSave]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
