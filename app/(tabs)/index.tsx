@@ -20,6 +20,7 @@ import {
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
+import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -73,25 +74,34 @@ export default function HomeScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
+  const mapToEnrichedWidgets = (data: GeneralPageDTO[] | null): Widget[] => {
+    if (data == null) {
+      return [];
+    } else {
+      const enrichedWidgets: Widget[] = (data || []).map((widget) => ({
+        id: String(widget.pageID),
+        title: widget.page_title,
+        tag: widget.tag?.tag_label || "Uncategorized",
+        color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
+        iconLeft: widget.page_icon
+          ? getMaterialIcon(widget.page_icon)
+          : undefined,
+        iconRight: widget.page_type
+          ? getIconForPageType(widget.page_type)
+          : undefined,
+      }));
+
+      return enrichedWidgets;
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
           const data = await getAllGeneralPageData();
 
-          const enrichedWidgets: Widget[] = (data || []).map((widget) => ({
-            id: String(widget.pageID),
-            title: widget.page_title,
-            tag: widget.tag?.tag_label || "Uncategorized",
-            color:
-              getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
-            iconLeft: widget.page_icon
-              ? getMaterialIcon(widget.page_icon)
-              : undefined,
-            iconRight: widget.page_type
-              ? getIconForPageType(widget.page_type)
-              : undefined,
-          }));
+          const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
 
           setWidgets(enrichedWidgets);
         } catch (error) {
@@ -200,9 +210,11 @@ export default function HomeScreen() {
               const widgetIdAsNumber = Number(widgetToDelete.id);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
-              setWidgets((prev) =>
-                prev.filter((w) => w.id !== widgetToDelete.id),
-              );
+
+              const data = await getAllGeneralPageData();
+              const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
+              setWidgets(enrichedWidgets);
+
               setWidgetToDelete(null);
               setShowDeleteModal(false);
             } catch (error) {
