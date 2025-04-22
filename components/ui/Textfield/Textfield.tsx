@@ -27,7 +27,7 @@ const Textfield: FC<TextfieldProps> = ({
 
   return (
     <TextfieldContainter>
-      <ThemedText fontWeight="bold">{title}</ThemedText>
+      <ThemedText fontWeight="regular">{title}</ThemedText>
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
           name="short-text"

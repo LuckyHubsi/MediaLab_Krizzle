@@ -33,7 +33,7 @@ const DateField: FC<DateFieldProps> = ({ title }) => {
 
   return (
     <DateFieldContainer>
-      <ThemedText fontWeight="bold">{title}</ThemedText>
+      <ThemedText fontWeight="regular">{title}</ThemedText>
 
       <StyledPressable
         onPress={showDatePicker}
