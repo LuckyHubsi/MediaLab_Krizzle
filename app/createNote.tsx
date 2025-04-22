@@ -41,17 +41,15 @@ export default function CreateNoteScreen() {
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
 
-  const colorOptions = Object.entries(Colors.widget).flatMap(([key, value]) => {
-    if (typeof value === "string") {
-      return [{ color: value, label: colorLabelMap[value], id: key }];
-    } else if (Array.isArray(value)) {
-      return value.map((v, index) => ({
-        color: v,
-        label: colorLabelMap[v],
-        id: `${key}-${index}`,
-      }));
-    }
-    return [];
+  const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
+    const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
+
+    return {
+      id: key,
+      color: value,
+      value: key, // <== pass the key here
+      label,
+    };
   });
 
   const getWidgetColorKey = (
@@ -80,7 +78,7 @@ export default function CreateNoteScreen() {
       page_type: PageType.Note,
       page_title: title,
       page_icon: selectedIcon,
-      page_color: getWidgetColorKey(selectedColor) ?? "blue",
+      page_color: (selectedColor as keyof typeof Colors.widget) || "blue",
       archived: false,
       pinned: false,
       note_content: null,
@@ -191,7 +189,7 @@ export default function CreateNoteScreen() {
           selectedItem={popupType === "color" ? selectedColor : selectedIcon}
           onSelect={(itemValue) => {
             if (popupType === "color") {
-              setSelectedColor(itemValue);
+              setSelectedColor(itemValue); // now itemValue is the key like 'gradientPink'
             } else {
               setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
             }
