@@ -13,9 +13,9 @@ import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { Button } from "@/components/ui/Button/Button";
-import { resetDatabase } from "@/utils/DatabaseReset";
 import { getAllGeneralPageData } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -37,6 +37,7 @@ export default function HomeScreen() {
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
+  const router = useRouter();
 
   interface Widget {
     id: string;
@@ -160,7 +161,10 @@ export default function HomeScreen() {
                       iconRight={item.iconRight}
                       color={item.color as keyof typeof Colors.widget}
                       onPress={() => {
-                        console.log("BackgroundColor: ", item.color);
+                        router.push({
+                          pathname: "/notePage",
+                          params: { id: item.id, title: item.title },
+                        });
                       }}
                     />
                   )}
