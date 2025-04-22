@@ -5,11 +5,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { NoteDTO } from "@/dto/NoteDTO";
+import { getNoteDataByPageID } from "@/services/NoteService";
 
 export default function NotesScreen() {
-  const { title } = useLocalSearchParams<{
-    title?: string;
-  }>();
+  const { id, title } = useLocalSearchParams<{ id?: string; title?: string }>();
+
+  useEffect(() => {
+    if (id) {
+      console.log("Opened note with ID:", id);
+      const numericID = Number(id);
+      console.log(numericID);
+      if (!isNaN(numericID)) {
+        (async () => {
+          const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
+          console.log(noteData);
+        })();
+      } else {
+        console.error("Error fetching note data");
+      }
+    }
+  }, [id]);
 
   return (
     <>
