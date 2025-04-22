@@ -11,6 +11,15 @@ export type ThemedTextProps = TextProps & {
   darkColor?: string;
   fontWeight?: "light" | "regular" | "semibold" | "bold";
   fontSize?: "regular" | "xxl" | "xl" | "s";
+  colorVariant?: "default" | "red" | "grey" | "white";
+};
+
+const colorVariants = {
+  default: (lightColor?: string, darkColor?: string) =>
+    useThemeColor({ light: lightColor, dark: darkColor }, "text"),
+  red: () => "#FF4949",
+  grey: () => "#585858",
+  white: () => "#FFFFFF",
 };
 
 export function ThemedText({
@@ -19,9 +28,13 @@ export function ThemedText({
   darkColor,
   fontWeight = "regular",
   fontSize = "regular",
+  colorVariant = "default",
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const color =
+    colorVariant && colorVariant !== "default"
+      ? colorVariants[colorVariant]()
+      : colorVariants.default(lightColor, darkColor);
 
   return (
     <Text

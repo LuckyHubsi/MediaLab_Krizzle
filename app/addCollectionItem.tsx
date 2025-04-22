@@ -13,6 +13,17 @@ export default function AddCollectionItem() {
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
           />
+          <BottomButtons
+            titleLeftButton={"Discard"}
+            titleRightButton={"Add"}
+            variant="discard"
+            onDiscard={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+            onNext={function (): void {
+              throw new Error("Function not implemented.");
+            }}
+          ></BottomButtons>
         </View>
       </ThemedView>
     </SafeAreaView>
