@@ -6,6 +6,8 @@ import { View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { NoteDTO } from "@/dto/NoteDTO";
+import { getNoteDataByPageID } from "@/services/NoteService";
 
 export default function NotesScreen() {
   const { id, title } = useLocalSearchParams<{ id?: string; title?: string }>();
@@ -13,7 +15,16 @@ export default function NotesScreen() {
   useEffect(() => {
     if (id) {
       console.log("Opened note with ID:", id);
-      // Fetch content for this note if needed
+      const numericID = Number(id);
+      console.log(numericID);
+      if (!isNaN(numericID)) {
+        (async () => {
+          const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
+          console.log(noteData);
+        })();
+      } else {
+        console.error("Error fetching note data");
+      }
     }
   }, [id]);
 
