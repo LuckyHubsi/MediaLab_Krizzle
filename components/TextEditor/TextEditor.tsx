@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// TextEditor.tsx
+import React, { useEffect, useState, useRef } from "react";
 import {
   AppState,
   AppStateStatus,
@@ -14,7 +15,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { customEditorHtml } from "./TextEditorCustomHtml";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
-const TextEditor: React.FC = () => {
+interface TextEditorProps {
+  initialContent: string;
+  onChange: (html: string) => void;
+}
+
+const TextEditor: React.FC<TextEditorProps> = ({
+  initialContent,
+  onChange,
+}) => {
   const colorScheme = useColorScheme();
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
@@ -74,16 +83,9 @@ const TextEditor: React.FC = () => {
     },
     onChange: async () => {
       const html = await editor.getHTML();
-      debouncedSave.debouncedFunction(html);
+      onChange(html);
     },
   });
-
-  const saveNote = async (html: string) => {
-    console.log("Saving note:", html);
-    // updateNoteContent(id, html); // TODO: have id ready to be passed
-  };
-
-  const debouncedSave = useDebouncedCallback(saveNote, 1000);
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -91,21 +93,16 @@ const TextEditor: React.FC = () => {
         appState.match(/active/) &&
         nextAppState.match(/inactive|background/)
       ) {
-        editor.getHTML().then((html) => {
-          debouncedSave.flush(html);
-        });
+        editor.getHTML().then(onChange);
       }
       setAppState(nextAppState);
     };
-
     const subscription = AppState.addEventListener(
       "change",
       handleAppStateChange,
     );
-    return () => {
-      subscription.remove();
-    };
-  }, [appState, debouncedSave, editor]);
+    return () => subscription.remove();
+  }, [appState, onChange, editor]);
 
   // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
   const { top } = useSafeAreaInsets();
@@ -151,7 +148,5 @@ const TextEditor: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const initialContent = "";
 
 export default TextEditor;

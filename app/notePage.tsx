@@ -7,30 +7,43 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { getNoteDataByPageID } from "@/services/NoteService";
+import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
 import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
 import { useState } from "react";
 import { deleteGeneralPage } from "@/services/GeneralPageService";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
+import { useColorScheme } from "react-native";
 
 export default function NotesScreen() {
   const { id, title } = useLocalSearchParams<{ id?: string; title?: string }>();
   const router = useRouter();
+  const [noteContent, setNoteContent] = useState<string>("");
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     if (id) {
-      console.log("Opened note with ID:", id);
       const numericID = Number(id);
-      console.log(numericID);
       if (!isNaN(numericID)) {
         (async () => {
           const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
-          console.log(noteData);
+          let noteContent = noteData?.note_content;
+          if (noteContent == null) {
+            noteContent = "";
+          }
+          setNoteContent(noteContent);
         })();
       } else {
         console.error("Error fetching note data");
       }
     }
-  }, [id]);
+  }, [id, colorScheme]);
+
+  const saveNote = async (html: string) => {
+    if (!id) return;
+    const success = await updateNoteContent(Number(id), html);
+  };
+
+  const debouncedSave = useDebouncedCallback(saveNote, 1000);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -43,7 +56,10 @@ export default function NotesScreen() {
           backBehavior="goHome"
           onIconPress={() => setShowDeleteModal(true)}
         />
-        <TextEditor />
+        <TextEditor
+          initialContent={noteContent}
+          onChange={debouncedSave.debouncedFunction}
+        />
       </SafeAreaView>
       <DeleteModal
         visible={showDeleteModal}
