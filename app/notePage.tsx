@@ -4,12 +4,21 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function NotesScreen() {
+  const { title } = useLocalSearchParams<{
+    title?: string;
+  }>();
+
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
-        <CustomStyledHeader title="Title" onIconPress={() => alert("Popup!")} />
+        <CustomStyledHeader
+          title={title || "Note"}
+          backBehavior="goHome"
+          onIconPress={() => alert("Popup!")}
+        />
         <TextEditor />
       </SafeAreaView>
     </>

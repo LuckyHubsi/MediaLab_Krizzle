@@ -80,14 +80,11 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                         <ItemWrapper
                           key={item.id}
                           isSelected={isSelected}
+                          colorScheme={colorScheme}
                           onPress={() => onSelect(item.value)}
                         >
                           <ItemCircle
-                            backgroundColor={
-                              type === "color"
-                                ? item.value
-                                : "rgba(255,255,255,0.1)"
-                            }
+                            backgroundColor={type === "color" ? item.value : ""}
                           >
                             {type === "icon" && (
                               <MaterialIcons
@@ -97,7 +94,11 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                               />
                             )}
                           </ItemCircle>
-                          {type === "color" && <ColorLabel>{label}</ColorLabel>}
+                          {type === "color" && (
+                            <ColorLabel>
+                              <ThemedText>{label}</ThemedText>
+                            </ColorLabel>
+                          )}
                         </ItemWrapper>
                       );
                     })}
