@@ -30,19 +30,28 @@ export const ItemsGrid = styled.View`
 
 export const ItemWrapper = styled.TouchableOpacity<{
   isSelected: boolean;
+  colorScheme: "light" | "dark";
 }>`
   flex-direction: row;
   align-items: center;
-  padding: 5px 10px 5px 5px;
+  padding: 5px;
   border-radius: 33px;
-  background-color: ${({ isSelected }: { isSelected: boolean }) =>
-    isSelected ? "#4599E8" : "#EAEAEA"};
+  background-color: ${({
+    isSelected,
+    colorScheme,
+  }: {
+    isSelected: boolean;
+    colorScheme: "light" | "dark";
+  }) =>
+    isSelected ? "#4599E8" : colorScheme === "light" ? "#EAEAEA" : "#3D3D3D"};
 `;
 
 export const ItemCircle = styled.View<{ backgroundColor: string }>`
   width: 24px;
   height: 24px;
   border-radius: 16px;
+  justify-content: center;
+  align-items: center;
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
     backgroundColor};
 `;
@@ -51,27 +60,17 @@ export const ColorLabel = styled.Text<{
   isSelected: boolean;
   colorScheme: "light" | "dark";
 }>`
-  font-family: Lexend;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: -0.4px;
-  color: "black" {
-    /*  color: ${({
+  color: {
+    color: ${({
       isSelected,
       colorScheme,
     }: {
       isSelected: boolean;
       colorScheme: "light" | "dark";
     }) =>
-      isSelected
-        ? "#FBFBFB"
-        : colorScheme === "light"
-          ? "#585858"
-          : "#EAEAEA"};*/
+      isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
   }
-  margin-left: 6px;
+  margin-left: 4px;
 `;
 
 export const DoneButton = styled.TouchableOpacity`
@@ -80,9 +79,8 @@ export const DoneButton = styled.TouchableOpacity`
   background-color: #4599e8;
 `;
 
-export const DoneButtonText = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const DoneButtonText = styled.Text`
   font-size: 16px;
   font-weight: 600;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light" ? "#fff" : "#fff"};
+  color: #fff;
 `;
