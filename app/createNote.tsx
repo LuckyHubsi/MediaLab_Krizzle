@@ -65,7 +65,7 @@ export default function CreateNoteScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
-  const handleNext = async () => {
+  const createNote = async () => {
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
@@ -205,7 +205,7 @@ export default function CreateNoteScreen() {
             width: "100%",
           }}
         >
-          <Button onPress={handleNext}>Create</Button>
+          <Button onPress={createNote}>Create</Button>
         </View>
       </ThemedView>
     </SafeAreaView>
