@@ -26,7 +26,12 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
           >
             <Text style={styles.modalOption}>Note</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onClose}>
+          <TouchableOpacity
+            onPress={() => {
+              onClose();
+              router.push("/createCollection");
+            }}
+          >
             <Text style={styles.modalOption}>Collection</Text>
           </TouchableOpacity>
         </View>

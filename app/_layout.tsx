@@ -53,6 +53,11 @@ export default function RootLayout() {
           <Stack.Screen name="createNote" options={{ headerShown: false }} />
           <Stack.Screen name="notePage" options={{ headerShown: false }} />
           <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="createCollection"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="addLists" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
