@@ -46,12 +46,15 @@ const getCollectionByPageId = async (
  *
  * @param {CollectionDTO} collectionDTO - The DTO representing the collection to insert.
  * @returns {Promise<number | null>} A promise that resolves to the inserted collection's ID, or null if the insertion fails.
+ *
+ * @throws {DatabaseError} If the insert or fetch inserted id fails.
+ *
  */
 const insertCollectionAndReturnID = async (
   collectionDTO: CollectionDTO,
-): Promise<number | null> => {
+): Promise<number> => {
   try {
-    const collectionID = await executeTransaction<number | null>(async () => {
+    const collectionID = await executeTransaction<number>(async () => {
       await executeQuery(insertCollection, [
         collectionDTO.pageID,
         collectionDTO.template.item_templateID,
@@ -65,12 +68,10 @@ const insertCollectionAndReturnID = async (
     if (collectionID) {
       return collectionID;
     } else {
-      console.error("Failed to fetch inserted collection ID");
-      return null;
+      throw new DatabaseError("Failed to insert collection");
     }
   } catch (error) {
-    console.error("Error inserting collection:", error);
-    return null;
+    throw new DatabaseError("Failed to insert collection");
   }
 };
 
