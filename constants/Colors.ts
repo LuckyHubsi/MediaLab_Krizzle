@@ -2,6 +2,11 @@ const tintColorLight = "#4599E8";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
+  primary: "#4599E8",
+  negative: "#FF4949",
+  white: "#ffffff",
+  grey50: "#ABABAB",
+  grey100: "#585858",
   light: {
     text: "#11181C",
     background: "#FBFBFB",
@@ -18,6 +23,8 @@ export const Colors = {
     cardBackground: "#FBFBFB",
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
+    textFieldBorder: "#585858",
+    placeholder: "#585858",
   },
   dark: {
     text: "#ECEDEE",
@@ -34,6 +41,8 @@ export const Colors = {
     cardBackground: "#242424",
     cardShadowColor: "#FFF",
     pillBackground: "#3D3D3D",
+    textFieldBorder: "#ffffff",
+    placeholder: "#ABABAB",
   },
   widget: {
     white: "#ffffff",
