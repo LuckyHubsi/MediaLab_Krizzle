@@ -38,7 +38,9 @@ const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
  *
  * @param {string} option - The label of the option.
  * @param {number} attributeID - The id of the attribute the option belongs to.
+ *
  * @returns {Promise<void>} A promise that resolves to void.
+ * @throws {DatabaseError} If the insert fails.
  */
 const insertMultiselectOptions = async (
   option: string,
@@ -47,7 +49,7 @@ const insertMultiselectOptions = async (
   try {
     await executeQuery(insertMultiselectOptionsQuery, [option, attributeID]);
   } catch (error) {
-    console.log(error);
+    throw new DatabaseError("Failed to insert attribute");
   }
 };
 
