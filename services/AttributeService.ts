@@ -17,10 +17,10 @@ const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
     }
 
     await executeQuery(insertAttributeQuery, [
-      attributeDTO.itemTemplateID,
       attributeDTO.attributeLabel,
       attributeDTO.attributeType,
       attributeDTO.preview ? 1 : 0,
+      attributeDTO.itemTemplateID,
     ]);
   } catch (error) {
     console.error("Error inserting attribute:", error);
