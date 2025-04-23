@@ -8,7 +8,7 @@ import { insertCollectionCategoryQuery } from "@/queries/CollectionCategoryQuery
  * @param {CollectionCategoryDTO} categoryDTO - The DTO representing the categorxy to insert.
  * @returns {Promise<void>}  A promise that resolves to void.
  */
-const isnertCollectionCategory = async (
+const insertCollectionCategory = async (
   categoryDTO: CollectionCategoryDTO,
 ): Promise<void> => {
   try {
@@ -22,4 +22,4 @@ const isnertCollectionCategory = async (
   }
 };
 
-export { isnertCollectionCategory };
+export { insertCollectionCategory };
