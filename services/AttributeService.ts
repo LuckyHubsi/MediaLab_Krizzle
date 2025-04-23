@@ -1,6 +1,9 @@
 import { AttributeDTO, isValidAttributeType } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
-import { insertAttributeQuery } from "@/queries/AttributeQuery";
+import {
+  insertAttributeQuery,
+  insertMultiselectOptionsQuery,
+} from "@/queries/AttributeQuery";
 import { executeQuery, getLastInsertId } from "@/utils/QueryHelper";
 
 /**
@@ -27,4 +30,15 @@ const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
   }
 };
 
-export { insertAttribute };
+const insertMultiselectOptions = async (
+  option: string,
+  attributeID: number,
+): Promise<void> => {
+  try {
+    await executeQuery(insertMultiselectOptionsQuery, [option, attributeID]);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { insertAttribute, insertMultiselectOptions };
