@@ -16,7 +16,7 @@ export const IndividualSelect = styled.TouchableOpacity<{
   isSelected: boolean;
 }>`
   background-color: ${({ isSelected }: { isSelected: boolean }) =>
-    isSelected ? Colors.primary : Colors.grey50};
+    isSelected ? Colors.grey25 : Colors.primary};
   padding: 4px 12px;
   border-radius: 33px;
 `;

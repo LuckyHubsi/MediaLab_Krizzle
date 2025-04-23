@@ -29,8 +29,6 @@ const DateField: FC<DateFieldProps> = ({ title }) => {
 
   const colorScheme = useColorScheme();
 
-  console.log("selectedDate", selectedDate);
-
   return (
     <DateFieldContainer>
       <ThemedText fontWeight="regular">{title}</ThemedText>

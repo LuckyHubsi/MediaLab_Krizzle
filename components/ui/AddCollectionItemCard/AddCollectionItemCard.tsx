@@ -4,6 +4,7 @@ import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./AddCollectionItemCard.styles";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
+import RatingPicker from "../RatingPicker/RatingPicker";
 
 interface AddCollectionItemProps {}
 
@@ -23,6 +24,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({}) => {
         selectedTag={null}
         onSelectTag={() => {}}
       />
+      {/* Get correct rating */}
+      <RatingPicker title={"Rating"} selectedIcon="star" />
     </StyledCardWrapper>
   );
 };
