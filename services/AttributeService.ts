@@ -7,7 +7,7 @@ import { executeQuery, getLastInsertId } from "@/utils/QueryHelper";
  * Inserts a new attribute into the database and returns its ID.
  *
  * @param {AttributeDTO} attributeDTO - The DTO representing the attribute to insert.
- * @returns {Promise<void>} A promise that resolves to the inserted attribute's ID, or null if the insertion fails.
+ * @returns {Promise<void>} A promise that resolves to void.
  */
 const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
   try {
