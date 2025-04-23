@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { DatabaseError } from "./DatabaseError";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -107,13 +108,20 @@ const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
 /**
  * Gets the last inserted row ID
  *
- * @returns {Promise<number | null>} The ID of the last inserted row or null if not available
+ * @returns {Promise<number>} The ID of the last inserted row or null if not available
+ *
+ * @throws {DatabaseError} If the fetch fails.
  */
-const getLastInsertId = async (): Promise<number | null> => {
-  const result = await fetchFirst<{ id: number }>(
-    "SELECT last_insert_rowid() as id",
-  );
-  return result?.id || null;
+const getLastInsertId = async (): Promise<number> => {
+  try {
+    const insertedID = await fetchFirst<{ id: number }>(
+      "SELECT last_insert_rowid() as id",
+    );
+    if (insertedID) return insertedID.id;
+    else throw new DatabaseError("Failed to fetch last inserted id");
+  } catch (error) {
+    throw new DatabaseError("Failed to fetch last inserted id");
+  }
 };
 
 export {
