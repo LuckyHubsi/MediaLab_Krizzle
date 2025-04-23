@@ -47,17 +47,19 @@ const insertCollectionAndReturnID = async (
   collectionDTO: CollectionDTO,
 ): Promise<number | null> => {
   try {
-    await executeQuery(insertCollection, [
-      collectionDTO.pageID,
-      collectionDTO.template.item_templateID,
-    ]);
+    const collectionID = await executeTransaction<number | null>(async () => {
+      await executeQuery(insertCollection, [
+        collectionDTO.pageID,
+        collectionDTO.template.item_templateID,
+      ]);
 
-    // get inserted collection ID
-    const result = await getLastInsertId();
+      // get inserted collection ID
+      const lastInsertedID = await getLastInsertId();
+      return lastInsertedID;
+    });
 
-    if (result) {
-      console.log("Inserted Collection ID:", result);
-      return result;
+    if (collectionID) {
+      return collectionID;
     } else {
       console.error("Failed to fetch inserted collection ID");
       return null;
