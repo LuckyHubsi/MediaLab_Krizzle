@@ -19,14 +19,15 @@ import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
  * Retrieves all general page data from the database.
  *
  * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
+ *
+ * @throws {DatabaseError} If the fetch fails.
  */
-const getAllGeneralPageData = async (): Promise<GeneralPageDTO[] | null> => {
+const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
   try {
     const rawData = await fetchAll<GeneralPageModel>(selectAllGeneralPageQuery);
     return rawData.map(GeneralPageMapper.toDTO);
   } catch (error) {
-    console.error("Error getting all pages note:", error);
-    return null;
+    throw new DatabaseError("Error retrieving all pages.");
   }
 };
 
