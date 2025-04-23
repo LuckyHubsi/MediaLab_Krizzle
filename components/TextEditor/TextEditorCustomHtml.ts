@@ -223,38 +223,21 @@ img.ProseMirror-separator {
     }
     
     body[data-theme='dark'] {
-      background-color: #111111;
-      color: #ECEDEE;
+      background-color: #000000;
+      color: #FBFBFB;
     }
 
     body[data-theme='light'] {
-      background-color: #FBFBFB;
+      background-color: #FFFFFF;
       color: #11181C;
     }
-}
-
-body[data-theme='light'] .editor-toolbar {
-  background-color: #ffffff;
-}
-
-body[data-theme='dark'] .editor-toolbar {
-  background-color: #000000;
-}
-
-body[data-theme='light'] #root > div:nth-of-type(2) {
-  background-color: #ffffff;
-}
-
-body[data-theme='dark'] #root > div:nth-of-type(2) {
-  background-color: #000000;
-}
       
     #root > div:nth-of-type(1) {
       position: absolute;
       height: 100%;
       overflow: auto;
       width: 100%;
-      top: -25px;
+      top: -20px;
       bottom: 0;
     }
     #root > div.dynamic-height {

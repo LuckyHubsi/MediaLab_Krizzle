@@ -49,7 +49,13 @@ const TextEditor: React.FC<TextEditorProps> = ({
 
   const toolbarItems = DEFAULT_TOOLBAR_ITEMS.filter((item) => {
     const img = item.image(dummyArgs);
-    return img !== Images.code && img !== Images.link && img !== Images.quote;
+    return (
+      img !== Images.code &&
+      img !== Images.link &&
+      img !== Images.quote &&
+      img !== Images.outdent &&
+      img !== Images.indent
+    );
   });
 
   const editor = useEditorBridge({
@@ -79,14 +85,14 @@ const TextEditor: React.FC<TextEditorProps> = ({
         iconWrapper: {
           backgroundColor:
             colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
+              ? Colors.dark.ToolbarBarButtonBackground
+              : Colors.light.ToolbarBarButtonBackground,
         },
         iconWrapperActive: {
           backgroundColor:
             colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
+              ? Colors.dark.ToolbarBarButtonBackgroundActive
+              : Colors.light.ToolbarBarButtonBackgroundActive,
         },
         iconWrapperDisabled: {
           backgroundColor:

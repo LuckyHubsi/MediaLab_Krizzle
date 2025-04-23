@@ -18,6 +18,10 @@ export const Colors = {
     cardBackground: "#FBFBFB",
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
+    ToolbarBarBackground: "#FBFBFB",
+    ToolbarBarButtonBackground: "#EEE",
+    ToolbarBarButtonBackgroundActive: "#aed7fc",
+    ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
   },
   dark: {
     text: "#ECEDEE",
@@ -34,6 +38,10 @@ export const Colors = {
     cardBackground: "#242424",
     cardShadowColor: "#FFF",
     pillBackground: "#3D3D3D",
+    ToolbarBarBackground: "#FBFBFB",
+    ToolbarBarButtonBackground: "#2A2A2A",
+    ToolbarBarButtonBackgroundActive: "#3e5b75",
+    ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
   },
   widget: {
     white: "#ffffff",
