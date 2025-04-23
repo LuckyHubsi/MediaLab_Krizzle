@@ -6,8 +6,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   useColorScheme,
+  View,
 } from "react-native";
-import { useEditorBridge, RichText, Toolbar } from "@10play/tentap-editor";
+import {
+  useEditorBridge,
+  RichText,
+  Toolbar,
+  DEFAULT_TOOLBAR_ITEMS,
+  Images,
+} from "@10play/tentap-editor";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
@@ -28,6 +35,22 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
+
+  // Dummy object used to call item.image() for filtering toolbar buttons
+  // The image() function expects an ArgsToolbarCB object,
+  // but since we’re only interested in comparing the returned image (icon),
+  // we don’t need real editor behavior here — just placeholders that satisfy the type.
+  const dummyArgs = {
+    editor: {} as any,
+    editorState: {} as any,
+    setToolbarContext: () => {},
+    toolbarContext: 0,
+  };
+
+  const toolbarItems = DEFAULT_TOOLBAR_ITEMS.filter((item) => {
+    const img = item.image(dummyArgs);
+    return img !== Images.code && img !== Images.link && img !== Images.quote;
+  });
 
   const editor = useEditorBridge({
     autofocus: false,
@@ -112,27 +135,16 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const keyboardVerticalOffset = headerHeight + top;
 
   return (
-    <SafeAreaView
+    <View
       style={{
         flex: 1,
         backgroundColor:
           colorScheme === "dark"
-            ? Colors.dark.background
-            : Colors.light.background,
+            ? Colors.light.background
+            : Colors.dark.background,
       }}
     >
-      <RichText
-        editor={editor}
-        style={{
-          flex: 1,
-          padding: 20,
-          top: 0,
-          backgroundColor:
-            colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
-        }}
-      />
+      <RichText editor={editor} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={keyboardVerticalOffset}
@@ -143,9 +155,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
           right: 0,
         }}
       >
-        <Toolbar editor={editor} />
+        <Toolbar editor={editor} items={toolbarItems} />
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
