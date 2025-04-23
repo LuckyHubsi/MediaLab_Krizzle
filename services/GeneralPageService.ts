@@ -5,7 +5,13 @@ import {
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
 } from "@/queries/GeneralPageQuery";
-import { fetchAll, executeQuery, fetchFirst } from "@/utils/QueryHelper";
+import {
+  fetchAll,
+  executeQuery,
+  fetchFirst,
+  executeTransaction,
+  getLastInsertId,
+} from "@/utils/QueryHelper";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
 
 /**
@@ -33,30 +39,33 @@ const insertGeneralPageAndReturnID = async (
   generalPageDTO: GeneralPageDTO,
 ): Promise<number | null> => {
   try {
-    await executeQuery(insertNewPageQuery, [
-      generalPageDTO.page_type,
-      generalPageDTO.page_title,
-      generalPageDTO.page_icon,
-      generalPageDTO.page_color,
-      new Date().toISOString(),
-      new Date().toISOString(),
-      generalPageDTO.archived ? 1 : 0,
-      generalPageDTO.pinned ? 1 : 0,
-    ]);
+    const pageID: number | null = await executeTransaction<number | null>(
+      async () => {
+        await executeQuery(insertNewPageQuery, [
+          generalPageDTO.page_type,
+          generalPageDTO.page_title,
+          generalPageDTO.page_icon,
+          generalPageDTO.page_color,
+          new Date().toISOString(),
+          new Date().toISOString(),
+          generalPageDTO.archived ? 1 : 0,
+          generalPageDTO.pinned ? 1 : 0,
+        ]);
 
-    // get inserted page ID
-    const pageID = await fetchFirst<{ id: number }>(
-      "SELECT last_insert_rowid() as id",
+        // get inserted page ID
+        const lastInsertedID = await getLastInsertId();
+        return lastInsertedID;
+      },
     );
 
-    if (pageID?.id) {
-      return pageID.id;
+    if (pageID) {
+      return pageID;
     } else {
       console.error("Failed to fetch inserted page ID");
       return null;
     }
   } catch (error) {
-    console.error("Error inserting note:", error);
+    console.error("Error inserting page:", error);
     return null;
   }
 };
