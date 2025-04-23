@@ -77,7 +77,7 @@ export default function CreateCollectionScreen() {
     }
 
     const noteDTO: NoteDTO = {
-      page_type: PageType.Note,
+      page_type: PageType.Collection,
       page_title: title,
       page_icon: selectedIcon,
       page_color: getWidgetColorKey(selectedColor) ?? "blue",
@@ -87,10 +87,10 @@ export default function CreateCollectionScreen() {
       tag: tagDTO,
     };
     const id = await insertNote(noteDTO);
-    console.log("Note created with ID:", id);
+    console.log("Collection created with ID:", id);
     navigation.navigate({
       name: "collectionPage",
-      params: { title },
+      params: { title, selectedIcon },
     });
   };
 
@@ -104,7 +104,7 @@ export default function CreateCollectionScreen() {
               onIconPress={() => alert("Popup!")}
               iconName="help-circle"
             />
-            <View style={{ height: 16 }} />
+            <View style={{ height: 16 }} /> // Space between header and widget
             <Widget
               title={title || "Title"}
               label={selectedTag ?? "No tag"}
@@ -112,7 +112,7 @@ export default function CreateCollectionScreen() {
                 <MaterialIcons name={selectedIcon} size={20} color="black" />
               }
               iconRight={
-                <MaterialIcons name="description" size={20} color="black" />
+                <MaterialIcons name="collections" size={20} color="black" />
               }
               color={
                 (getWidgetColorKey(
@@ -126,7 +126,7 @@ export default function CreateCollectionScreen() {
             <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
               <Card>
                 <TitleCard
-                  placeholder="Add a title to your Note"
+                  placeholder="Add a title to your Collection"
                   value={title}
                   onChangeText={setTitle}
                 />

@@ -1,3 +1,4 @@
+import React from "react";
 import TextEditor from "@/components/TextEditor/TextEditor";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -8,10 +9,14 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import { ModalSelection } from "@/components/ui/ModalSelection/ModalSelection";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 
 export default function CollectionScreen() {
-  const { title } = useLocalSearchParams<{
+  const { title, selectedIcon } = useLocalSearchParams<{
     title?: string;
+    selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   }>();
 
   const navigation = useNavigation();
@@ -22,15 +27,33 @@ export default function CollectionScreen() {
         <CustomStyledHeader
           title={title || "Collection"} //Here should be the title of the collection
           backBehavior="goHome" // Go back to home when back button is pressed
+          iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
-          iconName="book" //Here should be the icon of the collection
-          iconMenu="ellipsis-horizontal-circle-outline" // icon for the pop up menu
+          iconName2="more-horiz" // icon for the pop up menu
           onIconMenuPress={() => alert("Popup!")} // action when icon menu is pressed
         />
         <ThemedView>
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
             onSearch={(text) => console.log(text)}
+          />
+          <CollectionWidget
+            collectionTitle="Long Collection Title"
+            collectionText="Text long Note etc. 
+            still writing and still testing this long test test test"
+            collectionList="List 1"
+            collectionDate="2025-04-23"
+            collectionRating="4"
+            collectionSelectable={[
+              "Games",
+              "Movies",
+              "Books",
+              "Music",
+              "Shows",
+              "Apps",
+              "Websites",
+            ]}
+            onPress={() => console.log("Pressed!")}
           />
           <View
             style={{

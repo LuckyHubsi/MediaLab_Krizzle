@@ -20,6 +20,13 @@ export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
   margin-top: 5px;
   margin-left: 5px;
 `;
+
+export const Icon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
+  font-size: 24px;
+  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? "black" : "white"};
+  margin: 6px;
+`;
 export const IconContainer = styled.View`
   flex-direction: row;
   align-items: center;

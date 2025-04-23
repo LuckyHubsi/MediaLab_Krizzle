@@ -5,15 +5,16 @@ import {
   StyledHeader,
   BackIcon,
   IconContainer,
+  Icon,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation, useRouter } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface HeaderProps {
   title: string;
-  iconName?: keyof typeof Ionicons.glyphMap;
-  iconMenu?: keyof typeof Ionicons.glyphMap;
+  iconName?: keyof typeof MaterialIcons.glyphMap;
+  iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   onIconMenuPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
@@ -22,7 +23,7 @@ interface HeaderProps {
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
   title,
   iconName,
-  iconMenu,
+  iconName2,
   onIconPress,
   onIconMenuPress,
   backBehavior = "default",
@@ -58,22 +59,22 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       {/* Optional right icon */}
       <IconContainer>
         {iconName && onIconPress && (
-          <BackIcon onPress={onIconPress}>
-            <Ionicons
+          <Icon onPress={onIconPress}>
+            <MaterialIcons
               name={iconName}
               size={24}
               color={colorScheme === "light" ? "black" : "white"}
             />
-          </BackIcon>
+          </Icon>
         )}
-        {iconMenu && onIconMenuPress && (
-          <BackIcon onPress={onIconMenuPress}>
-            <Ionicons
-              name={iconMenu}
+        {iconName2 && onIconMenuPress && (
+          <Icon onPress={onIconMenuPress}>
+            <MaterialIcons
+              name={iconName2}
               size={24}
               color={colorScheme === "light" ? "black" : "white"}
             />
-          </BackIcon>
+          </Icon>
         )}
       </IconContainer>
     </StyledHeader>
