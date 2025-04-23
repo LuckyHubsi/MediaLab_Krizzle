@@ -78,17 +78,29 @@ const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
  */
 const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
   const db = await getDb();
+  const inTransaction: boolean = await db.isInTransactionAsync();
 
   return new Promise<T>((resolve, reject) => {
-    db.withTransactionAsync(async () => {
-      try {
-        const result = await fn();
-        resolve(result);
-      } catch (error) {
-        console.error("Transaction error, rolling back:", error);
-        reject(error);
-      }
-    });
+    if (inTransaction) {
+      console.log("already in transaction");
+      fn()
+        .then(resolve)
+        .catch((error) => {
+          console.error("Transaction error, rolling back:", error);
+          reject(error);
+        });
+    } else {
+      db.withTransactionAsync(async () => {
+        console.log("new transaction");
+        try {
+          const result = await fn();
+          resolve(result);
+        } catch (error) {
+          console.error("Transaction error, rolling back:", error);
+          reject(error);
+        }
+      });
+    }
   });
 };
 
