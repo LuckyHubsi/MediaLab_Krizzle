@@ -5,6 +5,7 @@ import {
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
 } from "@/queries/GeneralPageQuery";
+import { DatabaseError } from "@/utils/DatabaseError";
 import {
   fetchAll,
   executeQuery,
@@ -34,39 +35,33 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[] | null> => {
  *
  * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
  * @returns {Promise<number | null>} A promise that resolves to the inserted page's ID, or null if the insertion fails.
+ *
+ * @throws {DatabaseError} If the insertion fails or if the page ID cannot be fetched.
  */
 const insertGeneralPageAndReturnID = async (
   generalPageDTO: GeneralPageDTO,
-): Promise<number | null> => {
+): Promise<number> => {
   try {
-    const pageID: number | null = await executeTransaction<number | null>(
-      async () => {
-        await executeQuery(insertNewPageQuery, [
-          generalPageDTO.page_type,
-          generalPageDTO.page_title,
-          generalPageDTO.page_icon,
-          generalPageDTO.page_color,
-          new Date().toISOString(),
-          new Date().toISOString(),
-          generalPageDTO.archived ? 1 : 0,
-          generalPageDTO.pinned ? 1 : 0,
-        ]);
+    const pageID: number = await executeTransaction<number>(async () => {
+      await executeQuery(insertNewPageQuery, [
+        generalPageDTO.page_type,
+        generalPageDTO.page_title,
+        generalPageDTO.page_icon,
+        generalPageDTO.page_color,
+        new Date().toISOString(),
+        new Date().toISOString(),
+        generalPageDTO.archived ? 1 : 0,
+        generalPageDTO.pinned ? 1 : 0,
+      ]);
 
-        // get inserted page ID
-        const lastInsertedID = await getLastInsertId();
-        return lastInsertedID;
-      },
-    );
+      // get inserted page ID
+      const lastInsertedID = await getLastInsertId();
+      return lastInsertedID;
+    });
 
-    if (pageID) {
-      return pageID;
-    } else {
-      console.error("Failed to fetch inserted page ID");
-      return null;
-    }
+    return pageID;
   } catch (error) {
-    console.error("Error inserting page:", error);
-    return null;
+    throw new DatabaseError("Failed inserting the general page data.");
   }
 };
 
