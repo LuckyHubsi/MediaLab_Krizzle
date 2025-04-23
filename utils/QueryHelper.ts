@@ -79,23 +79,17 @@ const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
 const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
   const db = await getDb();
 
-  try {
-    // Begin transaction
-    await db.runAsync("BEGIN TRANSACTION");
-
-    // Execute the function
-    const result = await fn();
-
-    // Commit transaction
-    await db.runAsync("COMMIT");
-
-    return result;
-  } catch (error) {
-    // Roll back on error
-    console.error("Transaction error, rolling back:", error);
-    await db.runAsync("ROLLBACK");
-    throw error;
-  }
+  return new Promise<T>((resolve, reject) => {
+    db.withTransactionAsync(async () => {
+      try {
+        const result = await fn();
+        resolve(result);
+      } catch (error) {
+        console.error("Transaction error, rolling back:", error);
+        reject(error);
+      }
+    });
+  });
 };
 
 /**
