@@ -1,36 +1,49 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import styles from "./BottomButtons.styles";
+import React, { FC } from "react";
+import {
+  BottomButtonContainer,
+  DiscardButton,
+  NextButton,
+} from "./BottomButtons.styles";
+import { ThemedText } from "@/components/ThemedText";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface BottomButtonsProps {
   titleLeftButton: string;
   titleRightButton: string;
   onDiscard: () => void;
   onNext: () => void;
+  variant?: "discard" | "back";
 }
 
-const BottomButtons: React.FC<BottomButtonsProps> = ({
+const BottomButtons: FC<BottomButtonsProps> = ({
   titleLeftButton,
   titleRightButton,
   onDiscard,
   onNext,
+  variant,
 }) => {
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={[styles.button, styles.discardButton]}
-        onPress={onDiscard}
-      >
-        <Text style={styles.discardText}>{titleLeftButton}</Text>
-      </TouchableOpacity>
+  const colorScheme = useColorScheme() ?? "light";
+  const buttonTextVariants =
+    variant === "discard" ? "red" : colorScheme === "dark" ? "white" : "grey";
 
-      <TouchableOpacity
-        style={[styles.button, styles.nextButton]}
-        onPress={onNext}
+  return (
+    <BottomButtonContainer>
+      <DiscardButton
+        onPress={onDiscard}
+        colorScheme={colorScheme}
+        variant={variant ?? "discard"}
       >
-        <Text style={styles.nextText}>{titleRightButton}</Text>
-      </TouchableOpacity>
-    </View>
+        <ThemedText colorVariant={buttonTextVariants} fontWeight="bold">
+          {titleLeftButton}
+        </ThemedText>
+      </DiscardButton>
+
+      <NextButton onPress={onNext}>
+        <ThemedText colorVariant="white" fontWeight="bold">
+          {titleRightButton}
+        </ThemedText>
+      </NextButton>
+    </BottomButtonContainer>
   );
 };
 

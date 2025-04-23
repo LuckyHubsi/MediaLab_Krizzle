@@ -2,6 +2,11 @@ const tintColorLight = "#4599E8";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
+  primary: "#4599E8",
+  negative: "#FF4949",
+  white: "#ffffff",
+  grey50: "#ABABAB",
+  grey100: "#585858",
   light: {
     text: "#11181C",
     background: "#FBFBFB",
@@ -22,6 +27,8 @@ export const Colors = {
     ToolbarBarButtonBackground: "#EEE",
     ToolbarBarButtonBackgroundActive: "#aed7fc",
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
+    textFieldBorder: "#585858",
+    placeholder: "#585858",
   },
   dark: {
     text: "#ECEDEE",
@@ -42,6 +49,8 @@ export const Colors = {
     ToolbarBarButtonBackground: "#2A2A2A",
     ToolbarBarButtonBackgroundActive: "#3e5b75",
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
+    textFieldBorder: "#ffffff",
+    placeholder: "#ABABAB",
   },
   widget: {
     white: "#ffffff",
