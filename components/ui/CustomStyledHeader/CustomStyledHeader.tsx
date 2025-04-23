@@ -1,7 +1,11 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { StyledHeader, BackIcon } from "./CustomStyledHeader.styles";
+import {
+  StyledHeader,
+  BackIcon,
+  IconContainer,
+} from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation, useRouter } from "expo-router";
@@ -9,14 +13,18 @@ import { useNavigation, useRouter } from "expo-router";
 interface HeaderProps {
   title: string;
   iconName?: keyof typeof Ionicons.glyphMap;
+  iconMenu?: keyof typeof Ionicons.glyphMap;
   onIconPress?: () => void;
+  onIconMenuPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
   title,
   iconName,
+  iconMenu,
   onIconPress,
+  onIconMenuPress,
   backBehavior = "default",
 }) => {
   const router = useRouter();
@@ -48,15 +56,26 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       </TouchableOpacity>
 
       {/* Optional right icon */}
-      {iconName && onIconPress && (
-        <BackIcon onPress={onIconPress}>
-          <Ionicons
-            name={iconName}
-            size={24}
-            color={colorScheme === "light" ? "black" : "white"}
-          />
-        </BackIcon>
-      )}
+      <IconContainer>
+        {iconName && onIconPress && (
+          <BackIcon onPress={onIconPress}>
+            <Ionicons
+              name={iconName}
+              size={24}
+              color={colorScheme === "light" ? "black" : "white"}
+            />
+          </BackIcon>
+        )}
+        {iconMenu && onIconMenuPress && (
+          <BackIcon onPress={onIconMenuPress}>
+            <Ionicons
+              name={iconMenu}
+              size={24}
+              color={colorScheme === "light" ? "black" : "white"}
+            />
+          </BackIcon>
+        )}
+      </IconContainer>
     </StyledHeader>
   );
 };

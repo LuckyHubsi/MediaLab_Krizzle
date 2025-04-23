@@ -20,3 +20,7 @@ export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
   margin-top: 5px;
   margin-left: 5px;
 `;
+export const IconContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
