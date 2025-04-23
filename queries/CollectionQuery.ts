@@ -1,16 +1,16 @@
-// add multiselect options to query
-// add categories to query
 const collectionSelectByPageIdQuery: string = `
     SELECT 
     p.*, 
     c.collectionID, 
     it.item_templateID AS templateID, 
     it.title AS template_name,
+    CASE WHEN it.categories IS NULL THEN '[]' ELSE it.categories AS categories,
     json_group_array(
       json_object(
         'attributeID', a.attributeID,
         'attribute_label', a.attribute_label,
         'type', a.type,
+        'options', a.options,
         'preview', a.preview
       )
     ) AS attributes
