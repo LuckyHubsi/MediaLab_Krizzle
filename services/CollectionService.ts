@@ -23,17 +23,22 @@ import { DatabaseError } from "@/utils/DatabaseError";
  *
  * @param {number} pageId - The ID of the page.
  * @returns {Promise<CollectionDTO>} A promise that resolves to a CollectionDTO.
+ *
+ * @throws {DatabaseError} If the fetch fails.
  */
 const getCollectionByPageId = async (
   pageID: number,
 ): Promise<CollectionDTO | null> => {
-  const collection = await fetchFirst<CollectionModel>(
-    collectionSelectByPageIdQuery,
-    [pageID],
-  );
-  if (!collection) return null;
-
-  return CollectionMapper.toDTO(collection);
+  try {
+    const collection = await fetchFirst<CollectionModel>(
+      collectionSelectByPageIdQuery,
+      [pageID],
+    );
+    if (!collection) return null;
+    return CollectionMapper.toDTO(collection);
+  } catch (error) {
+    throw new DatabaseError("Failed to retrieve collection");
+  }
 };
 
 /**
