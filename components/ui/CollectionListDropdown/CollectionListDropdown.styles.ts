@@ -2,7 +2,6 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 
 export const CollectionListContainer = styled.View`
   width: 100%;
@@ -22,6 +21,7 @@ export const getPickerStyles = ({
   iconContainer: StyleProp<ViewStyle>;
   modalViewMiddle: StyleProp<ViewStyle>;
   modalViewBottom: StyleProp<ViewStyle>;
+  placeholder: StyleProp<TextStyle>;
 } => {
   const bgColor = colorScheme === "dark" ? Colors.grey100 : Colors.grey25;
   const textColor = colorScheme === "dark" ? Colors.dark.text : Colors.black;
@@ -64,6 +64,9 @@ export const getPickerStyles = ({
     },
     modalViewBottom: {
       backgroundColor: iosModalColor,
+    },
+    placeholder: {
+      color: Colors.grey100, // or whichever color you meant instead of `grey1ßß`
     },
   };
 };
