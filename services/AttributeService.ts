@@ -30,6 +30,13 @@ const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
   }
 };
 
+/**
+ * Inserts a new multiselect attribute option into the database.
+ *
+ * @param {string} option - The label of the option.
+ * @param {number} attributeID - The id of the attribute the option belongs to.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
 const insertMultiselectOptions = async (
   option: string,
   attributeID: number,

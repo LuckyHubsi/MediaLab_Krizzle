@@ -32,8 +32,8 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[] | null> => {
 /**
  * Inserts a new page into the database and returns its ID.
  *
- * @param {GeneralPageDTO} generalPageDTO - The DTO representing the note to insert.
- * @returns {Promise<number | null>} A promise that resolves to the inserted note's ID, or null if the insertion fails.
+ * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
+ * @returns {Promise<number | null>} A promise that resolves to the inserted page's ID, or null if the insertion fails.
  */
 const insertGeneralPageAndReturnID = async (
   generalPageDTO: GeneralPageDTO,

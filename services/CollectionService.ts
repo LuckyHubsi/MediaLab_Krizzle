@@ -1,4 +1,3 @@
-// CollectionService.ts
 import { CollectionDTO } from "@/dto/CollectionDTO";
 import { CollectionModel } from "@/models/CollectionModel";
 import {
@@ -20,10 +19,10 @@ import { AttributeType } from "@/utils/enums/AttributeType";
 import { DatabaseError } from "@/utils/DatabaseError";
 
 /**
- * Retrieves all collections associated with a specific page.
+ * Retrieves a collection associated with a specific page.
  *
  * @param {number} pageId - The ID of the page.
- * @returns {Promise<CollectionDTO[]>} A promise that resolves to an array of CollectionDTO objects.
+ * @returns {Promise<CollectionDTO>} A promise that resolves to a CollectionDTO.
  */
 const getCollectionByPageId = async (
   pageID: number,

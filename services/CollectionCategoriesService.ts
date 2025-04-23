@@ -3,9 +3,9 @@ import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { insertCollectionCategoryQuery } from "@/queries/CollectionCategoryQuery";
 
 /**
- * Inserts a new attribute into the database and returns its ID.
+ * Inserts a new collection category into the database.
  *
- * @param {CollectionCategoryDTO} categoryDTO - The DTO representing the categorxy to insert.
+ * @param {CollectionCategoryDTO} categoryDTO - The DTO representing the category to insert.
  * @returns {Promise<void>}  A promise that resolves to void.
  */
 const insertCollectionCategory = async (
