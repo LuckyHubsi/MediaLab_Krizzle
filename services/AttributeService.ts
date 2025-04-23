@@ -5,12 +5,15 @@ import {
   insertMultiselectOptionsQuery,
 } from "@/queries/AttributeQuery";
 import { executeQuery, getLastInsertId } from "@/utils/QueryHelper";
+import { DatabaseError } from "@/utils/DatabaseError";
 
 /**
  * Inserts a new attribute into the database and returns its ID.
  *
  * @param {AttributeDTO} attributeDTO - The DTO representing the attribute to insert.
  * @returns {Promise<void>} A promise that resolves to void.
+ *
+ *  @throws {DatabaseError} If the insert fails.
  */
 const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
   try {
@@ -26,7 +29,7 @@ const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
       attributeDTO.itemTemplateID,
     ]);
   } catch (error) {
-    console.error("Error inserting attribute:", error);
+    throw new DatabaseError("Failed to insert template attribute");
   }
 };
 
