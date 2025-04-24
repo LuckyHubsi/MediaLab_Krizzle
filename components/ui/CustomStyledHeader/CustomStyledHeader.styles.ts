@@ -9,7 +9,7 @@ export const StyledHeader = styled.View<{ colorScheme: "light" | "dark" }>`
   width: 100%;
   padding: 16px;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].cardBackground};
+    colorScheme === "light" ? "#FBFBFB" : "#111111"};
 `;
 
 export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
@@ -19,4 +19,15 @@ export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
   margin-right: 15px;
   margin-top: 5px;
   margin-left: 5px;
+`;
+
+export const Icon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
+  font-size: 24px;
+  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? "black" : "white"};
+  margin: 6px;
+`;
+export const IconContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
 `;

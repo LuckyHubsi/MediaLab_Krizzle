@@ -1,30 +1,44 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { StyledHeader, BackIcon } from "./CustomStyledHeader.styles";
+import {
+  StyledHeader,
+  BackIcon,
+  IconContainer,
+  Icon,
+} from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation, useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface HeaderProps {
   title: string;
   iconName?: keyof typeof MaterialIcons.glyphMap;
+  iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
+  onIconMenuPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
+  otherBackBehavior?: () => void;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
   title,
   iconName,
+  iconName2,
   onIconPress,
+  onIconMenuPress,
   backBehavior = "default",
+  otherBackBehavior,
 }) => {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const navigation = useNavigation();
 
   const handleBackPress = () => {
+    if (otherBackBehavior) {
+      otherBackBehavior();
+    }
+
     if (backBehavior === "goHome") {
       router.replace("/");
     } else if (backBehavior === "goArchive") {
@@ -49,15 +63,26 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       </TouchableOpacity>
 
       {/* Optional right icon */}
-      {iconName && onIconPress && (
-        <BackIcon onPress={onIconPress}>
-          <MaterialIcons
-            name={iconName}
-            size={24}
-            color={colorScheme === "light" ? "black" : "white"}
-          />
-        </BackIcon>
-      )}
+      <IconContainer>
+        {iconName && onIconPress && (
+          <Icon onPress={onIconPress}>
+            <MaterialIcons
+              name={iconName}
+              size={24}
+              color={colorScheme === "light" ? "black" : "white"}
+            />
+          </Icon>
+        )}
+        {iconName2 && onIconMenuPress && (
+          <Icon onPress={onIconMenuPress}>
+            <MaterialIcons
+              name={iconName2}
+              size={24}
+              color={colorScheme === "light" ? "black" : "white"}
+            />
+          </Icon>
+        )}
+      </IconContainer>
     </StyledHeader>
   );
 };

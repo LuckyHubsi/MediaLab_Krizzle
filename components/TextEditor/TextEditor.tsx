@@ -1,5 +1,8 @@
-import React from "react";
+// TextEditor.tsx
+import React, { useEffect, useState, useRef } from "react";
 import {
+  AppState,
+  AppStateStatus,
   KeyboardAvoidingView,
   Platform,
   useColorScheme,
@@ -9,16 +12,51 @@ import {
   useEditorBridge,
   RichText,
   Toolbar,
-  editorHtml,
+  DEFAULT_TOOLBAR_ITEMS,
+  Images,
 } from "@10play/tentap-editor";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { customEditorHtml } from "./TextEditorCustomHtml";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
-const TextEditor: React.FC = () => {
+interface TextEditorProps {
+  initialContent: string;
+  onChange: (html: string) => void;
+}
+
+const TextEditor: React.FC<TextEditorProps> = ({
+  initialContent,
+  onChange,
+}) => {
   const colorScheme = useColorScheme();
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState,
+  );
+
+  // Dummy object used to call item.image() for filtering toolbar buttons
+  // The image() function expects an ArgsToolbarCB object,
+  // but since we’re only interested in comparing the returned image (icon),
+  // we don’t need real editor behavior here — just placeholders that satisfy the type.
+  const dummyArgs = {
+    editor: {} as any,
+    editorState: {} as any,
+    setToolbarContext: () => {},
+    toolbarContext: 0,
+  };
+
+  const toolbarItems = DEFAULT_TOOLBAR_ITEMS.filter((item) => {
+    const img = item.image(dummyArgs);
+    return (
+      img !== Images.code &&
+      img !== Images.link &&
+      img !== Images.quote &&
+      img !== Images.outdent &&
+      img !== Images.indent
+    );
+  });
 
   const editor = useEditorBridge({
     autofocus: false,
@@ -47,14 +85,14 @@ const TextEditor: React.FC = () => {
         iconWrapper: {
           backgroundColor:
             colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
+              ? Colors.dark.ToolbarBarButtonBackground
+              : Colors.light.ToolbarBarButtonBackground,
         },
         iconWrapperActive: {
           backgroundColor:
             colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
+              ? Colors.dark.ToolbarBarButtonBackgroundActive
+              : Colors.light.ToolbarBarButtonBackgroundActive,
         },
         iconWrapperDisabled: {
           backgroundColor:
@@ -74,9 +112,26 @@ const TextEditor: React.FC = () => {
     },
     onChange: async () => {
       const html = await editor.getHTML();
-      console.log("Editor HTML:", html);
+      onChange(html);
     },
   });
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (
+        appState.match(/active/) &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        editor.getHTML().then(onChange);
+      }
+      setAppState(nextAppState);
+    };
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+    return () => subscription.remove();
+  }, [appState, onChange, editor]);
 
   // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
   const { top } = useSafeAreaInsets();
@@ -86,27 +141,16 @@ const TextEditor: React.FC = () => {
   const keyboardVerticalOffset = headerHeight + top;
 
   return (
-    <SafeAreaView
+    <View
       style={{
         flex: 1,
         backgroundColor:
           colorScheme === "dark"
-            ? Colors.dark.background
-            : Colors.light.background,
+            ? Colors.light.background
+            : Colors.dark.background,
       }}
     >
-      <RichText
-        editor={editor}
-        style={{
-          flex: 1,
-          padding: 20,
-          top: 0,
-          backgroundColor:
-            colorScheme === "dark"
-              ? Colors.dark.background
-              : Colors.light.background,
-        }}
-      />
+      <RichText editor={editor} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={keyboardVerticalOffset}
@@ -117,12 +161,10 @@ const TextEditor: React.FC = () => {
           right: 0,
         }}
       >
-        <Toolbar editor={editor} />
+        <Toolbar editor={editor} items={toolbarItems} />
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
-
-const initialContent = "";
 
 export default TextEditor;

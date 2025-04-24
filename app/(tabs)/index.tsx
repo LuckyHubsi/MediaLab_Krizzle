@@ -198,7 +198,9 @@ export default function HomeScreen() {
                   fontWeight="regular"
                   style={{ textAlign: "center", marginTop: 25 }}
                 >
-                  No entries for "{searchQuery}"
+                  {selectedTag === "All" && !searchQuery
+                    ? "No entries found."
+                    : `No entries for "${selectedTag !== "All" ? selectedTag : searchQuery}"`}
                 </ThemedText>
               )}
             </>

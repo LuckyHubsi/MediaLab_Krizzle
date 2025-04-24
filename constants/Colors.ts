@@ -2,6 +2,13 @@ const tintColorLight = "#4599E8";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
+  primary: "#4599E8",
+  negative: "#FF4949",
+  white: "#ffffff",
+  grey25: "#EAEAEA",
+  grey50: "#ABABAB",
+  grey100: "#585858",
+  black: "#111111",
   light: {
     text: "#11181C",
     background: "#FBFBFB",
@@ -18,6 +25,12 @@ export const Colors = {
     cardBackground: "#FBFBFB",
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
+    ToolbarBarBackground: "#FBFBFB",
+    ToolbarBarButtonBackground: "#EEE",
+    ToolbarBarButtonBackgroundActive: "#aed7fc",
+    ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
+    textFieldBorder: "#585858",
+    placeholder: "#585858",
   },
   dark: {
     text: "#ECEDEE",
@@ -34,6 +47,12 @@ export const Colors = {
     cardBackground: "#242424",
     cardShadowColor: "#FFF",
     pillBackground: "#3D3D3D",
+    ToolbarBarBackground: "#FBFBFB",
+    ToolbarBarButtonBackground: "#2A2A2A",
+    ToolbarBarButtonBackgroundActive: "#10598C",
+    ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
+    textFieldBorder: "#ffffff",
+    placeholder: "#ABABAB",
   },
   widget: {
     white: "#ffffff",
@@ -54,7 +73,7 @@ export const Colors = {
     sage: "#49976B",
     gradientPink: ["#F46D6F", "#B81CA3"],
     gradientRed: ["#FA995D", "#E92529"],
-    gradientBlue: ["#583FE7", "#4599E8"],
+    gradientBlue: ["#583FE7", "#4599E9"],
     gradientGreen: ["#1CA870", "#4AE7A8"],
     gradientPurple: ["#664DBD", "#E845D2"],
   },
