@@ -12,6 +12,7 @@ import { ModalSelection } from "@/components/ui/ModalSelection/ModalSelection";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
+import CollectionList from "@/components/ui/CollectionList/CollectionList";
 
 export default function CollectionScreen() {
   const { title, selectedIcon } = useLocalSearchParams<{
@@ -23,7 +24,7 @@ export default function CollectionScreen() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <CustomStyledHeader
           title={title || "Collection"} //Here should be the title of the collection
           backBehavior="goHome" // Go back to home when back button is pressed
@@ -36,6 +37,10 @@ export default function CollectionScreen() {
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
             onSearch={(text) => console.log(text)}
+          />
+          <CollectionList
+            collectionLists={["List 1", "List 2", "List 3", "List 4"]}
+            onPress={() => console.log("Pressed!")}
           />
           <CollectionWidget
             collectionTitle="Long Collection Title"
