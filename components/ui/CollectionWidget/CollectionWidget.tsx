@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors } from "@/constants/Colors";
 import {
   CollectionCardContainer,
   CollectionText,
@@ -9,7 +8,6 @@ import {
   CollectionTitle,
   CollectionSelectable,
 } from "./CollectionWidget.style";
-import { Collection } from "@/models/CollectionModel";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View } from "react-native";
 

@@ -9,7 +9,7 @@ export const StyledHeader = styled.View<{ colorScheme: "light" | "dark" }>`
   width: 100%;
   padding: 16px;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].cardBackground};
+    colorScheme === "light" ? "#FBFBFB" : "#111111"};
 `;
 
 export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
