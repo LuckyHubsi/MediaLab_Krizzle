@@ -1,4 +1,4 @@
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 
 interface DateTextProps {
@@ -20,11 +20,9 @@ export const DateInputContainer = styled.View<{
 }>`
   flex-direction: row;
   align-items: center;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].background};
   border: 1px solid
     ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-      colorScheme === "dark" ? Colors.white : Colors.grey100};
+      colorScheme === "dark" ? Colors.grey50 : Colors.grey100};
   border-radius: 16px;
   padding: 0 20px;
 `;

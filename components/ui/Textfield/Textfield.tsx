@@ -12,6 +12,7 @@ import { Colors } from "@/constants/Colors";
 interface TextfieldProps {
   title: string;
   placeholderText: string;
+  editable?: boolean;
   //   onChangeText: (text: string) => void;
   //   value: string;
 }
@@ -19,6 +20,7 @@ interface TextfieldProps {
 const Textfield: FC<TextfieldProps> = ({
   title,
   placeholderText,
+  editable = true,
   // onChangeText,
   //  value
 }) => {
@@ -27,7 +29,7 @@ const Textfield: FC<TextfieldProps> = ({
 
   return (
     <TextfieldContainter>
-      <ThemedText fontWeight="bold">{title}</ThemedText>
+      <ThemedText fontWeight="regular">{title}</ThemedText>
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
           name="short-text"
@@ -36,7 +38,7 @@ const Textfield: FC<TextfieldProps> = ({
         />
         <StyledTextInput
           colorScheme={colorScheme}
-          editable
+          editable={editable}
           //   onChangeText={onChangeText}
           //   value={value}
           placeholderTextColor={
