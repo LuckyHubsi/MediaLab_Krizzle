@@ -1,9 +1,15 @@
 import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
-import { insertItemTemplate } from "@/queries/ItemTemplateQuery";
+import { ItemTemplateModel } from "@/models/ItemTemplateModel";
+import {
+  insertItemTemplate,
+  selectItemTemplateByTemplateIDQuery,
+} from "@/queries/ItemTemplateQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
+import { ItemTemplateMapper } from "@/utils/mapper/ItemTemplateMapper";
 import {
   executeQuery,
   executeTransaction,
+  fetchFirst,
   getLastInsertId,
 } from "@/utils/QueryHelper";
 
@@ -34,4 +40,16 @@ const insertItemTemplateAndReturnID = async (
   }
 };
 
-export { insertItemTemplateAndReturnID };
+const getTemplate = async (templateID: number) => {
+  try {
+    const template = await fetchFirst<any>(
+      selectItemTemplateByTemplateIDQuery,
+      [templateID],
+    );
+    console.log(template);
+  } catch (error) {
+    throw new DatabaseError("failed to fetch item template");
+  }
+};
+
+export { insertItemTemplateAndReturnID, getTemplate };
