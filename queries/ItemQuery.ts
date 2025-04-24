@@ -19,34 +19,34 @@ function itemSelectByIdQuery(itemId: number): string {
                     WHEN a.type = 'date' THEN (SELECT value FROM date WHERE attributeID = a.attributeID AND itemID = i.itemID)
                     WHEN a.type = 'rating' THEN (SELECT value FROM rating WHERE attributeID = a.attributeID AND itemID = i.itemID)
                     WHEN a.type = 'multiselect' THEN (
-                        SELECT json_group_array(ao.option_value) 
+                        SELECT mo.options
                         FROM multiselect ms
-                        JOIN attribute_options ao ON ms.value = ao.optionID
-                        WHERE ms.attributeID = a.attributeID AND ms.itemID = i.itemID
+                        JOIN multiselect_options mo ON ms.multiselectID = mo.multiselectID
+                        WHERE ms.itemID = i.itemID AND ms.attributeID = a.attributeID
                     )
                     ELSE NULL
                 END,
                 'options', CASE 
                     WHEN a.type = 'multiselect' THEN (
                         SELECT json_group_array(
-                            json_object('optionID', o.optionID, 'optionValue', o.option_value)
+                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
                         )
-                        FROM attribute_options o
-                        WHERE o.attributeID = a.attributeID
+                        FROM multiselect_options mo
+                        WHERE mo.attributeID = a.attributeID
                     )
                     ELSE NULL
                 END
             )
         ) AS attributeValues
-    FROM items i
+    FROM item i
     JOIN collection c ON i.collectionID = c.collectionID
+    LEFT JOIN collection_category cc on i.category = cc.category_name
     JOIN item_template it ON c.item_templateID = it.item_templateID
     JOIN attribute a ON it.item_templateID = a.item_templateID
     WHERE i.itemID = ?
     GROUP BY i.itemID
   `;
 }
-
 
 // TODO: change to function to dynamically build query string based on an array of attributes that are set to preview
 const itemSelectByCollectionIdQuery: string = `
@@ -57,6 +57,7 @@ const insertItem: string = `
     INSERT INTO items (collectionID, pageID, category) 
     VALUES (?, ?, ?)
 `;
+
 // TODO: write query to insert individual values dependent on attribute type into corresponding table as well
 
 const updateItem: string = `
