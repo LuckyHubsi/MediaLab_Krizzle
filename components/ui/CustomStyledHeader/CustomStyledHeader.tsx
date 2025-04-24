@@ -12,6 +12,7 @@ interface HeaderProps {
   iconName?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
+  otherBackBehavior?: () => void;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -19,12 +20,17 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   iconName,
   onIconPress,
   backBehavior = "default",
+  otherBackBehavior,
 }) => {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const navigation = useNavigation();
 
   const handleBackPress = () => {
+    if (otherBackBehavior) {
+      otherBackBehavior();
+    }
+
     if (backBehavior === "goHome") {
       router.replace("/");
     } else if (backBehavior === "goArchive") {

@@ -11,6 +11,7 @@ export const customEditorHtml = String.raw`
     <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
     <title>RichTextEditor</title>
     <script type="module" crossorigin>
+    /*REPLACE_THEME*/
 var j0=Object.defineProperty;var \$0=(t,e,n)=>e in t?j0(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n;var rf=(t,e,n)=>(\$0(t,typeof e!="symbol"?e+"":e,n),n);(function(){const e=document.createElement("link").relList;if(e&&e.supports&&e.supports("modulepreload"))return;for(const i of document.querySelectorAll('link[rel="modulepreload"]'))r(i);new MutationObserver(i=>{for(const o of i)if(o.type==="childList")for(const s of o.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&r(s)}).observe(document,{childList:!0,subtree:!0});function n(i){const o={};return i.integrity&&(o.integrity=i.integrity),i.referrerPolicy&&(o.referrerPolicy=i.referrerPolicy),i.crossOrigin==="use-credentials"?o.credentials="include":i.crossOrigin==="anonymous"?o.credentials="omit":o.credentials="same-origin",o}function r(i){if(i.ep)return;i.ep=!0;const o=n(i);fetch(i.href,o)}})();var Bo=typeof globalThis<"u"?globalThis:typeof window<"u"?window:typeof global<"u"?global:typeof self<"u"?self:{};function Dc(t){return t&&t.__esModule&&Object.prototype.hasOwnProperty.call(t,"default")?t.default:t}var _p={exports:{}},_l={},jp={exports:{}},j={};/**
  * @license React
  * react.production.min.js
@@ -212,7 +213,7 @@ img.ProseMirror-separator {
   }  
   \`});function sO(t={}){return new He({view(e){return new lO(e,t)}})}class lO{constructor(e,n){var r;this.editorView=e,this.cursorPos=null,this.element=null,this.timeout=-1,this.width=(r=n.width)!==null&&r!==void 0?r:1,this.color=n.color===!1?void 0:n.color||"black",this.class=n.class,this.handlers=["dragover","dragend","drop","dragleave"].map(i=>{let o=s=>{this[i](s)};return e.dom.addEventListener(i,o),{name:i,handler:o}})}destroy(){this.handlers.forEach(({name:e,handler:n})=>this.editorView.dom.removeEventListener(e,n))}update(e,n){this.cursorPos!=null&&n.doc!=e.state.doc&&(this.cursorPos>e.state.doc.content.size?this.setCursor(null):this.updateOverlay())}setCursor(e){e!=this.cursorPos&&(this.cursorPos=e,e==null?(this.element.parentNode.removeChild(this.element),this.element=null):this.updateOverlay())}updateOverlay(){let e=this.editorView.state.doc.resolve(this.cursorPos),n=!e.parent.inlineContent,r;if(n){let l=e.nodeBefore,a=e.nodeAfter;if(l||a){let u=this.editorView.nodeDOM(this.cursorPos-(l?l.nodeSize:0));if(u){let c=u.getBoundingClientRect(),d=l?c.bottom:c.top;l&&a&&(d=(d+this.editorView.nodeDOM(this.cursorPos).getBoundingClientRect().top)/2),r={left:c.left,right:c.right,top:d-this.width/2,bottom:d+this.width/2}}}}if(!r){let l=this.editorView.coordsAtPos(this.cursorPos);r={left:l.left-this.width/2,right:l.left+this.width/2,top:l.top,bottom:l.bottom}}let i=this.editorView.dom.offsetParent;this.element||(this.element=i.appendChild(document.createElement("div")),this.class&&(this.element.className=this.class),this.element.style.cssText="position: absolute; z-index: 50; pointer-events: none;",this.color&&(this.element.style.backgroundColor=this.color)),this.element.classList.toggle("prosemirror-dropcursor-block",n),this.element.classList.toggle("prosemirror-dropcursor-inline",!n);let o,s;if(!i||i==document.body&&getComputedStyle(i).position=="static")o=-pageXOffset,s=-pageYOffset;else{let l=i.getBoundingClientRect();o=l.left-i.scrollLeft,s=l.top-i.scrollTop}this.element.style.left=r.left-o+"px",this.element.style.top=r.top-s+"px",this.element.style.width=r.right-r.left+"px",this.element.style.height=r.bottom-r.top+"px"}scheduleRemoval(e){clearTimeout(this.timeout),this.timeout=setTimeout(()=>this.setCursor(null),e)}dragover(e){if(!this.editorView.editable)return;let n=this.editorView.posAtCoords({left:e.clientX,top:e.clientY}),r=n&&n.inside>=0&&this.editorView.state.doc.nodeAt(n.inside),i=r&&r.type.spec.disableDropCursor,o=typeof i=="function"?i(this.editorView,n,e):i;if(n&&!o){let s=n.pos;if(this.editorView.dragging&&this.editorView.dragging.slice){let l=Ey(this.editorView.state.doc,s,this.editorView.dragging.slice);l!=null&&(s=l)}this.setCursor(s),this.scheduleRemoval(5e3)}}dragend(){this.scheduleRemoval(20)}drop(){this.scheduleRemoval(20)}dragleave(e){(e.target==this.editorView.dom||!this.editorView.dom.contains(e.relatedTarget))&&this.setCursor(null)}}const aO=Je.create({name:"dropCursor",addOptions(){return{color:"currentColor",width:1,class:void 0}},addProseMirrorPlugins(){return[sO(this.options)]}}),uO=new re({tiptapExtension:aO}),cO=Ee.create({name:"hardBreak",addOptions(){return{keepMarks:!0,HTMLAttributes:{}}},inline:!0,group:"inline",selectable:!1,parseHTML(){return[{tag:"br"}]},renderHTML({HTMLAttributes:t}){return["br",q(this.options.HTMLAttributes,t)]},renderText(){return\`
 \`},addCommands(){return{setHardBreak:()=>({commands:t,chain:e,state:n,editor:r})=>t.first([()=>t.exitCode(),()=>t.command(()=>{const{selection:i,storedMarks:o}=n;if(i.\$from.parent.type.spec.isolating)return!1;const{keepMarks:s}=this.options,{splittableMarks:l}=r.extensionManager,a=o||i.\$to.parentOffset&&i.\$from.marks();return e().insertContent({type:this.name}).command(({tr:u,dispatch:c})=>{if(c&&a&&s){const d=a.filter(f=>l.includes(f.type.name));u.ensureMarks(d)}return!0}).run()})])}},addKeyboardShortcuts(){return{"Mod-Enter":()=>this.editor.commands.setHardBreak(),"Shift-Enter":()=>this.editor.commands.setHardBreak()}}}),dO=new re({tiptapExtension:cO,onBridgeMessage:(t,e)=>(e.type==="set-hard-break"&&(console.log("setting hard break"),t.chain().focus().setHardBreak().run()),!1),extendEditorInstance:t=>({setHardBreak:()=>t({type:"set-hard-break"})}),extendEditorState:()=>({})}),fO=[FM,uT,WM,kT,ZT,tO,JT,QM,fT,jM,LM,oO,VT,JM,ZM,MM,QT,UT,uO,dO];let hO=fO.filter(t=>!window.whiteListBridgeExtensions||window.whiteListBridgeExtensions.includes(t.name));function pO(){const t=bM({bridges:hO});return Gp.jsx(dC,{editor:t,className:window.dynamicHeight?"dynamic-height":void 0})}const mO=()=>window.contentInjected;let Hp;Hp=setInterval(()=>{if(!mO())return;const t=document.getElementById("root");ey(t).render(Gp.jsx(pO,{})),clearInterval(Hp)},1);
-/*REPLACE_THEME*/
+
 </script>
   </head>
   <style>
@@ -220,21 +221,23 @@ img.ProseMirror-separator {
       margin: 0;
       font-family: Lexend, --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     }
-      body[data-theme='dark'] {
-  background-color: #111111;
-  color: #ECEDEE;
-}
-body[data-theme='light'] {
-  background-color: #FBFBFB;
-  color: #11181C;
-}
+    
+    body[data-theme='dark'] {
+      background-color: #000000;
+      color: #FBFBFB;
+    }
+
+    body[data-theme='light'] {
+      background-color: #FFFFFF;
+      color: #11181C;
+    }
       
     #root > div:nth-of-type(1) {
       position: absolute;
       height: 100%;
       overflow: auto;
       width: 100%;
-      top: -40px;
+      top: -20px;
       bottom: 0;
     }
     #root > div.dynamic-height {

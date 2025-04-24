@@ -1,35 +1,40 @@
-import { StyleSheet } from "react-native";
+import styled from "styled-components/native";
+import { Colors } from "@/constants/Colors";
 
-export default StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 10,
-    position: "absolute",
-    bottom: 0,
-    left: 20,
-    right: 20,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: "center",
-    borderRadius: 33,
-  },
-  discardButton: {
-    backgroundColor: "red",
-  },
-  discardText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  nextButton: {
-    backgroundColor: "#007AFF",
-  },
-  nextText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+export const BottomButtonContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0;
+  gap: 15px;
+`;
+
+export const BottomButtonBaseStyling = styled.TouchableOpacity<{
+  colorScheme: "light" | "dark";
+}>`
+  flex: 1;
+  padding-vertical: 19px;
+  align-items: center;
+  border-radius: 33px;
+`;
+
+interface DiscardButtonProps {
+  colorScheme: "light" | "dark";
+  variant: "discard" | "back";
+}
+
+export const DiscardButton = styled(
+  BottomButtonBaseStyling,
+)<DiscardButtonProps>`
+  background-color: ${({ variant, colorScheme }: DiscardButtonProps) =>
+    variant === "back"
+      ? Colors[colorScheme].background
+      : Colors[colorScheme].background};
+  border: 1px solid
+    ${({ variant }: DiscardButtonProps) =>
+      variant === "back" ? Colors.grey50 : Colors.negative};
+`;
+
+export const NextButton = styled(BottomButtonBaseStyling)`
+  background-color: ${Colors.primary};
+`;
