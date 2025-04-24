@@ -42,17 +42,17 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
             <ThemedText fontSize="regular" fontWeight="semibold">
-              Delete "{title}"?
+              Do you want to delete "{title}"?
             </ThemedText>
             <ThemedText fontSize="s" fontWeight="regular">
-              Are you sure you want to delete this {typeToDelete}?
+              You cannot undo this action
             </ThemedText>
             <ButtonRow>
-              <Action onPress={onCancel}>
-                <ActionText color={themeColors.icon}>Cancel</ActionText>
-              </Action>
-              <Action onPress={onConfirm}>
+              <Action onPress={onConfirm} colorScheme={colorScheme}>
                 <ActionText color="red">Delete</ActionText>
+              </Action>
+              <Action onPress={onCancel} colorScheme={colorScheme}>
+                <ActionText color="#4599E8">Cancel</ActionText>
               </Action>
             </ButtonRow>
           </ModalBox>
