@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { IconTopRight } from "@/components/ui/IconKriz/IconTopRight";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "react-native";

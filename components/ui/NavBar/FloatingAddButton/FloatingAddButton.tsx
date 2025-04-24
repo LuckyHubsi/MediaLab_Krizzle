@@ -14,7 +14,7 @@ export const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
   const color = useColorScheme() === "dark" ? "black" : "white";
 
   return (
-    <StyledButtonContainer onPress={onPress} activeOpacity={0.8}>
+    <StyledButtonContainer onPress={onPress}>
       <MaterialIcons name="add" size={40} color={color} />
     </StyledButtonContainer>
   );

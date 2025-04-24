@@ -6,7 +6,6 @@ import { NoteModel } from "@/models/NoteModel";
  * Utility class for converting general page data between different layers.
  */
 export class NoteMapper extends GeneralPageMapper {
-
   /**
    * Converts a NoteModel into a NoteDTO.
    *

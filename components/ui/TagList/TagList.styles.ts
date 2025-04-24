@@ -8,7 +8,7 @@ interface TagProps {
 }
 
 export const TagButton = styled(TouchableOpacity)<TagProps>`
-  background-color: ${({ active, themeMode }) =>
+  background-color: ${({ active, themeMode }: TagProps) =>
     active
       ? Colors.widget.blue
       : themeMode === "dark"
@@ -22,7 +22,7 @@ export const TagButton = styled(TouchableOpacity)<TagProps>`
 `;
 
 export const TagText = styled(Text)<TagProps>`
-  color: ${({ active, themeMode }) =>
+  color: ${({ active, themeMode }: TagProps) =>
     active
       ? "#fff"
       : themeMode === "dark"
