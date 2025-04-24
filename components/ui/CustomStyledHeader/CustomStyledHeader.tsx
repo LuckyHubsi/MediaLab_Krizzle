@@ -18,6 +18,7 @@ interface HeaderProps {
   onIconPress?: () => void;
   onIconMenuPress?: () => void;
   backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
+  otherBackBehavior?: () => void;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -27,12 +28,17 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   onIconPress,
   onIconMenuPress,
   backBehavior = "default",
+  otherBackBehavior,
 }) => {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const navigation = useNavigation();
 
   const handleBackPress = () => {
+    if (otherBackBehavior) {
+      otherBackBehavior();
+    }
+
     if (backBehavior === "goHome") {
       router.replace("/");
     } else if (backBehavior === "goArchive") {
