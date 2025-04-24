@@ -1,9 +1,16 @@
-import { insertNoteQuery, selectPageIDByNoteIDQuery, updateNoteContentQuery } from "@/queries/NoteQuery";
+import {
+  insertNoteQuery,
+  selectPageIDByNoteIDQuery,
+  updateNoteContentQuery,
+} from "@/queries/NoteQuery";
 import { insertGeneralPageAndReturnID } from "./GeneralPageService";
 import { executeQuery, fetchFirst } from "@/utils/QueryHelper";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { NoteMapper } from "@/utils/mapper/NoteMapper";
-import { selectNoteByPageIDQuery, updateDateModifiedByPageIDQuery } from "@/queries/GeneralPageQuery";
+import {
+  selectNoteByPageIDQuery,
+  updateDateModifiedByPageIDQuery,
+} from "@/queries/GeneralPageQuery";
 import { NoteModel } from "@/models/NoteModel";
 import { PageType } from "@/utils/enums/PageType";
 
@@ -14,21 +21,17 @@ import { PageType } from "@/utils/enums/PageType";
  * @returns {Promise<number | null>} A promise that resolves to the inserted note's ID, or null if the insertion fails.
  */
 const insertNote = async (noteDTO: NoteDTO): Promise<number | null> => {
-    try {
-        // first inserts the general page data and returns the pageID
-        const pageID = await insertGeneralPageAndReturnID(noteDTO);
+  try {
+    // first inserts the general page data and returns the pageID
+    const pageID = await insertGeneralPageAndReturnID(noteDTO);
 
-        await executeQuery(insertNoteQuery, [
-            noteDTO.note_content,
-            pageID
-        ]);
+    await executeQuery(insertNoteQuery, [noteDTO.note_content, pageID]);
 
-        return pageID;
-
-    } catch (error) {
-        console.error("Error inserting note:", error);
-        return null;
-    }
+    return pageID;
+  } catch (error) {
+    console.error("Error inserting note:", error);
+    return null;
+  }
 };
 
 /**
@@ -39,14 +42,17 @@ const insertNote = async (noteDTO: NoteDTO): Promise<number | null> => {
  * @returns A Promise that resolves to a NoteDTO if the page is a note, or null if not found or not a note.
  */
 const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
-    const noteData = await fetchFirst<NoteModel>(selectNoteByPageIDQuery, [pageID]);
+  const noteData = await fetchFirst<NoteModel>(selectNoteByPageIDQuery, [
+    pageID,
+  ]);
 
-    if (!noteData) return null;
-    if (noteData.page_type === PageType.Note) {
-        return NoteMapper.toDTO(noteData);
-    }
-    return null;
-}
+  if (!noteData) return null;
+  if (noteData.page_type === PageType.Note) {
+    console.log(NoteMapper.toDTO(noteData));
+    return NoteMapper.toDTO(noteData);
+  }
+  return null;
+};
 
 /**
  * Updates the content of a note and updates the corresponding page's `date_modified` timestamp.
@@ -55,26 +61,30 @@ const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
  * @param newNoteContent - The new content to save for the note.
  * @returns A Promise that resolves to `true` if the update was successful, or `false` if an error occurred.
  */
-const updateNoteContent = async (noteID: number, newNoteContent: string): Promise<boolean> => {
-    try {
-        // get the pageID from the noteID
-        const pageID = await getPageIDForNote(noteID);
-        if (!pageID) {
-            console.error("Page ID not found for the given note ID");
-            return false;
-        }
-
-        // update the note content
-        await executeQuery(updateNoteContentQuery, [noteID, newNoteContent]);
-
-        // update the date_modified for the general page data
-        await executeQuery(updateDateModifiedByPageIDQuery, [new Date().toISOString, pageID]);
-
-        return true;
-    } catch (error) {
-        console.error("Error updating note content:", error);
-        return false;
+const updateNoteContent = async (
+  pageID: number,
+  newNoteContent: string,
+): Promise<boolean> => {
+  try {
+    if (!pageID) {
+      console.error("Page ID not found for the given note ID");
+      return false;
     }
+
+    // update the note content
+    await executeQuery(updateNoteContentQuery, [newNoteContent, pageID]);
+
+    // update the date_modified for the general page data
+    await executeQuery(updateDateModifiedByPageIDQuery, [
+      new Date().toISOString(),
+      pageID,
+    ]);
+
+    return true;
+  } catch (error) {
+    console.error("Error updating note content:", error);
+    return false;
+  }
 };
 
 /**
@@ -84,17 +94,16 @@ const updateNoteContent = async (noteID: number, newNoteContent: string): Promis
  * @returns A Promise that resolves to the page ID if found, or `null` if not found or an error occurred.
  */
 const getPageIDForNote = async (noteID: number): Promise<number | null> => {
-    try {
-        const result = await fetchFirst<{ pageID: number }>(selectPageIDByNoteIDQuery, [noteID]);
-        return result?.pageID ?? null;
-    } catch (error) {
-        console.error("Error fetching pageID for note:", error);
-        return null;
-    }
+  try {
+    const result = await fetchFirst<{ pageID: number }>(
+      selectPageIDByNoteIDQuery,
+      [noteID],
+    );
+    return result?.pageID ?? null;
+  } catch (error) {
+    console.error("Error fetching pageID for note:", error);
+    return null;
+  }
 };
 
-export {
-    insertNote,
-    getNoteDataByPageID,
-    updateNoteContent
-}
+export { insertNote, getNoteDataByPageID, updateNoteContent };

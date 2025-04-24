@@ -5,6 +5,8 @@ import { Icons } from "@/constants/Icons";
 export const colorLabelMap: Record<string, string> = {};
 // Human readable label -> widget key
 export const colorKeyMap: Record<string, keyof typeof Colors.widget> = {};
+// Color ID (key) -> Human readable label
+export const colorIdLabelMap: Record<string, string> = {};
 
 Object.entries(Colors.widget).forEach(([key, value]) => {
   const humanName = key
@@ -13,13 +15,14 @@ Object.entries(Colors.widget).forEach(([key, value]) => {
 
   if (typeof value === "string") {
     colorLabelMap[value] = humanName;
-    colorKeyMap[humanName] = key as keyof typeof Colors.widget;
   } else if (Array.isArray(value)) {
     value.forEach((v) => {
       colorLabelMap[v] = humanName;
     });
-    colorKeyMap[humanName] = key as keyof typeof Colors.widget;
   }
+
+  colorKeyMap[humanName] = key as keyof typeof Colors.widget;
+  colorIdLabelMap[key] = humanName;
 });
 
 export const iconLabelMap: Record<string, string> = Icons.reduce(

@@ -5,6 +5,6 @@
  * @property tag_label - The human-readable label or name of the tag.
  */
 export type TagModel = {
-    tagID: number,
-    tag_label: string
-}
+  tagID: number;
+  tag_label: string;
+};

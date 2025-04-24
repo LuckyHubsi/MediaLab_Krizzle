@@ -41,17 +41,15 @@ export default function CreateNoteScreen() {
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
 
-  const colorOptions = Object.entries(Colors.widget).flatMap(([key, value]) => {
-    if (typeof value === "string") {
-      return [{ color: value, label: colorLabelMap[value], id: key }];
-    } else if (Array.isArray(value)) {
-      return value.map((v, index) => ({
-        color: v,
-        label: colorLabelMap[v],
-        id: `${key}-${index}`,
-      }));
-    }
-    return [];
+  const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
+    const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
+
+    return {
+      id: key,
+      color: value,
+      value: key,
+      label,
+    };
   });
 
   const getWidgetColorKey = (
@@ -67,7 +65,7 @@ export default function CreateNoteScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
-  const handleNext = async () => {
+  const createNote = async () => {
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
@@ -80,18 +78,16 @@ export default function CreateNoteScreen() {
       page_type: PageType.Note,
       page_title: title,
       page_icon: selectedIcon,
-      page_color: getWidgetColorKey(selectedColor) ?? "blue",
+      page_color: (selectedColor as keyof typeof Colors.widget) || "blue",
       archived: false,
       pinned: false,
       note_content: null,
       tag: tagDTO,
     };
+
     const id = await insertNote(noteDTO);
     console.log("Note created with ID:", id);
-    navigation.navigate({
-      name: "notePage",
-      params: { title },
-    });
+    navigation.navigate("notePage", { id, title });
   };
 
   return (
@@ -209,7 +205,7 @@ export default function CreateNoteScreen() {
             width: "100%",
           }}
         >
-          <Button onPress={handleNext}>Create</Button>
+          <Button onPress={createNote}>Create</Button>
         </View>
       </ThemedView>
     </SafeAreaView>

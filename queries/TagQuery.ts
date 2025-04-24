@@ -3,6 +3,4 @@ const selectAllTagsQuery = `
   ORDER BY tag_label ASC;
 `;
 
-export {
-    selectAllTagsQuery
-}
+export { selectAllTagsQuery };
