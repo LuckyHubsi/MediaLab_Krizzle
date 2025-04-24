@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import React, { useState } from "react";
 import { Platform, View } from "react-native";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
-import { ModalSelection } from "@/components/ui/ModalSelection/ModalSelection";
+import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";

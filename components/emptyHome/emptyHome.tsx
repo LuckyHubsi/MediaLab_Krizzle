@@ -5,7 +5,7 @@ import { Colors } from "@/constants/Colors";
 import { Button } from "../ui/Button/Button";
 import { ThemedText } from "../ThemedText";
 import { StyledEmptyHome } from "./emptyHome.styles";
-import { ModalSelection } from "../ui/ModalSelection/ModalSelection";
+import { ModalSelection } from "../Modals/CreateNCModal/CreateNCModal";
 
 export const EmptyHome: FC = () => {
   const colorScheme = useColorScheme() ?? "light";
