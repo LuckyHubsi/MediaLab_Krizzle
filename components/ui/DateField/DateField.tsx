@@ -13,9 +13,10 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface DateFieldProps {
   title: string;
+  editable?: boolean;
 }
 
-const DateField: FC<DateFieldProps> = ({ title }) => {
+const DateField: FC<DateFieldProps> = ({ title, editable = true }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -34,11 +35,15 @@ const DateField: FC<DateFieldProps> = ({ title }) => {
       <ThemedText fontWeight="regular">{title}</ThemedText>
 
       <StyledPressable
-        onPress={showDatePicker}
-        style={({ pressed }: { pressed: boolean }) => ({
-          backgroundColor: pressed ? "#ddd" : "transparent",
-          borderRadius: 16,
-        })}
+        onPress={editable ? showDatePicker : undefined}
+        style={
+          editable
+            ? ({ pressed }: { pressed: boolean }) => ({
+                backgroundColor: pressed ? "#ddd" : "transparent",
+                borderRadius: 16,
+              })
+            : undefined
+        }
       >
         <DateInputContainer colorScheme={colorScheme}>
           <MaterialIcons
