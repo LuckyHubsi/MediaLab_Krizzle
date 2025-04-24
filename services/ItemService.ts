@@ -1,4 +1,3 @@
-// ItemService.ts
 import { ItemDTO } from '@/dto/ItemDTO';
 import { ItemAttributeValueDTO } from '@/dto/ItemAttributeValueDTO';
 import { ItemModel } from '@/models/ItemModel';
@@ -25,8 +24,39 @@ import { ItemMapper } from '@/utils/mapper/ItemMapper';
  * @returns {Promise<ItemDTO | null>} A promise that resolves to an ItemDTO object or null if not found.
  */
 const getItemById = async (id: number): Promise<ItemDTO | null> => {
-    const result = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
-    return result ? ItemMapper.toDTO(result) : null;
+  try {
+    const query = itemSelectByIdQuery(id);
+    
+    // define interface for raw result
+    interface RawItemResult {
+      itemID: number;
+      collectionID: number;
+      category: string | null;
+      attributeValues: string;
+    }
+    
+    // get raw result using the query
+    const rawResult = await fetchFirst<RawItemResult>(query, [id]);
+    
+    if (!rawResult) {
+      return null;
+    }
+    
+    // parse the attributeValues JSON string into an array
+    const parsedValues = JSON.parse(rawResult.attributeValues);
+    
+    const result: ItemModel = {
+      itemID: rawResult.itemID,
+      collectionID: rawResult.collectionID,
+      category: rawResult.category,
+      values: parsedValues
+    };
+    
+    return ItemMapper.toDTO(result);
+  } catch (error) {
+    console.error('Error retrieving item by ID:', error);
+    throw error;
+  }
 };
 
 /**
