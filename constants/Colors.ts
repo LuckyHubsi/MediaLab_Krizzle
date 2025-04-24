@@ -71,7 +71,7 @@ export const Colors = {
     sage: "#49976B",
     gradientPink: ["#F46D6F", "#B81CA3"],
     gradientRed: ["#FA995D", "#E92529"],
-    gradientBlue: ["#583FE7", "#4599E8"],
+    gradientBlue: ["#583FE7", "#4599E9"],
     gradientGreen: ["#1CA870", "#4AE7A8"],
     gradientPurple: ["#664DBD", "#E845D2"],
   },
