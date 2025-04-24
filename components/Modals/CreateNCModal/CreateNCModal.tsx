@@ -59,7 +59,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
               <OptionButton
                 onPress={() => {
                   onClose();
-                  router.push("/addCollectionItem");
+                  router.push("/createCollection");
                 }}
                 colorScheme={colorScheme}
               >
