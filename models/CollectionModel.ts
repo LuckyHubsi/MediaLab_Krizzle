@@ -5,8 +5,6 @@ import { GeneralPageModel } from "./GeneralPageModel";
  */
 export type CollectionModel = GeneralPageModel & {
   collectionID: number;
-  item_templateID: number;
-  template_name: string;
+  templateID: number;
   categories: string;
-  attributes: string;
 };

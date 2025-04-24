@@ -17,6 +17,7 @@ import { insertAttribute, insertMultiselectOptions } from "./AttributeService";
 import { insertCollectionCategory } from "./CollectionCategoriesService";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { DatabaseError } from "@/utils/DatabaseError";
+import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 
 /**
  * Retrieves a collection associated with a specific page.
@@ -57,7 +58,7 @@ const insertCollectionAndReturnID = async (
     const collectionID = await executeTransaction<number>(async () => {
       await executeQuery(insertCollection, [
         collectionDTO.pageID,
-        collectionDTO.template.item_templateID,
+        collectionDTO.templateID,
       ]);
 
       // get inserted collection ID
@@ -94,6 +95,7 @@ const insertCollectionAndReturnID = async (
  */
 export const saveCollection = async (
   collectionDTO: CollectionDTO,
+  templateDTO: ItemTemplateDTO,
 ): Promise<void> => {
   try {
     console.log(JSON.stringify(collectionDTO));
@@ -105,13 +107,11 @@ export const saveCollection = async (
       }
 
       // 2. Insert Template and get template ID
-      const templateID = await insertItemTemplateAndReturnID(
-        collectionDTO.template,
-      );
+      const templateID = await insertItemTemplateAndReturnID(templateDTO);
 
       // 3. Insert Attributes for the template and possibly multiselect options
-      if (collectionDTO.template.attributes) {
-        for (const attr of collectionDTO.template.attributes) {
+      if (templateDTO.attributes) {
+        for (const attr of templateDTO.attributes) {
           if (templateID) {
             attr.itemTemplateID = templateID;
             await insertAttribute(attr);
@@ -132,7 +132,7 @@ export const saveCollection = async (
 
       // 4. Insert Collection and get collection ID
       if (templateID) {
-        collectionDTO.template.item_templateID = templateID;
+        collectionDTO.templateID = templateID;
       }
       const collectionID = await insertCollectionAndReturnID(collectionDTO);
 
@@ -148,6 +148,11 @@ export const saveCollection = async (
 
       return pageID;
     });
+
+    if (pageID) {
+      const collection = await getCollectionByPageId(pageID);
+      console.log("Retrieved collection: ", collection);
+    }
   } catch (error) {
     new DatabaseError("Failed to create a new collection", error);
   }
