@@ -16,8 +16,12 @@ export default function AddListsScreen() {
     setCards((prevCards) => [...prevCards, newCard]);
   };
 
+  // const handleNext = () => {
+  //   route.push("./collectionPage");
+  // };
+
   const handleNext = () => {
-    route.push("./collectionPage");
+    route.push("./collectionTemplate");
   };
 
   return (

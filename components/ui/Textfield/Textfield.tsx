@@ -11,8 +11,10 @@ import { Colors } from "@/constants/Colors";
 
 interface TextfieldProps {
   title: string;
+  showTitle?: boolean;
   placeholderText: string;
   editable?: boolean;
+  textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
   //   onChangeText: (text: string) => void;
   //   value: string;
 }
@@ -21,6 +23,8 @@ const Textfield: FC<TextfieldProps> = ({
   title,
   placeholderText,
   editable = true,
+  showTitle = true,
+  textfieldIcon = "short-text",
   // onChangeText,
   //  value
 }) => {
@@ -29,10 +33,10 @@ const Textfield: FC<TextfieldProps> = ({
 
   return (
     <TextfieldContainter>
-      <ThemedText fontWeight="regular">{title}</ThemedText>
+      {showTitle ? <ThemedText fontWeight="regular">{title}</ThemedText> : null}
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
-          name="short-text"
+          name={textfieldIcon}
           size={20}
           color={colorScheme === "light" ? "#333" : "#ccc"}
         />

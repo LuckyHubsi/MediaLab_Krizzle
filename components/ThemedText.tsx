@@ -6,20 +6,24 @@ import { Lexend_700Bold } from "@expo-google-fonts/lexend/700Bold";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 
+import { Colors } from "@/constants/Colors";
+
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   fontWeight?: "light" | "regular" | "semibold" | "bold";
   fontSize?: "regular" | "xxl" | "xl" | "s";
-  colorVariant?: "default" | "red" | "grey" | "white";
+  colorVariant?: "default" | "red" | "grey" | "white" | "lightGrey" | "primary";
 };
 
 const colorVariants = {
   default: (lightColor?: string, darkColor?: string) =>
     useThemeColor({ light: lightColor, dark: darkColor }, "text"),
-  red: () => "#FF4949",
-  grey: () => "#585858",
-  white: () => "#FFFFFF",
+  red: () => Colors.negative,
+  grey: () => Colors.grey100,
+  lightGrey: () => Colors.grey50,
+  white: () => Colors.white,
+  primary: () => Colors.primary,
 };
 
 export function ThemedText({
