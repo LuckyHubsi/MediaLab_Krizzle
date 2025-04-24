@@ -1,26 +1,47 @@
-import React from "react";
-import TextEditor from "@/components/TextEditor/TextEditor";
-import { ThemedText } from "@/components/ThemedText";
+import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { router, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
-import { ModalSelection } from "@/components/ui/ModalSelection/ModalSelection";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
+import { getCollectionByPageId } from "@/services/CollectionService";
+import { CollectionDTO } from "@/dto/CollectionDTO";
 
 export default function CollectionScreen() {
-  const { title, selectedIcon } = useLocalSearchParams<{
+  const router = useRouter();
+  const { pageId, title, selectedIcon } = useLocalSearchParams<{
+    pageId: string;
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   }>();
 
-  const navigation = useNavigation();
+  const [collection, setCollection] = useState<CollectionDTO>();
+  const [listNames, setListNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    async () => {
+      const numericID = Number(pageId);
+      if (!isNaN(numericID)) {
+        const collectionData = await getCollectionByPageId(numericID);
+        if (collectionData) {
+          setCollection(collectionData);
+          if (collection?.categories) {
+            const listNames = [];
+            for (const list of collection.categories) {
+              listNames.push(list.category_name);
+            }
+            setListNames(listNames);
+          }
+        }
+      }
+    };
+  }, [pageId]);
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -38,7 +59,7 @@ export default function CollectionScreen() {
             onSearch={(text) => console.log(text)}
           />
           <CollectionList
-            collectionLists={["List 1", "List 2", "List 3", "List 4"]}
+            collectionLists={listNames}
             onPress={() => console.log("Pressed!")}
           />
           <CollectionWidget
