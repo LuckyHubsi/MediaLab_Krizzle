@@ -47,7 +47,7 @@ export const Colors = {
     pillBackground: "#3D3D3D",
     ToolbarBarBackground: "#FBFBFB",
     ToolbarBarButtonBackground: "#2A2A2A",
-    ToolbarBarButtonBackgroundActive: "#3e5b75",
+    ToolbarBarButtonBackgroundActive: "#10598C",
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
     textFieldBorder: "#ffffff",
     placeholder: "#ABABAB",
