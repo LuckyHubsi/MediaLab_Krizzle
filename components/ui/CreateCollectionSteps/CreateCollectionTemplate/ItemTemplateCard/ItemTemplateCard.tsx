@@ -16,19 +16,20 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
+  itemType: string;
+  textfieldIcon: keyof typeof MaterialIcons.glyphMap;
+  isPreview: boolean;
 }
 
-const ItemTemplateCard: FC<ItemTemplateCardProps> = ({ isTitleCard }) => {
+const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
+  isTitleCard,
+  itemType,
+  textfieldIcon,
+  isPreview,
+}) => {
   const colorScheme = useColorScheme();
 
-  const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
-    "short-text",
-    "calendar-today",
-    "layers",
-  ];
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
-  const isPreview = true;
-
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
 
   return (
@@ -65,21 +66,32 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({ isTitleCard }) => {
       </CardTitleRow>
       <>
         <RNPickerSelect
-          style={pickerStyles}
           onValueChange={() => {}}
-          items={typeArray
-            .filter((item) => item !== "item")
-            .map((item) => ({
-              label: item,
-              value: item,
-            }))}
-          placeholder={{ label: "Select an option...", value: null }}
-          Icon={() => <MaterialIcons name="arrow-drop-down" size={24} />}
+          style={pickerStyles}
+          value={isTitleCard ? typeArray[1] : undefined}
+          items={
+            isTitleCard
+              ? [
+                  {
+                    label: "Text",
+                    value: "text",
+                  },
+                ]
+              : typeArray
+                  .filter((item) => item !== "item")
+                  .map((item) => ({
+                    label: item,
+                    value: item,
+                  }))
+          }
+          {...(!isTitleCard && {
+            Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
+          })}
         />
         <Textfield
           showTitle={false}
-          textfieldIcon={textfieldIconArray[1]}
-          placeholderText={`Add a title to your ${typeArray[4]}`}
+          textfieldIcon={textfieldIcon}
+          placeholderText={`Add a title to your ${itemType}`}
           title={""}
         />
       </>

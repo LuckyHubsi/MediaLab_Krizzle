@@ -23,6 +23,12 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const itemTypeCount = 3;
   const itemPreviewCount = 3;
   const colorScheme = useColorScheme();
+  const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
+    "short-text",
+    "calendar-today",
+    "layers",
+  ];
+  const typeArray = ["item", "text", "date", "multi-select", "rating"];
 
   return (
     <>
@@ -45,7 +51,12 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         </ItemCount>
       </ItemCountContainer>
 
-      <ItemTemplateCard isTitleCard={true} />
+      <ItemTemplateCard
+        isTitleCard={true}
+        itemType={typeArray[0]}
+        textfieldIcon={textfieldIconArray[0]}
+        isPreview={true}
+      />
 
       <AddButton onPress={undefined} />
 
