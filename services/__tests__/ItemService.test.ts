@@ -56,6 +56,12 @@ describe('ItemService', () => {
                         attributeLabel: 'Published',
                         attributeType: 'date',
                         value: '2025-04-24'
+                    },
+                    {
+                        attributeID: 3,
+                        attributeLabel: 'Genre',
+                        attributeType: 'date',
+                        value: '[Fantasy, Romance]'
                     }
                 ])
             };
@@ -76,6 +82,12 @@ describe('ItemService', () => {
                         attributeLabel: 'Published',
                         attributeType: 'date',
                         value: '2025-04-24'
+                    },
+                    {
+                        attributeID: 3,
+                        attributeLabel: 'Genre',
+                        attributeType: 'date',
+                        value: '[Fantasy, Romance]'
                     }
                 ]
             };
@@ -96,6 +108,12 @@ describe('ItemService', () => {
                         attributeLabel: 'Published',
                         attributeType: 'date',
                         value: '2025-04-24'
+                    },
+                    {
+                        attributeID: 3,
+                        attributeLabel: 'Genre',
+                        attributeType: 'date',
+                        value: '[Fantasy, Romance]'
                     }
                 ]
             };
