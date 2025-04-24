@@ -8,6 +8,7 @@ export const SearchContainer = styled.View`
   border-radius: 33px;
   padding: 16px 20px;
   width: 100%;
+  height: 56px;
   gap: 6px;
 `;
 
