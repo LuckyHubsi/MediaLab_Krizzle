@@ -5,13 +5,19 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Button } from "@/components/ui/Button/Button";
 import { Header } from "@/components/ui/Header/Header";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
+import { useRouter } from "expo-router";
 
 export default function AddListsScreen() {
   const [cards, setCards] = useState([{ id: Date.now().toString() }]);
+  const route = useRouter();
 
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString() };
     setCards((prevCards) => [...prevCards, newCard]);
+  };
+
+  const handleNext = () => {
+    route.push("./collectionPage");
   };
 
   return (
@@ -50,7 +56,7 @@ export default function AddListsScreen() {
             right: 20,
           }}
         >
-          <Button>Next</Button>
+          <Button onPress={handleNext}>Next</Button>
         </View>
       </ThemedView>
     </SafeAreaView>
