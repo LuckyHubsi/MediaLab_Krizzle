@@ -27,6 +27,8 @@ export const getPickerStyles = ({
   const textColor = colorScheme === "dark" ? Colors.dark.text : Colors.black;
   const borderColor = Colors.grey50;
   const iosModalColor = colorScheme === "dark" ? Colors.black : Colors.grey25;
+  const placeholderColor =
+    colorScheme === "dark" ? Colors.grey25 : Colors.grey100;
 
   return {
     inputIOS: {
@@ -66,7 +68,7 @@ export const getPickerStyles = ({
       backgroundColor: iosModalColor,
     },
     placeholder: {
-      color: Colors.grey100, // or whichever color you meant instead of `grey1ßß`
+      color: placeholderColor,
     },
   };
 };
