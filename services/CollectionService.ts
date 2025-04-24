@@ -1,4 +1,3 @@
-// CollectionService.ts
 import { CollectionDTO } from '@/dto/CollectionDTO';
 import { CollectionModel } from '@/models/CollectionModel';
 import { insertAttribute } from '@/queries/AttributeQuery';
@@ -26,10 +25,24 @@ import { insertGeneralPageAndReturnID } from './GeneralPageService';
  * @returns {Promise<CollectionDTO[]>} A promise that resolves to an array of CollectionDTO objects.
  */
 const getCollectionByPageId = async (pageID: number): Promise<CollectionDTO | null> => {
-    const collection = await fetchFirst<CollectionModel>(collectionSelectByPageIdQuery, [pageID]);
-    if (!collection) return null;
-
-    return CollectionMapper.toDTO(collection);
+    try {
+        const collection = await fetchFirst<CollectionModel>(collectionSelectByPageIdQuery, [pageID]);
+        if (!collection) return null;
+        
+        // parse JSON strings
+        if (typeof collection.attributes === 'string') {
+            collection.attributes = JSON.parse(collection.attributes);
+        }
+        
+        if (typeof collection.categories === 'string') {
+            collection.categories = JSON.parse(collection.categories);
+        }
+        
+        return CollectionMapper.toDTO(collection);
+    } catch (error) {
+        console.error("Error retrieving collection by page ID:", error);
+        return null;
+    }
 };
 
 /**
@@ -91,6 +104,7 @@ export const saveAndRetrieveCollection = async (collectionDTO: CollectionDTO): P
             await executeQuery(insertAttribute, [
               attr.attributeLabel,
               attr.attributeType,
+              attr.options,
               attr.preview ? 1 : 0,
               collectionDTO.template.item_templateID
             ]);
@@ -100,8 +114,8 @@ export const saveAndRetrieveCollection = async (collectionDTO: CollectionDTO): P
   
       // 4. Insert into collection table
       await executeQuery(insertCollection, [
-        collectionDTO.template.item_templateID,
-        pageID
+        pageID,
+        collectionDTO.template.item_templateID
       ]);
   
       // 5. Fetch collection by page ID (with all joins)
