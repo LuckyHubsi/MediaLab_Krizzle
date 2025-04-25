@@ -23,9 +23,62 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 }) => {
   const colorScheme = useColorScheme();
   const [selectedList, setSelectedList] = useState("");
+  const [listStrings, setListStrings] = useState<string[]>([]);
 
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
+  };
+
+  useEffect(() => {
+    const listArray: string[] = [];
+    lists.forEach((list) => {
+      listArray.push(list.category_name);
+    });
+    setListStrings(listArray);
+  }, [lists]);
+
+  const renderRepresentation = () => {
+    const elements: React.ReactNode[] = [];
+    if (attributes) {
+      attributes.forEach((attribute) => {
+        switch (attribute.type) {
+          case AttributeType.Text:
+            elements.push(
+              <Textfield
+                title={attribute.attributeLabel}
+                placeholderText="Add text here"
+              />,
+            );
+            break;
+          case AttributeType.Date:
+            elements.push(<DateField title={attribute.attributeLabel} />);
+            break;
+          case AttributeType.Rating:
+            elements.push(
+              <RatingPicker
+                title={attribute.attributeLabel}
+                selectedIcon="star"
+              />,
+            );
+            break;
+          case AttributeType.Multiselect:
+            if (attribute.options) {
+              elements.push(
+                <MultiSelectPicker
+                  title={attribute.attributeLabel}
+                  multiselectArray={attribute.options}
+                  selectedTag={null}
+                  onSelectTag={() => {}}
+                />,
+              );
+            }
+            break;
+          default:
+            break;
+        }
+      });
+    }
+    return elements;
   };
 
   return (
@@ -36,26 +89,13 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* get correct list */}
         <CollectionListDropdown
           title={"Select a List"}
-          collectionList={["list 1", "list 2", "list 3"]}
+          collectionList={listStrings}
           selectedList={selectedList}
           onSelectionChange={handleSelectionChange}
         />
-        {/* Get correct textfield title */}
-        <Textfield title="Textfield Title" placeholderText="Add text here" />
-        {/* Get correct datefield title */}
-        <DateField title="Date Field" />
-        {/* Get correct multi select */}
-        <MultiSelectPicker
-          title="MultiSelect Title"
-          multiselectArray={["scifi", "fantasy", "horror"]}
-          selectedTag={null}
-          onSelectTag={() => {}}
-        />
-        {/* Get correct rating */}
-        <RatingPicker title={"Rating"} selectedIcon="star" />
+        {renderRepresentation()}
       </ScrollView>
     </StyledCardWrapper>
   );
