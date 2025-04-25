@@ -17,7 +17,7 @@ interface CreateCollectionTemplateProps {
 const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   title,
 }) => {
-  const itemPreviewCount = 3;
+  const maxPreviewCount = 3;
   const colorScheme = useColorScheme();
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
     "short-text",
@@ -39,10 +39,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         return "short-text";
     }
   };
-  const [cards, setCards] = useState<{ id: number; itemType: string }[]>([]);
+  const [cards, setCards] = useState<
+    { id: number; itemType: string; isPreview: boolean }[]
+  >([]);
+
   const handleAddCard = () => {
     if (cards.length >= 10) return;
-    setCards((prev) => [...prev, { id: prev.length, itemType: "text" }]);
+    setCards((prev) => [
+      ...prev,
+      { id: prev.length, itemType: "text", isPreview: false },
+    ]);
+  };
+
+  const previewCount = cards.filter((card) => card.isPreview).length + 1;
+  const handlePreviewToggle = (cardId: number) => {
+    setCards((prev) =>
+      prev.map((card) => {
+        if (card.id === cardId) {
+          if (card.isPreview && previewCount <= maxPreviewCount) {
+            return { ...card, isPreview: false };
+          }
+
+          if (!card.isPreview && previewCount < maxPreviewCount) {
+            return { ...card, isPreview: true };
+          }
+
+          return card;
+        }
+        return card;
+      }),
+    );
   };
 
   return (
@@ -59,7 +85,9 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </ItemCount>
         <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={"primary"}>{itemPreviewCount}</ThemedText>
+          <ThemedText colorVariant={previewCount < 3 ? "primary" : "red"}>
+            {previewCount}
+          </ThemedText>
           <ThemedText
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
           >
@@ -77,11 +105,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
         <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
 
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <ItemTemplateCard
             key={card.id}
             isTitleCard={false}
-            isPreview={false}
+            isPreview={card.isPreview}
             itemType={card.itemType}
             textfieldIcon={getIconForType(card.itemType)}
             onTypeChange={(newType) => {
@@ -94,6 +122,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             onRemove={() => {
               setCards((prev) => prev.filter((c) => c.id !== card.id));
             }}
+            onPreviewToggle={() => handlePreviewToggle(card.id)}
           />
         ))}
       </ScrollView>

@@ -22,6 +22,7 @@ interface ItemTemplateCardProps {
   isPreview: boolean;
   onTypeChange?: (value: string) => void;
   onRemove?: () => void;
+  onPreviewToggle?: () => void;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -31,11 +32,14 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   isPreview,
   onTypeChange,
   onRemove,
+  onPreviewToggle,
 }) => {
   const colorScheme = useColorScheme();
 
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
+
+  console.log(isPreview, "isPreview");
 
   return (
     <TemplateSelectCard colorScheme={colorScheme}>
@@ -52,7 +56,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             <ThemedText>Type</ThemedText>
           )}
         </CardTitle>
-        <CardPreview>
+        <CardPreview onPress={onPreviewToggle}>
           <ThemedText>Item Preview</ThemedText>
           {isPreview ? (
             <MaterialIcons
