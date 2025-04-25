@@ -96,6 +96,7 @@ export default function CreateNoteScreen() {
             <Header title="Create Note" onIconPress={() => alert("Popup!")} />
             <Widget
               title={title || "Title"}
+              pageType={PageType.Note}
               label={selectedTag ?? "No tag"}
               iconLeft={
                 <MaterialIcons name={selectedIcon} size={20} color="black" />

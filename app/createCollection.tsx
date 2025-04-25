@@ -106,6 +106,7 @@ export default function CreateCollectionScreen() {
             <Widget
               title={title || "Title"}
               label={selectedTag ?? "No tag"}
+              pageType={PageType.Collection}
               iconLeft={
                 <MaterialIcons name={selectedIcon} size={20} color="black" />
               }
