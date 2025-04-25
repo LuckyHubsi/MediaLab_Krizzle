@@ -12,7 +12,7 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   fontWeight?: "light" | "regular" | "semibold" | "bold";
-  fontSize?: "regular" | "xxl" | "xl" | "s";
+  fontSize?: "regular" | "xxl" | "xl" | "l" | "s";
   colorVariant?:
     | "default"
     | "red"
@@ -59,6 +59,7 @@ export function ThemedText({
         fontSize === "regular" ? fontSizeStyles.regular : undefined,
         fontSize === "xxl" ? fontSizeStyles.xxl : undefined,
         fontSize === "xl" ? fontSizeStyles.xl : undefined,
+        fontSize === "l" ? fontSizeStyles.l : undefined,
         fontSize === "s" ? fontSizeStyles.s : undefined,
         style,
       ]}
@@ -78,5 +79,6 @@ const fontSizeStyles = {
   regular: { fontSize: 16 },
   xxl: { fontSize: 32 },
   xl: { fontSize: 28 },
+  l: { fontSize: 24 },
   s: { fontSize: 14 },
 };
