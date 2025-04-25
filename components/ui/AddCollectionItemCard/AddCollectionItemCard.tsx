@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Textfield from "../Textfield/Textfield";
 import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./AddCollectionItemCard.styles";
@@ -7,10 +7,20 @@ import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
 import RatingPicker from "../RatingPicker/RatingPicker";
 import CollectionListDropdown from "../CollectionListDropdown/CollectionListDropdown";
 import { ScrollView } from "react-native";
+import { AttributeDTO } from "@/dto/AttributeDTO";
+import { AttributeType } from "@/utils/enums/AttributeType";
+import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import constructWithOptions from "styled-components/dist/constructors/constructWithOptions";
 
-interface AddCollectionItemProps {}
+interface AddCollectionItemProps {
+  attributes?: AttributeDTO[];
+  lists: CollectionCategoryDTO[];
+}
 
-const AddCollectionItemCard: FC<AddCollectionItemProps> = ({}) => {
+const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
+  attributes,
+  lists,
+}) => {
   const colorScheme = useColorScheme();
   const [selectedList, setSelectedList] = useState("");
 

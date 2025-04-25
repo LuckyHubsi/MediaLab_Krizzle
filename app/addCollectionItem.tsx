@@ -51,7 +51,7 @@ export default function AddCollectionItem() {
             onIconPress={() => alert("Popup!")}
           />
 
-          <AddCollectionItemCard />
+          <AddCollectionItemCard attributes={attributes} lists={lists} />
 
           {/* add correct function to discard/next */}
           <BottomButtons
