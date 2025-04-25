@@ -26,9 +26,9 @@ const CollectionList: React.FC<CollectionListProps> = ({
       style={{ maxHeight: 42 }}
     >
       <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
-        {collectionLists?.map((item, index) => (
-          <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
-            <CollectionListContainer colorScheme={colorScheme} key={index}>
+        {collectionLists?.map((item) => (
+          <TouchableOpacity key={item} activeOpacity={0.85} onPress={onPress}>
+            <CollectionListContainer colorScheme={colorScheme}>
               <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
                 <MaterialIcons
                   name="check-circle-outline"
@@ -36,7 +36,6 @@ const CollectionList: React.FC<CollectionListProps> = ({
                   color="#FFFFFF"
                   style={{ marginRight: 6 }}
                 />
-
                 <CollectionListText>
                   <Text>{item}</Text>
                 </CollectionListText>
