@@ -1,8 +1,12 @@
 import { Platform } from "react-native";
 import styled from "styled-components/native";
 
-export const StyledView = styled.View<{ backgroundColor: string }>`
-  padding: 20px 20px 0px 20px;
+export const StyledView = styled.View<{
+  backgroundColor: string;
+  topPadding: number;
+}>`
+  padding: ${({ topPadding }: { topPadding: number }) => `${topPadding}px`} 20px
+    0px 20px;
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
     backgroundColor};
   display: flex;

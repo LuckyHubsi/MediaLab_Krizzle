@@ -12,7 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface DateFieldProps {
-  title: string;
+  title?: string;
   editable?: boolean;
 }
 
