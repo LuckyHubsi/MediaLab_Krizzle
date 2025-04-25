@@ -19,14 +19,7 @@ export const PopupContainer = styled.View<{ colorScheme: "light" | "dark" }>`
   border-bottom-right-radius: 28px;
   overflow: hidden;
   align-items: center;
-  padding: 20px;
-`;
-
-export const CloseButton = styled.TouchableOpacity`
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 10;
+  padding: 20px 15px;
 `;
 
 export const PopupImage = styled.Image`
@@ -34,13 +27,6 @@ export const PopupImage = styled.Image`
   height: 240px;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
-`;
-
-export const PopupHeader = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
 `;
 
 export const PopupText = styled.Text`

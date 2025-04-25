@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
         style={{ flexDirection: "row", alignItems: "center" }}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
-        <ThemedText fontSize="xl" fontWeight="semibold">
+        <ThemedText fontSize="l" fontWeight="semibold">
           {title}
         </ThemedText>
       </TouchableOpacity>

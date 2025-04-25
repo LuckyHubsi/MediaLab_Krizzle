@@ -8,12 +8,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import {
   PopupBackdrop,
   PopupContainer,
-  PopupHeader,
   PopupText,
   PopupImage,
   CTAButton,
   CTAButtonText,
-  CloseButton,
 } from "./InfoModal.styles";
 import { useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
@@ -48,9 +46,6 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
       <TouchableWithoutFeedback onPress={onClose}>
         <PopupBackdrop>
           <PopupImage source={image} />
-          <CloseButton onPress={onClose}>
-            <MaterialIcons name="close" size={20} color={iconColor} />
-          </CloseButton>
           <PopupContainer>
             <View style={{ marginBottom: 10 }}>
               <ThemedText fontSize="regular" fontWeight="bold">

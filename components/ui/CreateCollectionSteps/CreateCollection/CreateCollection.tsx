@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { router } from "expo-router";
-import { useColorScheme, View } from "react-native";
+import { TouchableOpacity, useColorScheme, View } from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
@@ -27,6 +27,8 @@ import {
   ButtonContainer,
 } from "./CreateCollection.styles";
 import { de } from "date-fns/locale";
+import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 const CreateCollection: FC = () => {
   const colorScheme = useColorScheme();
@@ -39,9 +41,10 @@ const CreateCollection: FC = () => {
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
-
+  const [showHelp, setShowHelp] = useState(false);
   const tags = ["Work", "Personal", "Urgent", "Ideas"];
-
+  const iconColor =
+    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
@@ -104,6 +107,15 @@ const CreateCollection: FC = () => {
       <ScrollContainer>
         <ContentWrapper>
           <Card>
+            <IconTopRight>
+              <TouchableOpacity onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={iconColor}
+                />
+              </TouchableOpacity>
+            </IconTopRight>
             <View style={{ alignItems: "center" }}>
               <Header
                 title="Create Collection"
@@ -238,6 +250,15 @@ const CreateCollection: FC = () => {
         onClose={() => setPopupVisible(false)}
         onDone={() => setPopupVisible(false)}
       />
+      {showHelp && (
+        <InfoPopup
+          visible={showHelp}
+          onClose={() => setShowHelp(false)}
+          image={require("@/assets/images/collection-guide.png")}
+          title="What is a Collection?"
+          description={`Collections let you group related Lists into a single custom page — perfect\u00A0for organizing similar Items together in one\u00A0place.\n\nFor example, you could create a Collection for your Books, add a special icon to make it stand out, and even use tags to keep things\u00A0organized.\nSimple! 📚`}
+        />
+      )}
     </>
   );
 };

@@ -7,7 +7,7 @@ export const StyledHeader = styled.View<{ colorScheme: "light" | "dark" }>`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 0 10px 0;
+  padding: 0 0 20px 0;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].cardBackground};
 `;
