@@ -15,14 +15,16 @@ function itemSelectByIdQuery(itemId: number): string {
                 'attributeLabel', a.attribute_label,
                 'attributeType', a.type,
                 'value', CASE 
-                    WHEN a.type = 'text' THEN (SELECT value FROM text WHERE attributeID = a.attributeID AND itemID = i.itemID)
-                    WHEN a.type = 'date' THEN (SELECT value FROM date WHERE attributeID = a.attributeID AND itemID = i.itemID)
-                    WHEN a.type = 'rating' THEN (SELECT value FROM rating WHERE attributeID = a.attributeID AND itemID = i.itemID)
+                    WHEN a.type = 'text' THEN t.value
+                    WHEN a.type = 'date' THEN d.value
+                    WHEN a.type = 'rating' THEN r.value
                     WHEN a.type = 'multiselect' THEN (
-                        SELECT mo.options
+                        SELECT json_group_array(
+                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
+                        )
                         FROM multiselect ms
-                        JOIN multiselect_options mo ON ms.multiselectID = mo.multiselectID
-                        WHERE ms.itemID = i.itemID AND ms.attributeID = a.attributeID
+                        JOIN multiselect_options mo ON mo.multiselectID = ms.multiselectID
+                        WHERE ms.attributeID = a.attributeID AND ms.itemID = i.itemID
                     )
                     ELSE NULL
                 END,
@@ -40,9 +42,12 @@ function itemSelectByIdQuery(itemId: number): string {
         ) AS attributeValues
     FROM item i
     JOIN collection c ON i.collectionID = c.collectionID
-    LEFT JOIN collection_category cc on i.category = cc.category_name
     JOIN item_template it ON c.item_templateID = it.item_templateID
     JOIN attribute a ON it.item_templateID = a.item_templateID
+    LEFT JOIN collection_category cc on i.category = cc.category_name
+    LEFT JOIN text t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
+    LEFT JOIN date d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
+    LEFT JOIN rating r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
     WHERE i.itemID = ?
     GROUP BY i.itemID
   `;
