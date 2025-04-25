@@ -85,7 +85,7 @@ export default function CreateNoteScreen() {
 
     const id = await insertNote(noteDTO);
     console.log("Note created with ID:", id);
-    router.push({ pathname: "/notePage", params: { id, title } });
+    router.replace({ pathname: "/notePage", params: { id, title } });
   };
 
   return (

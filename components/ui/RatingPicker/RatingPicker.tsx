@@ -8,8 +8,8 @@ import {
 import { Colors } from "@/constants/Colors";
 
 interface RatingPickerProps {
-  title: string;
-  selectedIcon: keyof typeof MaterialIcons.glyphMap;
+  title?: string;
+  selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   outlinedIcon?: keyof typeof MaterialIcons.glyphMap;
   editable?: boolean;
 }

@@ -105,7 +105,7 @@ export default function NotesScreen() {
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
-              router.navigate("/");
+              router.replace("/");
             } catch (error) {
               console.error("Error deleting note:", error);
             }

@@ -57,6 +57,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         style={{ flexDirection: "row", alignItems: "center" }}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
+
         <ThemedText fontSize="xl" fontWeight="semibold">
           {title}
         </ThemedText>

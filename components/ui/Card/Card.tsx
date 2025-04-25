@@ -20,3 +20,5 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
     </StyledCard>
   );
 };
+
+export default Card;

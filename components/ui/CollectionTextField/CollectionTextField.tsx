@@ -3,13 +3,13 @@ import {
   InputWrapper,
   StyledTextInput,
   TextfieldContainter,
-} from "./Textfield.styles";
+} from "./CollectionTextField.style";
 import { FC, SetStateAction, useState } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 
-interface TextfieldProps {
+interface CollectionTextfieldProps {
   title?: string;
   placeholderText?: string;
   editable?: boolean;
@@ -17,7 +17,7 @@ interface TextfieldProps {
   //   value: string;
 }
 
-const Textfield: FC<TextfieldProps> = ({
+const CollectionTextfield: FC<CollectionTextfieldProps> = ({
   title,
   placeholderText,
   editable = true,
@@ -31,19 +31,16 @@ const Textfield: FC<TextfieldProps> = ({
     <TextfieldContainter>
       <ThemedText fontWeight="regular">{title}</ThemedText>
       <InputWrapper colorScheme={colorScheme}>
-        <MaterialIcons
-          name="short-text"
-          size={20}
-          color={colorScheme === "light" ? "#333" : "#ccc"}
-        />
         <StyledTextInput
           colorScheme={colorScheme}
           editable={editable}
+          multiline={true} // Enable multiline input
+          textAlignVertical="top" // Align text to the top
+          placeholderTextColor={
+            colorScheme === "light" ? Colors.black : Colors.white
+          }
           //   onChangeText={onChangeText}
           //   value={value}
-          placeholderTextColor={
-            colorScheme === "light" ? Colors.grey100 : Colors.grey50
-          }
           placeholder={placeholderText}
         />
       </InputWrapper>
@@ -51,4 +48,4 @@ const Textfield: FC<TextfieldProps> = ({
   );
 };
 
-export default Textfield;
+export default CollectionTextfield;

@@ -66,6 +66,10 @@ export default function RootLayout() {
             name="addCollectionItem"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="collectionItemPage"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
