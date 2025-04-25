@@ -50,7 +50,7 @@ export default function HomeScreen() {
     title: string;
     tag: string;
     page_icon?: string;
-    page_type?: string;
+    page_type: PageType;
     color?: string;
     [key: string]: any;
   }
@@ -85,6 +85,7 @@ export default function HomeScreen() {
         title: widget.page_title,
         tag: widget.tag?.tag_label || "Uncategorized",
         color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
+        page_type: widget.page_type,
         iconLeft: widget.page_icon
           ? getMaterialIcon(widget.page_icon)
           : undefined,
@@ -127,6 +128,16 @@ export default function HomeScreen() {
   useEffect(() => {
     console.log("All widgets:", widgets);
   }, [widgets]);
+
+  const goToPage = (widget: Widget) => {
+    const path =
+      widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
+
+    router.push({
+      pathname: path,
+      params: { id: widget.id, title: widget.title },
+    });
+  };
 
   return (
     <>
@@ -178,11 +189,9 @@ export default function HomeScreen() {
                         iconLeft={item.iconLeft}
                         iconRight={item.iconRight}
                         color={item.color as keyof typeof Colors.widget}
+                        pageType={item.page_type}
                         onPress={() => {
-                          router.push({
-                            pathname: "/notePage",
-                            params: { id: item.id, title: item.title },
-                          });
+                          goToPage(item);
                         }}
                         onLongPress={() => {
                           setWidgetToDelete(item);

@@ -9,6 +9,7 @@ import {
   CardSolid,
   CardGradient,
 } from "./Widget.style";
+import { PageType } from "@/utils/enums/PageType";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -18,6 +19,7 @@ type Props = {
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
   color: ColorKey;
+  pageType: PageType;
   onPress?: () => void;
   onLongPress?: () => void;
 };
@@ -28,6 +30,7 @@ const Widget: React.FC<Props> = ({
   iconLeft,
   iconRight,
   color,
+  pageType,
   onPress,
   onLongPress,
 }) => {
