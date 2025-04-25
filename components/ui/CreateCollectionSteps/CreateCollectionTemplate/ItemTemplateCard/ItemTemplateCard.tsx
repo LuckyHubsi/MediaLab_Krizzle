@@ -15,6 +15,7 @@ import { getPickerStyles } from "@/components/ui/CollectionListDropdown/Collecti
 import { useColorScheme } from "@/hooks/useColorScheme";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
+import AddMultiSelectables from "./AddMultiSelectables";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -102,11 +103,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           title={""}
         />
         {itemType === "rating" && <TemplateRating title={"Rating Icon"} />}
-        {itemType === "multi-select" && (
-          <ThemedText colorVariant="grey" fontSize="s">
-            Multiselect
-          </ThemedText>
-        )}
+        {itemType === "multi-select" && <AddMultiSelectables title="" />}
         {!isTitleCard && <RemoveButton onPress={onRemove} />}
       </>
     </TemplateSelectCard>
