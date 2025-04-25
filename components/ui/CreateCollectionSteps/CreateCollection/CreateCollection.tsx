@@ -93,6 +93,13 @@ const CreateCollection: FC = () => {
   //     router.replace({ pathname: "/notePage", params: { id, title } });
   //   };
 
+  const nextPage = () => {
+    router.push({
+      pathname: "/addLists",
+      params: { title, selectedTag, selectedIcon, selectedColor },
+    });
+  };
+
   return (
     <>
       <ScrollContainer>
@@ -185,8 +192,13 @@ const CreateCollection: FC = () => {
           </TwoColumnRow>
 
           <ButtonContainer>
-            <Button onPress={() => console.log("Collection created")}>
-              Create
+            <Button
+              onPress={() => {
+                console.log("Collection created");
+                nextPage();
+              }}
+            >
+              Next
             </Button>
           </ButtonContainer>
         </ContentWrapper>
