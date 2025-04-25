@@ -22,7 +22,7 @@ export const Colors = {
     tabBarBackgroundColor: "rgba(255, 255, 255, 0.85)",
     searchBarBackground: "#EEE",
     searchBarPlaceholder: "#687076",
-    cardBackground: "#FBFBFB",
+    cardBackground: "#FFFFFF",
     cardShadowColor: "#000",
     pillBackground: "#EAEAEA",
     ToolbarBarBackground: "#FBFBFB",

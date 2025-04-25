@@ -11,20 +11,6 @@ export const StyledChooseCard = styled.View<{ colorScheme: "light" | "dark" }>`
     Colors[colorScheme].cardBackground};
   border-radius: 33px;
   position: relative;
-
-  /* iOS Shadows */
-  shadow-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].cardShadowColor};
-  shadow-offset: 0px 0px;
-  shadow-opacity: 0.05;
-  shadow-radius: 20px;
-
-  /* Android Shadow (Elevation) */
-  ${Platform.select({
-    android: `
-        elevation: 8;
-      `,
-  })}
 `;
 
 export const EditButton = styled.View`

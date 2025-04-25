@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
+import { Platform } from "react-native";
 
 export const StyledButtonContainer = styled.TouchableHighlight.attrs({
   underlayColor: Colors.light.buttonPressed,
@@ -12,7 +13,7 @@ export const StyledButtonContainer = styled.TouchableHighlight.attrs({
   justify-content: center;
   align-items: center;
   position: absolute;
-  bottom: 32px;
+  bottom: ${Platform.OS === "ios" ? "48px" : "25px"};
   right: 15px;
   align-self: center;
 `;
