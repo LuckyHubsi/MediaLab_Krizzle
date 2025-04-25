@@ -16,7 +16,7 @@ export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
   font-size: 24px;
   color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "black" : "white"};
-  margin-right: 15px;
+  margin-right: 7px;
   margin-top: 5px;
-  margin-left: 5px;
+  margin-left: 2px;
 `;
