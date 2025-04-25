@@ -13,6 +13,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { getPickerStyles } from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -20,6 +21,7 @@ interface ItemTemplateCardProps {
   textfieldIcon: keyof typeof MaterialIcons.glyphMap;
   isPreview: boolean;
   onTypeChange?: (value: string) => void;
+  onRemove?: () => void;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -28,6 +30,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   textfieldIcon,
   isPreview,
   onTypeChange,
+  onRemove,
 }) => {
   const colorScheme = useColorScheme();
 
@@ -93,6 +96,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           placeholderText={`Add a title to your ${itemType}`}
           title={""}
         />
+        {!isTitleCard && <RemoveButton onPress={onRemove} />}
       </>
     </TemplateSelectCard>
   );

@@ -91,6 +91,9 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 ),
               );
             }}
+            onRemove={() => {
+              setCards((prev) => prev.filter((c) => c.id !== card.id));
+            }}
           />
         ))}
       </ScrollView>
