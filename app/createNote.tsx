@@ -13,6 +13,8 @@ import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import {
   colorLabelMap,
   colorKeyMap,
@@ -23,6 +25,7 @@ import { NoteDTO } from "@/dto/NoteDTO";
 import { PageType } from "@/utils/enums/PageType";
 import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -93,27 +96,27 @@ export default function CreateNoteScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Card>
-            <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-            <Widget
-              title={title || "Title"}
-              label={selectedTag ?? "No tag"}
-              iconLeft={
-                <MaterialIcons name={selectedIcon} size={20} color="black" />
-              }
-              iconRight={
-                <MaterialIcons name="description" size={20} color="black" />
-              }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "blue"
-              }
-            />
-          </Card>
+        <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <Card>
+              <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+              <Widget
+                title={title || "Title"}
+                label={selectedTag ?? "No tag"}
+                iconLeft={
+                  <MaterialIcons name={selectedIcon} size={20} color="black" />
+                }
+                iconRight={
+                  <MaterialIcons name="description" size={20} color="black" />
+                }
+                color={
+                  (getWidgetColorKey(
+                    selectedColor,
+                  ) as keyof typeof Colors.widget) || "blue"
+                }
+              />
+            </Card>
 
-          <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
             <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
               <Card>
                 <TitleCard
@@ -156,7 +159,11 @@ export default function CreateNoteScreen() {
                 <View style={{ flex: 1 }}>
                   <ChooseCard
                     label={selectedIconLabel}
-                    selectedColor={selectedColor}
+                    selectedColor={
+                      useColorScheme() === "dark"
+                        ? Colors.dark.cardBackground
+                        : Colors.light.cardBackground
+                    }
                     selectedIcon={selectedIcon}
                     onPress={() => {
                       setPopupType("icon");
@@ -166,9 +173,17 @@ export default function CreateNoteScreen() {
                 </View>
               </View>
             </View>
-          </ScrollView>
-        </View>
-
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+            }}
+          >
+            <Button onPress={createNote}>Create</Button>
+          </View>
+        </ScrollView>
         <ChoosePopup
           visible={popupVisible}
           type={popupType}
@@ -195,18 +210,6 @@ export default function CreateNoteScreen() {
           onClose={() => setPopupVisible(false)}
           onDone={() => setPopupVisible(false)}
         />
-
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 20,
-            right: 20,
-            width: "100%",
-          }}
-        >
-          <Button onPress={createNote}>Create</Button>
-        </View>
       </ThemedView>
     </SafeAreaView>
   );

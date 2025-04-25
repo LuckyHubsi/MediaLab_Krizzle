@@ -3,6 +3,7 @@ import { Colors } from "@/constants/Colors";
 
 export const Container = styled.View`
   width: 100%;
+  gap: 8px;
 `;
 
 export const Label = styled.Text<{ colorScheme: "light" | "dark" }>`
@@ -48,4 +49,10 @@ export const StyledTitleInput = styled.TextInput<{
   font-family: Lexend;
   color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "#000" : "#fff"};
+`;
+
+export const TextAlignRight = styled.View`
+  width: 100%;
+  align-items: flex-end;
+  position: absolute;
 `;

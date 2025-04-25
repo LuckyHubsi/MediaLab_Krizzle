@@ -15,8 +15,8 @@ interface TextfieldProps {
   placeholderText: string;
   editable?: boolean;
   textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
-  //   onChangeText: (text: string) => void;
-  //   value: string;
+  onChangeText: (text: string) => void;
+  value: string;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -25,10 +25,9 @@ const Textfield: FC<TextfieldProps> = ({
   editable = true,
   showTitle = true,
   textfieldIcon = "short-text",
-  // onChangeText,
-  //  value
+  onChangeText,
+  value,
 }) => {
-  const [value, onChangeText] = useState(placeholderText);
   const colorScheme = useColorScheme();
 
   return (
@@ -43,8 +42,8 @@ const Textfield: FC<TextfieldProps> = ({
         <StyledTextInput
           colorScheme={colorScheme}
           editable={editable}
-          //   onChangeText={onChangeText}
-          //   value={value}
+          onChangeText={onChangeText}
+          value={value}
           placeholderTextColor={
             colorScheme === "light" ? Colors.grey100 : Colors.grey50
           }
