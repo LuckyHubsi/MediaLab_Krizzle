@@ -12,10 +12,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View } from "react-native";
 
 type CollectionProps = {
-  collectionTitle: string;
-  collectionText: string;
+  collectionTitleValue: string;
+  collectionTextValue: string;
   collectionList: string;
-  collectionDate: string;
+  collectionDateValue: string;
   collectionRating: string;
   collectionSelectable?: string[];
   onPress?: () => void;
@@ -23,10 +23,10 @@ type CollectionProps = {
 const isTextVisible = false; // This is a placeholder for the actual logic to determine visibility
 
 const CollectionWidget: React.FC<CollectionProps> = ({
-  collectionTitle,
-  collectionText,
+  collectionTitleValue,
+  collectionTextValue,
   collectionList,
-  collectionDate,
+  collectionDateValue,
   collectionRating,
   collectionSelectable,
 
@@ -38,19 +38,19 @@ const CollectionWidget: React.FC<CollectionProps> = ({
       <CollectionCardContainer colorScheme={colorScheme}>
         //Title
         <CollectionTitle colorScheme={colorScheme}>
-          {collectionTitle}
+          {collectionTitleValue}
         </CollectionTitle>
         //Text
         <CollectionText colorScheme={colorScheme}>
-          {collectionText}
+          {collectionTextValue}
         </CollectionText>
         //IF you want to hide preview:
-        {collectionText && (
+        {collectionTextValue && (
           <CollectionText
             colorScheme={colorScheme}
             style={{ display: isTextVisible ? "flex" : "none" }}
           >
-            {collectionText}
+            {collectionTextValue}
           </CollectionText>
         )}
         //Date and Rating Container
@@ -71,7 +71,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
               style={{ marginRight: 6 }}
             />
             <CollectionRating colorScheme={colorScheme}>
-              {collectionDate}
+              {collectionDateValue}
             </CollectionRating>
           </View>
           //Rating Container

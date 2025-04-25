@@ -10,8 +10,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 
 interface TextfieldProps {
-  title: string;
-  placeholderText: string;
+  title?: string;
+  placeholderText?: string;
   editable?: boolean;
   //   onChangeText: (text: string) => void;
   //   value: string;

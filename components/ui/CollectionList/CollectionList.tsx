@@ -29,10 +29,18 @@ const CollectionList: React.FC<CollectionListProps> = ({
         {collectionLists?.map((item, index) => (
           <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
             <CollectionListContainer colorScheme={colorScheme} key={index}>
-              <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "nowrap",
+                  alignContent: "center",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <MaterialIcons
                   name="check-circle-outline"
-                  size={24}
+                  size={16}
                   color="#FFFFFF"
                   style={{ marginRight: 6 }}
                 />

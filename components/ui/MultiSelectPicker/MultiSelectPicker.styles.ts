@@ -19,4 +19,6 @@ export const IndividualSelect = styled.TouchableOpacity<{
     isSelected ? Colors.grey25 : Colors.primary};
   padding: 4px 12px;
   border-radius: 33px;
+  margin-right: 6px;
+  margin-top: 12px;
 `;

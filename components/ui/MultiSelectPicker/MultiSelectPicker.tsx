@@ -9,10 +9,11 @@ import {
   IndividualSelect,
 } from "./MultiSelectPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
+import { View } from "react-native";
 
 interface MultiSelectPickerProps {
-  title: string;
-  multiselectArray: Array<string>;
+  title?: string;
+  multiselectArray?: Array<string>;
   selectedTag: string | null;
   onSelectTag: (tag: string) => void;
 }
@@ -29,25 +30,27 @@ const MultiSelectPickerProps: FC<MultiSelectPickerProps> = ({
     <MultiSelectContainer>
       <ThemedText fontWeight="regular">{title}</ThemedText>
       <MultiSelectPicker>
-        {multiselectArray.map((item, index) => (
-          <IndividualSelect
-            isSelected={!selectedTag}
-            key={index}
-            onPress={() => onSelectTag(item)}
-          >
-            {isSelected ? (
-              <MaterialIcons
-                name="check-circle"
-                size={16}
-                color="#FBFBFB"
-                style={{ marginRight: 10 }}
-              />
-            ) : null}
-            <ThemedText colorVariant={selectedTag ? "white" : "grey"}>
-              {item}
-            </ThemedText>
-          </IndividualSelect>
-        ))}
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          {multiselectArray?.map((item, index) => (
+            <IndividualSelect
+              isSelected={!selectedTag}
+              key={index}
+              onPress={() => onSelectTag(item)}
+            >
+              {isSelected ? (
+                <MaterialIcons
+                  name="check-circle"
+                  size={16}
+                  color="#FBFBFB"
+                  style={{ marginRight: 10 }}
+                />
+              ) : null}
+              <ThemedText colorVariant={selectedTag ? "white" : "grey"}>
+                {item}
+              </ThemedText>
+            </IndividualSelect>
+          ))}
+        </View>
       </MultiSelectPicker>
     </MultiSelectContainer>
   );
