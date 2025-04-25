@@ -28,6 +28,7 @@ export const PopupImage = styled.Image`
   width: 85%;
   height: 240px;
   max-width: 350px;
+  background-color: #f1f1f1;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
 `;
