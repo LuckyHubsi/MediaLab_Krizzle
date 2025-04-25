@@ -1,17 +1,18 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
+import { Platform } from "react-native";
 
 export const DividerContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-vertical: 10px;
 `;
 
 export const DividerLine = styled.View<{ colorScheme: "light" | "dark" }>`
   flex: 1;
-  height: 1px;
+  height: 0.1px;
   border-bottom-width: 1px;
-  border-style: dashed;
+  background-color: transparent;
+  border-style: ${Platform.OS === "ios" ? "solid" : "dashed"};
   border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
 `;

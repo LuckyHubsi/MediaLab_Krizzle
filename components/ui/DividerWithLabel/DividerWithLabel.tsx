@@ -6,6 +6,7 @@ import {
   LabelWrapper,
 } from "./DividerWithLabel.styles";
 import { ThemedText } from "@/components/ThemedText";
+import { View } from "react-native";
 
 interface DividerProps {
   label?: string;
@@ -25,23 +26,28 @@ export const DividerWithLabel = ({
       <DividerLine />
       <LabelWrapper>
         {iconName && (
-          <MaterialIcons
-            name={iconName}
-            size={iconSize}
-            color={iconColor}
+          <View
             style={{
               transform:
                 iconName === "arrow-back" ? [{ rotate: "-90deg" }] : [],
-              marginRight: label ? 4 : 0,
-              marginTop: label ? 4 : 0,
             }}
-          />
+          >
+            <MaterialIcons
+              name={iconName}
+              size={iconSize}
+              color={iconColor}
+              style={{
+                marginBottom: label ? 10 : 0,
+                marginTop: label ? 4 : 0,
+              }}
+            />
+          </View>
         )}
         {label && (
           <ThemedText
             fontSize="s"
             fontWeight="regular"
-            style={{ color: iconColor, marginRight: label ? 4 : 0 }}
+            style={{ color: iconColor }}
           >
             {label}
           </ThemedText>
