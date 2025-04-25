@@ -8,13 +8,15 @@ export const PopupBackdrop = styled.View`
   align-items: center;
 `;
 
-export const PopupContainer = styled.View<{ colorScheme: "light" | "dark" }>`
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light"
-      ? Colors.light.cardBackground
-      : Colors.dark.cardBackground};
+type ThemeProps = {
+  colorScheme: "light" | "dark";
+};
+
+export const PopupContainer = styled.View<ThemeProps>`
+  background-color: ${({ colorScheme }: ThemeProps) =>
+    Colors[colorScheme].background};
   width: 85%;
-  max-width: 400px;
+  max-width: 350px;
   border-bottom-left-radius: 28px;
   border-bottom-right-radius: 28px;
   overflow: hidden;
@@ -25,6 +27,7 @@ export const PopupContainer = styled.View<{ colorScheme: "light" | "dark" }>`
 export const PopupImage = styled.Image`
   width: 85%;
   height: 240px;
+  max-width: 350px;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
 `;

@@ -46,7 +46,7 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
       <TouchableWithoutFeedback onPress={onClose}>
         <PopupBackdrop>
           <PopupImage source={image} />
-          <PopupContainer>
+          <PopupContainer colorScheme={colorScheme}>
             <View style={{ marginBottom: 10 }}>
               <ThemedText fontSize="regular" fontWeight="bold">
                 {title}
