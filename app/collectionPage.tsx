@@ -11,6 +11,7 @@ import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget"
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
 import { getCollectionByPageId } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
+import { template } from "@babel/core";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -89,7 +90,15 @@ export default function CollectionScreen() {
             }}
           >
             <FloatingAddButton
-              onPress={() => router.push("/addCollectionItem")} // navigate to add collection item screen
+              onPress={() => {
+                router.push({
+                  pathname: "/addCollectionItem",
+                  params: {
+                    templateId: collection?.templateID?.toString(),
+                    collectionId: collection?.collectionID?.toString(),
+                  },
+                });
+              }} // navigate to add collection item screen
             />
           </View>
         </ThemedView>
