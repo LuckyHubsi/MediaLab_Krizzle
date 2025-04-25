@@ -32,8 +32,8 @@ const MultiSelectPickerProps: FC<MultiSelectPickerProps> = ({
         {multiselectArray.map((item, index) => (
           <IndividualSelect
             isSelected={!selectedTag}
-            key={index}
             onPress={() => onSelectTag(item)}
+            key={index}
           >
             {isSelected ? (
               <MaterialIcons
