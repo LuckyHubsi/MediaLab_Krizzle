@@ -18,13 +18,13 @@ import { DatabaseError } from "@/utils/DatabaseError";
 const insertAttribute = async (attributeDTO: AttributeDTO): Promise<void> => {
   try {
     // Validate attribute type or use default
-    if (!isValidAttributeType(attributeDTO.attributeType)) {
-      attributeDTO.attributeType = AttributeType.Text;
+    if (!isValidAttributeType(attributeDTO.type)) {
+      attributeDTO.type = AttributeType.Text;
     }
 
     await executeQuery(insertAttributeQuery, [
       attributeDTO.attributeLabel,
-      attributeDTO.attributeType,
+      attributeDTO.type,
       attributeDTO.preview ? 1 : 0,
       attributeDTO.itemTemplateID,
     ]);

@@ -115,10 +115,7 @@ export const saveCollection = async (
           if (templateID) {
             attr.itemTemplateID = templateID;
             await insertAttribute(attr);
-            if (
-              attr.attributeType == AttributeType.Multiselect &&
-              attr.options
-            ) {
+            if (attr.type == AttributeType.Multiselect && attr.options) {
               const attributeID = await getLastInsertId();
               if (attributeID) {
                 attr.options.forEach((option) => {
