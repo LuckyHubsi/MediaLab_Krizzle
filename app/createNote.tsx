@@ -27,6 +27,7 @@ import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
+import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -146,7 +147,7 @@ export default function CreateNoteScreen() {
                   </ThemedText>
                 )}
               </Card>
-
+              <DividerWithLabel label="optional" iconName="arrow-back" />
               <Card>
                 <TagPicker
                   tags={tags}
