@@ -36,15 +36,15 @@ const CollectionWidget: React.FC<CollectionProps> = ({
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <CollectionCardContainer colorScheme={colorScheme}>
-        //Title
+        {/* //Title */}
         <CollectionTitle colorScheme={colorScheme}>
           {collectionTitleValue}
         </CollectionTitle>
-        //Text
+        {/* //Text */}
         <CollectionText colorScheme={colorScheme}>
           {collectionTextValue}
         </CollectionText>
-        //IF you want to hide preview:
+        {/* //IF you want to hide preview: */}
         {collectionTextValue && (
           <CollectionText
             colorScheme={colorScheme}
@@ -53,7 +53,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             {collectionTextValue}
           </CollectionText>
         )}
-        //Date and Rating Container
+        {/* //Date and Rating Container */}
         <View
           style={{
             flexDirection: "row",
@@ -62,7 +62,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             width: "100%",
           }}
         >
-          //Date
+          {/* //Date */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons
               name="calendar-today"
@@ -74,7 +74,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
               {collectionDateValue}
             </CollectionRating>
           </View>
-          //Rating Container
+          {/* //Rating Container */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons
               name="star"
@@ -87,7 +87,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             </CollectionRating>
           </View>
         </View>
-        //Selectables
+        {/* //Selectables */}
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           {collectionSelectable?.map((item, index) => (
             <CollectionSelectable colorScheme={colorScheme} key={index}>

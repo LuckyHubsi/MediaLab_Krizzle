@@ -44,7 +44,6 @@ const CollectionList: React.FC<CollectionListProps> = ({
                   color="#FFFFFF"
                   style={{ marginRight: 6 }}
                 />
-
                 <CollectionListText>
                   <Text>{item}</Text>
                 </CollectionListText>
