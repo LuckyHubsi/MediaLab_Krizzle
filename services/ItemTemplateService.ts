@@ -40,13 +40,26 @@ const insertItemTemplateAndReturnID = async (
   }
 };
 
-const getTemplate = async (templateID: number) => {
+/**
+ * Retrieves a template by its id.
+ *
+ * @param {number} templateID - The ID of the template.
+ * @returns {Promise<ItemTemplateDTO>} A promise that resolves to a ItemTemplateDTO.
+ *
+ * @throws {DatabaseError} If the fetch fails.
+ */
+const getTemplate = async (templateID: number): Promise<ItemTemplateDTO> => {
   try {
-    const template = await fetchFirst<any>(
+    const template = await fetchFirst<ItemTemplateModel>(
       selectItemTemplateByTemplateIDQuery,
       [templateID],
     );
     console.log(template);
+    if (template) {
+      return ItemTemplateMapper.toDTO(template);
+    } else {
+      throw new DatabaseError("Failed to fetch template.");
+    }
   } catch (error) {
     throw new DatabaseError("failed to fetch item template");
   }
