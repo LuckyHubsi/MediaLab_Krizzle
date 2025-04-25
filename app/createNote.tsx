@@ -35,8 +35,9 @@ export default function CreateNoteScreen() {
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedIcon, setSelectedIcon] =
-    useState<keyof typeof MaterialIcons.glyphMap>("");
+  const [selectedIcon, setSelectedIcon] = useState<
+    keyof typeof MaterialIcons.glyphMap | null
+  >(null);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -44,7 +45,9 @@ export default function CreateNoteScreen() {
   const tags = ["Work", "Personal", "Urgent", "Ideas"];
 
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
-  const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
+  const selectedIconLabel = selectedIcon
+    ? iconLabelMap[selectedIcon]
+    : "Choose Icon";
 
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
@@ -88,7 +91,7 @@ export default function CreateNoteScreen() {
     const noteDTO: NoteDTO = {
       page_type: PageType.Note,
       page_title: title,
-      page_icon: selectedIcon,
+      page_icon: selectedIcon ?? undefined,
       page_color: (selectedColor as keyof typeof Colors.widget) || "blue",
       archived: false,
       pinned: false,
@@ -112,7 +115,11 @@ export default function CreateNoteScreen() {
                 title={title || "Title"}
                 label={selectedTag ?? "No tag"}
                 iconLeft={
-                  <MaterialIcons name={selectedIcon} size={20} color="black" />
+                  <MaterialIcons
+                    name={selectedIcon || "help"}
+                    size={20}
+                    color="black"
+                  />
                 }
                 iconRight={
                   <MaterialIcons name="description" size={20} color="black" />
@@ -186,7 +193,7 @@ export default function CreateNoteScreen() {
                         ? Colors.dark.cardBackground
                         : Colors.light.cardBackground
                     }
-                    selectedIcon={selectedIcon}
+                    selectedIcon={selectedIcon ?? undefined}
                     onPress={() => {
                       setPopupType("icon");
                       setPopupVisible(true);

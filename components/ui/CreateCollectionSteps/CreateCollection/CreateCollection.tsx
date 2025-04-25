@@ -34,8 +34,9 @@ const CreateCollection: FC = () => {
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedIcon, setSelectedIcon] =
-    useState<keyof typeof MaterialIcons.glyphMap>("");
+  const [selectedIcon, setSelectedIcon] = useState<
+    keyof typeof MaterialIcons.glyphMap | undefined
+  >(undefined);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -43,7 +44,9 @@ const CreateCollection: FC = () => {
   const tags = ["Work", "Personal", "Urgent", "Ideas"];
 
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
-  const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
+  const selectedIconLabel = selectedIcon
+    ? iconLabelMap[selectedIcon]
+    : "Choose Icon";
 
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => ({
     id: key,
@@ -103,7 +106,11 @@ const CreateCollection: FC = () => {
               title={title || "Title"}
               label={selectedTag ?? "No tag"}
               iconLeft={
-                <MaterialIcons name={selectedIcon} size={20} color="black" />
+                <MaterialIcons
+                  name={selectedIcon || "help"}
+                  size={20}
+                  color="black"
+                />
               }
               iconRight={
                 <MaterialIcons name="description" size={20} color="black" />
@@ -199,12 +206,20 @@ const CreateCollection: FC = () => {
                 value: iconName,
               }))
         }
-        selectedItem={popupType === "color" ? selectedColor : selectedIcon}
+        selectedItem={
+          popupType === "color"
+            ? (selectedColor ?? null)
+            : (selectedIcon ?? null)
+        }
         onSelect={(itemValue) => {
           if (popupType === "color") {
             setSelectedColor(itemValue);
           } else {
-            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
+            setSelectedIcon(
+              itemValue
+                ? (itemValue as keyof typeof MaterialIcons.glyphMap)
+                : undefined,
+            );
           }
         }}
         onClose={() => setPopupVisible(false)}
