@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   ItemCountContainer,
   ItemCount,
@@ -8,19 +8,15 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import ItemTemplateCard from "./ItemTemplateCard/ItemTemplateCard";
+import { ScrollView } from "react-native";
 
 interface CreateCollectionTemplateProps {
   title: string;
-  //   itemTypes?: string[];
-  //itemPreview?: string[];
 }
 
 const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   title,
-  // onChangeText,
-  //  value
 }) => {
-  const itemTypeCount = 3;
   const itemPreviewCount = 3;
   const colorScheme = useColorScheme();
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
@@ -29,12 +25,33 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     "layers",
   ];
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
+  const getIconForType = (type: string) => {
+    switch (type) {
+      case "text":
+        return "short-text";
+      case "date":
+        return "calendar-today";
+      case "multi-select":
+        return "layers";
+      case "rating":
+        return "star-rate";
+      default:
+        return "short-text";
+    }
+  };
+  const [cards, setCards] = useState<{ id: number; itemType: string }[]>([]);
+  const handleAddCard = () => {
+    if (cards.length >= 10) return;
+    setCards((prev) => [...prev, { id: prev.length, itemType: "text" }]);
+  };
 
   return (
     <>
       <ItemCountContainer>
         <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={"primary"}>{itemTypeCount}</ThemedText>
+          <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
+            {cards.length}
+          </ThemedText>
           <ThemedText
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
           >
@@ -50,15 +67,33 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </ItemCount>
       </ItemCountContainer>
+      <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
+        <ItemTemplateCard
+          isTitleCard={true}
+          itemType={typeArray[0]}
+          textfieldIcon={textfieldIconArray[0]}
+          isPreview={true}
+        />
 
-      <ItemTemplateCard
-        isTitleCard={true}
-        itemType={typeArray[0]}
-        textfieldIcon={textfieldIconArray[0]}
-        isPreview={true}
-      />
+        <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
 
-      <AddButton onPress={undefined} />
+        {cards.map((card, index) => (
+          <ItemTemplateCard
+            key={card.id}
+            isTitleCard={false}
+            isPreview={false}
+            itemType={card.itemType}
+            textfieldIcon={getIconForType(card.itemType)}
+            onTypeChange={(newType) => {
+              setCards((prev) =>
+                prev.map((c) =>
+                  c.id === card.id ? { ...c, itemType: newType } : c,
+                ),
+              );
+            }}
+          />
+        ))}
+      </ScrollView>
 
       <BottomButtons
         variant={"back"}

@@ -19,6 +19,7 @@ interface ItemTemplateCardProps {
   itemType: string;
   textfieldIcon: keyof typeof MaterialIcons.glyphMap;
   isPreview: boolean;
+  onTypeChange?: (value: string) => void;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -26,6 +27,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   itemType,
   textfieldIcon,
   isPreview,
+  onTypeChange,
 }) => {
   const colorScheme = useColorScheme();
 
@@ -66,17 +68,14 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
       </CardTitleRow>
       <>
         <RNPickerSelect
-          onValueChange={() => {}}
+          onValueChange={(value) => {
+            if (onTypeChange) onTypeChange(value);
+          }}
           style={pickerStyles}
-          value={isTitleCard ? typeArray[1] : undefined}
+          value={itemType}
           items={
             isTitleCard
-              ? [
-                  {
-                    label: "Text",
-                    value: "text",
-                  },
-                ]
+              ? [{ label: "Text", value: "text" }]
               : typeArray
                   .filter((item) => item !== "item")
                   .map((item) => ({
