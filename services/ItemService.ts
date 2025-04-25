@@ -66,10 +66,44 @@ const getItemById = async (id: number): Promise<ItemDTO | null> => {
  * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of ItemDTO objects.
  */
 const getItemsByCollectionId = async (collectionId: number): Promise<ItemDTO[]> => {
-    const rawData = await fetchAll<ItemModel>(itemSelectByCollectionIdQuery, [collectionId]);
-    return rawData.map(row => ItemMapper.toDTO(row));
-};
+  try {
+    const query = itemSelectByCollectionIdQuery(collectionId);
+    
+    // define interface for raw result
+    interface RawItemResult {
+      itemID: number;
+      collectionID: number;
+      category: string | null;
+      attributeValues: string;
+    }
+    
+    // get raw result using the query
+    const rawResults = await fetchAll<RawItemResult>(query, [collectionId]);
 
+        if (!rawResults) {
+      return [];
+    }
+
+    // change to correct format
+    const items = rawResults.map(rawResult => {
+      const parsedValues = JSON.parse(rawResult.attributeValues);
+
+      const result: ItemModel = {
+        itemID: rawResult.itemID,
+        collectionID: rawResult.collectionID,
+        category: rawResult.category,
+        values: parsedValues,
+      };
+
+      return ItemMapper.toDTO(result);
+    });
+
+    return items;
+  } catch (error) {
+    console.error('Error retrieving items by collection ID:', error);
+    throw error;
+  }
+}
 
 /**
  * Creates a new item based on a collection's item template and returns the new item ID.
