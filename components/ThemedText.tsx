@@ -1,4 +1,4 @@
-import { Text, type TextProps, StyleSheet } from "react-native";
+import { Text, type TextProps, StyleSheet, useColorScheme } from "react-native";
 import { Lexend_400Regular } from "@expo-google-fonts/lexend/400Regular";
 import { Lexend_300Light } from "@expo-google-fonts/lexend/300Light";
 import { Lexend_600SemiBold } from "@expo-google-fonts/lexend/600SemiBold";
@@ -13,7 +13,14 @@ export type ThemedTextProps = TextProps & {
   darkColor?: string;
   fontWeight?: "light" | "regular" | "semibold" | "bold";
   fontSize?: "regular" | "xxl" | "xl" | "s";
-  colorVariant?: "default" | "red" | "grey" | "white" | "lightGrey" | "primary";
+  colorVariant?:
+    | "default"
+    | "red"
+    | "grey"
+    | "white"
+    | "lightGrey"
+    | "primary"
+    | "viewAll";
 };
 
 const colorVariants = {
@@ -24,6 +31,7 @@ const colorVariants = {
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
   primary: () => Colors.primary,
+  viewAll: () => (useColorScheme() === "dark" ? Colors.grey50 : Colors.grey100),
 };
 
 export function ThemedText({
