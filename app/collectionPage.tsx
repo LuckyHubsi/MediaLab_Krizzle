@@ -24,22 +24,23 @@ export default function CollectionScreen() {
   const [listNames, setListNames] = useState<string[]>([]);
 
   useEffect(() => {
-    async () => {
+    (async () => {
+      console.log("page id: ", pageId);
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         const collectionData = await getCollectionByPageId(numericID);
         if (collectionData) {
           setCollection(collectionData);
-          if (collection?.categories) {
+          if (collectionData.categories) {
             const listNames = [];
-            for (const list of collection.categories) {
+            for (const list of collectionData.categories) {
               listNames.push(list.category_name);
             }
             setListNames(listNames);
           }
         }
       }
-    };
+    })();
   }, [pageId]);
 
   return (
