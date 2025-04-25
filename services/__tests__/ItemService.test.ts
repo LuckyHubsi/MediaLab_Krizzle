@@ -1,14 +1,22 @@
-import { getItemById } from "../ItemService";
-import { itemSelectByIdQuery } from "@/queries/ItemQuery";
-import { fetchFirst } from "@/utils/QueryHelper";
+import { 
+    getItemById,
+    getItemsByCollectionId
+ } from "../ItemService";
+import { 
+    itemSelectByIdQuery,
+    itemSelectByCollectionIdQuery 
+} from "@/queries/ItemQuery";
+import { fetchAll, fetchFirst } from "@/utils/QueryHelper";
 import { ItemMapper } from "@/utils/mapper/ItemMapper";
 
 jest.mock('@/queries/ItemQuery', () => ({
-    itemSelectByIdQuery: jest.fn()
+    itemSelectByIdQuery: jest.fn(),
+    itemSelectByCollectionIdQuery: jest.fn()
 }))
 
 jest.mock('@/utils/QueryHelper', () => ({
-    fetchFirst: jest.fn()
+    fetchFirst: jest.fn(),
+    fetchAll: jest.fn()
 }))
 
 jest.mock('@/utils/mapper/ItemMapper', () => {
@@ -23,10 +31,10 @@ jest.mock('@/utils/mapper/ItemMapper', () => {
 });
 
 describe('ItemService', () => {
-    describe('getItemById', () => {
-        beforeEach(() => {
-            jest.clearAllMocks();
-        });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+        describe('getItemById', () => {
 
         it('should return null when item does not exist', async () => {
             (itemSelectByIdQuery as jest.Mock).mockReturnValue('SELECT query');
@@ -129,5 +137,107 @@ describe('ItemService', () => {
             expect(ItemMapper.toDTO).toHaveBeenCalledWith(expectedModel);
             expect(result).toEqual(expectedDTO);
         })
-    })
+    });
+
+    it('should return the found items', async () => {
+      const mockRawResult = [
+        {
+          itemID: 1,
+          collectionID: 2,
+          category: 'Books',
+          attributeValues: JSON.stringify([
+            {
+              attributeID: 1,
+              attributeLabel: 'Title',
+              attributeType: 'text',
+              value: 'Sleeping Beauties'
+            }
+          ])
+        },
+        {
+          itemID: 2,
+          collectionID: 2,
+          category: 'Books',
+          attributeValues: JSON.stringify([
+            {
+              attributeID: 2,
+              attributeLabel: 'Published',
+              attributeType: 'date',
+              value: '2025-04-24'
+            }
+          ])
+        }
+      ];
+
+      const expectedModels = [
+        {
+          itemID: 1,
+          collectionID: 2,
+          category: 'Books',
+          values: [
+            {
+              attributeID: 1,
+              attributeLabel: 'Title',
+              attributeType: 'text',
+              value: 'Sleeping Beauties'
+            }
+          ]
+        },
+        {
+          itemID: 2,
+          collectionID: 2,
+          category: 'Books',
+          values: [
+            {
+              attributeID: 2,
+              attributeLabel: 'Published',
+              attributeType: 'date',
+              value: '2025-04-25'
+            }
+          ]
+        }
+      ];
+
+      const expectedDTOs = [
+        {
+          itemID: 1,
+          collectionID: 2,
+          category: 'Books',
+          attributeValues: [
+            {
+              attributeID: 1,
+              attributeLabel: 'Title',
+              attributeType: 'text',
+              value: 'Sleeping Beauties'
+            }
+          ]
+        },
+        {
+          itemID: 2,
+          collectionID: 2,
+          category: 'Books',
+          attributeValues: [
+            {
+              attributeID: 2,
+              attributeLabel: 'Published',
+              attributeType: 'date',
+              value: '2025-04-25'
+            }
+          ]
+        }
+      ];
+
+      (itemSelectByCollectionIdQuery as jest.Mock).mockReturnValue('SELECT query');
+      (fetchAll as jest.Mock).mockResolvedValue(mockRawResult);
+      (ItemMapper.toDTO as jest.Mock)
+        .mockReturnValueOnce(expectedDTOs[0])
+        .mockReturnValueOnce(expectedDTOs[1]);
+
+      const result = await getItemsByCollectionId(1);
+
+      expect(itemSelectByCollectionIdQuery).toHaveBeenCalledWith(1);
+      expect(fetchAll).toHaveBeenCalledWith('SELECT query', [1]);
+      expect(ItemMapper.toDTO).toHaveBeenCalledTimes(2);
+      expect(result).toEqual(expectedDTOs);
+    });
 })
