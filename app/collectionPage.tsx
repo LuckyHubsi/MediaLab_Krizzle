@@ -105,12 +105,12 @@ export default function CollectionScreen() {
             placeholder="Search" // Placeholder text for the search bar
             onSearch={(text) => console.log(text)}
           />
-          //Hardcoded data for testing purposes
+          {/* //Hardcoded data for testing purposes */}
           <CollectionList
             collectionLists={listNames}
             onPress={() => console.log("Pressed!")}
           />
-          //Hardcoded data for testing purposes
+          {/* //Hardcoded data for testing purposes */}
           <CollectionWidget
             collectionTitleValue={collectionData.collectionTitleValue}
             collectionTextValue={collectionData.collectionTextValue}
