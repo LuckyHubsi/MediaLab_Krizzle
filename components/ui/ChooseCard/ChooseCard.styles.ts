@@ -29,15 +29,3 @@ export const Circle = styled.View`
   align-items: center;
   justify-content: center;
 `;
-
-export const Label = styled.Text<{ colorScheme: "light" | "dark" }>`
-  font-family: Lexend;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 150% */
-  letter-spacing: -0.4px;
-  margin-top: 6px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light" ? "black" : "white"};
-`;
