@@ -36,15 +36,15 @@ const CollectionWidget: React.FC<CollectionProps> = ({
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <CollectionCardContainer colorScheme={colorScheme}>
-        //Title
+        {/* //Title */}
         <CollectionTitle colorScheme={colorScheme}>
           {collectionTitle}
         </CollectionTitle>
-        //Text
+        {/* //Text */}
         <CollectionText colorScheme={colorScheme}>
           {collectionText}
         </CollectionText>
-        //IF you want to hide preview:
+        {/* //IF you want to hide preview: */}
         {collectionText && (
           <CollectionText
             colorScheme={colorScheme}
@@ -53,7 +53,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             {collectionText}
           </CollectionText>
         )}
-        //Date and Rating Container
+        {/* //Date and Rating Container */}
         <View
           style={{
             flexDirection: "row",
@@ -62,7 +62,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             width: "100%",
           }}
         >
-          //Date
+          {/* //Date */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons
               name="calendar-today"
@@ -74,7 +74,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
               {collectionDate}
             </CollectionRating>
           </View>
-          //Rating Container
+          {/* //Rating Container */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons
               name="star"
@@ -87,7 +87,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
             </CollectionRating>
           </View>
         </View>
-        //Selectables
+        {/* //Selectables */}
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           {collectionSelectable?.map((item, index) => (
             <CollectionSelectable colorScheme={colorScheme} key={index}>

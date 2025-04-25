@@ -8,7 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
-import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
 import { deleteGeneralPage } from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";

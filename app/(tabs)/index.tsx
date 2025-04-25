@@ -19,7 +19,7 @@ import {
   getAllGeneralPageData,
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
-import DeleteModal from "@/components/ui/DeleteModal/DeleteModal";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 
@@ -30,9 +30,9 @@ export const getMaterialIcon = (name: string, size = 20, color = "black") => {
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
-      return getMaterialIcon("note");
+      return getMaterialIcon("sticky-note-2");
     case "collection":
-      return getMaterialIcon("folder");
+      return getMaterialIcon("collections-bookmark");
     default:
       return undefined;
   }

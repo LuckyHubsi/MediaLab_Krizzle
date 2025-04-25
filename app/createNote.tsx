@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -25,8 +25,6 @@ import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 
 export default function CreateNoteScreen() {
-  const navigation = useNavigation();
-
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
@@ -87,7 +85,7 @@ export default function CreateNoteScreen() {
 
     const id = await insertNote(noteDTO);
     console.log("Note created with ID:", id);
-    navigation.navigate("notePage", { id, title });
+    router.push({ pathname: "/notePage", params: { id, title } });
   };
 
   return (
@@ -130,7 +128,7 @@ export default function CreateNoteScreen() {
                   onSelectTag={(tag) => {
                     setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
                   }}
-                  onViewAllPress={() => navigation.navigate("tagManagement")}
+                  onViewAllPress={() => router.push("/tagManagement")}
                 />
               </Card>
 
