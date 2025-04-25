@@ -26,16 +26,17 @@ import { PageType } from "@/utils/enums/PageType";
 import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
+import { red } from "react-native-reanimated/lib/typescript/Colors";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
-
+  const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedIcon, setSelectedIcon] =
     useState<keyof typeof MaterialIcons.glyphMap>("");
-
+  const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
 
@@ -69,6 +70,13 @@ export default function CreateNoteScreen() {
   };
 
   const createNote = async () => {
+    if (title.trim().length === 0) {
+      setTitleError("Title is required.");
+      return;
+    }
+
+    setTitleError(null);
+
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
@@ -76,7 +84,6 @@ export default function CreateNoteScreen() {
         tag_label: selectedTag,
       };
     }
-
     const noteDTO: NoteDTO = {
       page_type: PageType.Note,
       page_title: title,
@@ -96,8 +103,8 @@ export default function CreateNoteScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
-          <View style={{ flex: 1, alignItems: "center" }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+          <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
             <Card>
               <Header title="Create Note" onIconPress={() => alert("Popup!")} />
               <Widget
@@ -117,13 +124,27 @@ export default function CreateNoteScreen() {
               />
             </Card>
 
-            <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
+            <View style={{ width: "100%", gap: 20 }}>
               <Card>
                 <TitleCard
                   placeholder="Add a title to your Note"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                  }}
                 />
+                {titleError && (
+                  <ThemedText
+                    style={{
+                      marginTop: 5,
+                    }}
+                    fontSize="s"
+                    colorVariant="red"
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
               </Card>
 
               <Card>
@@ -176,8 +197,7 @@ export default function CreateNoteScreen() {
           </View>
           <View
             style={{
-              position: "absolute",
-              bottom: 0,
+              marginTop: 20,
               width: "100%",
             }}
           >
