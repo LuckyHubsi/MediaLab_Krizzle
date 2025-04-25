@@ -9,6 +9,7 @@ import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import ItemTemplateCard from "./ItemTemplateCard/ItemTemplateCard";
 import { ScrollView } from "react-native";
+import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
 
 interface CreateCollectionTemplateProps {
   title: string;
@@ -128,6 +129,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         ))}
 
         <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
+        <ProgressIndicator progressStep={3} />
       </ScrollView>
 
       <BottomButtons
