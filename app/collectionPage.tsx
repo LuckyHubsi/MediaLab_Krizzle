@@ -14,6 +14,7 @@ import {
   CollectionSelectable,
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CollectionScreen() {
   const { title, selectedIcon } = useLocalSearchParams<{
@@ -29,6 +30,7 @@ export default function CollectionScreen() {
     id: "1",
     collectionTitle: "Books",
     collectionTitleValue: "Harry Potter",
+    collectionTextTitle: "Description",
     collectionTextValue:
       "Harry Potter is a series of fantasy novels written by J.K. Rowling, following the adventures of a young wizard and his friends at Hogwarts School of Witchcraft and Wizardry.",
     collectionList: "List 1",

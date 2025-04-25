@@ -13,10 +13,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ListCOntainer } from "./CollectionLoadItems.stlyle";
 import { CollectionListText } from "../CollectionList/CollectionList.style";
 import { ThemedText } from "@/components/ThemedText";
+import CollectionTextfield from "../CollectionTextField/CollectionTextField";
 
 interface CollectionLoadItemProps {
   collectionTitle?: string;
   collectionTitleValue?: string;
+  collectionTextTitle?: string;
   collectionTextValue?: string;
   collectionList?: string;
   collectionDateTitle?: string;
@@ -29,6 +31,7 @@ interface CollectionLoadItemProps {
 export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
   collectionTitle,
   collectionTitleValue,
+  collectionTextTitle,
   collectionTextValue,
   collectionList,
   collectionDateTitle,
@@ -77,12 +80,11 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       //Date
       <DateField title={collectionDateTitle} />
       //Text
-      <View style={{ flexDirection: "column", gap: 12 }}>
-        <ThemedText>Text</ThemedText>
-        <ThemedText fontSize="s" fontWeight="light">
-          {collectionTextValue}
-        </ThemedText>
-      </View>
+      <CollectionTextfield
+        title={collectionTextTitle}
+        placeholderText={collectionTextValue}
+        editable={false}
+      ></CollectionTextfield>
       //MultiSelect
       <MultiSelectPicker
         title={collectionSelectableTitle}
@@ -91,16 +93,11 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
         onSelectTag={() => {}}
       />
       //Rating
-      <ThemedText>Rating</ThemedText>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <MaterialIcons
-          name="star"
-          size={24}
-          color="#E7C716"
-          style={{ marginRight: 6 }}
-        />
-        <Text>{collectionRating + "/5"}</Text>
-      </View>
+      <RatingPicker
+        title="Rating"
+        selectedIcon="star"
+        editable={false}
+      ></RatingPicker>
     </StyledCardWrapper>
   );
 };

@@ -42,6 +42,9 @@ export default function CollectionItemScreen() {
               collectionTitleValue={
                 parsedCollectionData?.collectionTitleValue || "Default Title"
               }
+              collectionTextTitle={
+                parsedCollectionData?.collectionTextTitle || "Default Text"
+              }
               collectionTextValue={
                 parsedCollectionData?.collectionTextValue || "Default Text"
               }
