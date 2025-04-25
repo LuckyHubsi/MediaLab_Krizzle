@@ -1,6 +1,11 @@
-import { executeQuery } from "@/utils/QueryHelper";
+import { executeQuery, fetchAll } from "@/utils/QueryHelper";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { insertCollectionCategoryQuery } from "@/queries/CollectionCategoryQuery";
+import {
+  insertCollectionCategoryQuery,
+  selectCategoriesByCollectionIdQuery,
+} from "@/queries/CollectionCategoryQuery";
+import { CollectionCategoryModel } from "@/models/CollectionCategoryModel";
+import { CollectionCategoryMapper } from "@/utils/mapper/CollectionCategoryMapper";
 
 /**
  * Inserts a new collection category into the database.
@@ -21,5 +26,19 @@ const insertCollectionCategory = async (
     console.error("Error inserting list:", error);
   }
 };
+const getCollectionCategories = async (
+  collectionID: number,
+): Promise<CollectionCategoryDTO[]> => {
+  try {
+    const categories = await fetchAll<CollectionCategoryModel>(
+      selectCategoriesByCollectionIdQuery,
+      [collectionID],
+    );
+    return categories.map(CollectionCategoryMapper.toDTO);
+  } catch (error) {
+    console.error("Error fetching collection categories:", error);
+    return [];
+  }
+};
 
-export { insertCollectionCategory };
+export { insertCollectionCategory, getCollectionCategories };
