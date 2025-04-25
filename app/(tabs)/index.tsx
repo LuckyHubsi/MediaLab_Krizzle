@@ -135,7 +135,7 @@ export default function HomeScreen() {
 
     router.push({
       pathname: path,
-      params: { id: widget.id, title: widget.title },
+      params: { pageId: widget.id, title: widget.title },
     });
   };
 

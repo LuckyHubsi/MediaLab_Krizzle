@@ -15,7 +15,10 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
 
 export default function NotesScreen() {
-  const { id, title } = useLocalSearchParams<{ id?: string; title?: string }>();
+  const { pageId, title } = useLocalSearchParams<{
+    pageId?: string;
+    title?: string;
+  }>();
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
@@ -26,8 +29,8 @@ export default function NotesScreen() {
   );
 
   useEffect(() => {
-    if (id) {
-      const numericID = Number(id);
+    if (pageId) {
+      const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
           const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
@@ -41,11 +44,11 @@ export default function NotesScreen() {
         console.error("Error fetching note data");
       }
     }
-  }, [id, colorScheme]);
+  }, [pageId, colorScheme]);
 
   const saveNote = async (html: string) => {
-    if (!id) return;
-    const success = await updateNoteContent(Number(id), html);
+    if (!pageId) return;
+    const success = await updateNoteContent(Number(pageId), html);
     console.log("Saved note: ", success);
   };
 
@@ -96,9 +99,9 @@ export default function NotesScreen() {
         typeToDelete="note"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (id) {
+          if (pageId) {
             try {
-              const widgetIdAsNumber = Number(id);
+              const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
