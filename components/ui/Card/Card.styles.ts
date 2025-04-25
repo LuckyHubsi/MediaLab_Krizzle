@@ -12,7 +12,5 @@ export const StyledCard = styled(View)<{
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].cardBackground};
   border-radius: 33px;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
 `;

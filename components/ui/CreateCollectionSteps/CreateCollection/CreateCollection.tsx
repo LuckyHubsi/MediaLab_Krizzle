@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { router } from "expo-router";
 import { useColorScheme, View } from "react-native";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
@@ -105,29 +104,31 @@ const CreateCollection: FC = () => {
       <ScrollContainer>
         <ContentWrapper>
           <Card>
-            <Header
-              title="Create Collection"
-              onIconPress={() => alert("Popup!")}
-            />
-            <Widget
-              title={title || "Title"}
-              label={selectedTag ?? "No tag"}
-              iconLeft={
-                <MaterialIcons
-                  name={selectedIcon || "help"}
-                  size={20}
-                  color="black"
-                />
-              }
-              iconRight={
-                <MaterialIcons name="description" size={20} color="black" />
-              }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "blue"
-              }
-            />
+            <View style={{ alignItems: "center" }}>
+              <Header
+                title="Create Collection"
+                onIconPress={() => alert("Popup!")}
+              />
+              <Widget
+                title={title || "Title"}
+                label={selectedTag ?? "No tag"}
+                iconLeft={
+                  <MaterialIcons
+                    name={selectedIcon || "help"}
+                    size={20}
+                    color="black"
+                  />
+                }
+                iconRight={
+                  <MaterialIcons name="description" size={20} color="black" />
+                }
+                color={
+                  (getWidgetColorKey(
+                    selectedColor,
+                  ) as keyof typeof Colors.widget) || "blue"
+                }
+              />
+            </View>
           </Card>
 
           <Card>

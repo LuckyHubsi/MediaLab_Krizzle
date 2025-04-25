@@ -110,26 +110,31 @@ export default function CreateNoteScreen() {
         <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
           <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
             <Card>
-              <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-              <Widget
-                title={title || "Title"}
-                label={selectedTag ?? "No tag"}
-                iconLeft={
-                  <MaterialIcons
-                    name={selectedIcon || "help"}
-                    size={20}
-                    color="black"
-                  />
-                }
-                iconRight={
-                  <MaterialIcons name="description" size={20} color="black" />
-                }
-                color={
-                  (getWidgetColorKey(
-                    selectedColor,
-                  ) as keyof typeof Colors.widget) || "blue"
-                }
-              />
+              <View style={{ alignItems: "center" }}>
+                <Header
+                  title="Create Note"
+                  onIconPress={() => alert("Popup!")}
+                />
+                <Widget
+                  title={title || "Title"}
+                  label={selectedTag ?? "No tag"}
+                  iconLeft={
+                    <MaterialIcons
+                      name={selectedIcon || "help"}
+                      size={20}
+                      color="black"
+                    />
+                  }
+                  iconRight={
+                    <MaterialIcons name="description" size={20} color="black" />
+                  }
+                  color={
+                    (getWidgetColorKey(
+                      selectedColor,
+                    ) as keyof typeof Colors.widget) || "blue"
+                  }
+                />
+              </View>
             </Card>
 
             <View style={{ width: "100%", gap: 20 }}>
