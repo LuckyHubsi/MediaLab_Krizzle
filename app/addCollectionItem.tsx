@@ -4,6 +4,7 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
+import { router } from "expo-router";
 
 export default function AddCollectionItem() {
   return (
@@ -22,7 +23,7 @@ export default function AddCollectionItem() {
             titleLeftButton={"Discard"}
             titleRightButton={"Add"}
             variant="discard"
-            onDiscard={function (): void {}}
+            onDiscard={router.back}
             onNext={function (): void {}}
           ></BottomButtons>
         </View>
