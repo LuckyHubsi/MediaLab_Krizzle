@@ -20,6 +20,7 @@ import Textfield from "../../Textfield/Textfield";
 import { MaterialIcons } from "@expo/vector-icons";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import { Colors } from "@/constants/Colors";
+import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 
 const CreateCollectionList: FC = () => {
   const [cards, setCards] = useState<{ id: string }[]>([]);
@@ -115,41 +116,13 @@ const CreateCollectionList: FC = () => {
       </Container>
 
       {showHelp && (
-        <View
-          style={{
-            position: "absolute",
-            top: 100,
-            left: 20,
-            right: 20,
-            backgroundColor:
-              colorScheme === "dark"
-                ? Colors.dark.cardBackground
-                : Colors.light.cardBackground,
-            borderRadius: 12,
-            padding: 20,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-            elevation: 6,
-            zIndex: 10,
-          }}
-        >
-          <TouchableOpacity
-            style={{ position: "absolute", top: 8, right: 8 }}
-            onPress={() => setShowHelp(false)}
-          >
-            <MaterialIcons name="close" size={20} color={iconColor} />
-          </TouchableOpacity>
-          <ThemedText
-            fontSize="s"
-            fontWeight="regular"
-            style={{ marginTop: 16 }}
-          >
-            You can add multiple lists to your collection here. Tap the '+' to
-            create new ones. Use 'Next' to continue.
-          </ThemedText>
-        </View>
+        <InfoPopup
+          visible={showHelp}
+          onClose={() => setShowHelp(false)}
+          image={require("@/assets/images/list-guide.png")}
+          title="What is a Collection List?"
+          description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
+        />
       )}
     </>
   );
