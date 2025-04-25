@@ -98,12 +98,13 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
         <ItemTemplateCard
           isTitleCard={true}
-          itemType={typeArray[0]}
+          itemType={typeArray[1]}
           textfieldIcon={textfieldIconArray[0]}
           isPreview={true}
         />
-
-        <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
+        <ThemedText colorVariant="grey" style={{ margin: 10 }}>
+          Your Templates:
+        </ThemedText>
 
         {cards.map((card) => (
           <ItemTemplateCard
@@ -125,6 +126,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             onPreviewToggle={() => handlePreviewToggle(card.id)}
           />
         ))}
+
+        <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
       </ScrollView>
 
       <BottomButtons

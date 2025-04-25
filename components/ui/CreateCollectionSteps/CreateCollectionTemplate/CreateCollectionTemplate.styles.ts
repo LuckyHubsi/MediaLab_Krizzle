@@ -21,3 +21,13 @@ export const ItemCount = styled.View`
     ${({ colorScheme }: ThemeProps) => Colors[colorScheme].placeholder};
   padding: 10px 15px;
 `;
+
+export const RatingIconsContainer = styled.View`
+  width: 100%;
+  gap: 8px;
+`;
+
+export const IconContainer = styled.View`
+  flex-direction: row;
+  gap: 10px;
+`;
