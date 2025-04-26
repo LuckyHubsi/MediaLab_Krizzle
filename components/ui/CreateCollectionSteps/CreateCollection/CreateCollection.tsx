@@ -126,13 +126,6 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   //     router.replace({ pathname: "/notePage", params: { id, title } });
   //   };
 
-  const nextPage = () => {
-    router.push({
-      pathname: "/addLists",
-      params: { title, selectedTag, selectedIcon, selectedColor },
-    });
-  };
-
   return (
     <>
       <ScrollContainer>
