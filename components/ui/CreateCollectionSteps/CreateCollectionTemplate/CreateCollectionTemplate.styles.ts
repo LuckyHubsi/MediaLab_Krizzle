@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
+import { Card } from "../../Card/Card";
 
 type ThemeProps = {
   colorScheme: "light" | "dark";
@@ -55,4 +56,16 @@ export const SelectablesContainer = styled.View`
 
 export const TextfieldWrapper = styled.View`
   width: 90%;
+`;
+
+export const CardHeader = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+export const CardText = styled.View`
+  flex-direction: column;
+  gap: 10px;
 `;

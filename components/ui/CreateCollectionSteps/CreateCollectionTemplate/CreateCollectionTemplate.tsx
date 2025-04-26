@@ -1,10 +1,12 @@
-import { FC } from "react";
-import { ScrollView } from "react-native";
+import { FC, useState } from "react";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
 import {
   ItemCountContainer,
   ItemCount,
+  CardHeader,
+  CardText,
 } from "./CreateCollectionTemplate.styles";
 import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
@@ -13,6 +15,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
 import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
+import { Card } from "../../Card/Card";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
+import { Colors } from "@/constants/Colors";
+import { Header } from "../../Header/Header";
+import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -55,6 +62,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   };
 
   const previewCount = cards.filter((card) => card.isPreview).length + 1;
+
+  const [showHelp, setShowHelp] = useState(false);
+  const iconColor =
+    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 
   const handleAddCard = () => {
     if (cards.length >= 10) return;
@@ -143,6 +154,29 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
   return (
     <>
+      <Card>
+        <CardText>
+          <CardHeader>
+            <ThemedText fontSize="l" fontWeight="bold">
+              Adding Templates
+            </ThemedText>
+            <TouchableOpacity onPress={() => setShowHelp(true)}>
+              <MaterialIcons
+                name="help-outline"
+                size={26}
+                color={Colors.primary}
+              />
+            </TouchableOpacity>
+          </CardHeader>
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+          >
+            Create a Template for your Collection Items.
+          </ThemedText>
+        </CardText>
+      </Card>
       <ItemCountContainer>
         <ItemCount colorScheme={colorScheme}>
           <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
@@ -215,6 +249,16 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         onDiscard={onBack!}
         onNext={onNext!}
       />
+
+      {showHelp && (
+        <InfoPopup
+          visible={showHelp}
+          onClose={() => setShowHelp(false)}
+          image={require("@/assets/images/item_template_popup.png")}
+          title=" What is an Item Template?"
+          description={`Item Templates regulate what kind of fields you can enter for each (new) item of the Collection.For example, inside your Books Collection you could create a Template for each Book you want to put into the Collection. Like genres!  📚`}
+        />
+      )}
     </>
   );
 };

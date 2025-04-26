@@ -23,6 +23,10 @@ import {
 } from "./CreateCollectionList.styles";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
+import {
+  CardText,
+  CardHeader,
+} from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -72,17 +76,27 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     <>
       <Container>
         <Card>
-          <IconTopRight>
-            <TouchableOpacity onPress={() => setShowHelp(true)}>
-              <MaterialIcons name="help-outline" size={26} color={iconColor} />
-            </TouchableOpacity>
-          </IconTopRight>
-          <Header title="Adding Lists" />
-          <View style={{ marginLeft: 15 }}>
-            <ThemedText fontSize="s" fontWeight="light">
+          <CardText>
+            <CardHeader>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Adding Lists{" "}
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </CardHeader>
+            <ThemedText
+              fontSize="s"
+              fontWeight="light"
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
               Add Lists to organize your Collections
             </ThemedText>
-          </View>
+          </CardText>
         </Card>
 
         <FlatList

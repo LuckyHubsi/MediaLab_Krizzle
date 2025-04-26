@@ -38,8 +38,6 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
   onConfirm,
 }) => {
   const colorScheme = useColorScheme();
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 
   return (
     <Modal visible={visible} transparent animationType="fade">
