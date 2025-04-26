@@ -9,9 +9,10 @@ import {
 import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import ItemTemplateCard from "./ItemTemplateCard/ItemTemplateCard";
-import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
+import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -26,7 +27,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   onBack,
   onNext,
 }) => {
-  const maxPreviewCount = 3;
+  const maxPreviewCount = 2;
   const colorScheme = useColorScheme();
   const cards = data.templates;
 
@@ -61,7 +62,14 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       ...prev,
       templates: [
         ...prev.templates,
-        { id: prev.templates.length, itemType: "text", isPreview: false },
+        {
+          id: prev.templates.length,
+          itemType: "text",
+          isPreview: false,
+          title: "",
+          options: [],
+          rating: "star" as keyof typeof MaterialIcons.glyphMap,
+        },
       ],
     }));
   };
@@ -78,6 +86,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       ...prev,
       templates: prev.templates.map((card) =>
         card.id === id ? { ...card, itemType: newType } : card,
+      ),
+    }));
+  };
+
+  const handleTitleChange = (id: number, text: string) => {
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, title: text } : card,
+      ),
+    }));
+  };
+
+  const handleRatingChange = (
+    id: number,
+    ratingValue: keyof typeof MaterialIcons.glyphMap,
+  ) => {
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, rating: ratingValue } : card,
+      ),
+    }));
+  };
+
+  const handleOptionsChange = (id: number, newOptions: string[]) => {
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, options: newOptions } : card,
       ),
     }));
   };
@@ -117,8 +155,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </ItemCount>
         <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={previewCount <= 3 ? "primary" : "red"}>
-            {Math.min(previewCount - 1, 3)}
+          <ThemedText colorVariant={previewCount <= 2 ? "primary" : "red"}>
+            {Math.min(previewCount, 3)}
           </ThemedText>
           <ThemedText
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
@@ -134,6 +172,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           itemType={typeArray[1]}
           textfieldIcon={textfieldIconArray[0]}
           isPreview={true}
+          title={data.templateTitle}
+          onTitleChange={(text) =>
+            setData((prev) => ({ ...prev, templateTitle: text }))
+          }
         />
         <ThemedText colorVariant="grey" style={{ margin: 10 }}>
           Your Templates:
@@ -146,7 +188,17 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             isPreview={card.isPreview}
             itemType={card.itemType}
             textfieldIcon={getIconForType(card.itemType)}
+            title={card.title}
+            rating={card.rating}
+            options={card.options}
             onTypeChange={(newType) => handleTypeChange(card.id, newType)}
+            onTitleChange={(text) => handleTitleChange(card.id, text)}
+            onRatingChange={(newRating) =>
+              handleRatingChange(card.id, newRating)
+            }
+            onOptionsChange={(newOptions) =>
+              handleOptionsChange(card.id, newOptions)
+            }
             onRemove={() => handleRemoveCard(card.id)}
             onPreviewToggle={() => handlePreviewToggle(card.id)}
           />

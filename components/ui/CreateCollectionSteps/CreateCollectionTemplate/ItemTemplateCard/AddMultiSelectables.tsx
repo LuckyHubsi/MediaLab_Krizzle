@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import {
   AddMultiSelectableButton,
   AddMultiSelectablesContainer,
@@ -13,26 +13,30 @@ import Textfield from "@/components/ui/Textfield/Textfield";
 
 interface AddMultiSelectablesProps {
   title: string;
+  options: string[];
+  onOptionsChange: (newOptions: string[]) => void;
 }
 
-const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({ title }) => {
+const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
+  title,
+  options,
+  onOptionsChange,
+}) => {
   const colorScheme = useColorScheme();
-  const [textfields, setTextfields] = useState<string[]>([]);
 
   const handleAddButtonClick = () => {
-    setTextfields((prev) => [...prev, ""]);
+    onOptionsChange([...options, ""]);
   };
 
   const handleInputChange = (index: number, value: string) => {
-    setTextfields((prev) => {
-      const updatedTextfields = [...prev];
-      updatedTextfields[index] = value;
-      return updatedTextfields;
-    });
+    const updated = [...options];
+    updated[index] = value;
+    onOptionsChange(updated);
   };
 
   const handleRemoveTextfield = (indexToRemove: number) => {
-    setTextfields((prev) => prev.filter((_, index) => index !== indexToRemove));
+    const updated = options.filter((_, index) => index !== indexToRemove);
+    onOptionsChange(updated);
   };
 
   return (
@@ -45,9 +49,9 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({ title }) => {
         <ThemedText colorVariant="primary">Add a selectable</ThemedText>
       </AddMultiSelectableButton>
 
-      {textfields.length > 0 && <ThemedText>List of Selectables</ThemedText>}
+      {options.length > 0 && <ThemedText>List of Selectables</ThemedText>}
 
-      {textfields.map((textfieldValue, index) => (
+      {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
           <TextfieldWrapper>
             <Textfield
@@ -55,6 +59,8 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({ title }) => {
               title={""}
               placeholderText={"Enter Selectable"}
               textfieldIcon="bookmark"
+              value={textfieldValue}
+              onChangeText={(text) => handleInputChange(index, text)}
             />
           </TextfieldWrapper>
           <TouchableOpacity onPress={() => handleRemoveTextfield(index)}>

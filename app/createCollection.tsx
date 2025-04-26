@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import CreateCollection from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
+import CreateCollection, {
+  CollectionData,
+} from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
 import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";

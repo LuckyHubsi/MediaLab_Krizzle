@@ -48,7 +48,15 @@ export type CollectionData = {
   selectedColor: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   lists: { id: string; title: string }[];
-  templates: { id: number; itemType: string; isPreview: boolean }[];
+  templates: {
+    id: number;
+    itemType: string;
+    isPreview: boolean;
+    title?: string;
+    options?: string[];
+    rating?: keyof typeof MaterialIcons.glyphMap;
+  }[];
+  templateTitle?: string;
 };
 const CreateCollection: FC<CreateCollectionProps> = ({
   data,

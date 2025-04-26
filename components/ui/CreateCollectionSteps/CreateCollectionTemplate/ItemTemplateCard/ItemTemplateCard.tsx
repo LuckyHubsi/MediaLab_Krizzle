@@ -22,7 +22,13 @@ interface ItemTemplateCardProps {
   itemType: string;
   textfieldIcon: keyof typeof MaterialIcons.glyphMap;
   isPreview: boolean;
+  title?: string;
+  rating?: keyof typeof MaterialIcons.glyphMap;
+  options?: string[];
   onTypeChange?: (value: string) => void;
+  onTitleChange?: (text: string) => void;
+  onRatingChange?: (rating: keyof typeof MaterialIcons.glyphMap) => void;
+  onOptionsChange?: (options: string[]) => void;
   onRemove?: () => void;
   onPreviewToggle?: () => void;
 }
@@ -32,7 +38,13 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   itemType,
   textfieldIcon,
   isPreview,
+  title,
+  rating,
+  options,
   onTypeChange,
+  onTitleChange,
+  onRatingChange,
+  onOptionsChange,
   onRemove,
   onPreviewToggle,
 }) => {
@@ -40,8 +52,6 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
 
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
-
-  console.log(isPreview, "isPreview");
 
   return (
     <TemplateSelectCard colorScheme={colorScheme}>
@@ -75,37 +85,56 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
-      <>
-        <RNPickerSelect
-          onValueChange={(value) => {
-            if (onTypeChange) onTypeChange(value);
-          }}
-          style={pickerStyles}
-          value={itemType}
-          items={
-            isTitleCard
-              ? [{ label: "Text", value: "text" }]
-              : typeArray
-                  .filter((item) => item !== "item")
-                  .map((item) => ({
-                    label: item,
-                    value: item,
-                  }))
-          }
-          {...(!isTitleCard && {
-            Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
-          })}
+
+      <RNPickerSelect
+        onValueChange={(value) => {
+          if (onTypeChange) onTypeChange(value);
+        }}
+        style={pickerStyles}
+        value={itemType}
+        items={
+          isTitleCard
+            ? [{ label: "Text", value: "text" }]
+            : typeArray
+                .filter((item) => item !== "item")
+                .map((item) => ({
+                  label: item,
+                  value: item,
+                }))
+        }
+        {...(!isTitleCard && {
+          Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
+        })}
+      />
+
+      <Textfield
+        showTitle={false}
+        textfieldIcon={textfieldIcon}
+        placeholderText={`Add a title to your ${itemType}`}
+        title={""}
+        value={title || ""}
+        onChangeText={(text) => onTitleChange?.(text)}
+      />
+
+      {itemType === "rating" && rating !== undefined && onRatingChange && (
+        <TemplateRating
+          title={"Rating Icon"}
+          rating={rating}
+          onRatingChange={onRatingChange}
         />
-        <Textfield
-          showTitle={false}
-          textfieldIcon={textfieldIcon}
-          placeholderText={`Add a title to your ${itemType}`}
-          title={""}
-        />
-        {itemType === "rating" && <TemplateRating title={"Rating Icon"} />}
-        {itemType === "multi-select" && <AddMultiSelectables title="" />}
-        {!isTitleCard && <RemoveButton onPress={onRemove} />}
-      </>
+      )}
+
+      {itemType === "multi-select" &&
+        options !== undefined &&
+        onOptionsChange && (
+          <AddMultiSelectables
+            title=""
+            options={options}
+            onOptionsChange={onOptionsChange}
+          />
+        )}
+
+      {!isTitleCard && <RemoveButton onPress={onRemove} />}
     </TemplateSelectCard>
   );
 };

@@ -2,7 +2,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native";
-import { useState } from "react";
 import {
   IconContainer,
   RatingIconsContainer,
@@ -37,35 +36,26 @@ const iconArray: (keyof typeof MaterialIcons.glyphMap)[] = [
 
 interface TemplateRatingProps {
   title: string;
+  rating: keyof typeof MaterialIcons.glyphMap;
+  onRatingChange: (newRating: keyof typeof MaterialIcons.glyphMap) => void;
 }
 
-const TemplateRating: React.FC<TemplateRatingProps> = ({ title }) => {
-  const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set());
-
-  const toggleIconSelection = (icon: string) => {
-    setSelectedIcons(() => {
-      const updated = new Set<string>();
-      updated.add(icon);
-      return updated;
-    });
-  };
-
+const TemplateRating: React.FC<TemplateRatingProps> = ({
+  title,
+  rating,
+  onRatingChange,
+}) => {
   return (
     <RatingIconsContainer>
       <ThemedText>{title}</ThemedText>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <IconContainer>
           {iconArray.map((icon) => (
-            <TouchableOpacity
-              key={icon}
-              onPress={() => toggleIconSelection(icon)}
-            >
+            <TouchableOpacity key={icon} onPress={() => onRatingChange(icon)}>
               <MaterialIcons
                 name={icon}
                 size={28}
-                color={
-                  selectedIcons.has(icon) ? Colors.primary : Colors.grey100
-                }
+                color={rating === icon ? Colors.primary : Colors.grey100}
                 style={{ marginRight: 10 }}
               />
             </TouchableOpacity>
