@@ -21,8 +21,17 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import { Colors } from "@/constants/Colors";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
+import BottomButtons from "../../BottomButtons/BottomButtons";
 
-const CreateCollectionList: FC = () => {
+interface CreateCollectionListProps {
+  onBack?: () => void;
+  onNext?: () => void;
+}
+
+const CreateCollectionList: FC<CreateCollectionListProps> = ({
+  onBack,
+  onNext,
+}) => {
   const [cards, setCards] = useState<{ id: string }[]>([]);
   const router = useRouter();
   const [showHelp, setShowHelp] = useState(false);
@@ -30,10 +39,6 @@ const CreateCollectionList: FC = () => {
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString() };
     setCards((prevCards) => [...prevCards, newCard]);
-  };
-
-  const handleNext = () => {
-    router.push("./collectionTemplate");
   };
 
   const handleRemoveCard = (id: string) => {
@@ -110,9 +115,17 @@ const CreateCollectionList: FC = () => {
           }
         />
 
-        <NextButtonWrapper>
+        <BottomButtons
+          titleLeftButton="Back"
+          titleRightButton="Next"
+          onDiscard={onBack!}
+          onNext={onNext!}
+          variant="back"
+        />
+
+        {/* <NextButtonWrapper>
           <Button onPress={handleNext}>Next</Button>
-        </NextButtonWrapper>
+        </NextButtonWrapper> */}
       </Container>
 
       {showHelp && (

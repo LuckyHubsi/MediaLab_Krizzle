@@ -30,7 +30,11 @@ import { de } from "date-fns/locale";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
-const CreateCollection: FC = () => {
+interface CreateCollectionProps {
+  onNext?: () => void;
+}
+
+const CreateCollection: FC<CreateCollectionProps> = ({ onNext }) => {
   const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -208,7 +212,7 @@ const CreateCollection: FC = () => {
             <Button
               onPress={() => {
                 console.log("Collection created");
-                nextPage();
+                onNext?.();
               }}
             >
               Next

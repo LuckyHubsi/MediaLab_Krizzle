@@ -12,11 +12,13 @@ import { ScrollView } from "react-native";
 import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
 
 interface CreateCollectionTemplateProps {
-  title: string;
+  onBack?: () => void;
+  onNext?: () => void;
 }
 
 const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
-  title,
+  onBack,
+  onNext,
 }) => {
   const maxPreviewCount = 3;
   const colorScheme = useColorScheme();
@@ -136,12 +138,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         variant={"back"}
         titleLeftButton={"Back"}
         titleRightButton={"Add"}
-        onDiscard={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        onNext={function (): void {
-          throw new Error("Function not implemented.");
-        }}
+        onDiscard={onBack!}
+        onNext={onNext!}
       />
     </>
   );
