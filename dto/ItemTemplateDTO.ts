@@ -1,4 +1,4 @@
-import { AttributeDTO } from './AttributeDTO';
+import { AttributeDTO } from "./AttributeDTO";
 
 /**
  * Represents an ItemTemplate data structure

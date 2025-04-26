@@ -68,7 +68,7 @@ const itemSelectByCollectionIdQuery: string = `
  * @returns {string} - The SQL query
  */
 function itemSelectByCollectionIdQuery(collectionId: number): string {
-    return `
+  return `
         SELECT 
         i.itemID,
         i.collectionID,
@@ -135,9 +135,9 @@ const deleteItem: string = `
 `;
 
 export {
-    itemSelectByIdQuery,
-    itemSelectByCollectionIdQuery,
-    insertItem,
-    updateItem,
-    deleteItem
-}
+  itemSelectByIdQuery,
+  itemSelectByCollectionIdQuery,
+  insertItem,
+  updateItem,
+  deleteItem,
+};
