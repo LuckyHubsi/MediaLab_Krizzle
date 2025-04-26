@@ -7,9 +7,7 @@ export default function CollectionTemplateScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <CreateCollectionTemplate title={"Hey"} />
-        </View>
+        <View style={{ flex: 1 }}></View>
       </ThemedView>
     </SafeAreaView>
   );

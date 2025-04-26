@@ -1,33 +1,43 @@
+import { FC } from "react";
+import { ScrollView } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useState } from "react";
 import {
   ItemCountContainer,
   ItemCount,
 } from "./CreateCollectionTemplate.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import ItemTemplateCard from "./ItemTemplateCard/ItemTemplateCard";
-import { ScrollView } from "react-native";
 import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
 
+import type { CollectionData } from "../CreateCollection/CreateCollection";
+
 interface CreateCollectionTemplateProps {
+  data: CollectionData;
+  setData: React.Dispatch<React.SetStateAction<CollectionData>>;
   onBack?: () => void;
   onNext?: () => void;
 }
 
 const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
+  data,
+  setData,
   onBack,
   onNext,
 }) => {
   const maxPreviewCount = 3;
   const colorScheme = useColorScheme();
+  const cards = data.templates;
+
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
     "short-text",
     "calendar-today",
     "layers",
   ];
+
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
+
   const getIconForType = (type: string) => {
     switch (type) {
       case "text":
@@ -42,36 +52,55 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         return "short-text";
     }
   };
-  const [cards, setCards] = useState<
-    { id: number; itemType: string; isPreview: boolean }[]
-  >([]);
+
+  const previewCount = cards.filter((card) => card.isPreview).length + 1;
 
   const handleAddCard = () => {
     if (cards.length >= 10) return;
-    setCards((prev) => [
+    setData((prev) => ({
       ...prev,
-      { id: prev.length, itemType: "text", isPreview: false },
-    ]);
+      templates: [
+        ...prev.templates,
+        { id: prev.templates.length, itemType: "text", isPreview: false },
+      ],
+    }));
   };
 
-  const previewCount = cards.filter((card) => card.isPreview).length + 1;
-  const handlePreviewToggle = (cardId: number) => {
-    setCards((prev) =>
-      prev.map((card) => {
-        if (card.id === cardId) {
-          if (card.isPreview && previewCount <= maxPreviewCount) {
-            return { ...card, isPreview: false };
-          }
+  const handleRemoveCard = (id: number) => {
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.filter((card) => card.id !== id),
+    }));
+  };
 
-          if (!card.isPreview && previewCount < maxPreviewCount) {
-            return { ...card, isPreview: true };
-          }
+  const handleTypeChange = (id: number, newType: string) => {
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, itemType: newType } : card,
+      ),
+    }));
+  };
 
-          return card;
-        }
-        return card;
-      }),
-    );
+  const handlePreviewToggle = (id: number) => {
+    const currentCard = cards.find((c) => c.id === id);
+    const currentlyActive = cards.filter((c) => c.isPreview).length;
+
+    if (!currentCard) return;
+
+    const willBePreviewed = !currentCard.isPreview;
+    const validToggle = willBePreviewed
+      ? currentlyActive < maxPreviewCount
+      : true;
+
+    if (validToggle) {
+      setData((prev) => ({
+        ...prev,
+        templates: prev.templates.map((card) =>
+          card.id === id ? { ...card, isPreview: !card.isPreview } : card,
+        ),
+      }));
+    }
   };
 
   return (
@@ -88,8 +117,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </ItemCount>
         <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={previewCount < 3 ? "primary" : "red"}>
-            {previewCount}
+          <ThemedText colorVariant={previewCount <= 3 ? "primary" : "red"}>
+            {Math.min(previewCount - 1, 3)}
           </ThemedText>
           <ThemedText
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
@@ -98,6 +127,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </ItemCount>
       </ItemCountContainer>
+
       <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
         <ItemTemplateCard
           isTitleCard={true}
@@ -116,16 +146,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             isPreview={card.isPreview}
             itemType={card.itemType}
             textfieldIcon={getIconForType(card.itemType)}
-            onTypeChange={(newType) => {
-              setCards((prev) =>
-                prev.map((c) =>
-                  c.id === card.id ? { ...c, itemType: newType } : c,
-                ),
-              );
-            }}
-            onRemove={() => {
-              setCards((prev) => prev.filter((c) => c.id !== card.id));
-            }}
+            onTypeChange={(newType) => handleTypeChange(card.id, newType)}
+            onRemove={() => handleRemoveCard(card.id)}
             onPreviewToggle={() => handlePreviewToggle(card.id)}
           />
         ))}

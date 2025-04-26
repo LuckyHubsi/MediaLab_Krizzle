@@ -31,17 +31,36 @@ import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 interface CreateCollectionProps {
+  data: {
+    title: string;
+    selectedTag: string | null;
+    selectedColor: string;
+    selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+    lists: { id: string; title: string }[];
+    templates: { id: number; itemType: string; isPreview: boolean }[];
+  };
+  setData: React.Dispatch<React.SetStateAction<any>>;
   onNext?: () => void;
 }
-
-const CreateCollection: FC<CreateCollectionProps> = ({ onNext }) => {
+export type CollectionData = {
+  title: string;
+  selectedTag: string | null;
+  selectedColor: string;
+  selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+  lists: { id: string; title: string }[];
+  templates: { id: number; itemType: string; isPreview: boolean }[];
+};
+const CreateCollection: FC<CreateCollectionProps> = ({
+  data,
+  setData,
+  onNext,
+}) => {
   const colorScheme = useColorScheme();
-  const [title, setTitle] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedIcon, setSelectedIcon] = useState<
-    keyof typeof MaterialIcons.glyphMap | undefined
-  >(undefined);
+  const title = data.title;
+  const selectedTag = data.selectedTag;
+  const selectedColor = data.selectedColor;
+  const selectedIcon = data.selectedIcon;
+
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -152,8 +171,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({ onNext }) => {
               placeholder="Add a title to your Note"
               value={title}
               onChangeText={(text) => {
-                setTitle(text);
-                if (text.trim().length > 0) setTitleError(null);
+                setData((prev: any) => ({ ...prev, title: text }));
               }}
             />
             {titleError && (
@@ -174,7 +192,10 @@ const CreateCollection: FC<CreateCollectionProps> = ({ onNext }) => {
               tags={tags}
               selectedTag={selectedTag}
               onSelectTag={(tag) =>
-                setSelectedTag((prevTag) => (prevTag === tag ? null : tag))
+                setData((prev: { selectedTag: string }) => ({
+                  ...prev,
+                  selectedTag: prev.selectedTag === tag ? null : tag,
+                }))
               }
               onViewAllPress={() => router.push("/tagManagement")}
             />
@@ -242,13 +263,14 @@ const CreateCollection: FC<CreateCollectionProps> = ({ onNext }) => {
         }
         onSelect={(itemValue) => {
           if (popupType === "color") {
-            setSelectedColor(itemValue);
+            setData((prev: any) => ({ ...prev, selectedColor: itemValue }));
           } else {
-            setSelectedIcon(
-              itemValue
+            setData((prev: any) => ({
+              ...prev,
+              selectedIcon: itemValue
                 ? (itemValue as keyof typeof MaterialIcons.glyphMap)
                 : undefined,
-            );
+            }));
           }
         }}
         onClose={() => setPopupVisible(false)}

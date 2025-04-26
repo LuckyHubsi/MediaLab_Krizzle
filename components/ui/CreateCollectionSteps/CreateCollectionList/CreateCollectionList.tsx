@@ -1,48 +1,67 @@
-import React, { useState, FC } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { FlatList, TouchableOpacity, useColorScheme, View } from "react-native";
+import React, { FC, useState } from "react";
+import { FlatList, TouchableOpacity, View } from "react-native";
+import { useColorScheme } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
-import { Button } from "@/components/ui/Button/Button";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
 import { ThemedText } from "@/components/ThemedText";
+import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
+import BottomButtons from "../../BottomButtons/BottomButtons";
+import Textfield from "../../Textfield/Textfield";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
+
+import { Colors } from "@/constants/Colors";
 import {
   Container,
   AddButtonWrapper,
   ListContent,
-  NextButtonWrapper,
   RemoveButton,
   RemoveButtonContent,
 } from "./CreateCollectionList.styles";
-import Textfield from "../../Textfield/Textfield";
-import { MaterialIcons } from "@expo/vector-icons";
-import { IconTopRight } from "../../IconTopRight/IconTopRight";
-import { Colors } from "@/constants/Colors";
-import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
-import BottomButtons from "../../BottomButtons/BottomButtons";
+
+import type { CollectionData } from "../CreateCollection/CreateCollection";
 
 interface CreateCollectionListProps {
+  data: CollectionData;
+  setData: React.Dispatch<React.SetStateAction<CollectionData>>;
   onBack?: () => void;
   onNext?: () => void;
 }
 
 const CreateCollectionList: FC<CreateCollectionListProps> = ({
+  data,
+  setData,
   onBack,
   onNext,
 }) => {
-  const [cards, setCards] = useState<{ id: string }[]>([]);
-  const router = useRouter();
   const [showHelp, setShowHelp] = useState(false);
+  const cards = data.lists;
 
   const handleAddCard = () => {
-    const newCard = { id: Date.now().toString() };
-    setCards((prevCards) => [...prevCards, newCard]);
+    const newCard = { id: Date.now().toString(), title: "" };
+    setData((prev) => ({
+      ...prev,
+      lists: [...prev.lists, newCard],
+    }));
   };
 
   const handleRemoveCard = (id: string) => {
-    setCards((prevCards) => prevCards.filter((card) => card.id !== id));
+    setData((prev) => ({
+      ...prev,
+      lists: prev.lists.filter((card) => card.id !== id),
+    }));
+  };
+
+  const handleTitleChange = (id: string, text: string) => {
+    setData((prev) => ({
+      ...prev,
+      lists: prev.lists.map((card) =>
+        card.id === id ? { ...card, title: text } : card,
+      ),
+    }));
   };
 
   const colorScheme = useColorScheme();
@@ -85,8 +104,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
                 textfieldIcon="text-fields"
                 placeholderText={`Add a title to your note`}
                 title={""}
-                value={""}
-                onChangeText={() => {}}
+                value={item.title}
+                onChangeText={(text) => handleTitleChange(item.id, text)}
               />
               <RemoveButton onPress={() => handleRemoveCard(item.id)}>
                 <RemoveButtonContent>
@@ -122,10 +141,6 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           onNext={onNext!}
           variant="back"
         />
-
-        {/* <NextButtonWrapper>
-          <Button onPress={handleNext}>Next</Button>
-        </NextButtonWrapper> */}
       </Container>
 
       {showHelp && (
