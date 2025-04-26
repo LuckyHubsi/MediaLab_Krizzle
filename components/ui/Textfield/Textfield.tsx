@@ -10,37 +10,40 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 
 interface TextfieldProps {
-  title?: string;
-  placeholderText?: string;
+  title: string;
+  showTitle?: boolean;
+  placeholderText: string;
   editable?: boolean;
-  //   onChangeText: (text: string) => void;
-  //   value: string;
+  textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
+  onChangeText: (text: string) => void;
+  value: string;
 }
 
 const Textfield: FC<TextfieldProps> = ({
   title,
   placeholderText,
   editable = true,
-  // onChangeText,
-  //  value
+  showTitle = true,
+  textfieldIcon = "short-text",
+  onChangeText,
+  value,
 }) => {
-  const [value, onChangeText] = useState(placeholderText);
   const colorScheme = useColorScheme();
 
   return (
     <TextfieldContainter>
-      <ThemedText fontWeight="regular">{title}</ThemedText>
+      {showTitle ? <ThemedText fontWeight="regular">{title}</ThemedText> : null}
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
-          name="short-text"
+          name={textfieldIcon}
           size={20}
           color={colorScheme === "light" ? "#333" : "#ccc"}
         />
         <StyledTextInput
           colorScheme={colorScheme}
           editable={editable}
-          //   onChangeText={onChangeText}
-          //   value={value}
+          onChangeText={onChangeText}
+          value={value}
           placeholderTextColor={
             colorScheme === "light" ? Colors.grey100 : Colors.grey50
           }

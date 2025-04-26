@@ -7,8 +7,11 @@ import {
   InputWrapper,
   StyledTitleInput,
   TextIcon,
+  TextAlignRight,
 } from "./TitleCard.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { ThemedText } from "@/components/ThemedText";
+import Textfield from "../Textfield/Textfield";
 
 interface TitleCardProps {
   value: string;
@@ -25,23 +28,20 @@ export const TitleCard: React.FC<TitleCardProps> = ({
 
   return (
     <Container>
-      <Label colorScheme={colorScheme}>Title</Label>
-      <InputWrapper colorScheme={colorScheme}>
-        <TextIcon>
-          <MaterialIcons
-            name="text-fields"
-            size={20}
-            color={colorScheme === "light" ? "#333" : "#ccc"}
-          />
-        </TextIcon>
-        <StyledTitleInput
-          colorScheme={colorScheme}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={colorScheme === "light" ? "#999" : "#666"}
-        />
-      </InputWrapper>
+      <ThemedText fontSize="regular">Title</ThemedText>
+      <TextAlignRight>
+        <ThemedText fontSize="s" colorVariant="red">
+          * required
+        </ThemedText>
+      </TextAlignRight>
+      <Textfield
+        showTitle={false}
+        textfieldIcon="text-fields"
+        placeholderText={`Add a title to your note`}
+        title={""}
+        value={value}
+        onChangeText={onChangeText}
+      />
     </Container>
   );
 };

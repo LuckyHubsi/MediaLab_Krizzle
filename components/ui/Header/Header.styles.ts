@@ -7,7 +7,7 @@ export const StyledHeader = styled.View<{ colorScheme: "light" | "dark" }>`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 0 17px 0;
+  padding: 0 0 20px 0;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].cardBackground};
 `;
@@ -16,7 +16,7 @@ export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
   font-size: 24px;
   color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "black" : "white"};
-  margin-right: 15px;
+  margin-right: 7px;
   margin-top: 5px;
-  margin-left: 5px;
+  margin-left: 2px;
 `;

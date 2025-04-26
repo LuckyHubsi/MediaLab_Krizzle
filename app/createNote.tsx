@@ -13,6 +13,8 @@ import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import {
   colorLabelMap,
   colorKeyMap,
@@ -23,21 +25,29 @@ import { NoteDTO } from "@/dto/NoteDTO";
 import { PageType } from "@/utils/enums/PageType";
 import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
+import { ThemedText } from "@/components/ThemedText";
+import { red } from "react-native-reanimated/lib/typescript/Colors";
+import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 
 export default function CreateNoteScreen() {
+  const navigation = useNavigation();
+  const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedIcon, setSelectedIcon] =
-    useState<keyof typeof MaterialIcons.glyphMap>("");
-
+  const [selectedIcon, setSelectedIcon] = useState<
+    keyof typeof MaterialIcons.glyphMap | null
+  >(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
 
   const tags = ["Work", "Personal", "Urgent", "Ideas"];
 
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
-  const selectedIconLabel = iconLabelMap[selectedIcon] || "Choose Icon";
+  const selectedIconLabel = selectedIcon
+    ? iconLabelMap[selectedIcon]
+    : "Choose Icon";
 
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
@@ -64,6 +74,13 @@ export default function CreateNoteScreen() {
   };
 
   const createNote = async () => {
+    if (title.trim().length === 0) {
+      setTitleError("Title is required.");
+      return;
+    }
+
+    setTitleError(null);
+
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
@@ -71,11 +88,10 @@ export default function CreateNoteScreen() {
         tag_label: selectedTag,
       };
     }
-
     const noteDTO: NoteDTO = {
       page_type: PageType.Note,
       page_title: title,
-      page_icon: selectedIcon,
+      page_icon: selectedIcon ?? undefined,
       page_color: (selectedColor as keyof typeof Colors.widget) || "blue",
       archived: false,
       pinned: false,
@@ -91,37 +107,60 @@ export default function CreateNoteScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Card>
-            <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-            <Widget
-              title={title || "Title"}
-              pageType={PageType.Note}
-              label={selectedTag ?? "No tag"}
-              iconLeft={
-                <MaterialIcons name={selectedIcon} size={20} color="black" />
-              }
-              iconRight={
-                <MaterialIcons name="description" size={20} color="black" />
-              }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "blue"
-              }
-            />
-          </Card>
+        <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+          <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+            <Card>
+              <View style={{ alignItems: "center" }}>
+                <Header
+                  title="Create Note"
+                  onIconPress={() => alert("Popup!")}
+                />
+                <Widget
+                  title={title || "Title"}
+                  label={selectedTag ?? "No tag"}
+                  pageType={PageType.Note}
+                  iconLeft={
+                    <MaterialIcons
+                      name={selectedIcon || "help"}
+                      size={20}
+                      color="black"
+                    />
+                  }
+                  iconRight={
+                    <MaterialIcons name="description" size={20} color="black" />
+                  }
+                  color={
+                    (getWidgetColorKey(
+                      selectedColor,
+                    ) as keyof typeof Colors.widget) || "blue"
+                  }
+                />
+              </View>
+            </Card>
 
-          <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
-            <View style={{ width: "100%", marginTop: 16, gap: 25 }}>
+            <View style={{ width: "100%", gap: 20 }}>
               <Card>
                 <TitleCard
                   placeholder="Add a title to your Note"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                  }}
                 />
+                {titleError && (
+                  <ThemedText
+                    style={{
+                      marginTop: 5,
+                    }}
+                    fontSize="s"
+                    colorVariant="red"
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
               </Card>
-
+              <DividerWithLabel label="optional" iconName="arrow-back" />
               <Card>
                 <TagPicker
                   tags={tags}
@@ -155,8 +194,12 @@ export default function CreateNoteScreen() {
                 <View style={{ flex: 1 }}>
                   <ChooseCard
                     label={selectedIconLabel}
-                    selectedColor={selectedColor}
-                    selectedIcon={selectedIcon}
+                    selectedColor={
+                      useColorScheme() === "dark"
+                        ? Colors.dark.cardBackground
+                        : Colors.light.cardBackground
+                    }
+                    selectedIcon={selectedIcon ?? undefined}
                     onPress={() => {
                       setPopupType("icon");
                       setPopupVisible(true);
@@ -165,9 +208,16 @@ export default function CreateNoteScreen() {
                 </View>
               </View>
             </View>
-          </ScrollView>
-        </View>
-
+          </View>
+          <View
+            style={{
+              marginTop: 20,
+              width: "100%",
+            }}
+          >
+            <Button onPress={createNote}>Create</Button>
+          </View>
+        </ScrollView>
         <ChoosePopup
           visible={popupVisible}
           type={popupType}
@@ -194,18 +244,6 @@ export default function CreateNoteScreen() {
           onClose={() => setPopupVisible(false)}
           onDone={() => setPopupVisible(false)}
         />
-
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 20,
-            right: 20,
-            width: "100%",
-          }}
-        >
-          <Button onPress={createNote}>Create</Button>
-        </View>
       </ThemedView>
     </SafeAreaView>
   );

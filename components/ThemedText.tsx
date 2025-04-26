@@ -1,4 +1,4 @@
-import { Text, type TextProps, StyleSheet } from "react-native";
+import { Text, type TextProps, StyleSheet, useColorScheme } from "react-native";
 import { Lexend_400Regular } from "@expo-google-fonts/lexend/400Regular";
 import { Lexend_300Light } from "@expo-google-fonts/lexend/300Light";
 import { Lexend_600SemiBold } from "@expo-google-fonts/lexend/600SemiBold";
@@ -6,20 +6,32 @@ import { Lexend_700Bold } from "@expo-google-fonts/lexend/700Bold";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 
+import { Colors } from "@/constants/Colors";
+
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   fontWeight?: "light" | "regular" | "semibold" | "bold";
-  fontSize?: "regular" | "xxl" | "xl" | "s";
-  colorVariant?: "default" | "red" | "grey" | "white";
+  fontSize?: "regular" | "xxl" | "xl" | "l" | "s";
+  colorVariant?:
+    | "default"
+    | "red"
+    | "grey"
+    | "white"
+    | "lightGrey"
+    | "primary"
+    | "viewAll";
 };
 
 const colorVariants = {
   default: (lightColor?: string, darkColor?: string) =>
     useThemeColor({ light: lightColor, dark: darkColor }, "text"),
-  red: () => "#FF4949",
-  grey: () => "#585858",
-  white: () => "#FFFFFF",
+  red: () => Colors.negative,
+  grey: () => Colors.grey100,
+  lightGrey: () => Colors.grey50,
+  white: () => Colors.white,
+  primary: () => Colors.primary,
+  viewAll: () => (useColorScheme() === "dark" ? Colors.grey50 : Colors.grey100),
 };
 
 export function ThemedText({
@@ -47,6 +59,7 @@ export function ThemedText({
         fontSize === "regular" ? fontSizeStyles.regular : undefined,
         fontSize === "xxl" ? fontSizeStyles.xxl : undefined,
         fontSize === "xl" ? fontSizeStyles.xl : undefined,
+        fontSize === "l" ? fontSizeStyles.l : undefined,
         fontSize === "s" ? fontSizeStyles.s : undefined,
         style,
       ]}
@@ -66,5 +79,6 @@ const fontSizeStyles = {
   regular: { fontSize: 16 },
   xxl: { fontSize: 32 },
   xl: { fontSize: 28 },
+  l: { fontSize: 24 },
   s: { fontSize: 14 },
 };
