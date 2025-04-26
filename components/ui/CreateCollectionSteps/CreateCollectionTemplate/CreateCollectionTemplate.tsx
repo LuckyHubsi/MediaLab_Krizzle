@@ -239,7 +239,6 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         ))}
 
         <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
-        <ProgressIndicator progressStep={3} />
       </ScrollView>
 
       <BottomButtons
@@ -248,6 +247,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         titleRightButton={"Add"}
         onDiscard={onBack!}
         onNext={onNext!}
+        hasProgressIndicator={true}
+        progressStep={3}
       />
 
       {showHelp && (

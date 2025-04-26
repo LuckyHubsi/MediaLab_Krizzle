@@ -29,6 +29,7 @@ import {
 import { de } from "date-fns/locale";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
+import BottomButtons from "../../BottomButtons/BottomButtons";
 
 interface CreateCollectionProps {
   data: {
@@ -238,14 +239,14 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           </TwoColumnRow>
 
           <ButtonContainer>
-            <Button
-              onPress={() => {
-                console.log("Collection created");
-                onNext?.();
-              }}
-            >
-              Next
-            </Button>
+            <BottomButtons
+              variant={"back"}
+              titleLeftButton={"Back"}
+              titleRightButton={"Add"}
+              onNext={onNext!}
+              hasProgressIndicator={true}
+              progressStep={1}
+            />
           </ButtonContainer>
         </ContentWrapper>
       </ScrollContainer>

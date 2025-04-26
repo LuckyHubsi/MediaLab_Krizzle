@@ -1,9 +1,9 @@
 import { TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 
-export const Container = styled.View`
-  flex: 1;
-`;
+// export const Container = styled.View`
+//   flex: 1;
+// `;
 
 export const AddButtonWrapper = styled.View`
   width: 100%;
@@ -14,13 +14,6 @@ export const ListContent = {
   paddingTop: 20,
   gap: 20,
 };
-
-export const NextButtonWrapper = styled.View`
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  margin-bottom: 20px;
-`;
 
 export const RemoveButton = styled(TouchableOpacity)`
   margin-top: 15px;

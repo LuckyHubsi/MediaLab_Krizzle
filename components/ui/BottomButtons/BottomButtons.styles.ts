@@ -1,11 +1,21 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 
+type ThemeProps = {
+  colorScheme: "light" | "dark";
+};
+
+export const StyledBottomButtons = styled.View`
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 15px;
+  background-color: ${({ colorScheme }: ThemeProps) =>
+    Colors[colorScheme].background};
+`;
+
 export const BottomButtonContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  position: absolute;
-  bottom: 0;
   gap: 15px;
 `;
 

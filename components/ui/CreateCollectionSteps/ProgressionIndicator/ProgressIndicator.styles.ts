@@ -7,8 +7,6 @@ interface StepProps {
   colorScheme: "light" | "dark";
 }
 export const Container = styled.View`
-  position: absolute;
-  bottom: 0;
   width: 100%;
   flex-direction: row;
   align-items: center;
@@ -17,8 +15,8 @@ export const Container = styled.View`
 `;
 
 export const Step = styled.View<StepProps>`
-  width: ${({ isActive }: StepProps) => (isActive ? "50px" : "10px")};
-  height: 10px;
+  width: ${({ isActive }: StepProps) => (isActive ? "50px" : "8px")};
+  height: 8px;
   border-radius: 6px;
   background-color: ${({ isActive, colorScheme }: StepProps) =>
     isActive

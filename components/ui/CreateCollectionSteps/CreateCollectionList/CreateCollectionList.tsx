@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, ScrollView, TouchableOpacity, View } from "react-native";
 import { useColorScheme } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -15,7 +15,6 @@ import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 import { Colors } from "@/constants/Colors";
 import {
-  Container,
   AddButtonWrapper,
   ListContent,
   RemoveButton,
@@ -74,88 +73,87 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
 
   return (
     <>
-      <Container>
-        <Card>
-          <CardText>
-            <CardHeader>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Adding Lists{" "}
-              </ThemedText>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={Colors.primary}
-                />
-              </TouchableOpacity>
-            </CardHeader>
-            <ThemedText
-              fontSize="s"
-              fontWeight="light"
-              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-            >
-              Add Lists to organize your Collections
+      <Card>
+        <CardText>
+          <CardHeader>
+            <ThemedText fontSize="l" fontWeight="bold">
+              Adding Lists{" "}
             </ThemedText>
-          </CardText>
-        </Card>
-
-        <FlatList
-          style={{ marginBottom: 90 }}
-          data={cards}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={ListContent}
-          renderItem={({ item }) => (
-            <Card>
-              <ThemedText
-                fontSize="regular"
-                fontWeight="regular"
-                style={{ marginBottom: 15 }}
-              >
-                List {cards.findIndex((card) => card.id === item.id) + 1}
-              </ThemedText>
-              <Textfield
-                showTitle={false}
-                textfieldIcon="text-fields"
-                placeholderText={`Add a title to your note`}
-                title={""}
-                value={item.title}
-                onChangeText={(text) => handleTitleChange(item.id, text)}
+            <TouchableOpacity onPress={() => setShowHelp(true)}>
+              <MaterialIcons
+                name="help-outline"
+                size={26}
+                color={Colors.primary}
               />
-              <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                <RemoveButtonContent>
-                  <MaterialIcons
-                    name="delete"
-                    size={16}
-                    color="#ff4d4d"
-                    style={{ marginRight: 6, marginTop: 2 }}
-                  />
-                  <ThemedText
-                    fontSize="s"
-                    fontWeight="bold"
-                    style={{ color: "#ff4d4d" }}
-                  >
-                    remove
-                  </ThemedText>
-                </RemoveButtonContent>
-              </RemoveButton>
-            </Card>
-          )}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={
-            <AddButtonWrapper>
-              <AddButton onPress={handleAddCard} />
-            </AddButtonWrapper>
-          }
-        />
+            </TouchableOpacity>
+          </CardHeader>
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+          >
+            Add Lists to organize your Collections
+          </ThemedText>
+        </CardText>
+      </Card>
 
-        <BottomButtons
-          titleLeftButton="Back"
-          titleRightButton="Next"
-          onDiscard={onBack!}
-          onNext={onNext!}
-          variant="back"
-        />
-      </Container>
+      <FlatList
+        data={cards}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={ListContent}
+        renderItem={({ item }) => (
+          <Card>
+            <ThemedText
+              fontSize="regular"
+              fontWeight="regular"
+              style={{ marginBottom: 15 }}
+            >
+              List {cards.findIndex((card) => card.id === item.id) + 1}
+            </ThemedText>
+            <Textfield
+              showTitle={false}
+              textfieldIcon="text-fields"
+              placeholderText={`Add a title to your note`}
+              title={""}
+              value={item.title}
+              onChangeText={(text) => handleTitleChange(item.id, text)}
+            />
+            <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+              <RemoveButtonContent>
+                <MaterialIcons
+                  name="delete"
+                  size={16}
+                  color="#ff4d4d"
+                  style={{ marginRight: 6, marginTop: 2 }}
+                />
+                <ThemedText
+                  fontSize="s"
+                  fontWeight="bold"
+                  style={{ color: "#ff4d4d" }}
+                >
+                  remove
+                </ThemedText>
+              </RemoveButtonContent>
+            </RemoveButton>
+          </Card>
+        )}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <AddButtonWrapper>
+            <AddButton onPress={handleAddCard} />
+          </AddButtonWrapper>
+        }
+      />
+
+      <BottomButtons
+        titleLeftButton="Back"
+        titleRightButton="Next"
+        onDiscard={onBack!}
+        onNext={onNext!}
+        variant="back"
+        hasProgressIndicator={true}
+        progressStep={2}
+      />
 
       {showHelp && (
         <InfoPopup
