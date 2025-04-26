@@ -1,6 +1,7 @@
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { SafeAreaView, View } from "react-native";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CollectionTemplateScreen() {
   return (
