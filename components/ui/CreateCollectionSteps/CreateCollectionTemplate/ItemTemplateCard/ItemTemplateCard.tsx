@@ -13,12 +13,18 @@ import {
 import { Colors } from "@/constants/Colors";
 import { getPickerStyles } from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
+import TemplateRating from "./TemplateRating";
+import AddMultiSelectables from "./AddMultiSelectables";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
   itemType: string;
   textfieldIcon: keyof typeof MaterialIcons.glyphMap;
   isPreview: boolean;
+  onTypeChange?: (value: string) => void;
+  onRemove?: () => void;
+  onPreviewToggle?: () => void;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -26,11 +32,16 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   itemType,
   textfieldIcon,
   isPreview,
+  onTypeChange,
+  onRemove,
+  onPreviewToggle,
 }) => {
   const colorScheme = useColorScheme();
 
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
+
+  console.log(isPreview, "isPreview");
 
   return (
     <TemplateSelectCard colorScheme={colorScheme}>
@@ -47,7 +58,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             <ThemedText>Type</ThemedText>
           )}
         </CardTitle>
-        <CardPreview>
+        <CardPreview onPress={onPreviewToggle}>
           <ThemedText>Item Preview</ThemedText>
           {isPreview ? (
             <MaterialIcons
@@ -66,17 +77,14 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
       </CardTitleRow>
       <>
         <RNPickerSelect
-          onValueChange={() => {}}
+          onValueChange={(value) => {
+            if (onTypeChange) onTypeChange(value);
+          }}
           style={pickerStyles}
-          value={isTitleCard ? typeArray[1] : undefined}
+          value={itemType}
           items={
             isTitleCard
-              ? [
-                  {
-                    label: "Text",
-                    value: "text",
-                  },
-                ]
+              ? [{ label: "Text", value: "text" }]
               : typeArray
                   .filter((item) => item !== "item")
                   .map((item) => ({
@@ -94,6 +102,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           placeholderText={`Add a title to your ${itemType}`}
           title={""}
         />
+        {itemType === "rating" && <TemplateRating title={"Rating Icon"} />}
+        {itemType === "multi-select" && <AddMultiSelectables title="" />}
+        {!isTitleCard && <RemoveButton onPress={onRemove} />}
       </>
     </TemplateSelectCard>
   );

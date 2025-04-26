@@ -6,11 +6,18 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type AddButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
+  isDisabled?: boolean;
 };
 
-export const AddButton: React.FC<AddButtonProps> = ({ onPress }) => {
+export const AddButton: React.FC<AddButtonProps> = ({
+  onPress,
+  isDisabled = false,
+}) => {
   return (
-    <StyledButtonContainer onPress={onPress}>
+    <StyledButtonContainer
+      onPress={isDisabled ? undefined : onPress}
+      isDisabled={isDisabled}
+    >
       <MaterialIcons name="add" size={40} color="white" />
     </StyledButtonContainer>
   );
