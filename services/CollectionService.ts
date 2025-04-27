@@ -12,12 +12,16 @@ import {
 } from "@/utils/QueryHelper";
 import { CollectionMapper } from "@/utils/mapper/CollectionMapper";
 import { insertGeneralPageAndReturnID } from "./GeneralPageService";
-import { insertItemTemplateAndReturnID } from "./ItemTemplateService";
+import {
+  getTemplate,
+  insertItemTemplateAndReturnID,
+} from "./ItemTemplateService";
 import { insertAttribute, insertMultiselectOptions } from "./AttributeService";
 import { insertCollectionCategory } from "./CollectionCategoriesService";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Retrieves a collection associated with a specific page.
@@ -29,11 +33,13 @@ import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
  */
 const getCollectionByPageId = async (
   pageID: number,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<CollectionDTO | null> => {
   try {
     const collection = await fetchFirst<CollectionModel>(
       collectionSelectByPageIdQuery,
       [pageID],
+      txn,
     );
     if (!collection) return null;
     return CollectionMapper.toDTO(collection);
@@ -53,16 +59,18 @@ const getCollectionByPageId = async (
  */
 const insertCollectionAndReturnID = async (
   collectionDTO: CollectionDTO,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<number> => {
   try {
     const collectionID = await executeTransaction<number>(async () => {
-      await executeQuery(insertCollection, [
-        collectionDTO.pageID,
-        collectionDTO.templateID,
-      ]);
+      await executeQuery(
+        insertCollection,
+        [collectionDTO.pageID, collectionDTO.templateID],
+        txn,
+      );
 
       // get inserted collection ID
-      const lastInsertedID = await getLastInsertId();
+      const lastInsertedID = await getLastInsertId(txn);
       return lastInsertedID;
     });
 
@@ -96,30 +104,29 @@ const insertCollectionAndReturnID = async (
 export const saveCollection = async (
   collectionDTO: CollectionDTO,
   templateDTO: ItemTemplateDTO,
-): Promise<void> => {
+): Promise<number> => {
   try {
-    console.log(JSON.stringify(collectionDTO));
-    const pageID = await executeTransaction<number | null>(async () => {
+    const pageID = await executeTransaction<number | null>(async (txn) => {
       // 1. Insert General Page and get the pageID
-      const pageID = await insertGeneralPageAndReturnID(collectionDTO);
+      const pageID = await insertGeneralPageAndReturnID(collectionDTO, txn);
       if (pageID) {
         collectionDTO.pageID = pageID;
       }
 
       // 2. Insert Template and get template ID
-      const templateID = await insertItemTemplateAndReturnID(templateDTO);
+      const templateID = await insertItemTemplateAndReturnID(templateDTO, txn);
 
       // 3. Insert Attributes for the template and possibly multiselect options
       if (templateDTO.attributes) {
         for (const attr of templateDTO.attributes) {
           if (templateID) {
             attr.itemTemplateID = templateID;
-            await insertAttribute(attr);
-            if (attr.type == AttributeType.Multiselect && attr.options) {
-              const attributeID = await getLastInsertId();
+            await insertAttribute(attr, txn);
+            if (attr.type === AttributeType.Multiselect && attr.options) {
+              const attributeID = await getLastInsertId(txn);
               if (attributeID) {
                 attr.options.forEach((option) => {
-                  insertMultiselectOptions(option, attributeID);
+                  insertMultiselectOptions(option, attributeID, txn);
                 });
               }
             }
@@ -131,14 +138,17 @@ export const saveCollection = async (
       if (templateID) {
         collectionDTO.templateID = templateID;
       }
-      const collectionID = await insertCollectionAndReturnID(collectionDTO);
+      const collectionID = await insertCollectionAndReturnID(
+        collectionDTO,
+        txn,
+      );
 
       // 5. Insert Categories
       if (collectionDTO.categories) {
         for (const category of collectionDTO.categories) {
           if (collectionID) {
             category.collectionID = collectionID;
-            await insertCollectionCategory(category);
+            await insertCollectionCategory(category, txn);
           }
         }
       }
@@ -147,11 +157,12 @@ export const saveCollection = async (
     });
 
     if (pageID) {
-      const collection = await getCollectionByPageId(pageID);
-      console.log("Retrieved collection: ", collection);
+      return pageID;
+    } else {
+      throw new DatabaseError("Failed to create a new collection");
     }
   } catch (error) {
-    new DatabaseError("Failed to create a new collection", error);
+    throw new DatabaseError("Failed to create a new collection", error);
   }
 };
 

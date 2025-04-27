@@ -14,6 +14,7 @@ import {
   getLastInsertId,
 } from "@/utils/QueryHelper";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Retrieves all general page data from the database.
@@ -22,9 +23,15 @@ import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
  *
  * @throws {DatabaseError} If the fetch fails.
  */
-const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
+const getAllGeneralPageData = async (
+  txn?: SQLite.SQLiteDatabase,
+): Promise<GeneralPageDTO[]> => {
   try {
-    const rawData = await fetchAll<GeneralPageModel>(selectAllGeneralPageQuery);
+    const rawData = await fetchAll<GeneralPageModel>(
+      selectAllGeneralPageQuery,
+      [],
+      txn,
+    );
     return rawData.map(GeneralPageMapper.toDTO);
   } catch (error) {
     throw new DatabaseError("Error retrieving all pages.");
@@ -41,22 +48,27 @@ const getAllGeneralPageData = async (): Promise<GeneralPageDTO[]> => {
  */
 const insertGeneralPageAndReturnID = async (
   generalPageDTO: GeneralPageDTO,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<number> => {
   try {
     const pageID: number = await executeTransaction<number>(async () => {
-      await executeQuery(insertNewPageQuery, [
-        generalPageDTO.page_type,
-        generalPageDTO.page_title,
-        generalPageDTO.page_icon,
-        generalPageDTO.page_color,
-        new Date().toISOString(),
-        new Date().toISOString(),
-        generalPageDTO.archived ? 1 : 0,
-        generalPageDTO.pinned ? 1 : 0,
-      ]);
+      await executeQuery(
+        insertNewPageQuery,
+        [
+          generalPageDTO.page_type,
+          generalPageDTO.page_title,
+          generalPageDTO.page_icon,
+          generalPageDTO.page_color,
+          new Date().toISOString(),
+          new Date().toISOString(),
+          generalPageDTO.archived ? 1 : 0,
+          generalPageDTO.pinned ? 1 : 0,
+        ],
+        txn,
+      );
 
       // get inserted page ID
-      const lastInsertedID = await getLastInsertId();
+      const lastInsertedID = await getLastInsertId(txn);
       return lastInsertedID;
     });
 
@@ -74,9 +86,12 @@ const insertGeneralPageAndReturnID = async (
  *
  * @throws {DatabaseError} If the delete fails.
  */
-const deleteGeneralPage = async (pageID: number): Promise<boolean> => {
+const deleteGeneralPage = async (
+  pageID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
   try {
-    await executeQuery(deleteGeneralPageByIDQuery, [pageID]);
+    await executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
     return true;
   } catch (error) {
     throw new DatabaseError("Failed to delete teh page");

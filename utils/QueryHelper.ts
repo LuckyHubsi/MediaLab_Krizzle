@@ -23,11 +23,19 @@ const getDb = async () => {
  * @param {any[]} [params=[]] - The parameters for the query (optional).
  * @returns {Promise<SQLite.RunResult>} A promise that resolves when the query is executed.
  */
-const executeQuery = async (query: string, params: any[] = []) => {
-  const db = await getDb();
-  return db.runAsync(query, params);
+const executeQuery = async (
+  query: string,
+  params: any[] = [],
+  txn?: SQLite.SQLiteDatabase,
+) => {
+  const db = txn ?? (await getDb()); // Use txn if available, otherwise normal db
+  try {
+    return db.runAsync(query, params);
+  } catch (error) {
+    console.log("execute query", error);
+    throw error;
+  }
 };
-
 /**
  * Fetches the first result from an SQL query.
  *
@@ -39,14 +47,15 @@ const executeQuery = async (query: string, params: any[] = []) => {
 const fetchFirst = async <T>(
   query: string,
   params: any[] = [],
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<T | null> => {
-  const db = await getDb();
+  const db = txn ?? (await getDb());
   try {
-    const result = db.getFirstAsync<T>(query, params);
+    const result = await db.getFirstAsync<T>(query, params);
     return result;
   } catch (error) {
     console.error("Error fetching first item:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -58,14 +67,18 @@ const fetchFirst = async <T>(
  * @param {any[]} [params=[]] - The parameters for the query (optional).
  * @returns {Promise<T[]>} A promise that resolves to an array of results, or an empty array if an error occurs.
  */
-const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
-  const db = await getDb();
+const fetchAll = async <T>(
+  query: string,
+  params: any[] = [],
+  txn?: SQLite.SQLiteDatabase,
+): Promise<T[]> => {
+  const db = txn ?? (await getDb());
   try {
     const result = await db.getAllAsync<T>(query, params);
     return result;
   } catch (error) {
     console.error("Error fetching all items:", error);
-    return [];
+    throw error;
   }
 };
 
@@ -77,32 +90,31 @@ const fetchAll = async <T>(query: string, params: any[] = []): Promise<T[]> => {
  * @param {() => Promise<T>} fn - The function to execute within the transaction
  * @returns {Promise<T>} - Promise resolving to the return value of the function
  */
-const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
+const executeTransaction = async <T>(
+  fn: (txn: SQLite.SQLiteDatabase) => Promise<T>,
+): Promise<T> => {
   const db = await getDb();
   const inTransaction: boolean = await db.isInTransactionAsync();
 
-  return new Promise<T>((resolve, reject) => {
-    if (inTransaction) {
-      console.log("already in transaction");
-      fn()
-        .then(resolve)
-        .catch((error) => {
-          console.error("Transaction error, rolling back:", error);
-          reject(error);
-        });
-    } else {
-      db.withTransactionAsync(async () => {
-        console.log("new transaction");
+  if (inTransaction) {
+    console.log("already in transaction");
+    return fn(db);
+  } else {
+    console.log("new transaction");
+    return new Promise<T>((resolve, reject) => {
+      db.withExclusiveTransactionAsync(async (txn) => {
         try {
-          const result = await fn();
+          const result = await fn(txn);
           resolve(result);
         } catch (error) {
           console.error("Transaction error, rolling back:", error);
           reject(error);
+          // VERY IMPORTANT: THROW here to make sure rollback happens
+          throw error;
         }
       });
-    }
-  });
+    });
+  }
 };
 
 /**
@@ -112,10 +124,14 @@ const executeTransaction = async <T>(fn: () => Promise<T>): Promise<T> => {
  *
  * @throws {DatabaseError} If the fetch fails.
  */
-const getLastInsertId = async (): Promise<number> => {
+const getLastInsertId = async (
+  txn?: SQLite.SQLiteDatabase,
+): Promise<number> => {
   try {
     const insertedID = await fetchFirst<{ id: number }>(
       "SELECT last_insert_rowid() as id",
+      [],
+      txn,
     );
     if (insertedID) return insertedID.id;
     else throw new DatabaseError("Failed to fetch last inserted id");

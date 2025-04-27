@@ -6,6 +6,8 @@ import {
 } from "@/queries/CollectionCategoryQuery";
 import { CollectionCategoryModel } from "@/models/CollectionCategoryModel";
 import { CollectionCategoryMapper } from "@/utils/mapper/CollectionCategoryMapper";
+import * as SQLite from "expo-sqlite";
+import { DatabaseError } from "@/utils/DatabaseError";
 
 /**
  * Inserts a new collection category into the database.
@@ -15,29 +17,33 @@ import { CollectionCategoryMapper } from "@/utils/mapper/CollectionCategoryMappe
  */
 const insertCollectionCategory = async (
   categoryDTO: CollectionCategoryDTO,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<void> => {
   try {
     console.log(categoryDTO);
-    await executeQuery(insertCollectionCategoryQuery, [
-      categoryDTO.category_name,
-      categoryDTO.collectionID,
-    ]);
+    await executeQuery(
+      insertCollectionCategoryQuery,
+      [categoryDTO.category_name, categoryDTO.collectionID],
+      txn,
+    );
   } catch (error) {
-    console.error("Error inserting list:", error);
+    throw new DatabaseError("Error inserting list:", error);
   }
 };
+
 const getCollectionCategories = async (
   collectionID: number,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<CollectionCategoryDTO[]> => {
   try {
     const categories = await fetchAll<CollectionCategoryModel>(
       selectCategoriesByCollectionIdQuery,
       [collectionID],
+      txn,
     );
     return categories.map(CollectionCategoryMapper.toDTO);
   } catch (error) {
-    console.error("Error fetching collection categories:", error);
-    return [];
+    throw new DatabaseError("Failed to retrieve collection categories");
   }
 };
 

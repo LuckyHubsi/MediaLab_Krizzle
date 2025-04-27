@@ -12,6 +12,7 @@ import {
   fetchFirst,
   getLastInsertId,
 } from "@/utils/QueryHelper";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Inserts a new item template into the database and returns its ID.
@@ -23,14 +24,19 @@ import {
  */
 const insertItemTemplateAndReturnID = async (
   itemTemplateDTO: ItemTemplateDTO,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<number> => {
   try {
     const templateID: number | null = await executeTransaction<number>(
       async () => {
-        await executeQuery(insertItemTemplate, [itemTemplateDTO.template_name]);
+        await executeQuery(
+          insertItemTemplate,
+          [itemTemplateDTO.template_name],
+          txn,
+        );
 
         // get inserted page ID
-        const lastInsertedID = await getLastInsertId();
+        const lastInsertedID = await getLastInsertId(txn);
         return lastInsertedID;
       },
     );

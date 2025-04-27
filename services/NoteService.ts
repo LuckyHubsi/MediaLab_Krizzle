@@ -13,6 +13,7 @@ import {
 } from "@/queries/GeneralPageQuery";
 import { NoteModel } from "@/models/NoteModel";
 import { PageType } from "@/utils/enums/PageType";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Inserts a new note into the database.
@@ -20,12 +21,15 @@ import { PageType } from "@/utils/enums/PageType";
  * @param {NoteDTO} NoteDTO - The DTO representing the note to insert.
  * @returns {Promise<number | null>} A promise that resolves to the inserted note's ID, or null if the insertion fails.
  */
-const insertNote = async (noteDTO: NoteDTO): Promise<number | null> => {
+const insertNote = async (
+  noteDTO: NoteDTO,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<number | null> => {
   try {
     // first inserts the general page data and returns the pageID
-    const pageID = await insertGeneralPageAndReturnID(noteDTO);
+    const pageID = await insertGeneralPageAndReturnID(noteDTO, txn);
 
-    await executeQuery(insertNoteQuery, [noteDTO.note_content, pageID]);
+    await executeQuery(insertNoteQuery, [noteDTO.note_content, pageID], txn);
 
     return pageID;
   } catch (error) {
@@ -41,10 +45,15 @@ const insertNote = async (noteDTO: NoteDTO): Promise<number | null> => {
  * @param pageID - The unique identifier of the page to retrieve.
  * @returns A Promise that resolves to a NoteDTO if the page is a note, or null if not found or not a note.
  */
-const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
-  const noteData = await fetchFirst<NoteModel>(selectNoteByPageIDQuery, [
-    pageID,
-  ]);
+const getNoteDataByPageID = async (
+  pageID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<NoteDTO | null> => {
+  const noteData = await fetchFirst<NoteModel>(
+    selectNoteByPageIDQuery,
+    [pageID],
+    txn,
+  );
 
   if (!noteData) return null;
   if (noteData.page_type === PageType.Note) {
@@ -64,6 +73,7 @@ const getNoteDataByPageID = async (pageID: number): Promise<NoteDTO | null> => {
 const updateNoteContent = async (
   pageID: number,
   newNoteContent: string,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<boolean> => {
   try {
     if (!pageID) {
@@ -72,13 +82,14 @@ const updateNoteContent = async (
     }
 
     // update the note content
-    await executeQuery(updateNoteContentQuery, [newNoteContent, pageID]);
+    await executeQuery(updateNoteContentQuery, [newNoteContent, pageID], txn);
 
     // update the date_modified for the general page data
-    await executeQuery(updateDateModifiedByPageIDQuery, [
-      new Date().toISOString(),
-      pageID,
-    ]);
+    await executeQuery(
+      updateDateModifiedByPageIDQuery,
+      [new Date().toISOString(), pageID],
+      txn,
+    );
 
     return true;
   } catch (error) {
