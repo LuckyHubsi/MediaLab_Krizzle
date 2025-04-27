@@ -16,7 +16,7 @@ interface RatingPickerProps {
 
 const RatingPicker: React.FC<RatingPickerProps> = ({
   title,
-  selectedIcon,
+  selectedIcon = "star",
   outlinedIcon = "star-border",
   editable = true,
 }) => {

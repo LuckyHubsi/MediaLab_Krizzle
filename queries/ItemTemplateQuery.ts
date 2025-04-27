@@ -4,11 +4,13 @@ const insertItemTemplate: string = `
 
 const selectItemTemplateByTemplateIDQuery: string = `
     SELECT 
-        it.*,
-        json_group_array(
-            DISTINCT json_patch(
-                json_object(
-                    'attributeID', a.attributeID,
+    it.*,
+    json_group_array(
+        DISTINCT 
+            json_patch(
+                json_patch(
+                    json_object(
+                        'attributeID', a.attributeID,
                         'attribute_label', a.attribute_label,
                         'type', a.type,
                         'preview', a.preview
@@ -26,7 +28,21 @@ const selectItemTemplateByTemplateIDQuery: string = `
                         )
                         ELSE json_object()
                     END
-                )
+                ),
+                CASE
+                    WHEN a.type = 'rating' THEN json_object(
+                        'symbol', (
+                            SELECT
+                                rs.symbol
+                            FROM
+                                rating_symbol rs
+                            WHERE
+                                rs.attributeID = a.attributeID
+                        )
+                    )
+                    ELSE json_object()
+                END
+            )
         ) AS attributes
     FROM item_template it
     LEFT JOIN attribute a ON it.item_templateID = a.item_templateID

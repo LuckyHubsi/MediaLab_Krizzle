@@ -57,7 +57,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
             elements.push(
               <RatingPicker
                 title={attribute.attributeLabel}
-                selectedIcon="star"
+                selectedIcon={attribute.symbol || "star"}
               />,
             );
             break;
