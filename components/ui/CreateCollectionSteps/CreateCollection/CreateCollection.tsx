@@ -57,7 +57,6 @@ export type CollectionData = {
     options?: string[];
     rating?: keyof typeof MaterialIcons.glyphMap;
   }[];
-  templateTitle?: string;
 };
 const CreateCollection: FC<CreateCollectionProps> = ({
   data,

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
@@ -44,8 +44,6 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     "layers",
   ];
 
-  const typeArray = ["item", "text", "date", "multi-select", "rating"];
-
   const getIconForType = (type: string) => {
     switch (type) {
       case "text":
@@ -61,14 +59,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }
   };
 
-  const previewCount = cards.filter((card) => card.isPreview).length + 1;
+  const titleCard = cards[0];
+  const otherCards = cards.slice(1);
+
+  const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
 
   const [showHelp, setShowHelp] = useState(false);
   const iconColor =
     colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 
+  useEffect(() => {
+    if (!titleCard) {
+      setData((prev) => ({
+        ...prev,
+        templates: [
+          {
+            id: 0,
+            itemType: "text",
+            isPreview: true,
+            title: "",
+            options: [],
+            rating: "star" as keyof typeof MaterialIcons.glyphMap,
+          },
+          ...prev.templates,
+        ],
+      }));
+    }
+  }, []);
+
   const handleAddCard = () => {
-    if (cards.length >= 10) return;
+    if (otherCards.length >= 10) return;
     setData((prev) => ({
       ...prev,
       templates: [
@@ -132,8 +152,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   };
 
   const handlePreviewToggle = (id: number) => {
-    const currentCard = cards.find((c) => c.id === id);
-    const currentlyActive = cards.filter((c) => c.isPreview).length;
+    const currentCard = otherCards.find((c) => c.id === id);
+    const currentlyActive = otherCards.filter((c) => c.isPreview).length;
 
     if (!currentCard) return;
 
@@ -177,10 +197,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ThemedText>
         </CardText>
       </Card>
+
       <ItemCountContainer>
         <ItemCount colorScheme={colorScheme}>
           <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-            {cards.length}
+            {otherCards.length}
           </ThemedText>
           <ThemedText
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
@@ -201,21 +222,22 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       </ItemCountContainer>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
-        <ItemTemplateCard
-          isTitleCard={true}
-          itemType={typeArray[1]}
-          textfieldIcon={textfieldIconArray[0]}
-          isPreview={true}
-          title={data.templateTitle}
-          onTitleChange={(text) =>
-            setData((prev) => ({ ...prev, templateTitle: text }))
-          }
-        />
+        {titleCard && (
+          <ItemTemplateCard
+            isTitleCard={true}
+            itemType={titleCard.itemType}
+            textfieldIcon={getIconForType(titleCard.itemType)}
+            isPreview={true}
+            title={titleCard.title}
+            onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
+          />
+        )}
+
         <ThemedText colorVariant="grey" style={{ margin: 10 }}>
           Your Templates:
         </ThemedText>
 
-        {cards.map((card) => (
+        {otherCards.map((card) => (
           <ItemTemplateCard
             key={card.id}
             isTitleCard={false}
@@ -238,7 +260,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           />
         ))}
 
-        <AddButton onPress={handleAddCard} isDisabled={cards.length >= 10} />
+        <AddButton
+          onPress={handleAddCard}
+          isDisabled={otherCards.length >= 10}
+        />
       </ScrollView>
 
       <BottomButtons
@@ -257,7 +282,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           onClose={() => setShowHelp(false)}
           image={require("@/assets/images/item_template_popup.png")}
           title=" What is an Item Template?"
-          description={`Item Templates regulate what kind of fields you can enter for each (new) item of the Collection.For example, inside your Books Collection you could create a Template for each Book you want to put into the Collection. Like genres!  📚`}
+          description={`Item Templates regulate what kind of fields you can enter for each (new) item of the Collection. For example, inside your Books Collection you could create a Template for each Book you want to put into the Collection. Like genres!  📚`}
         />
       )}
     </>
