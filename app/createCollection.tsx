@@ -7,6 +7,13 @@ import CreateCollection, {
 import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
+import { saveCollection } from "@/services/CollectionService";
+import { CollectionDTO } from "@/dto/CollectionDTO";
+import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
+import { PageType } from "@/utils/enums/PageType";
+import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { AttributeDTO } from "@/dto/AttributeDTO";
+import { AttributeType } from "@/utils/enums/AttributeType";
 
 export default function CollectionTemplateScreen() {
   const [step, setStep] = useState<"create" | "list" | "template">("create");
@@ -19,6 +26,52 @@ export default function CollectionTemplateScreen() {
     lists: [],
     templates: [],
   });
+
+  const prepareDTOs = (): {
+    collection: CollectionDTO;
+    template: ItemTemplateDTO;
+  } => {
+    const lists: CollectionCategoryDTO[] = collectionData.lists.map((list) => {
+      return { category_name: list.title };
+    });
+
+    const collection: CollectionDTO = {
+      page_title: collectionData.title,
+      page_type: PageType.Collection,
+      archived: false,
+      pinned: false,
+      categories: lists,
+      tag: null,
+    };
+
+    const attributes: AttributeDTO[] = collectionData.templates.map(
+      (attribute) => {
+        return {
+          attributeLabel: attribute.title ?? "",
+          type: attribute.itemType as AttributeType,
+          preview: attribute.isPreview,
+          options: attribute.options,
+        };
+      },
+    );
+
+    const template: ItemTemplateDTO = {
+      template_name: `${collectionData.title} template`,
+      attributes: attributes,
+    };
+
+    return { collection, template };
+  };
+
+  const createCollection = async () => {
+    const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
+      prepareDTOs();
+    const pageId = await saveCollection(dtos.collection, dtos.template);
+    router.push({
+      pathname: "/collectionPage",
+      params: { pageId: pageId, title: collectionData.title },
+    });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -43,7 +96,7 @@ export default function CollectionTemplateScreen() {
             data={collectionData}
             setData={setCollectionData}
             onBack={() => setStep("list")}
-            onNext={() => router.push("/collectionPage")}
+            onNext={createCollection}
           />
         )}
       </ThemedView>
