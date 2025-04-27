@@ -135,7 +135,7 @@ const createItemFromTemplate = async (): Promise<number | null> => {
             defaultValue = ""; // assign default value if no valid value passed
             // insert into date table
             break;
-          case "multiselect":
+          case "multi-select":
             defaultValue = "[]"; // assign default value if no valid value passed
             // insert into multiselect table
             break;

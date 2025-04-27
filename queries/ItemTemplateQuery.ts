@@ -14,7 +14,7 @@ const selectItemTemplateByTemplateIDQuery: string = `
                         'preview', a.preview
                     ),
                     CASE
-                        WHEN a.type = 'multiselect' THEN json_object(
+                        WHEN a.type = 'multi-select' THEN json_object(
                             'options', (
                                 SELECT
                                     json_group_array(mo.options)

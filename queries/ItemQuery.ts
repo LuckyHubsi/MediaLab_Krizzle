@@ -18,7 +18,7 @@ function itemSelectByIdQuery(itemId: number): string {
                     WHEN a.type = 'text' THEN t.value
                     WHEN a.type = 'date' THEN d.value
                     WHEN a.type = 'rating' THEN r.value
-                    WHEN a.type = 'multiselect' THEN (
+                    WHEN a.type = 'multi-select' THEN (
                         SELECT json_group_array(
                             json_object('multiselectID', mo.multiselectID, 'options', mo.options)
                         )
@@ -82,7 +82,7 @@ function itemSelectByCollectionIdQuery(collectionId: number): string {
                     WHEN a.type = 'text' THEN t.value
                     WHEN a.type = 'date' THEN d.value
                     WHEN a.type = 'rating' THEN r.value
-                    WHEN a.type = 'multiselect' THEN (
+                    WHEN a.type = 'multi-select' THEN (
                         SELECT json_group_array(
                             json_object('multiselectID', mo.multiselectID, 'options', mo.options)
                         )

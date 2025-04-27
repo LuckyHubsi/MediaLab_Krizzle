@@ -7,7 +7,7 @@ export type AttributeDTO = {
   attributeID?: number;
   itemTemplateID?: number;
   attributeLabel: string;
-  type: AttributeType; // One of: "Text", "Rating", "Date", "Multiselect"
+  type: AttributeType; // One of: "text", "rating", "date", "multi-select"
   preview: boolean;
   options?: string[] | null; // For storing options for Multiselect type or other settings
 };
@@ -16,5 +16,5 @@ export type AttributeDTO = {
  * Type guard to validate attribute type
  */
 export function isValidAttributeType(type: AttributeType): boolean {
-  return ["text", "rating", "date", "multiselect"].includes(type);
+  return ["text", "rating", "date", "multi-select"].includes(type);
 }
