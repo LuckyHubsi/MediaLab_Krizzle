@@ -10,6 +10,7 @@ export type AttributeDTO = {
   type: AttributeType; // One of: "text", "rating", "date", "multi-select"
   preview: boolean;
   options?: string[] | null; // For storing options for Multiselect type or other settings
+  symbol?: string;
 };
 
 /**

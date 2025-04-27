@@ -3,6 +3,7 @@ import { AttributeType } from "@/utils/enums/AttributeType";
 import {
   insertAttributeQuery,
   insertMultiselectOptionsQuery,
+  insertRatingSymbolQuery,
 } from "@/queries/AttributeQuery";
 import { executeQuery, getLastInsertId } from "@/utils/QueryHelper";
 import { DatabaseError } from "@/utils/DatabaseError";
@@ -66,4 +67,16 @@ const insertMultiselectOptions = async (
   }
 };
 
-export { insertAttribute, insertMultiselectOptions };
+const insertRatingSymbol = async (
+  symbol: string,
+  attributeID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<void> => {
+  try {
+    await executeQuery(insertRatingSymbolQuery, [symbol, attributeID], txn);
+  } catch (error) {
+    throw new DatabaseError("Failed to insert attribute");
+  }
+};
+
+export { insertAttribute, insertMultiselectOptions, insertRatingSymbol };

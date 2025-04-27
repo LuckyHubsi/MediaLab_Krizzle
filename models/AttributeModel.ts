@@ -7,4 +7,5 @@ export type AttributeModel = {
   type: AttributeType;
   preview: 1 | 0;
   options?: string[] | null;
+  symbol?: string;
 };

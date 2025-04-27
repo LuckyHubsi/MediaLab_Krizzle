@@ -16,7 +16,11 @@ import {
   getTemplate,
   insertItemTemplateAndReturnID,
 } from "./ItemTemplateService";
-import { insertAttribute, insertMultiselectOptions } from "./AttributeService";
+import {
+  insertAttribute,
+  insertMultiselectOptions,
+  insertRatingSymbol,
+} from "./AttributeService";
 import { insertCollectionCategory } from "./CollectionCategoriesService";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { DatabaseError } from "@/utils/DatabaseError";
@@ -125,9 +129,15 @@ export const saveCollection = async (
             if (attr.type === AttributeType.Multiselect && attr.options) {
               const attributeID = await getLastInsertId(txn);
               if (attributeID) {
-                attr.options.forEach((option) => {
-                  insertMultiselectOptions(option, attributeID, txn);
-                });
+                for (const option of attr.options) {
+                  await insertMultiselectOptions(option, attributeID, txn);
+                }
+              }
+            }
+            if (attr.type === AttributeType.Rating && attr.symbol) {
+              const attributeID = await getLastInsertId(txn);
+              if (attributeID) {
+                await insertRatingSymbol(attr.symbol, attributeID, txn);
               }
             }
           }

@@ -25,6 +25,7 @@ export class ItemTemplateMapper {
           attributeID: attribute.attributeID,
           preview: attribute.preview === 1,
           options: attribute.options,
+          symbol: attribute.symbol,
         };
       });
     }

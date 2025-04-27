@@ -51,6 +51,7 @@ export default function CollectionTemplateScreen() {
           type: attribute.itemType as AttributeType,
           preview: attribute.isPreview,
           options: attribute.options,
+          symbol: attribute.rating,
         };
       },
     );

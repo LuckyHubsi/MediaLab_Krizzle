@@ -6,4 +6,12 @@ const insertMultiselectOptionsQuery: string = `
     INSERT INTO multiselect_options (options, attributeID) VALUES (?, ?)
 `;
 
-export { insertAttributeQuery, insertMultiselectOptionsQuery };
+const insertRatingSymbolQuery: string = `
+    INSERT INTO rating_symbol (symbol, attributeID) VALUES (?, ?)
+`;
+
+export {
+  insertAttributeQuery,
+  insertMultiselectOptionsQuery,
+  insertRatingSymbolQuery,
+};
