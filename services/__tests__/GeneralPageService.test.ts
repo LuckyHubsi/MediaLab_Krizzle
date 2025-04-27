@@ -2,18 +2,26 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { GeneralPageModel } from "@/models/GeneralPageModel";
 import { PageType } from "@/utils/enums/PageType";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
-import { executeQuery, fetchAll, fetchFirst } from "@/utils/QueryHelper";
+import {
+  executeQuery,
+  executeTransaction,
+  fetchAll,
+  getLastInsertId,
+} from "@/utils/QueryHelper";
 import {
   deleteGeneralPage,
   getAllGeneralPageData,
   insertGeneralPageAndReturnID,
 } from "../GeneralPageService";
+import { DatabaseError } from "@/utils/DatabaseError";
+import * as SQLite from "expo-sqlite";
 
 // mock the QueryHelper functions
 jest.mock("@/utils/QueryHelper", () => ({
   fetchAll: jest.fn(),
   executeQuery: jest.fn(),
-  fetchFirst: jest.fn(),
+  executeTransaction: jest.fn(),
+  getLastInsertId: jest.fn(),
 }));
 
 // mock the general page mapper
@@ -51,18 +59,28 @@ describe("GeneralPageService", () => {
     pinned: 1,
   };
 
+  const mockExecuteQuery = executeQuery as jest.MockedFunction<
+    typeof executeQuery
+  >;
+
+  const mockFetchAll = fetchAll as jest.MockedFunction<typeof fetchAll>;
+
+  const mockExecuteTransaction = executeTransaction as jest.MockedFunction<
+    typeof executeTransaction
+  >;
+
+  const mockGetLastInsertId = getLastInsertId as jest.MockedFunction<
+    typeof getLastInsertId
+  >;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  afterAll(() => {
-    (console.error as jest.Mock).mockRestore();
-  });
-
   describe("getAllGeneralPageData", () => {
     it("should return an array of GeneralPageDTO objects", async () => {
-      (fetchAll as jest.Mock).mockResolvedValue([mockGeneralPageModel]);
+      mockFetchAll.mockResolvedValue([mockGeneralPageModel]);
       (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
         mockGeneralPageDTO,
       );
@@ -70,7 +88,7 @@ describe("GeneralPageService", () => {
       const result = await getAllGeneralPageData();
 
       expect(result).toEqual([mockGeneralPageDTO]);
-      expect(fetchAll).toHaveBeenCalled();
+      expect(mockFetchAll).toHaveBeenCalled();
       expect((GeneralPageMapper.toDTO as jest.Mock).mock.calls[0][0]).toEqual(
         expect.objectContaining({
           pageID: 1,
@@ -84,89 +102,75 @@ describe("GeneralPageService", () => {
       );
     });
 
-    it("should return null on database error", async () => {
-      (fetchAll as jest.Mock).mockRejectedValue(new Error("Database error"));
+    it("should throw DatabaseError if fetchAll fails", async () => {
+      mockFetchAll.mockRejectedValue(new Error("Database error"));
 
-      const result = await getAllGeneralPageData();
-
-      expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith(
-        "Error getting all pages note:",
-        new Error("Database error"),
-      );
+      await expect(getAllGeneralPageData()).rejects.toThrow(DatabaseError);
     });
   });
 
   describe("insertGeneralPageAndReturnID", () => {
-    it("should return the inserted page ID", async () => {
-      (executeQuery as jest.Mock).mockResolvedValue(undefined);
-      (fetchFirst as jest.Mock).mockResolvedValue({ id: 1 });
+    it("should insert a general page and return its ID", async () => {
+      const mockInsertedId = 1;
+
+      mockExecuteTransaction.mockImplementation(async (fn) => {
+        return await fn({} as any);
+      });
+      mockExecuteQuery.mockResolvedValue({} as SQLite.SQLiteRunResult);
+      mockGetLastInsertId.mockResolvedValue(mockInsertedId);
 
       const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
 
-      expect(result).toBe(1);
-      expect(executeQuery).toHaveBeenCalledWith(expect.any(String), [
-        mockGeneralPageDTO.page_type,
-        mockGeneralPageDTO.page_title,
-        mockGeneralPageDTO.page_icon,
-        mockGeneralPageDTO.page_color,
+      expect(mockExecuteTransaction).toHaveBeenCalled();
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.any(String),
-        expect.any(String),
-        mockGeneralPageDTO.archived ? 1 : 0,
-        mockGeneralPageDTO.pinned ? 1 : 0,
-      ]);
-      expect(fetchFirst).toHaveBeenCalledWith(
-        "SELECT last_insert_rowid() as id",
+        [
+          mockGeneralPageDTO.page_type,
+          mockGeneralPageDTO.page_title,
+          mockGeneralPageDTO.page_icon,
+          mockGeneralPageDTO.page_color,
+          expect.any(String),
+          expect.any(String),
+          0,
+          1,
+        ],
+        undefined,
       );
+      expect(mockGetLastInsertId).toHaveBeenCalled();
+      expect(result).toBe(mockInsertedId);
     });
 
-    it("should return null on insertion failure", async () => {
-      (executeQuery as jest.Mock).mockRejectedValue(
-        new Error("Insertion error"),
-      );
+    it("should throw DatabaseError if insertion fails", async () => {
+      mockExecuteQuery.mockRejectedValue(new Error("Insert failed"));
 
-      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
-
-      expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith(
-        "Error inserting note:",
-        new Error("Insertion error"),
-      );
-    });
-
-    it("should return null if fetching inserted page ID fails", async () => {
-      (executeQuery as jest.Mock).mockResolvedValue(undefined);
-      (fetchFirst as jest.Mock).mockResolvedValue(null);
-
-      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
-
-      expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith(
-        "Failed to fetch inserted page ID",
-      );
+      await expect(
+        insertGeneralPageAndReturnID(mockGeneralPageDTO),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 
   describe("deleteGeneralPage", () => {
-    it("should call executeQuery with correct query and pageID", async () => {
+    it("should delete the general page and return true", async () => {
       const mockPageID = 1;
-      await deleteGeneralPage(mockPageID);
+      mockExecuteQuery.mockResolvedValue({} as SQLite.SQLiteRunResult);
 
-      expect(executeQuery).toHaveBeenCalledWith(expect.any(String), [
-        mockPageID,
-      ]);
+      const result = await deleteGeneralPage(mockPageID);
+
+      expect(executeQuery).toHaveBeenCalledWith(
+        expect.any(String),
+        [mockPageID],
+        undefined,
+      );
+      expect(result).toBe(true);
     });
 
-    it("should log an error if deletion fails", async () => {
+    it("should throw DatabaseError if deletion fails", async () => {
       const mockPageID = 1;
-      const mockError = new Error("Delete failed");
-      (executeQuery as jest.Mock).mockRejectedValueOnce(mockError);
 
-      await deleteGeneralPage(mockPageID);
+      mockExecuteQuery.mockRejectedValue(new Error("Delete failed"));
 
-      expect(console.error).toHaveBeenCalledWith(
-        "Error deleting note:",
-        mockError,
+      await expect(deleteGeneralPage(mockPageID)).rejects.toThrow(
+        DatabaseError,
       );
     });
   });
