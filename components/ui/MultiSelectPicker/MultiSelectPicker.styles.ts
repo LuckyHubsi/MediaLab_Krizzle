@@ -16,7 +16,10 @@ export const IndividualSelect = styled.TouchableOpacity<{
   isSelected: boolean;
 }>`
   background-color: ${({ isSelected }: { isSelected: boolean }) =>
-    isSelected ? Colors.grey25 : Colors.primary};
+    isSelected ? Colors.primary : Colors.grey25};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   padding: 4px 12px;
   border-radius: 33px;
   margin-right: 6px;
