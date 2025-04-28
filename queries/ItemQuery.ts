@@ -8,6 +8,7 @@ const itemSelectByIdQuery: string = `
         i.itemID,
         i.pageID,
         i.categoryID,
+        p.page_title,
         cc.category_name,
         json_group_array(
             json_object(
@@ -39,6 +40,7 @@ const itemSelectByIdQuery: string = `
             )
         ) AS attributes
     FROM item i
+    JOIN general_page_data p ON i.pageID = p.pageID
     JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
     JOIN collection c ON cc.collectionID = c.collectionID
     JOIN item_template it ON c.item_templateID = it.item_templateID
