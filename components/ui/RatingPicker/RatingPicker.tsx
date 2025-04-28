@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
@@ -12,6 +12,8 @@ interface RatingPickerProps {
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   outlinedIcon?: keyof typeof MaterialIcons.glyphMap;
   editable?: boolean;
+  value?: number;
+  onChange: (rating: number) => void;
 }
 
 const RatingPicker: React.FC<RatingPickerProps> = ({
@@ -19,11 +21,19 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
   selectedIcon = "star",
   outlinedIcon = "star-border",
   editable = true,
+  value = 0,
+  onChange,
 }) => {
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(value);
+
+  useEffect(() => {
+    setRating(value);
+  }, [value]);
 
   const handlePress = (index: number) => {
-    setRating(index + 1);
+    const newRating = index + 1;
+    setRating(newRating);
+    onChange(newRating);
   };
 
   return (
