@@ -1,21 +1,23 @@
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
+import { ItemsDTO } from "@/dto/ItemsDTO";
 import { ItemModel } from "@/models/ItemModel";
+import { ItemsModel } from "@/models/ItemsModel";
 import { insertRatingSymbolQuery } from "@/queries/AttributeQuery";
 import { updateDateModifiedByPageIDQuery } from "@/queries/GeneralPageQuery";
 import {
   itemSelectByIdQuery,
-  itemSelectByCollectionIdQuery,
   insertItemQuery,
-  updateItem,
   insertTextValueQuery,
   insertDateValueQuery,
   insertMultiselectValueQuery,
   insertRatingValueQuery,
+  itemSelectByPageIdQuery,
 } from "@/queries/ItemQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { ItemMapper } from "@/utils/mapper/ItemMapper";
+import { ItemsMapper } from "@/utils/mapper/ItemsMapper";
 import {
   fetchAll,
   fetchFirst,
@@ -23,7 +25,7 @@ import {
   executeTransaction,
   getLastInsertId,
 } from "@/utils/QueryHelper";
-import { SQLite } from "expo";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Retrieves a single item by its ID.
@@ -33,10 +35,8 @@ import { SQLite } from "expo";
  */
 const getItemById = async (id: number): Promise<ItemDTO> => {
   try {
-    const query = itemSelectByIdQuery(id);
-
     // get raw result using the query
-    const rawResult = await fetchFirst<ItemModel>(query, [id]);
+    const rawResult = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
 
     console.log("RAW ITEM", JSON.stringify(rawResult, null, 2));
 
@@ -65,48 +65,20 @@ const getItemById = async (id: number): Promise<ItemDTO> => {
 /**
  * Retrieves all items associated with a specific collection.
  *
- * @param {number} collectionId - The ID of the collection.
- * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of ItemDTO objects.
+ * @param {number} pageID - The ID of the page the item belongs to .
+ * @returns {Promise<ItemsDTO[]>} A promise that resolves to an ItemsDTO.
+ * @throws {DatabaseError} If fetch fails.
  */
-const getItemsByCollectionId = async (
-  collectionId: number,
-): Promise<ItemDTO[]> => {
+const getItemsByPageId = async (pageID: number): Promise<ItemsDTO> => {
   try {
-    const query = itemSelectByCollectionIdQuery(collectionId);
+    const rawResults = await fetchAll<ItemsModel>(itemSelectByPageIdQuery, [
+      pageID,
+    ]);
 
-    // define interface for raw result
-    interface RawItemResult {
-      itemID: number;
-      collectionID: number;
-      category: string | null;
-      attributeValues: string;
-    }
-
-    // get raw result using the query
-    const rawResults = await fetchAll<RawItemResult>(query, [collectionId]);
-
-    if (!rawResults) {
-      return [];
-    }
-
-    // change to correct format
-    const items = rawResults.map((rawResult) => {
-      const parsedValues = JSON.parse(rawResult.attributeValues);
-
-      const result: ItemModel = {
-        itemID: rawResult.itemID,
-        collectionID: rawResult.collectionID,
-        category: rawResult.category,
-        values: parsedValues,
-      };
-
-      return ItemMapper.toDTO(result);
-    });
-
-    return items;
+    return ItemsMapper.toDTO(rawResults);
   } catch (error) {
-    console.error("Error retrieving items by collection ID:", error);
-    throw error;
+    console.error("Error retrieving items by page ID:", error);
+    throw new DatabaseError("Error retrieving items by page id");
   }
 };
 
@@ -208,7 +180,7 @@ const insertItemAttributeValue = async (
 
 export {
   getItemById,
-  getItemsByCollectionId,
+  getItemsByPageId,
   insertItemAndReturnID,
   insertItemAttributeValue,
 };
