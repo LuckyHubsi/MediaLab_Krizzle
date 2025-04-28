@@ -24,6 +24,24 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const colorScheme = useColorScheme();
   const [selectedList, setSelectedList] = useState("");
   const [listStrings, setListStrings] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
+    {},
+  );
+
+  const handleTagSelect = (attributeLabel: string, tag: string) => {
+    setSelectedTags((prev) => {
+      const currentTags = prev[attributeLabel] || [];
+      const isAlreadySelected = currentTags.includes(tag);
+      const updatedTags = isAlreadySelected
+        ? currentTags.filter((t) => t !== tag)
+        : [...currentTags, tag];
+
+      return {
+        ...prev,
+        [attributeLabel]: updatedTags,
+      };
+    });
+  };
 
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
@@ -67,8 +85,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 <MultiSelectPicker
                   title={attribute.attributeLabel}
                   multiselectArray={attribute.options}
-                  selectedTag={null}
-                  onSelectTag={() => {}}
+                  selectedTags={selectedTags[attribute.attributeLabel] || []}
+                  onSelectTag={(tag) =>
+                    handleTagSelect(attribute.attributeLabel, tag)
+                  }
                 />,
               );
             }

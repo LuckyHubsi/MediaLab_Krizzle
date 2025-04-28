@@ -1,11 +1,10 @@
 import { ThemedText } from "@/components/ThemedText";
-
 import { FC } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import {
   MultiSelectContainer,
-  MultiSelectPicker,
+  MultiSelectPicker as MultiSelectPickerWrapper,
   IndividualSelect,
 } from "./MultiSelectPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -14,46 +13,47 @@ import { View } from "react-native";
 interface MultiSelectPickerProps {
   title?: string;
   multiselectArray?: Array<string>;
-  selectedTag: string | null;
+  selectedTags: string[];
   onSelectTag: (tag: string) => void;
 }
 
-const MultiSelectPickerProps: FC<MultiSelectPickerProps> = ({
+const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
   title,
   multiselectArray,
-  selectedTag,
+  selectedTags,
   onSelectTag,
 }) => {
-  const isSelected = selectedTag;
-
   return (
     <MultiSelectContainer>
       <ThemedText fontWeight="regular">{title}</ThemedText>
-      <MultiSelectPicker>
+      <MultiSelectPickerWrapper>
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          {multiselectArray?.map((item, index) => (
-            <IndividualSelect
-              isSelected={!selectedTag}
-              onPress={() => onSelectTag(item)}
-              key={index}
-            >
-              {isSelected ? (
-                <MaterialIcons
-                  name="check-circle"
-                  size={16}
-                  color="#FBFBFB"
-                  style={{ marginRight: 10 }}
-                />
-              ) : null}
-              <ThemedText colorVariant={selectedTag ? "white" : "grey"}>
-                {item}
-              </ThemedText>
-            </IndividualSelect>
-          ))}
+          {multiselectArray?.map((item, index) => {
+            const isSelected = selectedTags.includes(item);
+            return (
+              <IndividualSelect
+                key={index}
+                isSelected={isSelected}
+                onPress={() => onSelectTag(item)}
+              >
+                {isSelected && (
+                  <MaterialIcons
+                    name="check-circle"
+                    size={16}
+                    color="#FBFBFB"
+                    style={{ marginRight: 5 }}
+                  />
+                )}
+                <ThemedText colorVariant={isSelected ? "white" : "grey"}>
+                  {item}
+                </ThemedText>
+              </IndividualSelect>
+            );
+          })}
         </View>
-      </MultiSelectPicker>
+      </MultiSelectPickerWrapper>
     </MultiSelectContainer>
   );
 };
 
-export default MultiSelectPickerProps;
+export default MultiSelectPicker;
