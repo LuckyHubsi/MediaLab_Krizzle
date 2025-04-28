@@ -1,40 +1,50 @@
+import { AttributeDTO } from "@/dto/AttributeDTO";
+import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { ItemModel } from "@/models/ItemModel";
-import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
-import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "../enums/AttributeType";
 
 export class ItemMapper {
-  static toDTO(model: ItemModel): ItemDTO {
+  static toDTO(
+    model: Omit<ItemModel, "attributes"> & { attributes: any[] },
+  ): ItemDTO {
     const attributeValues: ItemAttributeValueDTO[] = model.attributes.map(
       (attr) => {
         const baseAttr: AttributeDTO = {
           attributeID: attr.attributeID,
           attributeLabel: attr.attributeLabel,
           type: attr.attributeType as AttributeType,
-          preview: false,
-          options: attr.options ? attr.options.map((opt) => opt.options) : null,
+          preview: attr.preview === 1 ? true : false,
+          options: attr.options
+            ? Array.isArray(attr.options)
+              ? attr.options.map((opt: any) => opt.options)
+              : null
+            : null,
         };
 
-        if (attr.attributeType === "text") {
+        if (attr.attributeType === "rating") {
           return {
             ...baseAttr,
-            valueID: undefined,
+            valueID: attr.valueID,
             itemID: model.itemID,
-            valueString: attr.value,
+            valueNumber: attr.value,
           };
-        } else if (attr.attributeType === "multiselect") {
+        } else if (attr.attributeType === "multi-select") {
+          const parsedValues: string[] =
+            typeof attr.value === "string" ? JSON.parse(attr.value) : [];
+
           return {
             ...baseAttr,
-            valueID: undefined,
+            valueID: attr.valueID,
             itemID: model.itemID,
-            valueMultiselect: attr.value,
+            valueMultiselect: parsedValues,
           };
         } else {
           return {
             ...baseAttr,
-            valueID: undefined,
+            valueID: attr.valueID,
             itemID: model.itemID,
+            valueString: attr.value,
           };
         }
       },
