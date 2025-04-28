@@ -136,7 +136,7 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
               insertItemAttributeValue(insertDateValueQuery, value);
               break;
             case AttributeType.Rating:
-              insertItemAttributeValue(insertTextValueQuery, value);
+              insertItemAttributeValue(insertRatingValueQuery, value);
               break;
             case AttributeType.Multiselect:
               insertItemAttributeValue(insertMultiselectValueQuery, value);
