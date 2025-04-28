@@ -23,9 +23,9 @@ import * as SQLite from "expo-sqlite";
 /**
  * Retrieves a collection associated with a specific page.
  *
- * @param {number} pageId - The ID of the page.
- * @returns {Promise<CollectionDTO>} A promise that resolves to a CollectionDTO.
- *
+ * @param {number} pageID - The ID of the page.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<CollectionDTO | null>} A promise that resolves to a CollectionDTO or null if no collection is found.
  * @throws {DatabaseError} If the fetch fails.
  */
 const getCollectionByPageId = async (
@@ -48,11 +48,11 @@ const getCollectionByPageId = async (
 /**
  * Inserts a new collection into the database and returns its ID.
  *
- * @param {CollectionDTO} collectionDTO - The DTO representing the collection to insert.
- * @returns {Promise<number | null>} A promise that resolves to the inserted collection's ID, or null if the insertion fails.
- *
+ * @param {number} pageID - The ID of the page the collection belongs to.
+ * @param {number} templateID - The ID of the template the collection belongs to.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<number>} A promise that resolves to the inserted collection's ID.
  * @throws {DatabaseError} If the insert or fetch inserted id fails.
- *
  */
 const insertCollectionAndReturnID = async (
   pageID: number,
@@ -91,6 +91,7 @@ const insertCollectionAndReturnID = async (
  * If any step fails, the entire transaction is rolled back to maintain database integrity.
  *
  * @param {CollectionDTO} collectionDTO - The collectionDTO containing all data needed to create the collection.
+ * @param {ItemTemplateDTO} templateDTO - The templateDTO containing all data needed to create the template.
  * @returns {Promise<void>} A promise that resolves if the collection is saved successfully, or rejects with an error.
  *
  * @throws {DatabaseError} If the overall transaction fails.
