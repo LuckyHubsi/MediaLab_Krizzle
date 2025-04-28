@@ -55,16 +55,13 @@ const getCollectionByPageId = async (
  *
  */
 const insertCollectionAndReturnID = async (
-  collectionDTO: CollectionDTO,
+  pageID: number,
+  templateID: number,
   txn?: SQLite.SQLiteDatabase,
 ): Promise<number> => {
   try {
     const collectionID = await executeTransaction<number>(async () => {
-      await executeQuery(
-        insertCollection,
-        [collectionDTO.pageID, collectionDTO.templateID],
-        txn,
-      );
+      await executeQuery(insertCollection, [pageID, templateID], txn);
 
       // get inserted collection ID
       const lastInsertedID = await getLastInsertId(txn);
@@ -150,11 +147,9 @@ export const saveCollection = async (
       }
 
       // 4. Insert Collection and get collection ID
-      if (templateID) {
-        collectionDTO.templateID = templateID;
-      }
       const collectionID = await insertCollectionAndReturnID(
-        collectionDTO,
+        pageID,
+        templateID,
         txn,
       );
 
