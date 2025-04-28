@@ -19,7 +19,7 @@ interface MultiSelectPickerProps {
 
 const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
   title,
-  multiselectArray,
+  multiselectArray = [],
   selectedTags,
   onSelectTag,
 }) => {
@@ -28,7 +28,7 @@ const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
       <ThemedText fontWeight="regular">{title}</ThemedText>
       <MultiSelectPickerWrapper>
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          {multiselectArray?.map((item, index) => {
+          {multiselectArray.map((item, index) => {
             const isSelected = selectedTags.includes(item);
             return (
               <IndividualSelect

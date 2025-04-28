@@ -117,7 +117,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 <MultiSelectPicker
                   key={attribute.attributeID}
                   title={attribute.attributeLabel}
-                  multiselectArray={attribute.options}
+                  multiselectArray={attribute.options ?? []}
                   selectedTags={currentValue || []}
                   onSelectTag={(tag) => {
                     const prevSelected = currentValue || [];
