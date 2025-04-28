@@ -51,60 +51,41 @@ const itemSelectByIdQuery: string = `
     GROUP BY i.itemID;
 `;
 
-/**
- * Builds a query to fetch all items in a collection
- * @param {number} collectionId - The ID of the collection
- * @returns {string} - The SQL query
- */
-function itemSelectByCollectionIdQuery(collectionId: number): string {
-  return `
-        SELECT 
-        i.itemID,
-        i.collectionID,
-        i.category,
-        json_group_array(
-            json_object(
-                'attributeID', a.attributeID,
-                'attributeLabel', a.attribute_label,
-                'attributeType', a.type,
-                'value', CASE 
-                    WHEN a.type = 'text' THEN t.value
-                    WHEN a.type = 'date' THEN d.value
-                    WHEN a.type = 'rating' THEN r.value
-                    WHEN a.type = 'multi-select' THEN (
-                        SELECT json_group_array(
-                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
-                        )
-                        FROM multiselect ms
-                        JOIN multiselect_options mo ON mo.multiselectID = ms.multiselectID
-                        WHERE ms.attributeID = a.attributeID AND ms.itemID = i.itemID
-                    )
-                    ELSE NULL
-                END,
-                'options', CASE 
-                    WHEN a.type = 'multiselect' THEN (
-                        SELECT json_group_array(
-                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
-                        )
-                        FROM multiselect_options mo
-                        WHERE mo.attributeID = a.attributeID
-                    )
-                    ELSE NULL
-                END
-            )
-        ) AS attributeValues
-    FROM item i
-    JOIN collection c ON i.collectionID = c.collectionID
-    JOIN item_template it ON c.item_templateID = it.item_templateID
-    JOIN attribute a ON it.item_templateID = a.item_templateID
-    LEFT JOIN collection_category cc on i.category = cc.category_name
-    LEFT JOIN text t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
-    LEFT JOIN date d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
-    LEFT JOIN rating r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
-    WHERE i.collectionID = ? AND a.preview = true
-    GROUP BY i.itemID
-  `;
-}
+const itemSelectByPageIdQuery: string = `
+        SELECT
+            c.collectionID,
+            c.pageID,
+            a.attributeID,
+            a.attribute_label,
+            a.type,
+            a.preview,
+            rs.symbol AS rating_symbol,
+            (
+                SELECT json_group_array(mo.options)
+                FROM multiselect_options mo
+                WHERE mo.attributeID = a.attributeID
+            ) AS multiselect_options,
+            i.itemID,
+            CASE
+                WHEN a.type = 'text' THEN t.value
+                WHEN a.type = 'date' THEN d.value
+                WHEN a.type = 'rating' THEN r.value
+                WHEN a.type = 'multi-select' THEN ms.value
+                ELSE NULL
+            END AS value
+        FROM item i
+        JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
+        JOIN collection c ON cc.collectionID = c.collectionID
+        JOIN attribute a ON a.item_templateID = c.item_templateID
+        LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
+        LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
+        LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
+        LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
+        LEFT JOIN rating_symbol rs ON rs.attributeID = a.attributeID
+        WHERE c.pageID = ?
+        AND a.preview = 1
+        ORDER BY a.attributeID ASC, i.itemID ASC;
+`;
 
 const insertItemQuery: string = `
     INSERT INTO item (pageID, categoryID) VALUES (?, ?)
@@ -138,7 +119,7 @@ const deleteItem: string = `
 
 export {
   itemSelectByIdQuery,
-  itemSelectByCollectionIdQuery,
+  itemSelectByPageIdQuery,
   insertItemQuery,
   insertTextValueQuery,
   insertDateValueQuery,
