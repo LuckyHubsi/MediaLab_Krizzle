@@ -7,3 +7,8 @@ export type ItemDTO = {
   categoryID: number;
   attributeValues?: ItemAttributeValueDTO[];
 };
+
+export type PreviewItemDTO = {
+  itemID: number;
+  values: (string | number | null)[];
+};
