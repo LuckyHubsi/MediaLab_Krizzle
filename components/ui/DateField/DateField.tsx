@@ -14,17 +14,23 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 interface DateFieldProps {
   title?: string;
   editable?: boolean;
+  value?: Date | null;
+  onChange?: (date: Date | null) => void;
 }
 
-const DateField: FC<DateFieldProps> = ({ title, editable = true }) => {
+const DateField: FC<DateFieldProps> = ({
+  title,
+  editable = true,
+  value,
+  onChange,
+}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
 
   const handleConfirm = (date: Date) => {
-    setSelectedDate(date);
+    onChange?.(date);
     hideDatePicker();
   };
 
@@ -51,8 +57,8 @@ const DateField: FC<DateFieldProps> = ({ title, editable = true }) => {
             size={20}
             color={colorScheme === "light" ? "#333" : "#ccc"}
           />
-          <DateText placeholder={!selectedDate} colorScheme={colorScheme}>
-            {selectedDate ? format(selectedDate, "dd.MM.yyyy") : "dd.mm.yyyy"}
+          <DateText placeholder={!value} colorScheme={colorScheme}>
+            {value ? format(value, "dd.MM.yyyy") : "dd.mm.yyyy"}
           </DateText>
         </DateInputContainer>
       </StyledPressable>
