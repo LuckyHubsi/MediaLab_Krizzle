@@ -3,64 +3,53 @@
  * @param {number} itemId - The ID of the item to fetch
  * @returns {string} - The SQL query
  */
-function itemSelectByIdQuery(itemId: number): string {
-  return `
-    SELECT 
+const itemSelectByIdQuery: string = `
+    SELECT
         i.itemID,
-        i.collectionID,
-        i.category,
+        i.pageID,
+        i.categoryID,
+        cc.category_name,
         json_group_array(
             json_object(
                 'attributeID', a.attributeID,
                 'attributeLabel', a.attribute_label,
                 'attributeType', a.type,
-                'value', CASE 
+                'preview', a.preview,
+                'valueID', CASE
+                    WHEN a.type = 'text' THEN t.text_valueID
+                    WHEN a.type = 'date' THEN d.date_valueID
+                    WHEN a.type = 'rating' THEN r.rating_valueID
+                    WHEN a.type = 'multi-select' THEN ms.multiselect_valueID
+                END,
+                'value', CASE
                     WHEN a.type = 'text' THEN t.value
                     WHEN a.type = 'date' THEN d.value
                     WHEN a.type = 'rating' THEN r.value
-                    WHEN a.type = 'multi-select' THEN (
-                        SELECT json_group_array(
-                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
-                        )
-                        FROM multiselect ms
-                        JOIN multiselect_options mo ON mo.multiselectID = ms.multiselectID
-                        WHERE ms.attributeID = a.attributeID AND ms.itemID = i.itemID
-                    )
+                    WHEN a.type = 'multi-select' THEN ms.value
                     ELSE NULL
                 END,
-                'options', CASE 
-                    WHEN a.type = 'multiselect' THEN (
-                        SELECT json_group_array(
-                            json_object('multiselectID', mo.multiselectID, 'options', mo.options)
-                        )
+                'options', CASE
+                    WHEN a.type = 'multi-select' THEN (
+                        SELECT options
                         FROM multiselect_options mo
                         WHERE mo.attributeID = a.attributeID
                     )
                     ELSE NULL
                 END
             )
-        ) AS attributeValues
+        ) AS attributes
     FROM item i
-    JOIN collection c ON i.collectionID = c.collectionID
+    JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
+    JOIN collection c ON cc.collectionID = c.collectionID
     JOIN item_template it ON c.item_templateID = it.item_templateID
-    JOIN attribute a ON it.item_templateID = a.item_templateID
-    LEFT JOIN collection_category cc on i.category = cc.category_name
-    LEFT JOIN text t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
-    LEFT JOIN date d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
-    LEFT JOIN rating r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
+    JOIN attribute a ON a.item_templateID = it.item_templateID
+    LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
+    LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
+    LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
+    LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
     WHERE i.itemID = ?
-    GROUP BY i.itemID
-  `;
-}
-
-/*
-
-// TODO: change to function to dynamically build query string based on an array of attributes that are set to preview
-const itemSelectByCollectionIdQuery: string = `
-    SELECT * FROM items WHERE collectionID = ?
+    GROUP BY i.itemID;
 `;
-
-*/
 
 /**
  * Builds a query to fetch all items in a collection
