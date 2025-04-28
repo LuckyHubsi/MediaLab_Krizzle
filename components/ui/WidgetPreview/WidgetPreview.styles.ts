@@ -1,9 +1,11 @@
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 import styled from "styled-components/native";
 
-export const Container = styled.View<{
-  backgroundColor: string;
-  colorScheme: "light" | "dark";
-}>`
+export const Container = styled.View<
+  {
+    backgroundColor: string;
+  } & ColorSchemeProps
+>`
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
     backgroundColor};
   border-radius: 33px;
@@ -12,7 +14,7 @@ export const Container = styled.View<{
   height: 180px;
   justify-content: space-between;
   border: 1px solid;
-  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#000" : "#585858"};
 `;
 

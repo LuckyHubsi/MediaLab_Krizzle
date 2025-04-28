@@ -1,5 +1,6 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 
 export const Container = styled.View`
   width: 100%;
@@ -12,25 +13,25 @@ export const HeaderRow = styled.View`
   margin-bottom: 8px;
 `;
 
-export const Label = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const Label = styled.Text<ColorSchemeProps>`
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.4px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#000" : "#fff"};
 `;
 
-export const ViewAllText = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const ViewAllText = styled.Text<ColorSchemeProps>`
   font-family: Lexend;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.35px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
 `;
 
@@ -38,10 +39,11 @@ export const TagScrollView = styled.ScrollView`
   flex-direction: row;
 `;
 
-export const TagPill = styled.View<{
-  isSelected: boolean;
-  colorScheme: "light" | "dark";
-}>`
+export const TagPill = styled.View<
+  {
+    isSelected: boolean;
+  } & ColorSchemeProps
+>`
   flex-direction: row;
   align-items: center;
   padding: 5px 15px;
@@ -52,8 +54,7 @@ export const TagPill = styled.View<{
     colorScheme,
   }: {
     isSelected: boolean;
-    colorScheme: "light" | "dark";
-  }) =>
+  } & ColorSchemeProps) =>
     isSelected
       ? Colors[colorScheme].tint
       : colorScheme === "light"
@@ -61,10 +62,11 @@ export const TagPill = styled.View<{
         : Colors[colorScheme].pillBackground};
 `;
 
-export const TagText = styled.Text<{
-  isSelected: boolean;
-  colorScheme: "light" | "dark";
-}>`
+export const TagText = styled.Text<
+  {
+    isSelected: boolean;
+  } & ColorSchemeProps
+>`
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;
@@ -76,7 +78,6 @@ export const TagText = styled.Text<{
     colorScheme,
   }: {
     isSelected: boolean;
-    colorScheme: "light" | "dark";
-  }) =>
+  } & ColorSchemeProps) =>
     isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
 `;

@@ -10,7 +10,7 @@ type TagListProps = {
 
 const TagList: React.FC<TagListProps> = ({ tags, onSelect }) => {
   const [activeTag, setActiveTag] = useState(tags[0]);
-  const themeMode = useColorScheme() ?? "light";
+  const colorScheme = useColorScheme() ?? "light";
 
   const handlePress = (tag: string) => {
     setActiveTag(tag);
@@ -24,10 +24,10 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect }) => {
           <TagButton
             key={tag}
             active={tag === activeTag}
-            themeMode={themeMode}
+            colorScheme={colorScheme}
             onPress={() => handlePress(tag)}
           >
-            <TagText active={tag === activeTag} themeMode={themeMode}>
+            <TagText active={tag === activeTag} colorScheme={colorScheme}>
               {tag}
             </TagText>
           </TagButton>

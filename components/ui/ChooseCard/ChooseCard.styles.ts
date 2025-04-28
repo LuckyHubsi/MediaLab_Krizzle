@@ -1,19 +1,20 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Platform } from "react-native";
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 
-export const StyledChooseCard = styled.View<{ colorScheme: "light" | "dark" }>`
+export const StyledChooseCard = styled.View<ColorSchemeProps>`
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 20px;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].cardBackground};
   border-radius: 33px;
   position: relative;
 
   /* iOS Shadows */
-  shadow-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  shadow-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].cardShadowColor};
   shadow-offset: 0px 0px;
   shadow-opacity: 0.05;
@@ -44,7 +45,7 @@ export const Circle = styled.View`
   justify-content: center;
 `;
 
-export const Label = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const Label = styled.Text<ColorSchemeProps>`
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;
@@ -52,6 +53,6 @@ export const Label = styled.Text<{ colorScheme: "light" | "dark" }>`
   line-height: 24px; /* 150% */
   letter-spacing: -0.4px;
   margin-top: 6px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "black" : "white"};
 `;

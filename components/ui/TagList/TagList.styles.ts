@@ -1,17 +1,17 @@
 import styled from "styled-components/native";
 import { TouchableOpacity, Text } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 
 interface TagProps {
   active?: boolean;
-  themeMode?: "light" | "dark";
 }
 
 export const TagButton = styled(TouchableOpacity)<TagProps>`
-  background-color: ${({ active, themeMode }: TagProps) =>
+  background-color: ${({ active, colorScheme }: TagProps & ColorSchemeProps) =>
     active
       ? Colors.widget.blue
-      : themeMode === "dark"
+      : colorScheme === "dark"
         ? Colors.dark.pillBackground
         : Colors.light.pillBackground};
   border-radius: 33px;
@@ -22,10 +22,10 @@ export const TagButton = styled(TouchableOpacity)<TagProps>`
 `;
 
 export const TagText = styled(Text)<TagProps>`
-  color: ${({ active, themeMode }: TagProps) =>
+  color: ${({ active, colorScheme }: TagProps & ColorSchemeProps) =>
     active
       ? "#fff"
-      : themeMode === "dark"
+      : colorScheme === "dark"
         ? Colors.dark.text
         : Colors.light.text};
   font-size: 16px;
