@@ -13,9 +13,9 @@ import * as SQLite from "expo-sqlite";
  * Inserts a new attribute into the database and returns its ID.
  *
  * @param {AttributeDTO} attributeDTO - The DTO representing the attribute to insert.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
  * @returns {Promise<void>} A promise that resolves to void.
- *
- *  @throws {DatabaseError} If the insert fails.
+ * @throws {DatabaseError} If there is an error during the insertion.
  */
 const insertAttribute = async (
   attributeDTO: AttributeDTO,
@@ -46,10 +46,10 @@ const insertAttribute = async (
  * Inserts a new multiselect attribute option into the database.
  *
  * @param {string} option - The label of the option.
- * @param {number} attributeID - The id of the attribute the option belongs to.
- *
+ * @param {number} attributeID - The ID of the attribute the option belongs to.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
  * @returns {Promise<void>} A promise that resolves to void.
- * @throws {DatabaseError} If the insert fails.
+ * @throws {DatabaseError} If there is an error during the insertion.
  */
 const insertMultiselectOptions = async (
   option: string,
@@ -67,6 +67,15 @@ const insertMultiselectOptions = async (
   }
 };
 
+/**
+ * Inserts the user-selected rating symbol/icon into the database.
+ *
+ * @param {string} symbol - The string of the icon of the option.
+ * @param {number} attributeID - The ID of the attribute the symbol belongs to.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<void>} A promise that resolves to void.
+ * @throws {DatabaseError} If there is an error during the insertion.
+ */
 const insertRatingSymbol = async (
   symbol: string,
   attributeID: number,
