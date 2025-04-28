@@ -12,6 +12,11 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { getTemplate } from "@/services/ItemTemplateService";
 import { getCollectionCategories } from "@/services/CollectionCategoriesService";
+import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
+import { ItemDTO } from "@/dto/ItemDTO";
+import { AttributeType } from "@/utils/enums/AttributeType";
+import { Button } from "@/components/ui/Button/Button";
+import { insertItemAndReturnID } from "@/services/ItemService";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -22,6 +27,12 @@ export default function AddCollectionItem() {
 
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
+  const [attributeValues, setAttributeValues] = useState<Record<number, any>>(
+    {},
+  );
+  const [selectedCategoryID, setSelectedCategoryID] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     (async () => {
@@ -43,6 +54,16 @@ export default function AddCollectionItem() {
     })();
   }, [templateId]);
 
+  const handleInputChange = (attributeID: number, value: any) => {
+    setAttributeValues((prevValues) => ({
+      ...prevValues,
+      [attributeID]: value,
+    }));
+  };
+
+  const handleListChange = (categoryID: number) => {
+    setSelectedCategoryID(categoryID);
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
@@ -52,7 +73,13 @@ export default function AddCollectionItem() {
             onIconPress={() => alert("Popup!")}
           />
 
-          <AddCollectionItemCard attributes={attributes} lists={lists} />
+          <AddCollectionItemCard
+            attributes={attributes}
+            lists={lists}
+            attributeValues={attributeValues}
+            onInputChange={handleInputChange}
+            onListChange={handleListChange}
+          />
 
           {/* add correct function to discard/next */}
           <BottomButtons

@@ -10,16 +10,21 @@ import { ScrollView } from "react-native";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import constructWithOptions from "styled-components/dist/constructors/constructWithOptions";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
+  attributeValues: Record<number, any>;
+  onInputChange: (attributeID: number, value: any) => void;
+  onListChange: (categoryID: number) => void;
 }
 
 const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   attributes,
   lists,
+  attributeValues,
+  onInputChange,
+  onListChange,
 }) => {
   const colorScheme = useColorScheme();
   const [selectedList, setSelectedList] = useState("");
@@ -45,6 +50,12 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
+
+    const selectedListDTO = lists.find((list) => list.category_name === value);
+
+    if (selectedListDTO && selectedListDTO.collectionCategoryID) {
+      onListChange(selectedListDTO.collectionCategoryID);
+    }
   };
 
   useEffect(() => {
@@ -59,23 +70,44 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     const elements: React.ReactNode[] = [];
     if (attributes) {
       attributes.forEach((attribute) => {
+        const currentValue = attributeValues[Number(attribute.attributeID)];
+
         switch (attribute.type) {
           case AttributeType.Text:
             elements.push(
               <Textfield
+                key={attribute.attributeID}
                 title={attribute.attributeLabel}
                 placeholderText="Add text here"
+                value={currentValue || ""}
+                onChangeText={(text) =>
+                  onInputChange(Number(attribute.attributeID), text)
+                }
               />,
             );
             break;
           case AttributeType.Date:
-            elements.push(<DateField title={attribute.attributeLabel} />);
+            elements.push(
+              <DateField
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue || ""}
+                onChange={(date) =>
+                  onInputChange(Number(attribute.attributeID), date)
+                }
+              />,
+            );
             break;
           case AttributeType.Rating:
             elements.push(
               <RatingPicker
+                key={attribute.attributeID}
                 title={attribute.attributeLabel}
                 selectedIcon={attribute.symbol || "star"}
+                value={currentValue || 0}
+                onChange={(rating) =>
+                  onInputChange(Number(attribute.attributeID), rating)
+                }
               />,
             );
             break;
@@ -83,12 +115,19 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
             if (attribute.options) {
               elements.push(
                 <MultiSelectPicker
+                  key={attribute.attributeID}
                   title={attribute.attributeLabel}
                   multiselectArray={attribute.options}
-                  selectedTags={selectedTags[attribute.attributeLabel] || []}
-                  onSelectTag={(tag) =>
-                    handleTagSelect(attribute.attributeLabel, tag)
-                  }
+                  selectedTags={currentValue || []}
+                  onSelectTag={(tag) => {
+                    const prevSelected = currentValue || [];
+                    const isAlreadySelected = prevSelected.includes(tag);
+                    const updatedTags = isAlreadySelected
+                      ? prevSelected.filter((t: string) => t !== tag)
+                      : [...prevSelected, tag];
+
+                    onInputChange(Number(attribute.attributeID), updatedTags);
+                  }}
                 />,
               );
             }
