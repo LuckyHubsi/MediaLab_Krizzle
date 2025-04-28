@@ -5,8 +5,11 @@ import { ItemModel } from "@/models/ItemModel";
 import {
   itemSelectByIdQuery,
   itemSelectByCollectionIdQuery,
-  insertItem,
+  insertItemQuery,
   updateItem,
+  insertTextValueQuery,
+  insertDateValueQuery,
+  insertMultiselectValueQuery,
 } from "@/queries/ItemQuery";
 import { ItemMapper } from "@/utils/mapper/ItemMapper";
 import {
@@ -161,27 +164,49 @@ const createItemFromTemplate = async (): Promise<number | null> => {
  * Inserts a new item into the database and returns its ID.
  *
  * @param {ItemDTO} itemDTO - The DTO representing the item to insert.
- * @returns {Promise<number | null>} A promise that resolves to the inserted item's ID, or null if the insertion fails.
+ * @returns {Promise<number>} A promise that resolves to the inserted item's ID, or null if the insertion fails.
+ *
+ * @throws {DatabaseError} When transaction fails.
  */
-const insertItemAndReturnID = async (
-  itemDTO: ItemDTO,
-): Promise<number | null> => {
+const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<void> => {
   try {
-    await executeQuery(insertItem, [itemDTO.collectionID, itemDTO.category]);
+    console.log("ITEM DTO", itemDTO);
+    const itemID = await executeTransaction<number>(async () => {
+      await executeQuery(insertItemQuery, [itemDTO.pageID, itemDTO.categoryID]);
+      const lastInsertedID = await getLastInsertId();
 
-    // get inserted item ID
-    const result = await getLastInsertId();
+      if (itemDTO.attributeValues) {
+        itemDTO.attributeValues.forEach((value) => {
+          value.itemID = lastInsertedID;
+          switch (value.type) {
+            case AttributeType.Text:
+              insertItemAttributeValue(insertTextValueQuery, value);
+              break;
+            case AttributeType.Date:
+              insertItemAttributeValue(insertTextValueQuery, value);
+              break;
+            case AttributeType.Rating:
+              insertItemAttributeValue(insertTextValueQuery, value);
+              break;
+            case AttributeType.Multiselect:
+              insertItemAttributeValue(insertTextValueQuery, value);
+              break;
+            default:
+              break;
+          }
+        });
+      }
 
-    if (result) {
-      console.log("Inserted Item ID:", result);
-      return result;
+      return lastInsertedID;
+    });
+
+    if (itemID) {
+      return itemID;
     } else {
-      console.error("Failed to fetch inserted item ID");
-      return null;
+      throw new DatabaseError("Failed to insert collection item.");
     }
   } catch (error) {
-    console.error("Error inserting item:", error);
-    return null;
+    throw new DatabaseError("Failed to insert collection item.");
   }
 };
 
@@ -191,7 +216,7 @@ const insertItemAndReturnID = async (
  * @param {ItemAttributeValueDTO} valueDTO - The DTO representing the attribute value to insert.
  * @returns {Promise<number | null>} A promise that resolves to the inserted value's ID, or null if the insertion fails.
  */
-const insertItemAttributeValueAndReturnID = async (
+const insertItemAttributeValue = async (
   query: string,
   valueDTO: ItemAttributeValueDTO,
 ): Promise<number | null> => {
@@ -202,12 +227,20 @@ const insertItemAttributeValueAndReturnID = async (
         valueDTO.attributeID,
         valueDTO.valueNumber,
       ]);
-    } else {
+    } else if ("valueString" in valueDTO) {
       await executeQuery(query, [
         valueDTO.itemID,
         valueDTO.attributeID,
         valueDTO.valueString,
       ]);
+    } else if ("valueMultiselect" in valueDTO) {
+      for (const valueMultiselect in valueDTO.valueMultiselect) {
+        await executeQuery(query, [
+          valueDTO.itemID,
+          valueDTO.attributeID,
+          valueDTO.valueMultiselect,
+        ]);
+      }
     }
 
     // get inserted value ID
@@ -288,7 +321,7 @@ export {
   getItemsByCollectionId,
   createItemFromTemplate,
   insertItemAndReturnID,
-  insertItemAttributeValueAndReturnID,
+  insertItemAttributeValue,
   updateItemById,
   updateItemWithAttributes,
 };

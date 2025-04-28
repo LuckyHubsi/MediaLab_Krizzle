@@ -1,8 +1,5 @@
 import { AttributeType } from "@/utils/enums/AttributeType";
 
-/**
- * Represents an Attribute data structure
- */
 export type AttributeDTO = {
   attributeID?: number;
   itemTemplateID?: number;

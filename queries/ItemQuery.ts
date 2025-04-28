@@ -117,12 +117,25 @@ function itemSelectByCollectionIdQuery(collectionId: number): string {
   `;
 }
 
-const insertItem: string = `
-    INSERT INTO items (collectionID, pageID, category) 
-    VALUES (?, ?, ?)
+const insertItemQuery: string = `
+    INSERT INTO item (pageID, categoryID) VALUES (?, ?)
 `;
 
-// TODO: write query to insert individual values dependent on attribute type into corresponding table as well
+const insertTextValueQuery: string = `
+    INSERT INTO text_value (itemID, attributeID, value) VALUES (?, ?, ?)
+`;
+
+const insertDateValueQuery: string = `
+    INSERT INTO date_value (itemID, attributeID, value) VALUES (?, ?, ?)
+`;
+
+const insertRatingValueQuery: string = `
+    INSERT INTO rating_value (itemID, attributeID, value) VALUES (?, ?, ?)
+`;
+
+const insertMultiselectValueQuery: string = `
+    INSERT INTO multiselect_values (itemID, attributeID, value) VALUES (?, ?, ?)
+`;
 
 const updateItem: string = `
     UPDATE items 
@@ -137,7 +150,11 @@ const deleteItem: string = `
 export {
   itemSelectByIdQuery,
   itemSelectByCollectionIdQuery,
-  insertItem,
+  insertItemQuery,
+  insertTextValueQuery,
+  insertDateValueQuery,
+  insertRatingValueQuery,
+  insertMultiselectValueQuery,
   updateItem,
   deleteItem,
 };
