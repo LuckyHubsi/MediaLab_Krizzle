@@ -11,17 +11,10 @@ import {
   getLastInsertId,
 } from "@/utils/QueryHelper";
 import { CollectionMapper } from "@/utils/mapper/CollectionMapper";
-import { insertGeneralPageAndReturnID } from "./GeneralPageService";
-import {
-  getTemplate,
-  insertItemTemplateAndReturnID,
-} from "./ItemTemplateService";
-import {
-  insertAttribute,
-  insertMultiselectOptions,
-  insertRatingSymbol,
-} from "./AttributeService";
-import { insertCollectionCategory } from "./CollectionCategoriesService";
+import * as GeneralPageService from "./GeneralPageService";
+import * as ItemTemplateService from "./ItemTemplateService";
+import * as AttributeService from "./AttributeService";
+import * as CollectionCategoriesService from "./CollectionCategoriesService";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
@@ -112,32 +105,44 @@ export const saveCollection = async (
   try {
     const pageID = await executeTransaction<number | null>(async (txn) => {
       // 1. Insert General Page and get the pageID
-      const pageID = await insertGeneralPageAndReturnID(collectionDTO, txn);
-      if (pageID) {
-        collectionDTO.pageID = pageID;
-      }
+      const pageID = await GeneralPageService.insertGeneralPageAndReturnID(
+        collectionDTO,
+        txn,
+      );
 
       // 2. Insert Template and get template ID
-      const templateID = await insertItemTemplateAndReturnID(templateDTO, txn);
+      const templateID =
+        await ItemTemplateService.insertItemTemplateAndReturnID(
+          templateDTO,
+          txn,
+        );
 
       // 3. Insert Attributes for the template and possibly multiselect options
       if (templateDTO.attributes) {
         for (const attr of templateDTO.attributes) {
           if (templateID) {
             attr.itemTemplateID = templateID;
-            await insertAttribute(attr, txn);
+            await AttributeService.insertAttribute(attr, txn);
             if (attr.type === AttributeType.Multiselect && attr.options) {
               const attributeID = await getLastInsertId(txn);
               if (attributeID) {
                 for (const option of attr.options) {
-                  await insertMultiselectOptions(option, attributeID, txn);
+                  await AttributeService.insertMultiselectOptions(
+                    option,
+                    attributeID,
+                    txn,
+                  );
                 }
               }
             }
             if (attr.type === AttributeType.Rating && attr.symbol) {
               const attributeID = await getLastInsertId(txn);
               if (attributeID) {
-                await insertRatingSymbol(attr.symbol, attributeID, txn);
+                await AttributeService.insertRatingSymbol(
+                  attr.symbol,
+                  attributeID,
+                  txn,
+                );
               }
             }
           }
@@ -158,7 +163,10 @@ export const saveCollection = async (
         for (const category of collectionDTO.categories) {
           if (collectionID) {
             category.collectionID = collectionID;
-            await insertCollectionCategory(category, txn);
+            await CollectionCategoriesService.insertCollectionCategory(
+              category,
+              txn,
+            );
           }
         }
       }
