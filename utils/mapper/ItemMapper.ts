@@ -53,6 +53,7 @@ export class ItemMapper {
     return {
       itemID: model.itemID,
       pageID: model.pageID,
+      page_title: model.page_title,
       categoryID: model.categoryID,
       attributeValues: attributeValues,
     };
