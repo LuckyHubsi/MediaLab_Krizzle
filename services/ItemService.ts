@@ -150,6 +150,12 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
         });
       }
 
+      await executeQuery(
+        updateDateModifiedByPageIDQuery,
+        [new Date().toISOString(), itemDTO.pageID],
+        txn,
+      );
+
       return lastInsertedID;
     });
 
@@ -193,6 +199,7 @@ const insertItemAttributeValue = async (
         query,
         [valueDTO.itemID, valueDTO.attributeID, stringifiedValues],
         txn,
+      );
     }
   } catch (error) {
     throw new DatabaseError("Failed to insert item value");
