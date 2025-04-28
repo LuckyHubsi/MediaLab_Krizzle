@@ -161,14 +161,14 @@ const createItemFromTemplate = async (): Promise<number | null> => {
 };
 
 /**
- * Inserts a new item into the database and returns its ID.
+ * Inserts a new item and its attribute values into the database and returns the item ID.
  *
  * @param {ItemDTO} itemDTO - The DTO representing the item to insert.
  * @returns {Promise<number>} A promise that resolves to the inserted item's ID, or null if the insertion fails.
  *
  * @throws {DatabaseError} When transaction fails.
  */
-const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<void> => {
+const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
   try {
     console.log("ITEM DTO", itemDTO);
     const itemID = await executeTransaction<number>(async () => {
@@ -183,13 +183,13 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<void> => {
               insertItemAttributeValue(insertTextValueQuery, value);
               break;
             case AttributeType.Date:
-              insertItemAttributeValue(insertTextValueQuery, value);
+              insertItemAttributeValue(insertDateValueQuery, value);
               break;
             case AttributeType.Rating:
               insertItemAttributeValue(insertTextValueQuery, value);
               break;
             case AttributeType.Multiselect:
-              insertItemAttributeValue(insertTextValueQuery, value);
+              insertItemAttributeValue(insertMultiselectValueQuery, value);
               break;
             default:
               break;
@@ -219,7 +219,7 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<void> => {
 const insertItemAttributeValue = async (
   query: string,
   valueDTO: ItemAttributeValueDTO,
-): Promise<number | null> => {
+): Promise<void> => {
   try {
     if ("valueNumber" in valueDTO) {
       await executeQuery(query, [
@@ -305,6 +305,12 @@ const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
     if (!itemDTO.itemID) {
       console.error("Item ID is required for update");
       return false;
+      const stringifiedValues = JSON.stringify(valueDTO.valueMultiselect);
+      await executeQuery(query, [
+        valueDTO.itemID,
+        valueDTO.attributeID,
+        stringifiedValues,
+      ]);
     }
 
     await executeQuery(updateItem, [itemDTO.category, itemDTO.itemID]);
@@ -313,6 +319,7 @@ const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
   } catch (error) {
     console.error("Error updating item:", error);
     return false;
+    throw new DatabaseError("Failed to insert item value");
   }
 };
 
