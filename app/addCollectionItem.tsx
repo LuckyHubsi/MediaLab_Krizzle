@@ -45,13 +45,11 @@ export default function AddCollectionItem() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Header
-            title="Add Collection Item"
-            onIconPress={() => alert("Popup!")}
-          />
-
-          <AddCollectionItemCard attributes={attributes} lists={lists} />
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
+          <View>
+            <Header title="Add Collection Item" />
+            <AddCollectionItemCard attributes={attributes} lists={lists} />
+          </View>
 
           {/* add correct function to discard/next */}
           <BottomButtons
@@ -60,6 +58,7 @@ export default function AddCollectionItem() {
             variant="discard"
             onDiscard={router.back}
             onNext={function (): void {}}
+            progressStep={10}
           ></BottomButtons>
         </View>
       </ThemedView>
