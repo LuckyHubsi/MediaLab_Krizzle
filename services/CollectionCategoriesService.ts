@@ -13,7 +13,9 @@ import { DatabaseError } from "@/utils/DatabaseError";
  * Inserts a new collection category into the database.
  *
  * @param {CollectionCategoryDTO} categoryDTO - The DTO representing the category to insert.
- * @returns {Promise<void>}  A promise that resolves to void.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<void>} A promise that resolves to void upon successful insertion.
+ * @throws {DatabaseError} If there is an error during the insertion.
  */
 const insertCollectionCategory = async (
   categoryDTO: CollectionCategoryDTO,
@@ -31,6 +33,14 @@ const insertCollectionCategory = async (
   }
 };
 
+/**
+ * Retrieves all collection categories for a given collection ID.
+ *
+ * @param {number} collectionID - The ID of the collection.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object.
+ * @returns {Promise<CollectionCategoryDTO[]>} A promise that resolves to an array of CollectionCategoryDTO objects.
+ * @throws {DatabaseError} If there is an error during the fetch.
+ */
 const getCollectionCategories = async (
   collectionID: number,
   txn?: SQLite.SQLiteDatabase,
