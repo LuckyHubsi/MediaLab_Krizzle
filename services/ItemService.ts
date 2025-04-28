@@ -1,7 +1,8 @@
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { ItemModel } from "@/models/ItemModel";
-// import { ItemAttributeValueModel } from '@/models/ItemAttributeValueModel';
+import { insertRatingSymbolQuery } from "@/queries/AttributeQuery";
+import { updateDateModifiedByPageIDQuery } from "@/queries/GeneralPageQuery";
 import {
   itemSelectByIdQuery,
   itemSelectByCollectionIdQuery,
@@ -10,7 +11,10 @@ import {
   insertTextValueQuery,
   insertDateValueQuery,
   insertMultiselectValueQuery,
+  insertRatingValueQuery,
 } from "@/queries/ItemQuery";
+import { DatabaseError } from "@/utils/DatabaseError";
+import { AttributeType } from "@/utils/enums/AttributeType";
 import { ItemMapper } from "@/utils/mapper/ItemMapper";
 import {
   fetchAll,
@@ -19,6 +23,7 @@ import {
   executeTransaction,
   getLastInsertId,
 } from "@/utils/QueryHelper";
+import { SQLite } from "expo";
 
 /**
  * Retrieves a single item by its ID.
@@ -26,39 +31,34 @@ import {
  * @param {number} id - The ID of the item to retrieve.
  * @returns {Promise<ItemDTO | null>} A promise that resolves to an ItemDTO object or null if not found.
  */
-const getItemById = async (id: number): Promise<ItemDTO | null> => {
+const getItemById = async (id: number): Promise<ItemDTO> => {
   try {
     const query = itemSelectByIdQuery(id);
 
-    // define interface for raw result
-    interface RawItemResult {
-      itemID: number;
-      collectionID: number;
-      category: string | null;
-      attributeValues: string;
-    }
-
     // get raw result using the query
-    const rawResult = await fetchFirst<RawItemResult>(query, [id]);
+    const rawResult = await fetchFirst<ItemModel>(query, [id]);
 
-    if (!rawResult) {
-      return null;
+    console.log("RAW ITEM", JSON.stringify(rawResult, null, 2));
+
+    if (rawResult) {
+      // Check if attributes are already a JSON string
+      const parsedAttributes =
+        typeof rawResult.attributes === "string"
+          ? JSON.parse(rawResult.attributes)
+          : rawResult.attributes;
+
+      const parsedModel = {
+        ...rawResult,
+        attributes: parsedAttributes,
+      };
+
+      const dto = ItemMapper.toDTO(parsedModel);
+      return dto;
+    } else {
+      throw new DatabaseError("Error retrieving item by ID");
     }
-
-    // parse the attributeValues JSON string into an array
-    const parsedValues = JSON.parse(rawResult.attributeValues);
-
-    const result: ItemModel = {
-      itemID: rawResult.itemID,
-      collectionID: rawResult.collectionID,
-      category: rawResult.category,
-      values: parsedValues,
-    };
-
-    return ItemMapper.toDTO(result);
   } catch (error) {
-    console.error("Error retrieving item by ID:", error);
-    throw error;
+    throw new DatabaseError("Error retrieving item by ID");
   }
 };
 
