@@ -33,9 +33,9 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
         {[0, 1, 2, 3, 4].map((i) => (
           <MaterialIcons
             key={i}
-            name={i < rating ? selectedIcon : outlinedIcon}
+            name={selectedIcon}
             size={32}
-            color={Colors.primary}
+            color={i < rating ? Colors.primary : Colors.grey100}
             onPress={editable ? () => handlePress(i) : undefined}
           />
         ))}
