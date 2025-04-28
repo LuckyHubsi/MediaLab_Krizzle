@@ -141,6 +141,7 @@ export default function CollectionScreen() {
                   params: {
                     templateId: collection?.templateID?.toString(),
                     collectionId: collection?.collectionID?.toString(),
+                    pageId: pageId,
                   },
                 });
               }} // navigate to add collection item screen

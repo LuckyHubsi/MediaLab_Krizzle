@@ -14,9 +14,10 @@ import { getTemplate } from "@/services/ItemTemplateService";
 import { getCollectionCategories } from "@/services/CollectionCategoriesService";
 
 export default function AddCollectionItem() {
-  const { templateId, collectionId } = useLocalSearchParams<{
+  const { templateId, collectionId, pageId } = useLocalSearchParams<{
     templateId?: string;
     collectionId?: string;
+    pageId?: string;
   }>();
 
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
