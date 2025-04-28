@@ -111,56 +111,6 @@ const getItemsByCollectionId = async (
 };
 
 /**
- * Creates a new item based on a collection's item template and returns the new item ID.
- * params: itemID, collectionID, attributeValueDTO[] (attributeID, attribute_label, value, attribute_type)
- * @returns {Promise<number | null>} A promise that resolves to the created item's ID, or null if creation fails.
- */
-const createItemFromTemplate = async (): Promise<number | null> => {
-  try {
-    // insert a new item with correct collectionID and category
-    // get lastInsertID
-
-    // get all attributes
-    let attributes: any[] = [];
-
-    // Create empty attribute values for each attribute, with appropriate defaults based on type
-    if (attributes.length > 0) {
-      attributes.map((attr) => {
-        // Set appropriate default values based on attribute type
-        let defaultValue = "";
-
-        switch (attr.attributeType) {
-          case "rating":
-            defaultValue = "0"; // assign default value if no valid value passed
-            // insert into rating table
-            break;
-          case "date":
-            defaultValue = ""; // assign default value if no valid value passed
-            // insert into date table
-            break;
-          case "multi-select":
-            defaultValue = "[]"; // assign default value if no valid value passed
-            // insert into multiselect table
-            break;
-          case "text":
-            defaultValue = ""; // assign default value if no valid value passed
-            // insert into text  table
-            break;
-          default:
-            defaultValue = ""; // Empty text
-            break;
-        }
-      });
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Error creating item from template:", error);
-    return null;
-  }
-};
-
-/**
  * Inserts a new item and its attribute values into the database and returns the item ID.
  *
  * @param {ItemDTO} itemDTO - The DTO representing the item to insert.
@@ -234,77 +184,6 @@ const insertItemAttributeValue = async (
         valueDTO.valueString,
       ]);
     } else if ("valueMultiselect" in valueDTO) {
-      for (const valueMultiselect in valueDTO.valueMultiselect) {
-        await executeQuery(query, [
-          valueDTO.itemID,
-          valueDTO.attributeID,
-          valueDTO.valueMultiselect,
-        ]);
-      }
-    }
-
-    // get inserted value ID
-    const result = await getLastInsertId();
-
-    if (result) {
-      console.log("Inserted Item Attribute Value ID:", result);
-      return result;
-    } else {
-      console.error("Failed to fetch inserted item attribute value ID");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error inserting item attribute value:", error);
-    return null;
-  }
-};
-
-/**
- * Updates an existing item and its attribute values in the database.
- *
- * @param {ItemDTO} itemDTO - The DTO representing the item to update.
- * @returns {Promise<boolean>} A promise that resolves to true if the update succeeds, false otherwise.
- */
-const updateItemWithAttributes = async (itemDTO: ItemDTO): Promise<boolean> => {
-  try {
-    if (!itemDTO.itemID) {
-      console.error("Item ID is required for update");
-      return false;
-    }
-
-    // Use a transaction to ensure all operations succeed or fail together
-    await executeTransaction(async () => {
-      // Update the item basic info
-      // TODO: only do i fnecessary
-      await executeQuery(updateItem, [itemDTO.category, itemDTO.itemID]);
-
-      // Update attribute values if provided
-      if (itemDTO.attributeValues && itemDTO.attributeValues.length > 0) {
-        for (const av of itemDTO.attributeValues) {
-          // get the attribute to determine its type for validation
-          // validate the value based on attribute type
-          // update the existing value
-        }
-      }
-    });
-    return true;
-  } catch (error) {
-    console.error("Error updating item with attributes:", error);
-    return false;
-  }
-};
-
-/**
- * Updates an existing item in the database.
- *
- * @param {ItemDTO} itemDTO - The DTO representing the item to update.
- * @returns {Promise<boolean>} A promise that resolves to true if the update succeeds, false otherwise.
- */
-const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
-  try {
-    if (!itemDTO.itemID) {
-      console.error("Item ID is required for update");
-      return false;
       const stringifiedValues = JSON.stringify(valueDTO.valueMultiselect);
       await executeQuery(query, [
         valueDTO.itemID,
@@ -312,13 +191,8 @@ const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
         stringifiedValues,
       ]);
     }
-
-    await executeQuery(updateItem, [itemDTO.category, itemDTO.itemID]);
-
-    return true;
   } catch (error) {
     console.error("Error updating item:", error);
-    return false;
     throw new DatabaseError("Failed to insert item value");
   }
 };
@@ -326,9 +200,6 @@ const updateItemById = async (itemDTO: ItemDTO): Promise<boolean> => {
 export {
   getItemById,
   getItemsByCollectionId,
-  createItemFromTemplate,
   insertItemAndReturnID,
   insertItemAttributeValue,
-  updateItemById,
-  updateItemWithAttributes,
 };
