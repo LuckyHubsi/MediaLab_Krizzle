@@ -63,17 +63,24 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
           case AttributeType.Text:
             elements.push(
               <Textfield
+                key={attribute.attributeID}
                 title={attribute.attributeLabel}
                 placeholderText="Add text here"
               />,
             );
             break;
           case AttributeType.Date:
-            elements.push(<DateField title={attribute.attributeLabel} />);
+            elements.push(
+              <DateField
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+              />,
+            );
             break;
           case AttributeType.Rating:
             elements.push(
               <RatingPicker
+                key={attribute.attributeID}
                 title={attribute.attributeLabel}
                 selectedIcon={attribute.symbol || "star"}
               />,
@@ -83,6 +90,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
             if (attribute.options) {
               elements.push(
                 <MultiSelectPicker
+                  key={attribute.attributeID}
                   title={attribute.attributeLabel}
                   multiselectArray={attribute.options}
                   selectedTags={selectedTags[attribute.attributeLabel] || []}

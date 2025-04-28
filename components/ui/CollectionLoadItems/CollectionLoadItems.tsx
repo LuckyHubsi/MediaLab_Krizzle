@@ -50,7 +50,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
   return (
     <StyledCardWrapper colorScheme={colorScheme}>
-      //List
+      {/* //List */}
       <ListCOntainer>
         <View
           style={{
@@ -71,28 +71,28 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
           <CollectionListText>{collectionList}</CollectionListText>
         </View>
       </ListCOntainer>
-      //Title
+      {/* //Title */}
       <Textfield
         title={collectionTitle}
         placeholderText={collectionTitleValue}
         editable={false}
       />
-      //Date
-      <DateField title={collectionDateTitle} />
-      //Text
+      {/* //Date */}
+      <DateField title={collectionDateTitle} editable={false} />
+      {/* //Text */}
       <CollectionTextfield
         title={collectionTextTitle}
         placeholderText={collectionTextValue}
         editable={false}
       ></CollectionTextfield>
-      //MultiSelect
+      {/* //MultiSelect */}
       <MultiSelectPicker
         title={collectionSelectableTitle}
         multiselectArray={collectionSelectable}
-        selectedTag={null}
+        selectedTags={[]}
         onSelectTag={() => {}}
       />
-      //Rating
+      {/* //Rating */}
       <RatingPicker
         title="Rating"
         selectedIcon="star"
