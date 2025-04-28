@@ -19,8 +19,8 @@ import * as SQLite from "expo-sqlite";
 /**
  * Retrieves all general page data from the database.
  *
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
  * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
- *
  * @throws {DatabaseError} If the fetch fails.
  */
 const getAllGeneralPageData = async (
@@ -42,8 +42,8 @@ const getAllGeneralPageData = async (
  * Inserts a new page into the database and returns its ID.
  *
  * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
- * @returns {Promise<number | null>} A promise that resolves to the inserted page's ID, or null if the insertion fails.
- *
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<number>} A promise that resolves to the inserted page's ID.
  * @throws {DatabaseError} If the insertion fails or if the page ID cannot be fetched.
  */
 const insertGeneralPageAndReturnID = async (
@@ -82,8 +82,8 @@ const insertGeneralPageAndReturnID = async (
  * Deletes a page based on its ID from DB.
  *
  * @param {pageID} number - The pageID of the page to be deleted.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
  * @returns {Promise<boolean>} A promise that resolves to true if successful.
- *
  * @throws {DatabaseError} If the delete fails.
  */
 const deleteGeneralPage = async (
