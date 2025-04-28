@@ -120,26 +120,29 @@ const getItemsByCollectionId = async (
  */
 const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
   try {
-    console.log("ITEM DTO", itemDTO);
-    const itemID = await executeTransaction<number>(async () => {
-      await executeQuery(insertItemQuery, [itemDTO.pageID, itemDTO.categoryID]);
-      const lastInsertedID = await getLastInsertId();
+    const itemID = await executeTransaction<number>(async (txn) => {
+      await executeQuery(
+        insertItemQuery,
+        [itemDTO.pageID, itemDTO.categoryID],
+        txn,
+      );
+      const lastInsertedID = await getLastInsertId(txn);
 
       if (itemDTO.attributeValues) {
         itemDTO.attributeValues.forEach((value) => {
           value.itemID = lastInsertedID;
           switch (value.type) {
             case AttributeType.Text:
-              insertItemAttributeValue(insertTextValueQuery, value);
+              insertItemAttributeValue(insertTextValueQuery, value, txn);
               break;
             case AttributeType.Date:
-              insertItemAttributeValue(insertDateValueQuery, value);
+              insertItemAttributeValue(insertDateValueQuery, value, txn);
               break;
             case AttributeType.Rating:
-              insertItemAttributeValue(insertRatingValueQuery, value);
+              insertItemAttributeValue(insertRatingValueQuery, value, txn);
               break;
             case AttributeType.Multiselect:
-              insertItemAttributeValue(insertMultiselectValueQuery, value);
+              insertItemAttributeValue(insertMultiselectValueQuery, value, txn);
               break;
             default:
               break;
@@ -169,30 +172,29 @@ const insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
 const insertItemAttributeValue = async (
   query: string,
   valueDTO: ItemAttributeValueDTO,
+  txn?: SQLite.SQLiteDatabase,
 ): Promise<void> => {
   try {
     if ("valueNumber" in valueDTO) {
-      await executeQuery(query, [
-        valueDTO.itemID,
-        valueDTO.attributeID,
-        valueDTO.valueNumber,
-      ]);
+      await executeQuery(
+        query,
+        [valueDTO.itemID, valueDTO.attributeID, valueDTO.valueNumber],
+        txn,
+      );
     } else if ("valueString" in valueDTO) {
-      await executeQuery(query, [
-        valueDTO.itemID,
-        valueDTO.attributeID,
-        valueDTO.valueString,
-      ]);
+      await executeQuery(
+        query,
+        [valueDTO.itemID, valueDTO.attributeID, valueDTO.valueString],
+        txn,
+      );
     } else if ("valueMultiselect" in valueDTO) {
       const stringifiedValues = JSON.stringify(valueDTO.valueMultiselect);
-      await executeQuery(query, [
-        valueDTO.itemID,
-        valueDTO.attributeID,
-        stringifiedValues,
-      ]);
+      await executeQuery(
+        query,
+        [valueDTO.itemID, valueDTO.attributeID, stringifiedValues],
+        txn,
     }
   } catch (error) {
-    console.error("Error updating item:", error);
     throw new DatabaseError("Failed to insert item value");
   }
 };
