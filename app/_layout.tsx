@@ -66,7 +66,7 @@ export default function RootLayout() {
             name="collectionTemplate"
             options={{ headerShown: false }}
           />
-
+          <Stack.Screen name="appearance" options={{ headerShown: false }} />
           <Stack.Screen
             name="addCollectionItem"
             options={{ headerShown: false }}
