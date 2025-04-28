@@ -64,6 +64,55 @@ export default function AddCollectionItem() {
   const handleListChange = (categoryID: number) => {
     setSelectedCategoryID(categoryID);
   };
+
+  const mapToItemDTO = (attributes: AttributeDTO[]): ItemDTO => {
+    const attributeValueDTOs: ItemAttributeValueDTO[] = attributes.map(
+      (attribute) => {
+        const value = attributeValues[attribute.attributeID || 0];
+
+        switch (attribute.type) {
+          case AttributeType.Text:
+            return {
+              ...attribute,
+              valueString: value,
+            };
+          case AttributeType.Date:
+            return {
+              ...attribute,
+              valueString: value ? value.toISOString() : undefined,
+            };
+          case AttributeType.Rating:
+            return {
+              ...attribute,
+              valueNumber: value,
+            };
+          case AttributeType.Multiselect:
+            return {
+              ...attribute,
+              valueMultiselect: value,
+            };
+          default:
+            return { ...attribute };
+        }
+      },
+    );
+
+    return {
+      pageID: Number(pageId),
+      categoryID: Number(selectedCategoryID),
+      attributeValues: attributeValueDTOs,
+    };
+  };
+
+  const handleSaveItem = async () => {
+    const itemDTO = mapToItemDTO(attributes || []);
+    const itemId = await insertItemAndReturnID(itemDTO);
+    router.push({
+      pathname: "/collectionItemPage",
+      params: { itemId: itemId },
+    });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
@@ -73,6 +122,7 @@ export default function AddCollectionItem() {
             onIconPress={() => alert("Popup!")}
           />
 
+          <Button onPress={handleSaveItem}>Submit</Button>
           <AddCollectionItemCard
             attributes={attributes}
             lists={lists}
@@ -87,7 +137,7 @@ export default function AddCollectionItem() {
             titleRightButton={"Add"}
             variant="discard"
             onDiscard={router.back}
-            onNext={function (): void {}}
+            onNext={handleSaveItem}
           ></BottomButtons>
         </View>
       </ThemedView>

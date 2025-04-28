@@ -6,5 +6,5 @@ export type ItemAttributeValueDTO =
   | (AttributeDTO & {
       valueID?: number;
       itemID?: number;
-      valueMultiselect?: { multiselectID: number; options: string }[];
+      valueMultiselect?: string[];
     });
