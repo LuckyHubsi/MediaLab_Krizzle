@@ -107,7 +107,7 @@ export default function AddCollectionItem() {
   const handleSaveItem = async () => {
     const itemDTO = mapToItemDTO(attributes || []);
     const itemId = await insertItemAndReturnID(itemDTO);
-    router.push({
+    router.replace({
       pathname: "/collectionItemPage",
       params: { itemId: itemId },
     });
