@@ -1,8 +1,7 @@
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 import styled from "styled-components/native";
 
-export const CollectionListContainer = styled.View<{
-  colorScheme: "light" | "dark";
-}>`
+export const CollectionListContainer = styled.View<ColorSchemeProps>`
   display: flex;
   width: 124px;
   height: 42px;
@@ -15,9 +14,7 @@ export const CollectionListContainer = styled.View<{
   margin-right: 6px;
 `;
 
-export const CollectionListText = styled.Text<{
-  colorScheme: "light" | "dark";
-}>`
+export const CollectionListText = styled.Text<ColorSchemeProps>`
   color: #ffffff;
   font-family: Lexend;
   font-size: 16px;

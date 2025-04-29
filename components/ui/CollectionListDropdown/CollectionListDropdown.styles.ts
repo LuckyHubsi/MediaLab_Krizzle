@@ -2,19 +2,16 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { StyleProp, TextStyle, ViewStyle } from "react-native";
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 
 export const CollectionListContainer = styled.View`
   width: 100%;
   gap: 8px;
 `;
 
-export interface PickerStyleProps {
-  colorScheme: "light" | "dark";
-}
-
 export const getPickerStyles = ({
   colorScheme,
-}: PickerStyleProps): {
+}: ColorSchemeProps): {
   inputIOS: StyleProp<TextStyle>;
   inputIOSContainer: StyleProp<ViewStyle>;
   inputAndroid: StyleProp<TextStyle>;

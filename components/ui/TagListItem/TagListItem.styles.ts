@@ -1,3 +1,4 @@
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 import styled from "styled-components/native";
 
 export const Row = styled.View`
@@ -9,10 +10,10 @@ export const Row = styled.View`
   border-bottom-color: #ccc;
 `;
 
-export const TagText = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const TagText = styled.Text<ColorSchemeProps>`
   font-family: Lexend;
   font-size: 16px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#000" : "#fff"};
 `;
 

@@ -1,13 +1,12 @@
+import { ColorSchemeProps } from "@/hooks/useColorScheme";
 import styled from "styled-components/native";
 
-export const CollectionCardContainer = styled.View<{
-  colorScheme: "light" | "dark";
-}>`
+export const CollectionCardContainer = styled.View<ColorSchemeProps>`
   border-radius: 25px;
   border-width: 1px;
-  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#FBFBFB" : "#242424"};
   /* Shadow for iOS */
   shadow-color: #000;
@@ -24,20 +23,20 @@ export const CollectionCardContainer = styled.View<{
   gap: 10px;
 `;
 
-export const CollectionTitle = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const CollectionTitle = styled.Text<ColorSchemeProps>`
   font-family: Lexend_400Bold;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "black" : "white"};
   font-weight: 700;
   font-size: 16px;
   line-height: 20px; /* 125% */
 `;
 
-export const CollectionText = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const CollectionText = styled.Text<ColorSchemeProps>`
   width: 100%;
   height: 48px; /* Set a fixed height */
   max-height: 48px; /* Limit the height to 48px */
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
   font-family: Lexend;
   font-size: 14px;
@@ -47,13 +46,13 @@ export const CollectionText = styled.Text<{ colorScheme: "light" | "dark" }>`
   letter-spacing: -0.35px;
   overflow: hidden; /* Hide any overflowing text */
 `;
-export const CollectionDate = styled.Text<{ colorScheme: "light" | "dark" }>`
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+export const CollectionDate = styled.Text<ColorSchemeProps>`
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
 `;
 
-export const CollectionRating = styled.Text<{ colorScheme: "light" | "dark" }>`
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+export const CollectionRating = styled.Text<ColorSchemeProps>`
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
   font-family: Lexend;
   font-size: 14px;
@@ -66,14 +65,12 @@ export const CollectionRating = styled.Text<{ colorScheme: "light" | "dark" }>`
   align-items: center;
 `;
 
-export const CollectionSelectable = styled.Text<{
-  colorScheme: "light" | "dark";
-}>`
+export const CollectionSelectable = styled.Text<ColorSchemeProps>`
   border-radius: 33px;
   border: 1px solid
-    ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    ${({ colorScheme }: ColorSchemeProps) =>
       colorScheme === "light" ? "#585858" : "#EAEAEA"};
-  background: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  background: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
   display: flex;
   padding: 4px 12px;
@@ -82,6 +79,6 @@ export const CollectionSelectable = styled.Text<{
   gap: 10px;
   margin-right: 5px;
   margin-top: 5px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#EAEAEA"};
 `;
