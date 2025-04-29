@@ -20,6 +20,7 @@ export class ItemMapper {
               ? attr.options.map((opt: any) => opt.options)
               : null
             : null,
+          symbol: attr.symbol,
         };
 
         if (attr.attributeType === "rating") {
@@ -55,6 +56,7 @@ export class ItemMapper {
       pageID: model.pageID,
       page_title: model.page_title,
       categoryID: model.categoryID,
+      categoryName: model.category_name ? model.category_name : undefined,
       attributeValues: attributeValues,
     };
   }

@@ -4,7 +4,8 @@ export type ItemDTO = {
   itemID?: number;
   pageID: number;
   page_title?: string;
-  categoryID: number;
+  categoryID: number | null;
+  categoryName?: string;
   attributeValues?: ItemAttributeValueDTO[];
 };
 
