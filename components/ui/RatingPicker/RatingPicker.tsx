@@ -13,7 +13,7 @@ interface RatingPickerProps {
   outlinedIcon?: keyof typeof MaterialIcons.glyphMap;
   editable?: boolean;
   value?: number;
-  onChange: (rating: number) => void;
+  onChange?: (rating: number) => void;
 }
 
 const RatingPicker: React.FC<RatingPickerProps> = ({
@@ -33,7 +33,9 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
   const handlePress = (index: number) => {
     const newRating = index + 1;
     setRating(newRating);
-    onChange(newRating);
+    if (onChange) {
+      onChange(newRating);
+    }
   };
 
   return (
