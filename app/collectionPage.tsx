@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -17,6 +17,8 @@ import {
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useNavigation } from "@react-navigation/native";
+import { ItemsDTO } from "@/dto/ItemsDTO";
+import { getItemsByPageId } from "@/services/ItemService";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function CollectionScreen() {
 
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
+  const [items, setItems] = useState<ItemsDTO>();
 
   useEffect(() => {
     (async () => {
@@ -44,87 +47,12 @@ export default function CollectionScreen() {
             setListNames(listNames);
           }
         }
+        const items: ItemsDTO = await getItemsByPageId(numericID);
+        console.log(JSON.stringify(items, null, 2));
+        if (items) setItems(items);
       }
     })();
   }, [pageId]);
-  const navigation = useNavigation();
-
-  // Hardcoded data for testing purposes
-  const collectionData = {
-    id: "1",
-    collectionTitle: "Books",
-    collectionTitleValue: "Harry Potter",
-    collectionTextTitle: "Description",
-    collectionTextValue:
-      "Harry Potter is a series of fantasy novels written by J.K. Rowling, following the adventures of a young wizard and his friends at Hogwarts School of Witchcraft and Wizardry.",
-    collectionList: "List 1",
-    collectionDateValue: "2025-04-23",
-    collectionRating: "4",
-    collectionSelectable: [
-      "Fantasy",
-      "Adventure",
-      "Magic",
-      "Young Adult",
-      "Mystery",
-      "Drama",
-      "Coming of Age",
-    ],
-    collectionDateTitle: "Finished reading",
-    CollectionSelectableTitle: "Genres",
-  };
-
-  const ALL_ITEMS = {
-    collectionID: 13,
-    pageID: Number(pageId),
-    attributes: [
-      {
-        attributeID: 30,
-        attributeLabel: "attr1",
-        type: "text",
-        preview: true,
-        options: ["[]"],
-      },
-      {
-        attributeID: 31,
-        attributeLabel: "attr2",
-        type: "rating",
-        preview: true,
-        options: ["[]"],
-      },
-      {
-        attributeID: 32,
-        attributeLabel: "attr3",
-        type: "date",
-        preview: true,
-        options: ["[]"],
-      },
-    ],
-    items: [
-      {
-        itemID: 1,
-        values: ["Test title value", "2", "2025-04-23T19:39:00.000Z"],
-      },
-      {
-        itemID: 2,
-        values: ["Test title value 2", "3", "2025-04-23T19:39:00.000Z"],
-      },
-    ],
-  };
-
-  // interface ColectionWidget {
-  //   id: string;
-  //   collectionTitle?: string;
-  //   collectionTitleValue?: string;
-  //   collectionText?: string;
-  //   collectionTextValue?: string;
-  //   collectionList?: string;
-  //   collectionDateTitle?: string;
-  //   collectionDateValue?: string;
-  //   collectionRating?: string;
-  //   collectionSelectableTitle?: string;
-  //   collectionSelectable?: string[];
-  //   [key: string]: any;
-  // }
 
   return (
     <>
@@ -148,18 +76,22 @@ export default function CollectionScreen() {
             onPress={() => console.log("Pressed!")}
           />
           {/* //Hardcoded data for testing purposes */}
-          {ALL_ITEMS?.items.map((item) => (
-            <CollectionWidget
-              key={item.itemID}
-              attributes={ALL_ITEMS.attributes}
-              item={item}
-              onPress={() => {
-                router.push({
-                  pathname: "/collectionItemPage",
-                });
-              }}
-            />
-          ))}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ flex: 1, gap: 12 }}>
+              {items?.items.map((item) => (
+                <CollectionWidget
+                  key={item.itemID}
+                  attributes={items.attributes}
+                  item={item}
+                  onPress={() => {
+                    router.push({
+                      pathname: "/collectionItemPage",
+                    });
+                  }}
+                />
+              ))}
+            </View>
+          </ScrollView>
 
           <View
             style={{

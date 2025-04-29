@@ -9,13 +9,7 @@ import {
   CollectionSelectable,
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-
-type Attribute = {
-  attributeID: number;
-  attributeLabel: string;
-  type: string;
-  preview: boolean;
-};
+import { AttributeDTO } from "@/dto/AttributeDTO";
 
 type Item = {
   itemID: number;
@@ -23,7 +17,7 @@ type Item = {
 };
 
 type CollectionWidgetProps = {
-  attributes: Attribute[];
+  attributes: AttributeDTO[];
   item: Item;
   onPress?: () => void;
 };
