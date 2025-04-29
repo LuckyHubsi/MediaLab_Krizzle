@@ -70,7 +70,7 @@ export default function CollectionTemplateScreen() {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
     const pageId = await saveCollection(dtos.collection, dtos.template);
-    router.push({
+    router.replace({
       pathname: "/collectionPage",
       params: { pageId: pageId, title: collectionData.title },
     });
