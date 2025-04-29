@@ -4,10 +4,6 @@ import { ItemsModel } from "@/models/ItemsModel";
 
 export class ItemsMapper {
   static toDTO(model: ItemsModel[]): ItemsDTO {
-    if (model.length === 0) {
-      throw new Error("No items found.");
-    }
-
     const collectionID = model[0].collectionID;
     const pageID = model[0].pageID;
 
@@ -25,7 +21,7 @@ export class ItemsMapper {
             ? singleEntry.rating_symbol
             : undefined,
           options: singleEntry.multiselect_options
-            ? singleEntry.multiselect_options.split(",")
+            ? JSON.parse(singleEntry.multiselect_options)
             : null,
         });
       }
