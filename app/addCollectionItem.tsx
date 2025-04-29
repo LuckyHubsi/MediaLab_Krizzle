@@ -99,7 +99,9 @@ export default function AddCollectionItem() {
 
     return {
       pageID: Number(pageId),
-      categoryID: Number(selectedCategoryID),
+      categoryID: Number(selectedCategoryID)
+        ? Number(selectedCategoryID)
+        : null,
       attributeValues: attributeValueDTOs,
     };
   };
