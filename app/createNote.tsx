@@ -100,7 +100,10 @@ export default function CreateNoteScreen() {
     };
 
     const id = await insertNote(noteDTO);
-    router.replace({ pathname: "/notePage", params: { id, title } });
+    router.replace({
+      pathname: "/notePage",
+      params: { pageId: id, title: title },
+    });
   };
 
   return (
