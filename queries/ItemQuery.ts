@@ -54,39 +54,40 @@ const itemSelectByIdQuery: string = `
 `;
 
 const itemSelectByPageIdQuery: string = `
-        SELECT
-            c.collectionID,
-            c.pageID,
-            a.attributeID,
-            a.attribute_label,
-            a.type,
-            a.preview,
-            rs.symbol AS rating_symbol,
-            (
-                SELECT json_group_array(mo.options)
-                FROM multiselect_options mo
-                WHERE mo.attributeID = a.attributeID
-            ) AS multiselect_options,
-            i.itemID,
-            CASE
-                WHEN a.type = 'text' THEN t.value
-                WHEN a.type = 'date' THEN d.value
-                WHEN a.type = 'rating' THEN r.value
-                WHEN a.type = 'multi-select' THEN ms.value
-                ELSE NULL
-            END AS value
-        FROM item i
-        JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
-        JOIN collection c ON cc.collectionID = c.collectionID
-        JOIN attribute a ON a.item_templateID = c.item_templateID
-        LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
-        LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
-        LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
-        LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
-        LEFT JOIN rating_symbol rs ON rs.attributeID = a.attributeID
-        WHERE c.pageID = ?
-        AND a.preview = 1
-        ORDER BY a.attributeID ASC, i.itemID ASC;
+    SELECT
+        c.collectionID,
+        c.pageID,
+        a.attributeID,
+        a.attribute_label,
+        a.type,
+        a.preview,
+        i.categoryID,
+        rs.symbol AS rating_symbol,
+        (
+            SELECT json_group_array(mo.options)
+            FROM multiselect_options mo
+            WHERE mo.attributeID = a.attributeID
+        ) AS multiselect_options,
+        i.itemID,
+        CASE
+            WHEN a.type = 'text' THEN t.value
+            WHEN a.type = 'date' THEN d.value
+            WHEN a.type = 'rating' THEN r.value
+            WHEN a.type = 'multi-select' THEN ms.value
+            ELSE NULL
+        END AS value
+    FROM item i
+    LEFT JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
+    LEFT JOIN collection c ON i.pageID = c.pageID 
+    LEFT JOIN attribute a ON a.item_templateID = c.item_templateID
+    LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
+    LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
+    LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
+    LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
+    LEFT JOIN rating_symbol rs ON rs.attributeID = a.attributeID
+    WHERE c.pageID = ?
+    AND a.preview = 1
+    ORDER BY a.attributeID ASC, i.itemID ASC;
 `;
 
 const insertItemQuery: string = `
