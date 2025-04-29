@@ -73,6 +73,44 @@ export default function CollectionScreen() {
     CollectionSelectableTitle: "Genres",
   };
 
+  const ALL_ITEMS = {
+    collectionID: 13,
+    pageID: Number(pageId),
+    attributes: [
+      {
+        attributeID: 30,
+        attributeLabel: "attr1",
+        type: "text",
+        preview: true,
+        options: ["[]"],
+      },
+      {
+        attributeID: 31,
+        attributeLabel: "attr2",
+        type: "rating",
+        preview: true,
+        options: ["[]"],
+      },
+      {
+        attributeID: 32,
+        attributeLabel: "attr3",
+        type: "date",
+        preview: true,
+        options: ["[]"],
+      },
+    ],
+    items: [
+      {
+        itemID: 1,
+        values: ["Test title value", "2", "2025-04-23T19:39:00.000Z"],
+      },
+      {
+        itemID: 2,
+        values: ["Test title value 2", "3", "2025-04-23T19:39:00.000Z"],
+      },
+    ],
+  };
+
   // interface ColectionWidget {
   //   id: string;
   //   collectionTitle?: string;
@@ -110,22 +148,19 @@ export default function CollectionScreen() {
             onPress={() => console.log("Pressed!")}
           />
           {/* //Hardcoded data for testing purposes */}
-          <CollectionWidget
-            collectionTitleValue={collectionData.collectionTitleValue}
-            collectionTextValue={collectionData.collectionTextValue}
-            collectionList={collectionData.collectionList}
-            collectionDateValue={collectionData.collectionDateValue}
-            collectionRating={collectionData.collectionRating}
-            collectionSelectable={collectionData.collectionSelectable}
-            onPress={() =>
-              //navigate to a new screen when the widget is pressed
-              router.push({
-                pathname: "/collectionItemPage",
-                //for now it is passing hard coded params
-                params: { collectionData: JSON.stringify(collectionData) },
-              })
-            }
-          />
+          {ALL_ITEMS?.items.map((item) => (
+            <CollectionWidget
+              key={item.itemID}
+              attributes={ALL_ITEMS.attributes}
+              item={item}
+              onPress={() => {
+                router.push({
+                  pathname: "/collectionItemPage",
+                });
+              }}
+            />
+          ))}
+
           <View
             style={{
               position: "absolute",
