@@ -15,8 +15,8 @@ interface TextfieldProps {
   placeholderText: string;
   editable?: boolean;
   textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
-  onChangeText: (text: string) => void;
-  value: string;
+  onChangeText?: (text: string) => void;
+  value?: string;
 }
 
 const Textfield: FC<TextfieldProps> = ({
