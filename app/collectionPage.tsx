@@ -48,7 +48,6 @@ export default function CollectionScreen() {
           }
         }
         const items: ItemsDTO = await getItemsByPageId(numericID);
-        console.log(JSON.stringify(items, null, 2));
         if (items) setItems(items);
       }
     })();
@@ -86,6 +85,7 @@ export default function CollectionScreen() {
                   onPress={() => {
                     router.push({
                       pathname: "/collectionItemPage",
+                      params: { itemId: item.itemID.toString() },
                     });
                   }}
                 />
