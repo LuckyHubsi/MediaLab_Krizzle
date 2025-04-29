@@ -116,20 +116,21 @@ export default function AddCollectionItem() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Header
-            title="Add Collection Item"
-            onIconPress={() => alert("Popup!")}
-          />
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
+          <View>
+            <Header
+              title="Add Collection Item"
+              onIconPress={() => alert("Popup!")}
+            />
 
-          <Button onPress={handleSaveItem}>Submit</Button>
-          <AddCollectionItemCard
-            attributes={attributes}
-            lists={lists}
-            attributeValues={attributeValues}
-            onInputChange={handleInputChange}
-            onListChange={handleListChange}
-          />
+            <AddCollectionItemCard
+              attributes={attributes}
+              lists={lists}
+              attributeValues={attributeValues}
+              onInputChange={handleInputChange}
+              onListChange={handleListChange}
+            />
+          </View>
 
           {/* add correct function to discard/next */}
           <BottomButtons
@@ -138,6 +139,7 @@ export default function AddCollectionItem() {
             variant="discard"
             onDiscard={router.back}
             onNext={handleSaveItem}
+            progressStep={10}
           ></BottomButtons>
         </View>
       </ThemedView>

@@ -38,6 +38,8 @@ export default function CollectionTemplateScreen() {
     const collection: CollectionDTO = {
       page_title: collectionData.title,
       page_type: PageType.Collection,
+      page_icon: collectionData.selectedIcon,
+      page_color: collectionData.selectedColor,
       archived: false,
       pinned: false,
       categories: lists,

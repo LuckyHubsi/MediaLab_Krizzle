@@ -27,7 +27,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
     >
       <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
         {collectionLists?.map((item, index) => (
-          <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
+          <TouchableOpacity activeOpacity={0.85} onPress={onPress} key={index}>
             <CollectionListContainer colorScheme={colorScheme} key={index}>
               <View
                 style={{

@@ -125,9 +125,7 @@ export default function HomeScreen() {
     });
   }, [widgets, selectedTag, searchQuery]);
 
-  useEffect(() => {
-    console.log("All widgets:", widgets);
-  }, [widgets]);
+  useEffect(() => {}, [widgets]);
 
   const goToPage = (widget: Widget) => {
     const path =
