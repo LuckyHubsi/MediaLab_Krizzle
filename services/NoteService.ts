@@ -57,7 +57,6 @@ const getNoteDataByPageID = async (
 
   if (!noteData) return null;
   if (noteData.page_type === PageType.Note) {
-    console.log(NoteMapper.toDTO(noteData));
     return NoteMapper.toDTO(noteData);
   }
   return null;

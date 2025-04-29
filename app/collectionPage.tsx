@@ -31,7 +31,6 @@ export default function CollectionScreen() {
 
   useEffect(() => {
     (async () => {
-      console.log("page id: ", pageId);
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         const collectionData = await getCollectionByPageId(numericID);
@@ -103,7 +102,7 @@ export default function CollectionScreen() {
         <ThemedView topPadding={0}>
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
-            onSearch={(text) => console.log(text)}
+            onSearch={(text) => {}}
           />
           {/* //Hardcoded data for testing purposes */}
           <CollectionList

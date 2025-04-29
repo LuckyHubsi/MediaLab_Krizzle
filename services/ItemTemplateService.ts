@@ -64,7 +64,6 @@ const getTemplate = async (
       [templateID],
       txn,
     );
-    console.log(template);
     if (template) {
       return ItemTemplateMapper.toDTO(template);
     } else {

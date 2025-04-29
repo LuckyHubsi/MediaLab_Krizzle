@@ -5,8 +5,6 @@ import { AttributeModel } from "@/models/AttributeModel";
 
 export class ItemTemplateMapper {
   static toDTO(model: ItemTemplateModel): ItemTemplateDTO {
-    console.log("Entering toDTO function:", model);
-
     let attributes: AttributeDTO[] = [];
     if (model.attributes) {
       // If the attributes are a stringified JSON array, parse it into an actual array
@@ -14,8 +12,6 @@ export class ItemTemplateMapper {
         typeof model.attributes === "string"
           ? JSON.parse(model.attributes)
           : model.attributes;
-
-      console.log("Model has attributes:", parsedAttributes);
 
       // Now map the parsed attributes
       attributes = parsedAttributes.map((attribute) => {
@@ -30,7 +26,6 @@ export class ItemTemplateMapper {
       });
     }
 
-    console.log("ATTR IN TODTO:", JSON.stringify({ attributes }));
     return {
       item_templateID: model.itemTemplateID,
       template_name: model.title,

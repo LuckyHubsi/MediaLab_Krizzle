@@ -49,7 +49,6 @@ export default function NotesScreen() {
   const saveNote = async (html: string) => {
     if (!pageId) return;
     const success = await updateNoteContent(Number(pageId), html);
-    console.log("Saved note: ", success);
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);

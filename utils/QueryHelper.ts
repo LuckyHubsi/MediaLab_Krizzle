@@ -32,7 +32,6 @@ const executeQuery = async (
   try {
     return db.runAsync(query, params);
   } catch (error) {
-    console.log("execute query", error);
     throw error;
   }
 };
@@ -97,10 +96,8 @@ const executeTransaction = async <T>(
   const inTransaction: boolean = await db.isInTransactionAsync();
 
   if (inTransaction) {
-    console.log("already in transaction");
     return fn(db);
   } else {
-    console.log("new transaction");
     return new Promise<T>((resolve, reject) => {
       db.withExclusiveTransactionAsync(async (txn) => {
         try {

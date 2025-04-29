@@ -22,7 +22,6 @@ const insertCollectionCategory = async (
   txn?: SQLite.SQLiteDatabase,
 ): Promise<void> => {
   try {
-    console.log(categoryDTO);
     await executeQuery(
       insertCollectionCategoryQuery,
       [categoryDTO.category_name, categoryDTO.collectionID],

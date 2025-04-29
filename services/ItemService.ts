@@ -38,8 +38,6 @@ const getItemById = async (id: number): Promise<ItemDTO> => {
     // get raw result using the query
     const rawResult = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
 
-    console.log("RAW ITEM", JSON.stringify(rawResult, null, 2));
-
     if (rawResult) {
       // Check if attributes are already a JSON string
       const parsedAttributes =
