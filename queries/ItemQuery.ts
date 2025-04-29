@@ -10,45 +10,57 @@ const itemSelectByIdQuery: string = `
         i.categoryID,
         p.page_title,
         cc.category_name,
-        json_group_array(
-            json_object(
-                'attributeID', a.attributeID,
-                'attributeLabel', a.attribute_label,
-                'attributeType', a.type,
-                'preview', a.preview,
-                'valueID', CASE
-                    WHEN a.type = 'text' THEN t.text_valueID
-                    WHEN a.type = 'date' THEN d.date_valueID
-                    WHEN a.type = 'rating' THEN r.rating_valueID
-                    WHEN a.type = 'multi-select' THEN ms.multiselect_valueID
-                END,
-                'value', CASE
-                    WHEN a.type = 'text' THEN t.value
-                    WHEN a.type = 'date' THEN d.value
-                    WHEN a.type = 'rating' THEN r.value
-                    WHEN a.type = 'multi-select' THEN ms.value
-                    ELSE NULL
-                END,
-                'options', CASE
-                    WHEN a.type = 'multi-select' THEN (
-                        SELECT options
-                        FROM multiselect_options mo
-                        WHERE mo.attributeID = a.attributeID
-                    )
-                    ELSE NULL
-                END
+        (
+            SELECT json_group_array(
+                json_object(
+                    'attributeID', a.attributeID,
+                    'attributeLabel', a.attribute_label,
+                    'attributeType', a.type,
+                    'preview', a.preview,
+                    'valueID', CASE
+                        WHEN a.type = 'text' THEN t.text_valueID
+                        WHEN a.type = 'date' THEN d.date_valueID
+                        WHEN a.type = 'rating' THEN r.rating_valueID
+                        WHEN a.type = 'multi-select' THEN ms.multiselect_valueID
+                    END,
+                    'value', CASE
+                        WHEN a.type = 'text' THEN t.value
+                        WHEN a.type = 'date' THEN d.value
+                        WHEN a.type = 'rating' THEN r.value
+                        WHEN a.type = 'multi-select' THEN ms.value
+                        ELSE NULL
+                    END,
+                    'symbol', CASE
+                        WHEN a.type = 'rating' THEN (
+                            SELECT rs.symbol
+                            FROM rating_symbol rs
+                            WHERE rs.attributeID = a.attributeID
+                        )
+                        ELSE NULL
+                    END,
+                    'options', CASE
+                        WHEN a.type = 'multi-select' THEN (
+                            SELECT json_group_array(mo.options)
+                            FROM multiselect_options mo
+                            WHERE mo.attributeID = a.attributeID
+                        )
+                        ELSE NULL
+                    END
+                )
             )
+            FROM attribute a
+            LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
+            LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
+            LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
+            LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
+            WHERE a.item_templateID = it.item_templateID
+            ORDER BY a.attributeID
         ) AS attributes
     FROM item i
     JOIN general_page_data p ON i.pageID = p.pageID
-    JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
-    JOIN collection c ON cc.collectionID = c.collectionID
-    JOIN item_template it ON c.item_templateID = it.item_templateID
-    JOIN attribute a ON a.item_templateID = it.item_templateID
-    LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
-    LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
-    LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
-    LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
+    LEFT JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
+    LEFT JOIN collection c ON c.pageID = i.pageID
+    LEFT JOIN item_template it ON c.item_templateID = it.item_templateID
     WHERE i.itemID = ?
     GROUP BY i.itemID;
 `;
