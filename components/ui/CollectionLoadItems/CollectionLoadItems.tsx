@@ -14,31 +14,18 @@ import { ListCOntainer } from "./CollectionLoadItems.stlyle";
 import { CollectionListText } from "../CollectionList/CollectionList.style";
 import { ThemedText } from "@/components/ThemedText";
 import CollectionTextfield from "../CollectionTextField/CollectionTextField";
+import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
+import { AttributeType } from "@/utils/enums/AttributeType";
+import { parseISO } from "date-fns";
 
 interface CollectionLoadItemProps {
-  collectionTitle?: string;
-  collectionTitleValue?: string;
-  collectionTextTitle?: string;
-  collectionTextValue?: string;
-  collectionList?: string;
-  collectionDateTitle?: string;
-  collectionDateValue?: string;
-  collectionRating?: string;
-  collectionSelectable?: string[];
-  collectionSelectableTitle?: string;
+  attributeValues?: ItemAttributeValueDTO[];
+  listName?: string;
 }
 
 export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
-  collectionTitle,
-  collectionTitleValue,
-  collectionTextTitle,
-  collectionTextValue,
-  collectionList,
-  collectionDateTitle,
-  collectionDateValue,
-  collectionRating,
-  collectionSelectable,
-  collectionSelectableTitle,
+  attributeValues,
+  listName,
 }) => {
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -46,6 +33,97 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
+  };
+
+  const renderRepresentation = () => {
+    const elements: React.ReactNode[] = [];
+    if (attributeValues) {
+      attributeValues.forEach((attributeValue) => {
+        if (attributeValue == attributeValues[0]) {
+          if ("valueString" in attributeValue && attributeValue.valueString) {
+            elements.push(
+              <Textfield
+                key={attributeValue.attributeID}
+                title={attributeValue.attributeLabel}
+                placeholderText={attributeValue.valueString}
+                editable={false}
+              />,
+            );
+          }
+        } else {
+          switch (attributeValue.type) {
+            case AttributeType.Text:
+              if (
+                "valueString" in attributeValue &&
+                attributeValue.valueString
+              ) {
+                elements.push(
+                  <CollectionTextfield
+                    key={attributeValue.attributeID}
+                    title={attributeValue.attributeLabel}
+                    placeholderText={attributeValue.valueString}
+                    editable={false}
+                  ></CollectionTextfield>,
+                );
+              }
+              break;
+            case AttributeType.Date:
+              if (
+                "valueString" in attributeValue &&
+                attributeValue.valueString
+              ) {
+                elements.push(
+                  <DateField
+                    key={attributeValue.attributeID}
+                    title={attributeValue.attributeLabel}
+                    editable={false}
+                    value={parseISO(attributeValue.valueString)}
+                  />,
+                );
+              }
+              break;
+            case AttributeType.Rating:
+              if (
+                "valueNumber" in attributeValue &&
+                attributeValue.valueNumber &&
+                attributeValue.valueNumber !== 0
+              ) {
+                elements.push(
+                  <RatingPicker
+                    key={attributeValue.attributeID}
+                    title="Rating"
+                    selectedIcon={attributeValue.symbol}
+                    editable={false}
+                    value={attributeValue.valueNumber}
+                  ></RatingPicker>,
+                );
+              }
+              break;
+            case AttributeType.Multiselect:
+              if (
+                attributeValue.options &&
+                "valueMultiselect" in attributeValue &&
+                attributeValue.valueMultiselect &&
+                attributeValue.valueMultiselect.length !== 0
+              ) {
+                elements.push(
+                  <MultiSelectPicker
+                    key={attributeValue.attributeID}
+                    title={attributeValue.attributeLabel}
+                    multiselectArray={attributeValue.valueMultiselect}
+                    selectedTags={attributeValue.valueMultiselect}
+                    onSelectTag={() => {}}
+                  />,
+                );
+              }
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    }
+    return elements;
   };
 
   return (
@@ -68,36 +146,10 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
             style={{ marginRight: 10 }}
           />
 
-          <CollectionListText>{collectionList}</CollectionListText>
+          <CollectionListText>{listName}</CollectionListText>
         </View>
       </ListCOntainer>
-      {/* //Title */}
-      <Textfield
-        title={collectionTitle}
-        placeholderText={collectionTitleValue}
-        editable={false}
-      />
-      {/* //Date */}
-      <DateField title={collectionDateTitle} editable={false} />
-      {/* //Text */}
-      <CollectionTextfield
-        title={collectionTextTitle}
-        placeholderText={collectionTextValue}
-        editable={false}
-      ></CollectionTextfield>
-      {/* //MultiSelect */}
-      <MultiSelectPicker
-        title={collectionSelectableTitle}
-        multiselectArray={collectionSelectable}
-        selectedTags={[]}
-        onSelectTag={() => {}}
-      />
-      {/* //Rating */}
-      <RatingPicker
-        title="Rating"
-        selectedIcon="star"
-        editable={false}
-      ></RatingPicker>
+      {renderRepresentation()}
     </StyledCardWrapper>
   );
 };

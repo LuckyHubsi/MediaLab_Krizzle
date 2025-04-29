@@ -20,7 +20,6 @@ export default function CollectionItemScreen() {
       const numericItemId = Number(itemId);
       const item = await getItemById(numericItemId);
       setItem(item);
-      console.log(JSON.stringify(item, null, 2));
     })();
   }, [itemId]);
 
@@ -40,34 +39,10 @@ export default function CollectionItemScreen() {
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
           <ThemedView topPadding={0}>
-            {/* <CollectionLoadItem
-              collectionTitle={
-                parsedCollectionData?.collectionTitle || "Default Title"
-              }
-              collectionTitleValue={
-                parsedCollectionData?.collectionTitleValue || "Default Title"
-              }
-              collectionTextTitle={
-                parsedCollectionData?.collectionTextTitle || "Default Text"
-              }
-              collectionTextValue={
-                parsedCollectionData?.collectionTextValue || "Default Text"
-              }
-              collectionList={parsedCollectionData?.collectionList || []}
-              collectionDateTitle={
-                parsedCollectionData?.collectionDateTitle || "Date"
-              }
-              collectionDateValue={
-                parsedCollectionData?.collectionDateValue || "N/A"
-              }
-              collectionRating={parsedCollectionData?.collectionRating || 0}
-              collectionSelectable={
-                parsedCollectionData?.collectionSelectable || false
-              }
-              collectionSelectableTitle={
-                parsedCollectionData?.CollectionSelectableTitle || "Selectable"
-              }
-            /> */}
+            <CollectionLoadItem
+              attributeValues={item?.attributeValues}
+              listName={item?.categoryName}
+            />
           </ThemedView>
         </ScrollView>
       </SafeAreaView>
