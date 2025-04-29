@@ -18,15 +18,11 @@ export default function TabThreeScreen() {
         <ThemedText fontSize="xl" fontWeight="bold">
           Settings
         </ThemedText>
-        <SettingsLink
-          label="Appearance"
-          href="/appearance"
-          iconName="palette" // 🎨
-        />
+        <SettingsLink label="Appearance" href="/appearance" iconName="tune" />
         <SettingsLink
           label="Tag Management"
           href="/tagManagement"
-          iconName="local-offer" // 🏷️
+          iconName="local-offer"
         />
       </ThemedView>
     </SafeAreaView>
