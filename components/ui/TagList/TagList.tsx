@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { TagButton, TagText } from "./TagList.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type TagListProps = {
   tags: string[];
@@ -10,7 +10,7 @@ type TagListProps = {
 
 const TagList: React.FC<TagListProps> = ({ tags, onSelect }) => {
   const [activeTag, setActiveTag] = useState(tags[0]);
-  const themeMode = useColorScheme() ?? "light";
+  const themeMode = useActiveColorScheme() ?? "light";
 
   const handlePress = (tag: string) => {
     setActiveTag(tag);

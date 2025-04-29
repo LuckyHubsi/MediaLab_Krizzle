@@ -7,8 +7,8 @@ import {
   ArrowWrapper,
 } from "./Settingslink.styles";
 import type { LinkProps } from "expo-router";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type SettingsLinkProps = {
   label: string;
@@ -18,7 +18,7 @@ type SettingsLinkProps = {
 
 export const SettingsLink = ({ label, href, iconName }: SettingsLinkProps) => {
   const router = useRouter();
-  const colorScheme = useColorScheme() ?? "light"; // fallback to 'light' if null
+  const colorScheme = useActiveColorScheme() ?? "light"; // fallback to 'light' if null
 
   return (
     <LinkContainer colorScheme={colorScheme} onPress={() => router.push(href)}>

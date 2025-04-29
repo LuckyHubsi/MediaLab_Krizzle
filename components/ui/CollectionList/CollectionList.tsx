@@ -8,6 +8,7 @@ import {
 } from "./CollectionList.style";
 import { View } from "react-native";
 import { ScrollView } from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type CollectionListProps = {
   collectionLists?: string[];
@@ -18,7 +19,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   return (
     <ScrollView
       horizontal={true}

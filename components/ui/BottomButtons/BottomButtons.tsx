@@ -6,9 +6,9 @@ import {
   StyledBottomButtons,
 } from "./BottomButtons.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import ProgressIndicator from "../CreateCollectionSteps/ProgressionIndicator/ProgressionIndicator";
 import { Button } from "../Button/Button";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface BottomButtonsProps {
   titleLeftButton: string;
@@ -29,7 +29,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   hasProgressIndicator = false,
   progressStep,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const buttonTextVariants =
     variant === "discard" ? "red" : colorScheme === "dark" ? "white" : "grey";
 

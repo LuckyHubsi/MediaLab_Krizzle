@@ -1,10 +1,10 @@
 import React from "react";
 import { View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function TabBarBackground() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   return (
     <View
       style={{

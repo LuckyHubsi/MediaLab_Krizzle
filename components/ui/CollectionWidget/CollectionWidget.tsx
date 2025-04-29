@@ -1,6 +1,5 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   CollectionCardContainer,
   CollectionText,
@@ -10,6 +9,7 @@ import {
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View } from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type CollectionProps = {
   collectionTitle: string;
@@ -32,7 +32,7 @@ const CollectionWidget: React.FC<CollectionProps> = ({
 
   onPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <CollectionCardContainer colorScheme={colorScheme}>

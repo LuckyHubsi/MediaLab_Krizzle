@@ -9,6 +9,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { TouchableWithoutFeedback } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CollectionListDropdownProps {
   title: string;
@@ -23,7 +24,7 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
   selectedList,
   onSelectionChange,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
   const dropdownItems = collectionList.map((item) => ({
     label: item,

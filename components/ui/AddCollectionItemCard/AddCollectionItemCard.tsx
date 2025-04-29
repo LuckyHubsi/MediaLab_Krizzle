@@ -2,16 +2,16 @@ import { FC, useState } from "react";
 import Textfield from "../Textfield/Textfield";
 import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./AddCollectionItemCard.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
 import RatingPicker from "../RatingPicker/RatingPicker";
 import CollectionListDropdown from "../CollectionListDropdown/CollectionListDropdown";
 import { ScrollView } from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface AddCollectionItemProps {}
 
 const AddCollectionItemCard: FC<AddCollectionItemProps> = ({}) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
 
   const handleSelectionChange = (value: string) => {
@@ -34,7 +34,14 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({}) => {
           onSelectionChange={handleSelectionChange}
         />
         {/* Get correct textfield title */}
-        <Textfield title="Textfield Title" placeholderText="Add text here" />
+        <Textfield
+          title="Textfield Title"
+          placeholderText="Add text here"
+          onChangeText={function (text: string): void {
+            throw new Error("Function not implemented.");
+          }}
+          value={""}
+        />
         {/* Get correct datefield title */}
         <DateField title="Date Field" />
         {/* Get correct multi select */}

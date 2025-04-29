@@ -12,10 +12,10 @@ import {
 } from "./ItemTemplateCard.styles";
 import { Colors } from "@/constants/Colors";
 import { getPickerStyles } from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -48,7 +48,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onRemove,
   onPreviewToggle,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
