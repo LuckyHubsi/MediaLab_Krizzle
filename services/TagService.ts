@@ -9,13 +9,18 @@ import { DatabaseError } from "@/utils/DatabaseError";
 /**
  * Retrieves all tags from the database.
  *
+ * @param {SQLite.SQLiteDatabase} txn - Optional SQLite transaction object when its called inside a transaction.
  * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of TagDTO objects.
  */
 export const getAllTags = async (
   txn?: SQLite.SQLiteDatabase,
 ): Promise<TagDTO[]> => {
-  const rawTags = await fetchAll<TagModel>(selectAllTagsQuery, [], txn);
-  return rawTags.map(TagMapper.toDTO);
+  try {
+    const rawTags = await fetchAll<TagModel>(selectAllTagsQuery, [], txn);
+    return rawTags.map(TagMapper.toDTO);
+  } catch (error) {
+    throw new DatabaseError("Failed to fetch all tags.");
+  }
 };
 
 /**
