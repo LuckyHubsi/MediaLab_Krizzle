@@ -18,6 +18,13 @@ export const getAllTags = async (
   return rawTags.map(TagMapper.toDTO);
 };
 
+/**
+ * Insert a tag into the database with a user-input tag label.
+ *
+ * @param {TagDTO} tag - The TagDTO sent from the frontend.
+ * @param {SQLite.SQLiteDatabase} txn - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<boolean>} A promise that resolves to true upon successful insertion.
+ */
 export const insertTag = async (
   tag: TagDTO,
   txn?: SQLite.SQLiteDatabase,
