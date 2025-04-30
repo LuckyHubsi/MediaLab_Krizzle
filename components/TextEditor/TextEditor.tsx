@@ -18,9 +18,8 @@ import {
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { customEditorHtml } from "./TextEditorCustomHtml";
-import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface TextEditorProps {
   initialContent: string;
@@ -31,7 +30,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   initialContent,
   onChange,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );

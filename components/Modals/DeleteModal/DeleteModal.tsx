@@ -7,9 +7,9 @@ import {
   Action,
   ActionText,
 } from "./DeleteModal.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface DeleteModalProps {
   visible: boolean;
@@ -28,7 +28,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onConfirm,
   onclose,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
 
   return (
