@@ -1,13 +1,10 @@
 import { router } from "expo-router";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
-import { Header } from "@/components/ui/Header/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { Card } from "@/components/ui/Card/Card";
 import { ThemeSelector } from "@/components/ui/ThemeSelector/ThemeSelector";
-import { useState } from "react";
 import { useUserTheme } from "@/context/ThemeContext";
 import { useColorScheme } from "react-native";
 

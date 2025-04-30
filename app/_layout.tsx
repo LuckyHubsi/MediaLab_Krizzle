@@ -84,6 +84,7 @@ export default function RootLayout() {
               name="collectionItemPage"
               options={{ headerShown: false }}
             />
+            <Stack.Screen name="appearance" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
