@@ -10,6 +10,7 @@ import {
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/dto/AttributeDTO";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type Item = {
   itemID: number;
@@ -27,7 +28,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   item,
   onPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   // Find indexes for each type
   const titleIndex = attributes.findIndex((attr) => attr.type === "text");

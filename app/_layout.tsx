@@ -19,6 +19,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SQLiteProvider } from "expo-sqlite";
+import { UserThemeProvider } from "@/context/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,42 +44,51 @@ export default function RootLayout() {
   }
 
   return (
-    <SQLiteProvider
-      databaseName="krizzle_local.db"
-      assetSource={{ assetId: require("../assets/database/krizzle_local.db") }}
-    >
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="createNote" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="collectionPage"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="notePage" options={{ headerShown: false }} />
-          <Stack.Screen name="tagManagement" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="createCollection"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="addLists" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="collectionTemplate"
-            options={{ headerShown: false }}
-          />
+    <UserThemeProvider>
+      <SQLiteProvider
+        databaseName="krizzle_local.db"
+        assetSource={{
+          assetId: require("../assets/database/krizzle_local.db"),
+        }}
+      >
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="createNote" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="collectionPage"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="notePage" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="tagManagement"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="createCollection"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="addLists" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="collectionTemplate"
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen
-            name="addCollectionItem"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="collectionItemPage"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </SQLiteProvider>
+            <Stack.Screen
+              name="addCollectionItem"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="collectionItemPage"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SQLiteProvider>
+    </UserThemeProvider>
   );
 }

@@ -1,17 +1,12 @@
 import React, { FC, useState } from "react";
-import { FlatList, ScrollView, TouchableOpacity, View } from "react-native";
-import { useColorScheme } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Card } from "@/components/ui/Card/Card";
-import { Header } from "@/components/ui/Header/Header";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
 import { ThemedText } from "@/components/ThemedText";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import Textfield from "../../Textfield/Textfield";
-import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 import { Colors } from "@/constants/Colors";
 import {
@@ -26,6 +21,7 @@ import {
   CardText,
   CardHeader,
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -67,7 +63,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const iconColor =
     colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 

@@ -4,10 +4,10 @@ import {
   StyledTextInput,
   TextfieldContainter,
 } from "./Textfield.styles";
-import { FC, SetStateAction, useState } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { FC } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface TextfieldProps {
   title: string;
@@ -28,7 +28,7 @@ const Textfield: FC<TextfieldProps> = ({
   onChangeText,
   value,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   return (
     <TextfieldContainter>

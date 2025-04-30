@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -13,7 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
 }) => {
   const [query, setQuery] = useState("");
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
 
   // Call onSearch live as user types

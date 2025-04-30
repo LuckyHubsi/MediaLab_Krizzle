@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
 import {
   ItemCountContainer,
@@ -12,14 +11,11 @@ import { AddButton } from "../../AddButton/AddButton";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import ItemTemplateCard from "./ItemTemplateCard/ItemTemplateCard";
 import { MaterialIcons } from "@expo/vector-icons";
-
 import type { CollectionData } from "../CreateCollection/CreateCollection";
-import ProgressIndicator from "../ProgressionIndicator/ProgressionIndicator";
 import { Card } from "../../Card/Card";
-import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import { Colors } from "@/constants/Colors";
-import { Header } from "../../Header/Header";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -35,7 +31,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   onNext,
 }) => {
   const maxPreviewCount = 2;
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const cards = data.templates;
 
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [

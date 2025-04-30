@@ -23,6 +23,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { colorLabelMap } from "@/constants/LabelMaps";
 import { LinearGradient } from "expo-linear-gradient";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -51,7 +52,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
   onClose,
   onDone,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Modal

@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity } from "react-native";
 import { Row, TagText, IconRow } from "./TagListItem.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface Props {
   tag: string;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const TagListItem: React.FC<Props> = ({ tag, onEdit, onDelete }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Row>

@@ -8,28 +8,22 @@ import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
-import { Button } from "@/components/ui/Button/Button";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { insertNote } from "@/services/NoteService";
-import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import {
-  Container,
   ScrollContainer,
   ContentWrapper,
   TwoColumnRow,
   ButtonContainer,
 } from "./CreateCollection.styles";
-import { de } from "date-fns/locale";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import BottomButtons from "../../BottomButtons/BottomButtons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CreateCollectionProps {
   data: {
@@ -63,7 +57,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   setData,
   onNext,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const title = data.title;
   const selectedTag = data.selectedTag;
   const selectedColor = data.selectedColor;

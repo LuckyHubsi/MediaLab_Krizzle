@@ -10,11 +10,10 @@ import {
   OptionText,
 } from "./CreateNCModal.styles";
 import { useRouter } from "expo-router";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
-import MaterialCommunityIcons from "@expo/vector-icons/build/MaterialCommunityIcons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -25,7 +24,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   isVisible,
   onClose,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const router = useRouter();
 
   return (

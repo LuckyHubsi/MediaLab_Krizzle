@@ -6,37 +6,37 @@ import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal"
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [isModalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={{ flex: 1 }}>
       <Tabs
-        screenOptions={{
-          tabBarActiveTintColor:
-            Colors[colorScheme ?? "light"].tabBarActiveTintColor,
-          tabBarInactiveTintColor:
-            Colors[colorScheme ?? "light"].tabBarInactiveTintColor,
-          headerShown: false,
-          tabBarButton: HapticTab,
-          tabBarBackground: TabBarBackground,
-          tabBarLabelStyle: {
-            fontFamily: "Lexend_400Regular",
-            fontSize: 12,
-          },
-          tabBarStyle: {
-            position: Platform.OS === "ios" ? "absolute" : "relative",
-            height: Platform.OS === "ios" ? 80 : 60,
-            paddingTop: Platform.OS === "ios" ? 5 : 2,
-            backgroundColor:
-              Colors[colorScheme ?? "light"].tabBarBackgroundColor,
-            borderTopWidth: 0,
-            paddingRight: 75,
-          },
+        screenOptions={() => {
+          const theme = colorScheme ?? "light";
+          return {
+            tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
+            tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
+            headerShown: false,
+            tabBarButton: HapticTab,
+            tabBarBackground: TabBarBackground,
+            tabBarLabelStyle: {
+              fontFamily: "Lexend_400Regular",
+              fontSize: 12,
+            },
+            tabBarStyle: {
+              position: Platform.OS === "ios" ? "absolute" : "relative",
+              height: Platform.OS === "ios" ? 80 : 60,
+              paddingTop: Platform.OS === "ios" ? 5 : 2,
+              backgroundColor: Colors[theme].tabBarBackgroundColor,
+              borderTopWidth: 0,
+              paddingRight: 75,
+            },
+          };
         }}
       >
         <Tabs.Screen

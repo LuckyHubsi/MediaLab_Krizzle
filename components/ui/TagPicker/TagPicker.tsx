@@ -1,17 +1,15 @@
 import React from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   Container,
   HeaderRow,
-  ViewAllText,
   TagScrollView,
   TagPill,
   BackIcon,
 } from "./TagPicker.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface TagPickerProps {
   tags: string[];
@@ -26,7 +24,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
   onSelectTag,
   onViewAllPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Container>

@@ -1,17 +1,8 @@
 import React from "react";
-import { View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import {
-  Container,
-  Label,
-  InputWrapper,
-  StyledTitleInput,
-  TextIcon,
-  TextAlignRight,
-} from "./TitleCard.styles";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Container, TextAlignRight } from "./TitleCard.styles";
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "../Textfield/Textfield";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface TitleCardProps {
   value: string;
@@ -24,7 +15,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   onChangeText,
   placeholder = "Add title...",
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Container>

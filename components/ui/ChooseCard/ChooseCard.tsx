@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { TouchableOpacity } from "react-native";
 import { StyledChooseCard, Circle, EditButton } from "./ChooseCard.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface ChooseCardProps {
   label: string;
@@ -18,7 +18,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
   selectedIcon,
   onPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <TouchableOpacity onPress={onPress}>

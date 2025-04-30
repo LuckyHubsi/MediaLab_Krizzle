@@ -1,14 +1,14 @@
 import React, { FC, useState } from "react";
 import { Image } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Button } from "../ui/Button/Button";
 import { ThemedText } from "../ThemedText";
 import { StyledEmptyHome } from "./emptyHome.styles";
 import { ModalSelection } from "../Modals/CreateNCModal/CreateNCModal";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export const EmptyHome: FC = () => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const [isModalVisible, setModalVisible] = useState(false);
 
   return (

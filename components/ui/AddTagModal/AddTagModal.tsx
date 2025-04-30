@@ -12,7 +12,7 @@ import {
   StyledInput,
 } from "./AddTagModal.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface Props {
   visible: boolean;
@@ -26,7 +26,7 @@ export const AddTagModal: React.FC<Props> = ({
   onSubmit,
 }) => {
   const [input, setInput] = useState("");
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   const handleSubmit = () => {
     onSubmit(input.trim());
