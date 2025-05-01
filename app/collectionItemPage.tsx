@@ -7,6 +7,7 @@ import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/Collecti
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
 import { getItemById } from "@/services/ItemService";
 import { ItemDTO } from "@/dto/ItemDTO";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -14,6 +15,7 @@ export default function CollectionItemScreen() {
   }>();
 
   const [item, setItem] = useState<ItemDTO>();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -32,7 +34,9 @@ export default function CollectionItemScreen() {
           iconName={undefined} // No icon for the header
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => alert("Popup!")} // action when icon menu is pressed
+          onIconMenuPress={() => {
+            setShowModal(true);
+          }} // action when icon menu is pressed
         />
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
@@ -46,6 +50,19 @@ export default function CollectionItemScreen() {
           </ThemedView>
         </ScrollView>
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {},
+            danger: true,
+          },
+        ]}
+      />
     </>
   );
 }
