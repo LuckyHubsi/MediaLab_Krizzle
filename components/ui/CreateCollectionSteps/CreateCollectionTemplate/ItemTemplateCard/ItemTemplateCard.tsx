@@ -32,6 +32,7 @@ interface ItemTemplateCardProps {
   onRemove?: () => void;
   onPreviewToggle?: () => void;
   hasNoInputError?: boolean;
+  hasNoMultiSelectableError?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -49,6 +50,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onRemove,
   onPreviewToggle,
   hasNoInputError,
+  hasNoMultiSelectableError,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -134,6 +136,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             title=""
             options={options}
             onOptionsChange={onOptionsChange}
+            hasNoInputError={hasNoMultiSelectableError}
           />
         )}
 

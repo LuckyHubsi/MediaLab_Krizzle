@@ -16,12 +16,14 @@ interface AddMultiSelectablesProps {
   title: string;
   options: string[];
   onOptionsChange: (newOptions: string[]) => void;
+  hasNoInputError?: boolean;
 }
 
 const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   title,
   options,
   onOptionsChange,
+  hasNoInputError,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -49,9 +51,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
         <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
         <ThemedText colorVariant="primary">Add a selectable</ThemedText>
       </AddMultiSelectableButton>
-
       {options.length > 0 && <ThemedText>List of Selectables</ThemedText>}
-
       {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
           <TextfieldWrapper>
@@ -64,6 +64,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
               onChangeText={(text) => handleInputChange(index, text)}
             />
           </TextfieldWrapper>
+
           <TouchableOpacity onPress={() => handleRemoveTextfield(index)}>
             <MaterialIcons
               name="remove-circle"
@@ -73,6 +74,11 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
           </TouchableOpacity>
         </SelectablesContainer>
       ))}
+      {hasNoInputError && (
+        <ThemedText fontSize="s" colorVariant={"red"}>
+          Please enter a text in all fields.
+        </ThemedText>
+      )}
     </AddMultiSelectablesContainer>
   );
 };

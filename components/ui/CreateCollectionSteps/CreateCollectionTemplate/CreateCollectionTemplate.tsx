@@ -262,6 +262,13 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             hasNoInputError={
               hasClickedNext && (!card.title || card.title.trim() === "")
             }
+            hasNoMultiSelectableError={
+              hasClickedNext &&
+              card.itemType === "multi-select" &&
+              (!card.options ||
+                card.options.length === 0 ||
+                card.options.some((o) => o.trim() === ""))
+            }
           />
         ))}
 
@@ -283,15 +290,25 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           //check if all textfields are filled
           () => {
             setHasClickedNext(true);
+
             const isMainTitleFilled =
               titleCard?.title && titleCard.title.trim() !== "";
 
-            const allOtherTitlesFilled = otherCards.every(
-              (card) => card.title && card.title.trim() !== "",
-            );
+            // check if all titles and multi-select textfields are filled
+            const allOtherTitlesFilled = otherCards.every((card) => {
+              const isTitleFilled = card.title && card.title.trim() !== "";
+              const hasMultiSelectFilled =
+                card.itemType === "multi-select" &&
+                (!card.options ||
+                  card.options.length === 0 ||
+                  card.options.some((o) => o.trim() === ""));
+              return isTitleFilled && hasMultiSelectFilled;
+            });
 
             if (!isMainTitleFilled || !allOtherTitlesFilled) {
-              Alert.alert("Please fill in all titles before continuing.");
+              Alert.alert(
+                "Please fill in all titles and select at least one option before continuing.",
+              );
               return;
             }
 
