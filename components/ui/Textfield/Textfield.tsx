@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import {
   InputWrapper,
   StyledTextInput,
-  TextfieldContainter,
+  TextfieldContainer,
 } from "./Textfield.styles";
 import { FC } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -31,7 +31,7 @@ const Textfield: FC<TextfieldProps> = ({
   const colorScheme = useActiveColorScheme();
 
   return (
-    <TextfieldContainter>
+    <TextfieldContainer>
       {showTitle ? <ThemedText fontWeight="regular">{title}</ThemedText> : null}
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
@@ -50,7 +50,7 @@ const Textfield: FC<TextfieldProps> = ({
           placeholder={placeholderText}
         />
       </InputWrapper>
-    </TextfieldContainter>
+    </TextfieldContainer>
   );
 };
 

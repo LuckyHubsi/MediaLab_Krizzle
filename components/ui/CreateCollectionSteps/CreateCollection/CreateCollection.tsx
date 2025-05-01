@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { router } from "expo-router";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { Alert, TouchableOpacity, useColorScheme, View } from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
@@ -229,7 +229,15 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               variant={"back"}
               titleLeftButton={"Back"}
               titleRightButton={"Add"}
-              onNext={onNext!}
+              onNext={() => {
+                //check if textfield is filled
+                if (!data.title || data.title.trim() === "") {
+                  Alert.alert("Please fill in the title before continuing.");
+                  return;
+                }
+
+                onNext?.();
+              }}
               hasProgressIndicator={true}
               progressStep={1}
             />

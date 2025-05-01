@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import {
   ItemCountContainer,
@@ -267,7 +267,24 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         titleLeftButton={"Back"}
         titleRightButton={"Add"}
         onDiscard={onBack!}
-        onNext={onNext!}
+        onNext={
+          //check if all textfields are filled
+          () => {
+            const isMainTitleFilled =
+              titleCard?.title && titleCard.title.trim() !== "";
+
+            const allOtherTitlesFilled = otherCards.every(
+              (card) => card.title && card.title.trim() !== "",
+            );
+
+            if (!isMainTitleFilled || !allOtherTitlesFilled) {
+              Alert.alert("Please fill in all titles before continuing.");
+              return;
+            }
+
+            onNext?.();
+          }
+        }
         hasProgressIndicator={true}
         progressStep={3}
       />

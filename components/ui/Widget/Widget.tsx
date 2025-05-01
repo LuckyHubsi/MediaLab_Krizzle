@@ -19,7 +19,7 @@ type Props = {
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
   color: ColorKey;
-  pageType: PageType;
+  pageType?: PageType;
   onPress?: () => void;
   onLongPress?: () => void;
 };

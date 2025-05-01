@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { Alert, FlatList, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Card } from "@/components/ui/Card/Card";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
@@ -145,7 +145,19 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
         titleLeftButton="Back"
         titleRightButton="Next"
         onDiscard={onBack!}
-        onNext={onNext!}
+        onNext={() => {
+          //check if all textfields are filled
+          const allTitlesFilled = cards.every(
+            (card) => card.title && card.title.trim() !== "",
+          );
+
+          if (!allTitlesFilled) {
+            Alert.alert("Please fill in all titles before continuing.");
+            return;
+          }
+
+          onNext?.();
+        }}
         variant="back"
         hasProgressIndicator={true}
         progressStep={2}
