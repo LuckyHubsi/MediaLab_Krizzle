@@ -6,6 +6,7 @@ import {
   ButtonRow,
   Action,
   ActionText,
+  OverlayTextBox,
 } from "./DeleteModal.styles";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
@@ -23,7 +24,6 @@ interface DeleteModalProps {
 const DeleteModal: React.FC<DeleteModalProps> = ({
   visible,
   title,
-  typeToDelete,
   onCancel,
   onConfirm,
   onclose,
@@ -41,12 +41,14 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onclose}>
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
-            <ThemedText fontSize="regular" fontWeight="semibold">
-              Do you want to delete "{title}"?
-            </ThemedText>
-            <ThemedText fontSize="s" fontWeight="regular">
-              You cannot undo this action
-            </ThemedText>
+            <OverlayTextBox>
+              <ThemedText fontSize="regular" fontWeight="semibold">
+                Do you want to delete "{title}"?
+              </ThemedText>
+              <ThemedText fontSize="s" fontWeight="regular">
+                You cannot undo this action
+              </ThemedText>
+            </OverlayTextBox>
             <ButtonRow>
               <Action onPress={onConfirm} colorScheme={colorScheme}>
                 <ActionText color="red">Delete</ActionText>
