@@ -10,6 +10,7 @@ import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
@@ -17,6 +18,7 @@ interface AddCollectionItemProps {
   attributeValues: Record<number, any>;
   onInputChange: (attributeID: number, value: any) => void;
   onListChange: (categoryID: number) => void;
+  hasNoInputError?: boolean;
 }
 
 const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
@@ -25,6 +27,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   attributeValues,
   onInputChange,
   onListChange,
+  hasNoInputError,
 }) => {
   const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
@@ -83,6 +86,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 onChangeText={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
                 }
+                hasNoInputError={hasNoInputError}
               />,
             );
             break;
@@ -103,7 +107,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
               <RatingPicker
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
-                selectedIcon={attribute.symbol || "star"}
+                selectedIcon={
+                  (attribute.symbol as keyof typeof MaterialIcons.glyphMap) ||
+                  "star"
+                }
                 value={currentValue || 0}
                 onChange={(rating) =>
                   onInputChange(Number(attribute.attributeID), rating)

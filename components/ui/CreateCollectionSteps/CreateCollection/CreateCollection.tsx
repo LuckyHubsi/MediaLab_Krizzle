@@ -170,7 +170,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 setData((prev: any) => ({ ...prev, title: text }));
               }}
               hasNoInputError={
-                (hasClickedNext && !data.title) || data.title.trim() === ""
+                hasClickedNext && (!data.title || data.title.trim() === "")
               }
             />
             {titleError && (
