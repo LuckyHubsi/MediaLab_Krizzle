@@ -17,6 +17,7 @@ interface TextfieldProps {
   textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
   onChangeText?: (text: string) => void;
   value?: string;
+  hasNoInputError?: boolean;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -27,6 +28,7 @@ const Textfield: FC<TextfieldProps> = ({
   textfieldIcon = "short-text",
   onChangeText,
   value,
+  hasNoInputError,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -50,6 +52,11 @@ const Textfield: FC<TextfieldProps> = ({
           placeholder={placeholderText}
         />
       </InputWrapper>
+      {hasNoInputError && (
+        <ThemedText fontSize="s" colorVariant={"red"}>
+          This field is required, please enter a text.
+        </ThemedText>
+      )}
     </TextfieldContainer>
   );
 };

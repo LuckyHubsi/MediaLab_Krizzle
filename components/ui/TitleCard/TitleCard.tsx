@@ -8,12 +8,14 @@ interface TitleCardProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  hasNoInputError?: boolean;
 }
 
 export const TitleCard: React.FC<TitleCardProps> = ({
   value,
   onChangeText,
   placeholder = "Add title...",
+  hasNoInputError,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
@@ -32,6 +34,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
         title={""}
         value={value}
         onChangeText={onChangeText}
+        hasNoInputError={hasNoInputError}
       />
     </Container>
   );

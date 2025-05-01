@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 
 import {
@@ -31,6 +31,7 @@ interface ItemTemplateCardProps {
   onOptionsChange?: (options: string[]) => void;
   onRemove?: () => void;
   onPreviewToggle?: () => void;
+  hasNoInputError?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -47,6 +48,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onOptionsChange,
   onRemove,
   onPreviewToggle,
+  hasNoInputError,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -114,6 +116,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
+        hasNoInputError={hasNoInputError}
       />
 
       {itemType === "rating" && rating !== undefined && onRatingChange && (

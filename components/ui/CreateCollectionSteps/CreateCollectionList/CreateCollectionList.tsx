@@ -36,6 +36,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   onBack,
   onNext,
 }) => {
+  const [hasClickedNext, setHasClickedNext] = useState(false);
+
   const [showHelp, setShowHelp] = useState(false);
   const cards = data.lists;
 
@@ -73,7 +75,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
         <CardText>
           <CardHeader>
             <ThemedText fontSize="l" fontWeight="bold">
-              Adding Lists{" "}
+              Adding Lists
             </ThemedText>
             <TouchableOpacity onPress={() => setShowHelp(true)}>
               <MaterialIcons
@@ -113,6 +115,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               title={""}
               value={item.title}
               onChangeText={(text) => handleTitleChange(item.id, text)}
+              hasNoInputError={hasClickedNext && !item.title}
             />
             <RemoveButton onPress={() => handleRemoveCard(item.id)}>
               <RemoveButtonContent>
@@ -136,7 +139,12 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
         showsVerticalScrollIndicator={false}
         ListFooterComponent={
           <AddButtonWrapper>
-            <AddButton onPress={handleAddCard} />
+            <AddButton
+              onPress={() => {
+                handleAddCard();
+                setHasClickedNext(false);
+              }}
+            />
           </AddButtonWrapper>
         }
       />
@@ -146,13 +154,13 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
         titleRightButton="Next"
         onDiscard={onBack!}
         onNext={() => {
+          setHasClickedNext(true);
           //check if all textfields are filled
           const allTitlesFilled = cards.every(
             (card) => card.title && card.title.trim() !== "",
           );
 
           if (!allTitlesFilled) {
-            Alert.alert("Please fill in all titles before continuing.");
             return;
           }
 

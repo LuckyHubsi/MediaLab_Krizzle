@@ -34,6 +34,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const colorScheme = useActiveColorScheme();
   const cards = data.templates;
 
+  const [hasClickedNext, setHasClickedNext] = useState(false);
+
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
     "short-text",
     "calendar-today",
@@ -226,6 +228,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             isPreview={true}
             title={titleCard.title}
             onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
+            hasNoInputError={
+              hasClickedNext &&
+              (!titleCard.title || titleCard.title.trim() === "")
+            }
           />
         )}
 
@@ -253,11 +259,17 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             }
             onRemove={() => handleRemoveCard(card.id)}
             onPreviewToggle={() => handlePreviewToggle(card.id)}
+            hasNoInputError={
+              hasClickedNext && (!card.title || card.title.trim() === "")
+            }
           />
         ))}
 
         <AddButton
-          onPress={handleAddCard}
+          onPress={() => {
+            handleAddCard();
+            setHasClickedNext(false);
+          }}
           isDisabled={otherCards.length >= 10}
         />
       </ScrollView>
@@ -270,6 +282,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         onNext={
           //check if all textfields are filled
           () => {
+            setHasClickedNext(true);
             const isMainTitleFilled =
               titleCard?.title && titleCard.title.trim() !== "";
 

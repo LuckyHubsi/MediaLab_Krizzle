@@ -63,6 +63,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   const selectedColor = data.selectedColor;
   const selectedIcon = data.selectedIcon;
 
+  const [hasClickedNext, setHasClickedNext] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -168,6 +169,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               onChangeText={(text) => {
                 setData((prev: any) => ({ ...prev, title: text }));
               }}
+              hasNoInputError={
+                (hasClickedNext && !data.title) || data.title.trim() === ""
+              }
             />
             {titleError && (
               <ThemedText
@@ -230,6 +234,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               titleLeftButton={"Back"}
               titleRightButton={"Add"}
               onNext={() => {
+                setHasClickedNext(true);
                 //check if textfield is filled
                 if (!data.title || data.title.trim() === "") {
                   Alert.alert("Please fill in the title before continuing.");
