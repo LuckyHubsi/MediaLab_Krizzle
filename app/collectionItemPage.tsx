@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
 import { getItemById } from "@/services/ItemService";
@@ -54,7 +54,13 @@ export default function CollectionItemScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              router.push("/collectionItemEdit");
+            },
+          },
           {
             label: "Delete",
             icon: "delete",
