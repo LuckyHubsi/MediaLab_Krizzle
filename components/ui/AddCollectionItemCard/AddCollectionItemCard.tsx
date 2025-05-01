@@ -87,6 +87,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                   onInputChange(Number(attribute.attributeID), text)
                 }
                 hasNoInputError={hasNoInputError}
+                maxLength={750}
               />,
             );
             break;

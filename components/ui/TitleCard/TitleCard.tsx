@@ -35,6 +35,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
         value={value}
         onChangeText={onChangeText}
         hasNoInputError={hasNoInputError}
+        maxLength={30}
       />
     </Container>
   );

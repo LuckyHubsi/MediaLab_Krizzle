@@ -62,6 +62,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
               textfieldIcon="bookmark"
               value={textfieldValue}
               onChangeText={(text) => handleInputChange(index, text)}
+              maxLength={30}
             />
           </TextfieldWrapper>
 

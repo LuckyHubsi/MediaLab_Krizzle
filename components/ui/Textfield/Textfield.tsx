@@ -18,6 +18,8 @@ interface TextfieldProps {
   onChangeText?: (text: string) => void;
   value?: string;
   hasNoInputError?: boolean;
+  maxLength?: number;
+  multiline?: boolean;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -29,6 +31,7 @@ const Textfield: FC<TextfieldProps> = ({
   onChangeText,
   value,
   hasNoInputError,
+  maxLength,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -50,6 +53,7 @@ const Textfield: FC<TextfieldProps> = ({
             colorScheme === "light" ? Colors.grey100 : Colors.grey50
           }
           placeholder={placeholderText}
+          maxLength={maxLength}
         />
       </InputWrapper>
       {hasNoInputError && (

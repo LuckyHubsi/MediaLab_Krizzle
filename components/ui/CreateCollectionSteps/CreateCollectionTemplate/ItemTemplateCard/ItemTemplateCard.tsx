@@ -119,6 +119,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
         hasNoInputError={hasNoInputError}
+        maxLength={30}
       />
 
       {itemType === "rating" && rating !== undefined && onRatingChange && (

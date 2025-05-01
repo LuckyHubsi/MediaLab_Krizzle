@@ -92,7 +92,9 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
                   <RatingPicker
                     key={attributeValue.attributeID}
                     title="Rating"
-                    selectedIcon={attributeValue.symbol}
+                    selectedIcon={
+                      attributeValue.symbol as keyof typeof MaterialIcons.glyphMap
+                    }
                     editable={false}
                     value={attributeValue.valueNumber}
                   ></RatingPicker>,

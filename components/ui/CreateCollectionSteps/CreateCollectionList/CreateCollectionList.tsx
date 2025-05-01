@@ -116,6 +116,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               value={item.title}
               onChangeText={(text) => handleTitleChange(item.id, text)}
               hasNoInputError={hasClickedNext && !item.title}
+              maxLength={30}
             />
             <RemoveButton onPress={() => handleRemoveCard(item.id)}>
               <RemoveButtonContent>
