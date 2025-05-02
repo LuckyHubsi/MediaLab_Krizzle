@@ -1,6 +1,6 @@
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { executeQuery } from "@/utils/QueryHelper";
-import { insertCollectionCategory } from "../CollectionCategoriesService";
+import { collectionCategoryService } from "../CollectionCategoriesService";
 import { DatabaseError } from "@/utils/DatabaseError";
 
 // mock the QueryHelper functions
@@ -24,7 +24,7 @@ describe("AttributeService", () => {
         collectionID: 1,
       };
 
-      await insertCollectionCategory(categoryDTO);
+      await collectionCategoryService.insertCollectionCategory(categoryDTO);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.any(String),
@@ -41,9 +41,9 @@ describe("AttributeService", () => {
         collectionID: 1,
       };
 
-      await expect(insertCollectionCategory(categoryDTO)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        collectionCategoryService.insertCollectionCategory(categoryDTO),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 });

@@ -5,7 +5,7 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
-import { getItemById } from "@/services/ItemService";
+import { itemService } from "@/services/ItemService";
 import { ItemDTO } from "@/dto/ItemDTO";
 
 export default function CollectionItemScreen() {
@@ -18,7 +18,7 @@ export default function CollectionItemScreen() {
   useEffect(() => {
     (async () => {
       const numericItemId = Number(itemId);
-      const item = await getItemById(numericItemId);
+      const item = await itemService.getItemById(numericItemId);
       setItem(item);
     })();
   }, [itemId]);

@@ -9,7 +9,7 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
-import { getCollectionByPageId } from "@/services/CollectionService";
+import { collectionService } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
 import { template } from "@babel/core";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
-import { getItemsByPageId } from "@/services/ItemService";
+import { itemService } from "@/services/ItemService";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -36,7 +36,8 @@ export default function CollectionScreen() {
     (async () => {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
-        const collectionData = await getCollectionByPageId(numericID);
+        const collectionData =
+          await collectionService.getCollectionByPageId(numericID);
         if (collectionData) {
           setCollection(collectionData);
           if (collectionData.categories) {
@@ -47,7 +48,7 @@ export default function CollectionScreen() {
             setListNames(listNames);
           }
         }
-        const items: ItemsDTO = await getItemsByPageId(numericID);
+        const items: ItemsDTO = await itemService.getItemsByPageId(numericID);
         if (items) setItems(items);
       }
     })();

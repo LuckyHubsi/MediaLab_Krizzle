@@ -16,90 +16,88 @@ import {
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
 import * as SQLite from "expo-sqlite";
 
-/**
- * Retrieves all general page data from the database.
- *
- * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
- * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
- * @throws {DatabaseError} If the fetch fails.
- */
-const getAllGeneralPageData = async (
-  txn?: SQLite.SQLiteDatabase,
-): Promise<GeneralPageDTO[]> => {
-  try {
-    const rawData = await fetchAll<GeneralPageModel>(
-      selectAllGeneralPageQuery,
-      [],
-      txn,
-    );
-    return rawData.map(GeneralPageMapper.toDTO);
-  } catch (error) {
-    throw new DatabaseError("Error retrieving all pages.");
-  }
-};
-
-/**
- * Inserts a new page into the database and returns its ID.
- *
- * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
- * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
- * @returns {Promise<number>} A promise that resolves to the inserted page's ID.
- * @throws {DatabaseError} If the insertion fails or if the page ID cannot be fetched.
- */
-const insertGeneralPageAndReturnID = async (
-  generalPageDTO: GeneralPageDTO,
-  txn?: SQLite.SQLiteDatabase,
-): Promise<number> => {
-  try {
-    const pageID: number = await executeTransaction<number>(async () => {
-      await executeQuery(
-        insertNewPageQuery,
-        [
-          generalPageDTO.page_type,
-          generalPageDTO.page_title,
-          generalPageDTO.page_icon,
-          generalPageDTO.page_color,
-          new Date().toISOString(),
-          new Date().toISOString(),
-          generalPageDTO.archived ? 1 : 0,
-          generalPageDTO.pinned ? 1 : 0,
-        ],
+class GeneralPageService {
+  /**
+   * Retrieves all general page data from the database.
+   *
+   * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+   * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
+   * @throws {DatabaseError} If the fetch fails.
+   */
+  public getAllGeneralPageData = async (
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<GeneralPageDTO[]> => {
+    try {
+      const rawData = await fetchAll<GeneralPageModel>(
+        selectAllGeneralPageQuery,
+        [],
         txn,
       );
+      return rawData.map(GeneralPageMapper.toDTO);
+    } catch (error) {
+      throw new DatabaseError("Error retrieving all pages.");
+    }
+  };
 
-      // get inserted page ID
-      const lastInsertedID = await getLastInsertId(txn);
-      return lastInsertedID;
-    });
+  /**
+   * Inserts a new page into the database and returns its ID.
+   *
+   * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
+   * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+   * @returns {Promise<number>} A promise that resolves to the inserted page's ID.
+   * @throws {DatabaseError} If the insertion fails or if the page ID cannot be fetched.
+   */
+  public insertGeneralPageAndReturnID = async (
+    generalPageDTO: GeneralPageDTO,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<number> => {
+    try {
+      const pageID: number = await executeTransaction<number>(async () => {
+        await executeQuery(
+          insertNewPageQuery,
+          [
+            generalPageDTO.page_type,
+            generalPageDTO.page_title,
+            generalPageDTO.page_icon,
+            generalPageDTO.page_color,
+            new Date().toISOString(),
+            new Date().toISOString(),
+            generalPageDTO.archived ? 1 : 0,
+            generalPageDTO.pinned ? 1 : 0,
+          ],
+          txn,
+        );
 
-    return pageID;
-  } catch (error) {
-    throw new DatabaseError("Failed inserting the general page data.");
-  }
-};
+        // get inserted page ID
+        const lastInsertedID = await getLastInsertId(txn);
+        return lastInsertedID;
+      });
 
-/**
- * Deletes a page based on its ID from DB.
- *
- * @param {pageID} number - The pageID of the page to be deleted.
- * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
- * @returns {Promise<boolean>} A promise that resolves to true if successful.
- * @throws {DatabaseError} If the delete fails.
- */
-const deleteGeneralPage = async (
-  pageID: number,
-  txn?: SQLite.SQLiteDatabase,
-): Promise<boolean> => {
-  try {
-    await executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
-    return true;
-  } catch (error) {
-    throw new DatabaseError("Failed to delete teh page");
-  }
-};
+      return pageID;
+    } catch (error) {
+      throw new DatabaseError("Failed inserting the general page data.");
+    }
+  };
 
-export {
-  getAllGeneralPageData,
-  insertGeneralPageAndReturnID,
-  deleteGeneralPage,
-};
+  /**
+   * Deletes a page based on its ID from DB.
+   *
+   * @param {pageID} number - The pageID of the page to be deleted.
+   * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+   * @returns {Promise<boolean>} A promise that resolves to true if successful.
+   * @throws {DatabaseError} If the delete fails.
+   */
+  public deleteGeneralPage = async (
+    pageID: number,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean> => {
+    try {
+      await executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
+      return true;
+    } catch (error) {
+      throw new DatabaseError("Failed to delete teh page");
+    }
+  };
+}
+
+export const generalPageService = new GeneralPageService();

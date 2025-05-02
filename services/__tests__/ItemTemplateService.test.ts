@@ -1,7 +1,4 @@
-import {
-  insertItemTemplateAndReturnID,
-  getTemplate,
-} from "@/services/ItemTemplateService";
+import { itemTemplateService } from "@/services/ItemTemplateService";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { ItemTemplateMapper } from "@/utils/mapper/ItemTemplateMapper";
 import {
@@ -50,7 +47,8 @@ describe("ItemTemplateService", () => {
 
       const templateDTO = { template_name: "temp 1" } as any;
 
-      const result = await insertItemTemplateAndReturnID(templateDTO);
+      const result =
+        await itemTemplateService.insertItemTemplateAndReturnID(templateDTO);
 
       expect(mockExecuteTransaction).toHaveBeenCalledTimes(1);
       expect(mockExecuteQuery).toHaveBeenCalledWith(
@@ -67,9 +65,9 @@ describe("ItemTemplateService", () => {
 
       const templateDTO = { template_name: "temp 1" } as any;
 
-      await expect(insertItemTemplateAndReturnID(templateDTO)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        itemTemplateService.insertItemTemplateAndReturnID(templateDTO),
+      ).rejects.toThrow(DatabaseError);
 
       expect(mockExecuteTransaction).toHaveBeenCalledTimes(1);
     });
@@ -86,7 +84,7 @@ describe("ItemTemplateService", () => {
       mockFetchFirst.mockResolvedValue(templateModel);
       (ItemTemplateMapper.toDTO as jest.Mock).mockReturnValue(templateDTO);
 
-      const result = await getTemplate(1);
+      const result = await itemTemplateService.getTemplate(1);
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         expect.any(String),
@@ -100,7 +98,9 @@ describe("ItemTemplateService", () => {
     it("should throw DatabaseError if no template is found", async () => {
       mockFetchFirst.mockResolvedValue(null);
 
-      await expect(getTemplate(1)).rejects.toThrow(DatabaseError);
+      await expect(itemTemplateService.getTemplate(1)).rejects.toThrow(
+        DatabaseError,
+      );
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         expect.any(String),
@@ -112,7 +112,9 @@ describe("ItemTemplateService", () => {
     it("should throw DatabaseError if fetchFirst fails", async () => {
       mockFetchFirst.mockRejectedValue(new Error("fetch fail"));
 
-      await expect(getTemplate(1)).rejects.toThrow(DatabaseError);
+      await expect(itemTemplateService.getTemplate(1)).rejects.toThrow(
+        DatabaseError,
+      );
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         expect.any(String),

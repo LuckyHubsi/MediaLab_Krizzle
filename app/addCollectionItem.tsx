@@ -10,13 +10,13 @@ import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { getTemplate } from "@/services/ItemTemplateService";
-import { getCollectionCategories } from "@/services/CollectionCategoriesService";
+import { itemTemplateService } from "@/services/ItemTemplateService";
+import { collectionCategoryService } from "@/services/CollectionCategoriesService";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { Button } from "@/components/ui/Button/Button";
-import { insertItemAndReturnID } from "@/services/ItemService";
+import { itemService } from "@/services/ItemService";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -39,14 +39,18 @@ export default function AddCollectionItem() {
       const numericTemplateID = Number(templateId);
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
-        const template = await getTemplate(numericTemplateID);
+        const template =
+          await itemTemplateService.getTemplate(numericTemplateID);
 
         if (template && template.attributes) {
           setAttributes(template.attributes);
         }
       }
       if (!isNaN(numericCollectionID)) {
-        const lists = await getCollectionCategories(numericCollectionID);
+        const lists =
+          await collectionCategoryService.getCollectionCategories(
+            numericCollectionID,
+          );
         if (lists) {
           setLists(lists);
         }
@@ -108,7 +112,7 @@ export default function AddCollectionItem() {
 
   const handleSaveItem = async () => {
     const itemDTO = mapToItemDTO(attributes || []);
-    const itemId = await insertItemAndReturnID(itemDTO);
+    const itemId = await itemService.insertItemAndReturnID(itemDTO);
     router.replace({
       pathname: "/collectionItemPage",
       params: { itemId: itemId },

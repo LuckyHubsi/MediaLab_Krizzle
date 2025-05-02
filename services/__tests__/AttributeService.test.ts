@@ -1,8 +1,4 @@
-import {
-  insertAttribute,
-  insertMultiselectOptions,
-  insertRatingSymbol,
-} from "../AttributeService";
+import { attributeService } from "../AttributeService";
 import { executeQuery } from "@/utils/QueryHelper";
 import { AttributeDTO, isValidAttributeType } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
@@ -31,7 +27,7 @@ describe("AttributeService", () => {
         itemTemplateID: 1,
       };
 
-      await insertAttribute(attributeDTO);
+      await attributeService.insertAttribute(attributeDTO);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.any(String),
@@ -50,15 +46,15 @@ describe("AttributeService", () => {
         itemTemplateID: 1,
       };
 
-      await expect(insertAttribute(attributeDTO)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        attributeService.insertAttribute(attributeDTO),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 
   describe("insertMultiselectOptions", () => {
     it("should call executeQuery with correct parameters", async () => {
-      await insertMultiselectOptions("Horror", 1);
+      await attributeService.insertMultiselectOptions("Horror", 1);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.any(String),
@@ -70,15 +66,15 @@ describe("AttributeService", () => {
     it("should throw DatabaseError if executeQuery fails", async () => {
       mockExecuteQuery.mockRejectedValueOnce(new Error("DB failure"));
 
-      await expect(insertMultiselectOptions("Horror", 1)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        attributeService.insertMultiselectOptions("Horror", 1),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 
   describe("insertRatingSymbol", () => {
     it("should call executeQuery with correct parameters", async () => {
-      await insertRatingSymbol("star", 1);
+      await attributeService.insertRatingSymbol("star", 1);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.any(String),
@@ -90,9 +86,9 @@ describe("AttributeService", () => {
     it("should throw DatabaseError if executeQuery fails", async () => {
       mockExecuteQuery.mockRejectedValueOnce(new Error("DB failure"));
 
-      await expect(insertRatingSymbol("star", 1)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        attributeService.insertRatingSymbol("star", 1),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 });

@@ -7,10 +7,10 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
+import { noteService } from "@/services/NoteService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import { deleteGeneralPage } from "@/services/GeneralPageService";
+import { generalPageService } from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
 
@@ -33,7 +33,8 @@ export default function NotesScreen() {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
+          const noteData: NoteDTO | null =
+            await noteService.getNoteDataByPageID(numericID);
           let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
@@ -48,7 +49,7 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const success = await updateNoteContent(Number(pageId), html);
+    const success = await noteService.updateNoteContent(Number(pageId), html);
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
@@ -102,7 +103,7 @@ export default function NotesScreen() {
             try {
               const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {

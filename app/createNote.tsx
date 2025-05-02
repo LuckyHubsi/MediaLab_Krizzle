@@ -23,7 +23,7 @@ import {
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { PageType } from "@/utils/enums/PageType";
-import { insertNote } from "@/services/NoteService";
+import { noteService } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
@@ -99,7 +99,7 @@ export default function CreateNoteScreen() {
       tag: tagDTO,
     };
 
-    const id = await insertNote(noteDTO);
+    const id = await noteService.insertNote(noteDTO);
     router.replace({
       pathname: "/notePage",
       params: { pageId: id, title: title },

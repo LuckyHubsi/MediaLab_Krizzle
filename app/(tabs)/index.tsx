@@ -13,10 +13,7 @@ import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-} from "@/services/GeneralPageService";
+import { generalPageService } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
@@ -102,7 +99,7 @@ export default function HomeScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await getAllGeneralPageData();
+          const data = await generalPageService.getAllGeneralPageData();
 
           const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
 
@@ -225,9 +222,9 @@ export default function HomeScreen() {
             try {
               const widgetIdAsNumber = Number(widgetToDelete.id);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
-              const data = await getAllGeneralPageData();
+              const data = await generalPageService.getAllGeneralPageData();
               const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
               setWidgets(enrichedWidgets);
 

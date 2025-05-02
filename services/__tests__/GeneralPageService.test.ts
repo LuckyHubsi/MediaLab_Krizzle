@@ -8,11 +8,7 @@ import {
   fetchAll,
   getLastInsertId,
 } from "@/utils/QueryHelper";
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  insertGeneralPageAndReturnID,
-} from "../GeneralPageService";
+import { generalPageService } from "../GeneralPageService";
 import { DatabaseError } from "@/utils/DatabaseError";
 import * as SQLite from "expo-sqlite";
 
@@ -85,7 +81,7 @@ describe("GeneralPageService", () => {
         mockGeneralPageDTO,
       );
 
-      const result = await getAllGeneralPageData();
+      const result = await generalPageService.getAllGeneralPageData();
 
       expect(result).toEqual([mockGeneralPageDTO]);
       expect(mockFetchAll).toHaveBeenCalled();
@@ -105,7 +101,9 @@ describe("GeneralPageService", () => {
     it("should throw DatabaseError if fetchAll fails", async () => {
       mockFetchAll.mockRejectedValue(new Error("Database error"));
 
-      await expect(getAllGeneralPageData()).rejects.toThrow(DatabaseError);
+      await expect(generalPageService.getAllGeneralPageData()).rejects.toThrow(
+        DatabaseError,
+      );
     });
   });
 
@@ -119,7 +117,10 @@ describe("GeneralPageService", () => {
       mockExecuteQuery.mockResolvedValue({} as SQLite.SQLiteRunResult);
       mockGetLastInsertId.mockResolvedValue(mockInsertedId);
 
-      const result = await insertGeneralPageAndReturnID(mockGeneralPageDTO);
+      const result =
+        await generalPageService.insertGeneralPageAndReturnID(
+          mockGeneralPageDTO,
+        );
 
       expect(mockExecuteTransaction).toHaveBeenCalled();
       expect(mockExecuteQuery).toHaveBeenCalledWith(
@@ -144,7 +145,7 @@ describe("GeneralPageService", () => {
       mockExecuteQuery.mockRejectedValue(new Error("Insert failed"));
 
       await expect(
-        insertGeneralPageAndReturnID(mockGeneralPageDTO),
+        generalPageService.insertGeneralPageAndReturnID(mockGeneralPageDTO),
       ).rejects.toThrow(DatabaseError);
     });
   });
@@ -154,7 +155,7 @@ describe("GeneralPageService", () => {
       const mockPageID = 1;
       mockExecuteQuery.mockResolvedValue({} as SQLite.SQLiteRunResult);
 
-      const result = await deleteGeneralPage(mockPageID);
+      const result = await generalPageService.deleteGeneralPage(mockPageID);
 
       expect(executeQuery).toHaveBeenCalledWith(
         expect.any(String),
@@ -169,9 +170,9 @@ describe("GeneralPageService", () => {
 
       mockExecuteQuery.mockRejectedValue(new Error("Delete failed"));
 
-      await expect(deleteGeneralPage(mockPageID)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        generalPageService.deleteGeneralPage(mockPageID),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 });

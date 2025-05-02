@@ -1,10 +1,6 @@
 import { PageType } from "@/utils/enums/PageType";
-import { insertGeneralPageAndReturnID } from "../GeneralPageService";
-import {
-  getNoteDataByPageID,
-  insertNote,
-  updateNoteContent,
-} from "../NoteService";
+import { generalPageService } from "../GeneralPageService";
+import { noteService } from "../NoteService";
 import { executeQuery, fetchFirst } from "@/utils/QueryHelper";
 
 // mock the QueryHelper functions
@@ -39,11 +35,15 @@ describe("NoteService", () => {
 
   describe("insertNote", () => {
     it("should insert a general page and a note, then return the pageID", async () => {
-      (insertGeneralPageAndReturnID as jest.Mock).mockResolvedValue(123);
+      (
+        generalPageService.insertGeneralPageAndReturnID as jest.Mock
+      ).mockResolvedValue(123);
 
-      const result = await insertNote(mockNoteDTO);
+      const result = await noteService.insertNote(mockNoteDTO);
 
-      expect(insertGeneralPageAndReturnID).toHaveBeenCalledWith(mockNoteDTO);
+      expect(
+        generalPageService.insertGeneralPageAndReturnID,
+      ).toHaveBeenCalledWith(mockNoteDTO);
       expect(executeQuery).toHaveBeenCalledWith(expect.any(String), [
         mockNoteDTO.note_content,
         123,
@@ -52,9 +52,11 @@ describe("NoteService", () => {
     });
 
     it("should return null if general page insertion fails", async () => {
-      (insertGeneralPageAndReturnID as jest.Mock).mockResolvedValue(null);
+      (
+        generalPageService.insertGeneralPageAndReturnID as jest.Mock
+      ).mockResolvedValue(null);
 
-      const result = await insertNote(mockNoteDTO);
+      const result = await noteService.insertNote(mockNoteDTO);
 
       expect(result).toBeNull();
     });
@@ -73,7 +75,7 @@ describe("NoteService", () => {
         pinned: 1,
       });
 
-      const noteDTO = await getNoteDataByPageID(1);
+      const noteDTO = await noteService.getNoteDataByPageID(1);
 
       expect(noteDTO?.note_content).toBe("Content here");
       expect(noteDTO?.page_type).toBe(PageType.Note);
@@ -81,7 +83,7 @@ describe("NoteService", () => {
 
     it("should return null when no data is found", async () => {
       (fetchFirst as jest.Mock).mockResolvedValue(null);
-      const noteDTO = await getNoteDataByPageID(1);
+      const noteDTO = await noteService.getNoteDataByPageID(1);
       expect(noteDTO).toBeNull();
     });
 
@@ -89,7 +91,7 @@ describe("NoteService", () => {
       (fetchFirst as jest.Mock).mockResolvedValue({
         page_type: PageType.Collection,
       });
-      const noteDTO = await getNoteDataByPageID(1);
+      const noteDTO = await noteService.getNoteDataByPageID(1);
       expect(noteDTO).toBeNull();
     });
   });
@@ -98,7 +100,7 @@ describe("NoteService", () => {
     it("should update content and modified date and return true", async () => {
       (fetchFirst as jest.Mock).mockResolvedValue({ pageID: 1 });
 
-      const result = await updateNoteContent(5, "New content");
+      const result = await noteService.updateNoteContent(5, "New content");
 
       expect(executeQuery).toHaveBeenCalledTimes(2);
       expect(result).toBe(true);
@@ -107,7 +109,7 @@ describe("NoteService", () => {
     it("should return false if pageID not found", async () => {
       (fetchFirst as jest.Mock).mockResolvedValue(null);
 
-      const result = await updateNoteContent(5, "New content");
+      const result = await noteService.updateNoteContent(5, "New content");
       expect(result).toBe(false);
     });
 
@@ -117,7 +119,7 @@ describe("NoteService", () => {
         throw new Error("DB error");
       });
 
-      const result = await updateNoteContent(5, "New content");
+      const result = await noteService.updateNoteContent(5, "New content");
       expect(result).toBe(false);
     });
   });

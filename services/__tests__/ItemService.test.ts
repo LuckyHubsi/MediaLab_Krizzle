@@ -1,10 +1,5 @@
 import { DatabaseError } from "@/utils/DatabaseError";
-import {
-  getItemById,
-  getItemsByPageId,
-  insertItemAndReturnID,
-  insertItemAttributeValue,
-} from "../ItemService";
+import { itemService } from "../ItemService";
 import { ItemMapper } from "@/utils/mapper/ItemMapper";
 import { ItemsMapper } from "@/utils/mapper/ItemsMapper";
 import {
@@ -103,7 +98,7 @@ describe("ItemService", () => {
       mockFetchFirst.mockResolvedValue(mockItemModel);
       (ItemMapper.toDTO as jest.Mock).mockReturnValue(itemDTO);
 
-      const result = await getItemById(1);
+      const result = await itemService.getItemById(1);
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         ItemQuery.itemSelectByIdQuery,
@@ -116,7 +111,7 @@ describe("ItemService", () => {
     it("throws DatabaseError if fetchFirst fails", async () => {
       mockFetchFirst.mockResolvedValue(null);
 
-      await expect(getItemById(1)).rejects.toThrow(DatabaseError);
+      await expect(itemService.getItemById(1)).rejects.toThrow(DatabaseError);
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         ItemQuery.itemSelectByIdQuery,
@@ -134,7 +129,7 @@ describe("ItemService", () => {
       mockFetchAll.mockResolvedValue(rawItems);
       (ItemsMapper.toDTO as jest.Mock).mockReturnValue(expectedItemsDTO);
 
-      const result = await getItemsByPageId(2);
+      const result = await itemService.getItemsByPageId(2);
 
       expect(mockFetchAll).toHaveBeenCalledWith(
         ItemQuery.itemSelectByPageIdQuery,
@@ -147,7 +142,9 @@ describe("ItemService", () => {
     it("throws DatabaseError if fetchAll fails", async () => {
       mockFetchAll.mockRejectedValue(new Error());
 
-      await expect(getItemsByPageId(1)).rejects.toThrow(DatabaseError);
+      await expect(itemService.getItemsByPageId(1)).rejects.toThrow(
+        DatabaseError,
+      );
 
       expect(mockFetchAll).toHaveBeenCalledWith(
         ItemQuery.itemSelectByPageIdQuery,
@@ -167,7 +164,7 @@ describe("ItemService", () => {
 
       mockGetLastInsertId.mockResolvedValue(1);
 
-      const result = await insertItemAndReturnID(itemDTOInsertion);
+      const result = await itemService.insertItemAndReturnID(itemDTOInsertion);
 
       expect(mockExecuteTransaction).toHaveBeenCalledTimes(1);
 
@@ -205,9 +202,9 @@ describe("ItemService", () => {
     it("throws DatabaseError if transaction fails", async () => {
       mockExecuteTransaction.mockRejectedValue(new Error());
 
-      await expect(insertItemAndReturnID(itemDTOInsertion)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        itemService.insertItemAndReturnID(itemDTOInsertion),
+      ).rejects.toThrow(DatabaseError);
 
       expect(mockExecuteTransaction).toHaveBeenCalledTimes(1);
     });
@@ -215,7 +212,7 @@ describe("ItemService", () => {
 
   describe("insertItemAttributeValue", () => {
     it("inserts a text attribute value", async () => {
-      await insertItemAttributeValue("query", {
+      await itemService.insertItemAttributeValue("query", {
         itemID: 1,
         attributeID: 10,
         valueString: "test text",
@@ -229,7 +226,7 @@ describe("ItemService", () => {
     });
 
     it("inserts a number attribute value", async () => {
-      await insertItemAttributeValue("query", {
+      await itemService.insertItemAttributeValue("query", {
         itemID: 1,
         attributeID: 20,
         valueNumber: 5,
@@ -243,7 +240,7 @@ describe("ItemService", () => {
     });
 
     it("inserts a multiselect attribute value", async () => {
-      await insertItemAttributeValue("query", {
+      await itemService.insertItemAttributeValue("query", {
         itemID: 1,
         attributeID: 30,
         valueMultiselect: ["opt1", "opt2"],
@@ -260,7 +257,7 @@ describe("ItemService", () => {
       mockExecuteQuery.mockRejectedValue(new Error());
 
       await expect(
-        insertItemAttributeValue("query", {
+        itemService.insertItemAttributeValue("query", {
           itemID: 1,
           attributeID: 99,
           valueString: "Error",

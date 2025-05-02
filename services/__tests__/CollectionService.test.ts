@@ -9,19 +9,15 @@ import {
   fetchFirst,
   getLastInsertId,
 } from "@/utils/QueryHelper";
-import * as CollectionService from "../CollectionService";
+import { collectionService } from "../CollectionService";
 import { DatabaseError } from "@/utils/DatabaseError";
 import * as SQLite from "expo-sqlite";
 import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
-import {
-  insertAttribute,
-  insertMultiselectOptions,
-  insertRatingSymbol,
-} from "../AttributeService";
-import { insertCollectionCategory } from "../CollectionCategoriesService";
-import { insertGeneralPageAndReturnID } from "../GeneralPageService";
-import { insertItemTemplateAndReturnID } from "../ItemTemplateService";
+import { attributeService } from "../AttributeService";
+import { collectionCategoryService } from "../CollectionCategoriesService";
+import { generalPageService } from "../GeneralPageService";
+import { itemTemplateService } from "../ItemTemplateService";
 
 // mock the QueryHelper functions
 jest.mock("@/utils/QueryHelper", () => ({
@@ -121,7 +117,7 @@ describe("CollectionService", () => {
       mockFetchFirst.mockResolvedValue(mockCollectionModel);
       (CollectionMapper.toDTO as jest.Mock).mockReturnValue(mockCollectionDTO);
 
-      const result = await CollectionService.getCollectionByPageId(1, mockTxn);
+      const result = await collectionService.getCollectionByPageId(1, mockTxn);
 
       expect(mockFetchFirst).toHaveBeenCalledWith(
         expect.any(String),
@@ -138,7 +134,7 @@ describe("CollectionService", () => {
       mockFetchFirst.mockRejectedValue(new Error("DB Failure"));
 
       await expect(
-        CollectionService.getCollectionByPageId(1, mockTxn),
+        collectionService.getCollectionByPageId(1, mockTxn),
       ).rejects.toThrow(DatabaseError);
     });
   });
@@ -151,7 +147,7 @@ describe("CollectionService", () => {
       mockExecuteQuery.mockResolvedValue({} as SQLite.SQLiteRunResult);
       mockGetLastInsertId.mockResolvedValue(1);
 
-      const result = await CollectionService.insertCollectionAndReturnID(1, 1);
+      const result = await collectionService.insertCollectionAndReturnID(1, 1);
 
       expect(result).toBe(1);
       expect(mockExecuteTransaction).toHaveBeenCalled();
@@ -167,7 +163,7 @@ describe("CollectionService", () => {
       mockExecuteQuery.mockRejectedValueOnce(new Error("Insert failed"));
 
       await expect(
-        CollectionService.insertCollectionAndReturnID(1, 1),
+        collectionService.insertCollectionAndReturnID(1, 1),
       ).rejects.toThrow(DatabaseError);
     });
 
@@ -176,33 +172,35 @@ describe("CollectionService", () => {
       mockGetLastInsertId.mockRejectedValueOnce(new Error("Fetch failure"));
 
       await expect(
-        CollectionService.insertCollectionAndReturnID(1, 1),
+        collectionService.insertCollectionAndReturnID(1, 1),
       ).rejects.toThrow(DatabaseError);
     });
   });
 
   describe("saveCollection", () => {
     const mockInsertGeneralPageAndReturnID =
-      insertGeneralPageAndReturnID as jest.MockedFunction<
-        typeof insertGeneralPageAndReturnID
+      generalPageService.insertGeneralPageAndReturnID as jest.MockedFunction<
+        typeof generalPageService.insertGeneralPageAndReturnID
       >;
     const mockInsertItemTemplateAndReturnID =
-      insertItemTemplateAndReturnID as jest.MockedFunction<
-        typeof insertItemTemplateAndReturnID
+      itemTemplateService.insertItemTemplateAndReturnID as jest.MockedFunction<
+        typeof itemTemplateService.insertItemTemplateAndReturnID
       >;
-    const mockInsertAttribute = insertAttribute as jest.MockedFunction<
-      typeof insertAttribute
-    >;
+    const mockInsertAttribute =
+      attributeService.insertAttribute as jest.MockedFunction<
+        typeof attributeService.insertAttribute
+      >;
     const mockInsertMultiselectOptions =
-      insertMultiselectOptions as jest.MockedFunction<
-        typeof insertMultiselectOptions
+      attributeService.insertMultiselectOptions as jest.MockedFunction<
+        typeof attributeService.insertMultiselectOptions
       >;
-    const mockInsertRatingSymbol = insertRatingSymbol as jest.MockedFunction<
-      typeof insertRatingSymbol
-    >;
+    const mockInsertRatingSymbol =
+      attributeService.insertRatingSymbol as jest.MockedFunction<
+        typeof attributeService.insertRatingSymbol
+      >;
     const mockInsertCollectionCategory =
-      insertCollectionCategory as jest.MockedFunction<
-        typeof insertCollectionCategory
+      collectionCategoryService.insertCollectionCategory as jest.MockedFunction<
+        typeof collectionCategoryService.insertCollectionCategory
       >;
 
     it("should save a collection and return the page ID", async () => {
@@ -214,7 +212,7 @@ describe("CollectionService", () => {
       mockInsertGeneralPageAndReturnID.mockResolvedValue(1);
       mockInsertItemTemplateAndReturnID.mockResolvedValue(1);
 
-      const result = await CollectionService.saveCollection(
+      const result = await collectionService.saveCollection(
         mockCollectionDTO,
         mockTemplateDTO,
       );
@@ -241,7 +239,7 @@ describe("CollectionService", () => {
       );
 
       await expect(
-        CollectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
+        collectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
       ).rejects.toThrow(DatabaseError);
     });
 
@@ -254,7 +252,7 @@ describe("CollectionService", () => {
       );
 
       await expect(
-        CollectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
+        collectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
       ).rejects.toThrow(DatabaseError);
     });
 
@@ -268,7 +266,7 @@ describe("CollectionService", () => {
       );
 
       await expect(
-        CollectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
+        collectionService.saveCollection(mockCollectionDTO, mockTemplateDTO),
       ).rejects.toThrow(DatabaseError);
     });
   });

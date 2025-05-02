@@ -7,7 +7,7 @@ import CreateCollection, {
 import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
-import { saveCollection } from "@/services/CollectionService";
+import { collectionService } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
 import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 import { PageType } from "@/utils/enums/PageType";
@@ -69,7 +69,10 @@ export default function CollectionTemplateScreen() {
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
-    const pageId = await saveCollection(dtos.collection, dtos.template);
+    const pageId = await collectionService.saveCollection(
+      dtos.collection,
+      dtos.template,
+    );
     router.replace({
       pathname: "/collectionPage",
       params: { pageId: pageId, title: collectionData.title },
