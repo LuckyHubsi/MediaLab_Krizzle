@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { FC } from "react";
 import {
+  AndroidPickerWrapper,
   CollectionListContainer,
   getPickerStyles,
 } from "./CollectionListDropdown.styles";
@@ -34,20 +35,22 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
   return (
     <CollectionListContainer>
       <ThemedText>{title}</ThemedText>
-      <RNPickerSelect
-        placeholder={{ label: "Select an option...", value: null }}
-        items={dropdownItems}
-        value={selectedList}
-        onValueChange={onSelectionChange}
-        style={pickerStyles}
-        Icon={() => (
-          <MaterialIcons
-            name="arrow-drop-down"
-            size={24}
-            color={colorScheme === "light" ? Colors.grey100 : Colors.white}
-          />
-        )}
-      />
+      <AndroidPickerWrapper>
+        <RNPickerSelect
+          placeholder={{ label: "Select an option...", value: null }}
+          items={dropdownItems}
+          value={selectedList}
+          onValueChange={onSelectionChange}
+          style={pickerStyles}
+          Icon={() => (
+            <MaterialIcons
+              name="arrow-drop-down"
+              size={24}
+              color={colorScheme === "light" ? Colors.grey100 : Colors.white}
+            />
+          )}
+        />
+      </AndroidPickerWrapper>
     </CollectionListContainer>
   );
 };
