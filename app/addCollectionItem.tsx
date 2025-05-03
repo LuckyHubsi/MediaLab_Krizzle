@@ -61,7 +61,7 @@ export default function AddCollectionItem() {
     }));
   };
 
-  const handleListChange = (categoryID: number) => {
+  const handleListChange = (categoryID: number | null) => {
     setSelectedCategoryID(categoryID);
   };
 
@@ -131,6 +131,7 @@ export default function AddCollectionItem() {
               attributeValues={attributeValues}
               onInputChange={handleInputChange}
               onListChange={handleListChange}
+              selectedCategoryID={selectedCategoryID}
             />
           </View>
 
