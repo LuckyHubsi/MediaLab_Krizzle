@@ -6,7 +6,6 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router } from "expo-router";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,7 +14,6 @@ import { getCollectionCategories } from "@/services/CollectionCategoriesService"
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
-import { Button } from "@/components/ui/Button/Button";
 import { insertItemAndReturnID } from "@/services/ItemService";
 
 export default function AddCollectionItem() {

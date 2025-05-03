@@ -1,4 +1,3 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Platform, StyleProp, TextStyle, ViewStyle } from "react-native";

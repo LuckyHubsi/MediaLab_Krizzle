@@ -7,8 +7,6 @@ import {
 } from "./CollectionListDropdown.styles";
 import RNPickerSelect from "react-native-picker-select";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { TouchableWithoutFeedback } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
