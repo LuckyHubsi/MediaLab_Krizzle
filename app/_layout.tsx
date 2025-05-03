@@ -86,7 +86,7 @@ export default function RootLayout() {
             />
             <Stack.Screen name="appearance" options={{ headerShown: false }} />
             <Stack.Screen
-              name="collectionItemEdit"
+              name="editCollectionItem"
               options={{ headerShown: false }}
             />
             <Stack.Screen name="+not-found" />

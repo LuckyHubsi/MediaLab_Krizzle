@@ -59,7 +59,7 @@ export default function CollectionItemScreen() {
             icon: "edit",
             onPress: () => {
               router.push({
-                pathname: "/collectionItemEdit",
+                pathname: "/editCollectionItem",
                 params: { itemId },
               });
             },
