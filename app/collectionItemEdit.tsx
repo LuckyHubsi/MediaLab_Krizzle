@@ -57,19 +57,31 @@ export default function EditCollectionItem() {
 
           switch (templateAttr.type) {
             case AttributeType.Date:
-              mappedValues[attrID] = attrValue.valueString
-                ? new Date(attrValue.valueString)
-                : null;
+              mappedValues[attrID] =
+                "valueString" in attrValue && attrValue.valueString
+                  ? new Date(attrValue.valueString)
+                  : null;
               break;
+
             case AttributeType.Rating:
-              mappedValues[attrID] = attrValue.valueNumber ?? null;
+              mappedValues[attrID] =
+                "valueNumber" in attrValue
+                  ? (attrValue.valueNumber ?? null)
+                  : null;
               break;
+
             case AttributeType.Multiselect:
-              mappedValues[attrID] = attrValue.valueMultiselect ?? [];
+              mappedValues[attrID] =
+                "valueMultiselect" in attrValue
+                  ? (attrValue.valueMultiselect ?? [])
+                  : [];
               break;
+
             case AttributeType.Text:
             default:
-              mappedValues[attrID] = attrValue.valueString ?? "";
+              mappedValues[attrID] =
+                "valueString" in attrValue ? (attrValue.valueString ?? "") : "";
+              break;
           }
         });
 
@@ -89,7 +101,7 @@ export default function EditCollectionItem() {
     }));
   };
 
-  const handleListChange = (categoryID: number) => {
+  const handleListChange = (categoryID: number | null) => {
     setSelectedCategoryID(categoryID);
   };
 
@@ -124,7 +136,6 @@ export default function EditCollectionItem() {
                 attributeValues,
                 selectedCategoryID,
               });
-              // No save yet — just log or forward to a preview
             }}
             progressStep={10}
           />
