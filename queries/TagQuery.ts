@@ -3,4 +3,7 @@ const selectAllTagsQuery = `
   ORDER BY tag_label ASC;
 `;
 
-export { selectAllTagsQuery };
+const insertTagQuery = `
+  INSERT INTO tag (tag_label) VALUES (?);
+`;
+export { selectAllTagsQuery, insertTagQuery };
