@@ -58,7 +58,10 @@ export default function CollectionItemScreen() {
             label: "Edit",
             icon: "edit",
             onPress: () => {
-              router.push("/collectionItemEdit");
+              router.push({
+                pathname: "/collectionItemEdit",
+                params: { itemId },
+              });
             },
           },
           {
