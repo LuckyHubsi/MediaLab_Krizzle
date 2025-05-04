@@ -23,6 +23,10 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { resetDatabase } from "@/utils/DatabaseReset";
+import { Button } from "@/components/ui/Button/Button";
+import { TagDTO } from "@/dto/TagDTO";
+import { getAllTags } from "@/services/TagService";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -49,7 +53,7 @@ export default function HomeScreen() {
   interface Widget {
     id: string;
     title: string;
-    tag: string;
+    tag: TagDTO;
     page_icon?: string;
     page_type: PageType;
     color?: string;
@@ -62,6 +66,7 @@ export default function HomeScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
+  const [tags, setTags] = useState<TagDTO[]>([]);
 
   const getColorKeyFromValue = (
     value: string,
@@ -85,7 +90,7 @@ export default function HomeScreen() {
       const enrichedWidgets: Widget[] = (data || []).map((widget) => ({
         id: String(widget.pageID),
         title: widget.page_title,
-        tag: widget.tag?.tag_label || "Uncategorized",
+        tag: widget.tag || { tag_label: "Uncategorized" },
         color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
         page_type: widget.page_type,
         iconLeft: widget.page_icon
@@ -114,6 +119,16 @@ export default function HomeScreen() {
         }
       };
 
+      const fetchTags = async () => {
+        try {
+          const tagData = await getAllTags();
+          if (tagData) setTags(tagData);
+        } catch (error) {
+          console.error("Failed to load tags:", error);
+        }
+      };
+
+      fetchTags();
       fetchWidgets();
     }, []),
   );
@@ -121,13 +136,12 @@ export default function HomeScreen() {
   const filteredWidgets = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
-      const matchesTag = selectedTag === "All" || widget.tag === selectedTag;
+      const matchesTag =
+        selectedTag === "All" || widget.tag.tag_label === selectedTag;
       const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
       return matchesTag && matchesTitle;
     });
   }, [widgets, selectedTag, searchQuery]);
-
-  useEffect(() => {}, [widgets]);
 
   const goToPage = (widget: Widget) => {
     const path =
@@ -165,8 +179,11 @@ export default function HomeScreen() {
               />
 
               <TagList
-                tags={["All", "Books", "Cafés", "Lists", "To-Dos"]}
+                tags={["All", ...tags.map((tag) => tag.tag_label)]}
                 onSelect={(tag) => setSelectedTag(tag)}
+                onPress={() => {
+                  router.push("/tagManagement");
+                }}
               />
 
               {filteredWidgets.length > 0 ? (
@@ -186,7 +203,7 @@ export default function HomeScreen() {
                     renderItem={({ item }) => (
                       <Widget
                         title={item.title}
-                        label={item.tag}
+                        label={item.tag.tag_label}
                         iconLeft={item.iconLeft}
                         iconRight={item.iconRight}
                         color={item.color as keyof typeof Colors.widget}
