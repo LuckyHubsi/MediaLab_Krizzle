@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -9,15 +9,16 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
-import { useNavigation } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Header } from "@/components/ui/Header/Header";
-import { Button } from "@/components/ui/Button/Button";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { TouchableWithoutFeedback } from "react-native";
+import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
+import { TagDTO } from "@/dto/TagDTO";
+import { Button } from "@/components/ui/Button/Button";
+import { getAllTags, insertTag } from "@/services/TagService";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -44,8 +45,8 @@ export default function TagManagementScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingTop: 20 }}>
-          <Header title="Tags management" />
+        <View style={{ flex: 1 }}>
+          <CustomStyledHeader title="Tags management" />
 
           <View style={{ flex: 1, marginTop: 20 }}>
             <FlatList
@@ -63,70 +64,70 @@ export default function TagManagementScreen() {
 
           <View>
             <Button onPress={() => setModalVisible(true)}>
-              <ThemedText>Add</ThemedText>
+              <ThemedText colorVariant="white">Add</ThemedText>
             </Button>
           </View>
-
-          <Modal
-            visible={modalVisible}
-            animationType="fade"
-            transparent
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => {
-                Keyboard.dismiss();
-                setModalVisible(false);
-              }}
-              style={{
-                flex: 1,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <TouchableWithoutFeedback>
-                <View
-                  style={{
-                    width: "85%",
-                    backgroundColor:
-                      colorScheme === "light" ? "#fff" : "#1a1a1a",
-                    borderRadius: 20,
-                    padding: 20,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
-                  <TextInput
-                    placeholder="New tag name"
-                    placeholderTextColor="#999"
-                    style={{
-                      flex: 1,
-                      borderBottomWidth: 1,
-                      borderColor: "#ccc",
-                      color: colorScheme === "light" ? "#000" : "#fff",
-                      paddingVertical: 8,
-                      fontSize: 16,
-                    }}
-                    value={newTag}
-                    onChangeText={setNewTag}
-                    onSubmitEditing={addTag}
-                    autoFocus
-                  />
-                  <TouchableOpacity onPress={addTag}>
-                    <MaterialIcons
-                      name="arrow-upward"
-                      size={28}
-                      color={colorScheme === "light" ? "#000" : "#fff"}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableWithoutFeedback>
-            </TouchableOpacity>
-          </Modal>
         </View>
+        <Modal
+          visible={modalVisible}
+          animationType="fade"
+          transparent
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {
+              Keyboard.dismiss();
+              setModalVisible(false);
+            }}
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 150,
+            }}
+          >
+            <TouchableWithoutFeedback>
+              <View
+                style={{
+                  width: "85%",
+                  height: 58,
+                  backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
+                  borderRadius: 33,
+                  paddingHorizontal: 20,
+                  paddingVertical: 4,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <TextInput
+                  placeholder="New tag name"
+                  placeholderTextColor="#999"
+                  style={{
+                    flex: 1,
+                    borderColor: "#ccc",
+                    color: colorScheme === "light" ? "#000" : "#fff",
+                    paddingVertical: 8,
+                    fontSize: 16,
+                  }}
+                  value={newTag}
+                  onChangeText={setNewTag}
+                  onSubmitEditing={addTag}
+                  autoFocus
+                />
+                <TouchableOpacity onPress={addTag}>
+                  <MaterialIcons
+                    name="arrow-upward"
+                    size={28}
+                    color={colorScheme === "light" ? "#000" : "#fff"}
+                  />
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
+        </Modal>
       </ThemedView>
     </SafeAreaView>
   );
