@@ -34,7 +34,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         </ThemedText>
         <TouchableOpacity onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
-            View all
+            Edit Tags
             <BackIcon
               name="chevron-forward-outline"
               colorScheme={colorScheme}
