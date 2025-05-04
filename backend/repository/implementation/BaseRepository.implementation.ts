@@ -1,7 +1,7 @@
-import { Repository } from "../interfaces/Repository";
+import { BaseRepository } from "../interfaces/BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
 
-export class RepositoryImpl implements Repository {
+export class BaseRepositoryImpl implements BaseRepository {
   private db: SQLite.SQLiteDatabase | null = null;
 
   /**

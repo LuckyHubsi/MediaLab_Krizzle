@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 
-export interface Repository {
+export interface BaseRepository {
   executeQuery: (
     query: string,
     params?: any[],
