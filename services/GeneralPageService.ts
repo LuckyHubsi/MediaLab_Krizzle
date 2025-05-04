@@ -4,6 +4,7 @@ import {
   selectAllGeneralPageQuery,
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
+  updatePinnedByPageIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -79,6 +80,29 @@ const insertGeneralPageAndReturnID = async (
 };
 
 /**
+ * Toggles a page's pinned status (from pinned to unpinned or vice versa).
+ *
+ * @param {number} pageID - The ID of the page to toggle pin status.
+ * @param {boolean} currentPinStatus - The current pin status of the page.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<boolean>} A promise that resolves to true if successful.
+ * @throws {DatabaseError} If the update fails.
+ */
+const togglePagePin = async (
+  pageID: number,
+  currentPinStatus: boolean,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    const newPinStatus = currentPinStatus ? 0 : 1;
+    await executeQuery(updatePinnedByPageIDQuery, [newPinStatus, pageID], txn);
+    return true;
+  } catch (error) {
+    throw new DatabaseError("Failed to toggle pin status for the page");
+  }
+};
+
+/**
  * Deletes a page based on its ID from DB.
  *
  * @param {pageID} number - The pageID of the page to be deleted.
@@ -101,5 +125,6 @@ const deleteGeneralPage = async (
 export {
   getAllGeneralPageData,
   insertGeneralPageAndReturnID,
+  togglePagePin,
   deleteGeneralPage,
 };
