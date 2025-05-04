@@ -41,6 +41,22 @@ export class GeneralPageMapper {
     };
   }
 
+  static toInsertModel(entity: NewGeneralPage): GeneralPageModel {
+    return {
+      pageID: 0,
+      page_type: entity.pageType,
+      page_title: entity.pageTitle,
+      page_icon: entity.pageIcon,
+      page_color: entity.pageColor,
+      date_created: entity.createdAt.toISOString(),
+      date_modified: entity.updatedAt.toISOString(),
+      archived: entity.archived ? 1 : 0,
+      pinned: entity.pinned ? 1 : 0,
+      tagID: entity.tag?.tagID ?? null,
+      tag_label: entity.tag?.tagLabel,
+    };
+  }
+
   static toNewEntity(dto: GeneralPageDTO): NewGeneralPage {
     try {
       const parsedDTO = createNewGeneralPage.parse({
