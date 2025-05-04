@@ -1,9 +1,9 @@
 import { Tag } from "@/backend/domain/entity/Tag";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { TagRepository } from "../interfaces/TagRepository.interface";
-import { TagModel } from "@/models/TagModel";
 import { selectAllTagsQuery } from "../query/TagQuery";
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
+import { TagModel } from "../model/TagModel";
 
 export class TagRepositoryImpl
   extends BaseRepositoryImpl
