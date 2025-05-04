@@ -25,6 +25,10 @@ const updatePinnedByPageIDQuery: string = `
     UPDATE general_page_data SET pinned = ? WHERE pageID = ?
 `;
 
+const updateArchivedByPageIDQuery: string = `
+    UPDATE general_page_data SET archived = ? WHERE pageID = ?
+`;
+
 const deleteGeneralPageByIDQuery: string = `
     DELETE FROM general_page_data WHERE pageID = ?
 `;
@@ -35,5 +39,6 @@ export {
   selectNoteByPageIDQuery,
   updateDateModifiedByPageIDQuery,
   updatePinnedByPageIDQuery,
+  updateArchivedByPageIDQuery,
   deleteGeneralPageByIDQuery,
 };
