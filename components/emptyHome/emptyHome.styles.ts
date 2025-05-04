@@ -3,7 +3,7 @@ import { Colors } from "@/constants/Colors";
 
 export const StyledEmptyHome = styled.View`
   flex: 1;
-  margin-top: 45%;
+  justify-content: center;
   align-items: center;
   padding: 20px;
   height: 100%;

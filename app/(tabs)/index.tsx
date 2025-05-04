@@ -23,6 +23,7 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -62,6 +63,7 @@ export default function HomeScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const getColorKeyFromValue = (
     value: string,
@@ -155,7 +157,12 @@ export default function HomeScreen() {
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome />
+            <EmptyHome
+              text="Add your first note/collection"
+              buttonLabel="Start"
+              useModal={false}
+              onButtonPress={() => setModalVisible(true)}
+            />
           ) : (
             <>
               {/* <Button onPress={resetDatabase}>reset all</Button> */}
@@ -233,6 +240,10 @@ export default function HomeScreen() {
             danger: true,
           },
         ]}
+      />
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
       />
       <DeleteModal
         visible={showDeleteModal}

@@ -96,7 +96,6 @@ export default function ArchiveScreen() {
           ? getIconForPageType(widget.page_type)
           : undefined,
       }));
-
       return enrichedWidgets;
     }
   };
@@ -154,7 +153,7 @@ export default function ArchiveScreen() {
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome />
+            <EmptyHome text="Archive is empty" showButton={false} />
           ) : (
             <>
               {/* <Button onPress={resetDatabase}>reset all</Button> */}
@@ -166,7 +165,7 @@ export default function ArchiveScreen() {
               {filteredWidgets.length > 0 ? (
                 <>
                   <ThemedText fontSize="regular" fontWeight="regular">
-                    Recent
+                    Archive
                   </ThemedText>
 
                   <FlatList
