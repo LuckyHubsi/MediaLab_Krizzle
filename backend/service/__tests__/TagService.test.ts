@@ -1,7 +1,7 @@
 import { TagRepository } from "@/backend/repository/interfaces/TagRepository.interface";
 import { tagService, TagService } from "@/backend/service/TagService";
 import { ServiceError } from "@/backend/util/error/ServiceError";
-import { TagMapper } from "@/backend/util/TagMapper";
+import { TagMapper } from "@/backend/util/mapper/TagMapper";
 
 jest.mock(
   "@/backend/repository/implementation/TagRepository.implementation",

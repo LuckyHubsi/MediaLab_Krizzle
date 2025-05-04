@@ -1,7 +1,7 @@
 import { TagDTO } from "@/dto/TagDTO";
 import { TagRepository } from "../repository/interfaces/TagRepository.interface";
 import { tagRepository } from "../repository/implementation/TagRepository.implementation";
-import { TagMapper } from "../util/TagMapper";
+import { TagMapper } from "../util/mapper/TagMapper";
 import { ServiceError } from "../util/error/ServiceError";
 
 export class TagService {

@@ -3,7 +3,7 @@ import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { TagRepository } from "../interfaces/TagRepository.interface";
 import { TagModel } from "@/models/TagModel";
 import { selectAllTagsQuery } from "../query/TagQuery";
-import { TagMapper } from "@/backend/util/TagMapper";
+import { TagMapper } from "@/backend/util/mapper/TagMapper";
 
 export class TagRepositoryImpl
   extends BaseRepositoryImpl
