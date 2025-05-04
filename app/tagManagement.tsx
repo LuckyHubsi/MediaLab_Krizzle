@@ -22,25 +22,51 @@ import { getAllTags, insertTag } from "@/services/TagService";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
-  const [tags, setTags] = useState<string[]>(["Work", "Urgent", "Ideas"]);
+  const [tags, setTags] = useState<TagDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newTag, setNewTag] = useState("");
 
-  const addTag = () => {
+  const addTag = async () => {
     if (!newTag.trim()) return;
-    setTags((prev) => [...prev, newTag.trim()]);
-    setNewTag("");
-    setModalVisible(false);
-    Keyboard.dismiss();
+
+    const newTagObject: TagDTO = {
+      tag_label: newTag.trim(),
+    };
+
+    try {
+      const success = await insertTag(newTagObject);
+      if (success) {
+        const updatedTags = await getAllTags();
+        setTags(updatedTags);
+        setNewTag("");
+        setModalVisible(false);
+        Keyboard.dismiss();
+      }
+    } catch (error) {
+      console.error("Error adding tag:", error);
+    }
   };
 
-  const deleteTag = (tag: string) => {
-    setTags((prev) => prev.filter((t) => t !== tag));
+  const deleteTag = (tagID: number) => {
+    setTags((prev) => prev.filter((t) => t.tagID !== tagID));
   };
 
-  const editTag = (tag: string) => {
+  const editTag = (tagID: number) => {
     // future editing logic here
   };
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tagData = await getAllTags();
+        if (tagData) setTags(tagData);
+      } catch (error) {
+        console.error("Failed to load tags:", error);
+      }
+    };
+
+    fetchTags();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -51,12 +77,12 @@ export default function TagManagementScreen() {
           <View style={{ flex: 1, marginTop: 20 }}>
             <FlatList
               data={tags}
-              keyExtractor={(item) => item}
+              keyExtractor={(item) => item.tagID?.toString() || ""}
               renderItem={({ item }) => (
                 <TagListItem
-                  tag={item}
-                  onDelete={() => deleteTag(item)}
-                  onEdit={() => editTag(item)}
+                  tag={item.tag_label}
+                  onDelete={() => deleteTag(item.tagID || 0)}
+                  onEdit={() => editTag(item.tagID || 0)}
                 />
               )}
             />
