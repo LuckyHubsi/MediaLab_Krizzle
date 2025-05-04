@@ -5,6 +5,7 @@ import {
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
   updatePinnedByPageIDQuery,
+  updateDateModifiedByPageIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -80,6 +81,31 @@ const insertGeneralPageAndReturnID = async (
 };
 
 /**
+ * Updates the date modified of a page to the current date and time.
+ *
+ * @param {number} pageID - The ID of the page to update.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when it's called inside a transaction.
+ * @returns {Promise<boolean>} A promise that resolves to true if successful.
+ * @throws {DatabaseError} If the update fails.
+ */
+const updateDateModified = async (
+  pageID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    const currentDate = new Date().toISOString();
+    await executeQuery(
+      updateDateModifiedByPageIDQuery,
+      [currentDate, pageID],
+      txn,
+    );
+    return true;
+  } catch (error) {
+    throw new DatabaseError("Failed to update the page modification date");
+  }
+};
+
+/**
  * Toggles a page's pinned status (from pinned to unpinned or vice versa).
  *
  * @param {number} pageID - The ID of the page to toggle pin status.
@@ -94,9 +120,21 @@ const togglePagePin = async (
   txn?: SQLite.SQLiteDatabase,
 ): Promise<boolean> => {
   try {
-    const newPinStatus = currentPinStatus ? 0 : 1;
-    await executeQuery(updatePinnedByPageIDQuery, [newPinStatus, pageID], txn);
-    return true;
+    return await executeTransaction<boolean>(async (transaction) => {
+      const newPinStatus = currentPinStatus ? 0 : 1;
+      const currentDate = new Date().toISOString();
+
+      // Update pinned status
+      await executeQuery(
+        updatePinnedByPageIDQuery,
+        [newPinStatus, pageID],
+        transaction || txn,
+      );
+
+      updateDateModified;
+
+      return true;
+    });
   } catch (error) {
     throw new DatabaseError("Failed to toggle pin status for the page");
   }
@@ -125,6 +163,7 @@ const deleteGeneralPage = async (
 export {
   getAllGeneralPageData,
   insertGeneralPageAndReturnID,
+  updateDateModified,
   togglePagePin,
   deleteGeneralPage,
 };
