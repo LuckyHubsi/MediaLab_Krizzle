@@ -128,8 +128,15 @@ const updateItem: string = `
     WHERE itemID = ?
 `;
 
-const deleteItem: string = `
-    DELETE FROM items WHERE itemID = ?
+const deleteItemQuery: string = `
+    DELETE FROM items WHERE itemID = ? RETURNING pageID
+`;
+
+const deleteItemAttributeValuesQuery: string = `
+    DELETE FROM text_value WHERE itemID = ?;
+    DELETE FROM date_value WHERE itemID = ?;
+    DELETE FROM rating_value WHERE itemID = ?;
+    DELETE FROM multiselect_values WHERE itemID = ?;
 `;
 
 export {
@@ -141,5 +148,6 @@ export {
   insertRatingValueQuery,
   insertMultiselectValueQuery,
   updateItem,
-  deleteItem,
+  deleteItemQuery,
+  deleteItemAttributeValuesQuery,
 };
