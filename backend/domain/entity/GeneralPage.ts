@@ -31,13 +31,13 @@ export const createNewGeneralPage = z
     pinned: common.boolean.default(false),
     tag: tagSchema.nullable().optional(),
   })
-  .transform(
-    (data) =>
-      ({
-        ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }) satisfies Omit<GeneralPage, "pageID">,
-  );
+  .transform((data) => {
+    const now = new Date(); // Create a single Date object
+    return {
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    } satisfies Omit<GeneralPage, "pageID">;
+  });
 
 export type NewGeneralPage = z.infer<typeof createNewGeneralPage>;
