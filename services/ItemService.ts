@@ -13,6 +13,8 @@ import {
   insertMultiselectValueQuery,
   insertRatingValueQuery,
   itemSelectByPageIdQuery,
+  deleteItemQuery,
+  deleteItemAttributeValuesQuery,
 } from "@/queries/ItemQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { AttributeType } from "@/utils/enums/AttributeType";
@@ -179,9 +181,54 @@ const insertItemAttributeValue = async (
   }
 };
 
+/**
+ * Deletes an item and all its associated attribute values from the database.
+ *
+ * @param {number} itemID - The ID of the item to delete.
+ * @returns {Promise<boolean>} A promise that resolves to true if the deletion was successful.
+ * @throws {DatabaseError} When transaction fails.
+ */
+const deleteItemById = async (itemID: number): Promise<boolean> => {
+  try {
+    const success = await executeTransaction<boolean>(async (txn) => {
+      // deletes all of the item's attribute values
+      await executeQuery(
+        deleteItemAttributeValuesQuery,
+        [itemID, itemID, itemID, itemID],
+        txn,
+      );
+
+      // deletes item and gets the page id
+      const result = await fetchFirst<{ pageID: number }>(
+        deleteItemQuery,
+        [itemID],
+        txn,
+      );
+
+      if (!result) {
+        throw new DatabaseError(`Item with ID ${itemID} not found.`);
+      }
+
+      // updates date modified of the page
+      await executeQuery(
+        updateDateModifiedByPageIDQuery,
+        [new Date().toISOString(), result.pageID],
+        txn,
+      );
+
+      return true;
+    });
+
+    return success;
+  } catch (error) {
+    throw new DatabaseError("Failed to delete item");
+  }
+};
+
 export {
   getItemById,
   getItemsByPageId,
   insertItemAndReturnID,
   insertItemAttributeValue,
+  deleteItemById,
 };
