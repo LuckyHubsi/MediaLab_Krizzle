@@ -6,6 +6,7 @@ import {
   deleteGeneralPageByIDQuery,
   updatePinnedByPageIDQuery,
   updateDateModifiedByPageIDQuery,
+  updateArchivedByPageIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -141,6 +142,41 @@ const togglePagePin = async (
 };
 
 /**
+ * Toggles a page's archived status (from archived to unarchived or vice versa).
+ *
+ * @param {number} pageID - The ID of the page to toggle pin status.
+ * @param {boolean} currentArchiveStatus - The current archive status of the page.
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<boolean>} A promise that resolves to true if successful.
+ * @throws {DatabaseError} If the update fails.
+ */
+const togglePageArchive = async (
+  pageID: number,
+  currentArchiveStatus: boolean,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    return await executeTransaction<boolean>(async (transaction) => {
+      const newArchiveStatus = currentArchiveStatus ? 0 : 1;
+      const currentDate = new Date().toISOString();
+
+      // Update archived status
+      await executeQuery(
+        updateArchivedByPageIDQuery,
+        [newArchiveStatus, pageID],
+        transaction || txn,
+      );
+
+      updateDateModified;
+
+      return true;
+    });
+  } catch (error) {
+    throw new DatabaseError("Failed to toggle archive status for the page");
+  }
+};
+
+/**
  * Deletes a page based on its ID from DB.
  *
  * @param {pageID} number - The pageID of the page to be deleted.
@@ -165,5 +201,6 @@ export {
   insertGeneralPageAndReturnID,
   updateDateModified,
   togglePagePin,
+  togglePageArchive,
   deleteGeneralPage,
 };
