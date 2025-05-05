@@ -28,7 +28,9 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   const colorScheme = useActiveColorScheme();
 
   const handleAddButtonClick = () => {
-    onOptionsChange([...options, ""]);
+    if (options.length < 20) {
+      onOptionsChange([...options, ""]);
+    }
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -44,14 +46,16 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
 
   return (
     <AddMultiSelectablesContainer>
-      <AddMultiSelectableButton
-        colorScheme={colorScheme}
-        onPress={handleAddButtonClick}
-      >
-        <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
-        <ThemedText colorVariant="primary">Add a selectable</ThemedText>
-      </AddMultiSelectableButton>
-      {options.length > 0 && <ThemedText>List of Selectables</ThemedText>}
+      {options.length < 20 && (
+        <AddMultiSelectableButton
+          colorScheme={colorScheme}
+          onPress={handleAddButtonClick}
+        >
+          <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
+          <ThemedText colorVariant="primary">Add a selectable</ThemedText>
+        </AddMultiSelectableButton>
+      )}
+      {options.length > 0 && <ThemedText>Add up to 20 Selectables</ThemedText>}
       {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
           <TextfieldWrapper>
