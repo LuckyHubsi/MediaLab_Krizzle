@@ -6,4 +6,11 @@ const updateNoteContentQuery: string = `
     UPDATE note SET note_content = ? WHERE pageID = ?
 `;
 
-export { insertNoteQuery, updateNoteContentQuery };
+const selectNoteByPageIDQuery: string = `
+    SELECT p.*, n.*
+    FROM general_page_data p
+    INNER JOIN note n ON p.pageID = n.pageID
+    WHERE p.pageID = ?;
+`;
+
+export { insertNoteQuery, updateNoteContentQuery, selectNoteByPageIDQuery };

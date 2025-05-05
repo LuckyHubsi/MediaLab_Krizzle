@@ -2,13 +2,14 @@ import { Note } from "@/backend/domain/entity/Note";
 import { NoteRepository } from "../interfaces/NoteRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { NoteModel } from "../model/NoteModel";
-import {
-  selectNoteByPageIDQuery,
-  updateDateModifiedByPageIDQuery,
-} from "../query/GeneralPageQuery";
+import { updateDateModifiedByPageIDQuery } from "../query/GeneralPageQuery";
 import { PageType } from "@/backend/util/enum/PageType";
 import { NoteMapper } from "@/backend/util/mapper/NoteMapper";
-import { insertNoteQuery, updateNoteContentQuery } from "../query/NoteQuery";
+import {
+  insertNoteQuery,
+  selectNoteByPageIDQuery,
+  updateNoteContentQuery,
+} from "../query/NoteQuery";
 import { PageID, pageID } from "@/backend/domain/entity/GeneralPage";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import * as common from "../../domain/common/types";
