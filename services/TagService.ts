@@ -47,7 +47,7 @@ export const insertTag = async (
   }
 };
 
-export const deleteTag = async (tagID: number): Promise<boolean> => {
+export const deleteTagByID = async (tagID: number): Promise<boolean> => {
   try {
     await executeQuery(deleteTagQuery, [tagID]);
     return true;
