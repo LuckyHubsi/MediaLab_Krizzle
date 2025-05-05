@@ -11,6 +11,7 @@ import { NoteMapper } from "@/backend/util/mapper/NoteMapper";
 import { insertNoteQuery, updateNoteContentQuery } from "../query/NoteQuery";
 import { PageID, pageID } from "@/backend/domain/entity/GeneralPage";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import * as common from "../../domain/common/types";
 
 export class NoteRepositoryImpl
   extends BaseRepositoryImpl
@@ -44,7 +45,7 @@ export class NoteRepositoryImpl
       return pageId;
     } catch (error) {
       console.error("Error inserting note:", error);
-      return null;
+      throw new RepositoryError("Failed to isnert note.");
     }
   }
 
@@ -58,7 +59,7 @@ export class NoteRepositoryImpl
       return true;
     } catch (error) {
       console.error("Error updating note content:", error);
-      return false;
+      throw new RepositoryError("Failed to update content.");
     }
   }
 }
