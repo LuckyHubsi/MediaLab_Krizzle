@@ -49,7 +49,10 @@ export class NoteRepositoryImpl
     }
   }
 
-  async updateContent(pageId: PageID, newContent: string): Promise<boolean> {
+  async updateContent(
+    pageId: PageID,
+    newContent: common.String20000,
+  ): Promise<boolean> {
     try {
       await this.executeQuery(updateNoteContentQuery, [newContent, pageId]);
       await this.executeQuery(updateDateModifiedByPageIDQuery, [
