@@ -112,7 +112,7 @@ export default function CreateNoteScreen() {
         <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
           <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
             <Card>
-              <View style={{ alignItems: "center" }}>
+              <View style={{ alignItems: "center", gap: 20 }}>
                 <Header
                   title="Create Note"
                   onIconPress={() => alert("Popup!")}

@@ -12,6 +12,7 @@ import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { getCollectionByPageId } from "@/services/CollectionService";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function EditCollectionItem() {
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
@@ -107,7 +108,7 @@ export default function EditCollectionItem() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
+      <GradientBackground>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View>
             <Header
@@ -140,7 +141,7 @@ export default function EditCollectionItem() {
             progressStep={10}
           />
         </View>
-      </ThemedView>
+      </GradientBackground>
     </SafeAreaView>
   );
 }
