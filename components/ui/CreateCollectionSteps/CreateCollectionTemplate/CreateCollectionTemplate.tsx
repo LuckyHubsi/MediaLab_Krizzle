@@ -151,23 +151,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
   const handlePreviewToggle = (id: number) => {
     const currentCard = otherCards.find((c) => c.id === id);
-    const currentlyActive = otherCards.filter((c) => c.isPreview).length;
-
     if (!currentCard) return;
 
-    const willBePreviewed = !currentCard.isPreview;
-    const validToggle = willBePreviewed
-      ? currentlyActive < maxPreviewCount
-      : true;
+    const currentlyActivePreviews = otherCards.filter((c) => c.isPreview);
+    const isCurrentlyPreviewed = currentCard.isPreview;
+    const newPreviewState = !isCurrentlyPreviewed;
 
-    if (validToggle) {
-      setData((prev) => ({
-        ...prev,
-        templates: prev.templates.map((card) =>
-          card.id === id ? { ...card, isPreview: !card.isPreview } : card,
-        ),
-      }));
+    if (newPreviewState) {
+      const typeAlreadyUsed = currentlyActivePreviews.some(
+        (card) => card.itemType === currentCard.itemType,
+      );
+      const underMaxPreviewCount =
+        currentlyActivePreviews.length < maxPreviewCount;
+
+      if (!underMaxPreviewCount) {
+        Alert.alert("Only 3 Item Previews are allowed");
+        return;
+      }
+
+      if (typeAlreadyUsed) {
+        Alert.alert("One Type can only be set as preview once");
+        return;
+      }
     }
+
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, isPreview: newPreviewState } : card,
+      ),
+    }));
   };
 
   return (
