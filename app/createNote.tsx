@@ -35,7 +35,7 @@ export default function CreateNoteScreen() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
@@ -85,7 +85,9 @@ export default function CreateNoteScreen() {
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
-      const matchingTag = tags.find((tag) => tag.tag_label === selectedTag);
+      const matchingTag = tags.find(
+        (tag) => tag.tag_label === selectedTag?.tag_label,
+      );
       if (matchingTag) {
         tagDTO = {
           tagID: matchingTag.tagID,
@@ -140,7 +142,7 @@ export default function CreateNoteScreen() {
                 />
                 <Widget
                   title={title || "Title"}
-                  label={selectedTag ?? "No tag"}
+                  label={selectedTag?.tag_label ?? "No tag"}
                   pageType={PageType.Note}
                   iconLeft={
                     <MaterialIcons
@@ -186,7 +188,7 @@ export default function CreateNoteScreen() {
               <DividerWithLabel label="optional" iconName="arrow-back" />
               <Card>
                 <TagPicker
-                  tags={tags.map((tag) => tag.tag_label)}
+                  tags={tags}
                   selectedTag={selectedTag}
                   onSelectTag={(tag) => {
                     setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
