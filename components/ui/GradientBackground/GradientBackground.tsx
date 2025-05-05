@@ -5,6 +5,7 @@ import {
   GradientBackgroundWrapper,
   StyledView,
 } from "./GradientBackground.styles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export type GradientBackgroundProps = ViewProps & {
   lightColor?: string;
@@ -31,15 +32,18 @@ export function GradientBackground({
     <View style={{ flex: 1 }}>
       {/* Background layers */}
       <GradientBackgroundWrapper colors={["#4599E8", "#583FE7"]} />
+
       <BackgroundCard
         backgroundColor={backgroundColor}
         topOffset={backgroundCardTopOffset}
       />
 
       {/* Foreground content */}
-      <StyledView topPadding={topPadding} style={style} {...otherProps}>
-        {children}
-      </StyledView>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+        <StyledView topPadding={topPadding} style={style} {...otherProps}>
+          {children}
+        </StyledView>
+      </SafeAreaView>
     </View>
   );
 }
