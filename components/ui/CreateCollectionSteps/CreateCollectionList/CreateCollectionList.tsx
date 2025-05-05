@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Alert, FlatList, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Card } from "@/components/ui/Card/Card";
@@ -65,6 +65,13 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
+  useEffect(() => {
+    if (data.lists.length === 0) {
+      const initialCard = { id: Date.now().toString(), title: "" };
+      setData((prev) => ({ ...prev, lists: [initialCard] }));
+    }
+  }, []);
+
   const colorScheme = useActiveColorScheme();
   const iconColor =
     colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
@@ -99,54 +106,62 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
         data={cards}
         keyExtractor={(item) => item.id}
         contentContainerStyle={ListContent}
-        renderItem={({ item }) => (
-          <Card>
-            <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
-            >
-              List {cards.findIndex((card) => card.id === item.id) + 1}
-            </ThemedText>
-            <Textfield
-              showTitle={false}
-              textfieldIcon="text-fields"
-              placeholderText={`Add a title to your note`}
-              title={""}
-              value={item.title}
-              onChangeText={(text) => handleTitleChange(item.id, text)}
-              hasNoInputError={hasClickedNext && !item.title}
-              maxLength={30}
-            />
-            <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-              <RemoveButtonContent>
-                <MaterialIcons
-                  name="delete"
-                  size={16}
-                  color="#ff4d4d"
-                  style={{ marginRight: 6, marginTop: 2 }}
-                />
-                <ThemedText
-                  fontSize="s"
-                  fontWeight="bold"
-                  style={{ color: "#ff4d4d" }}
-                >
-                  remove
-                </ThemedText>
-              </RemoveButtonContent>
-            </RemoveButton>
-          </Card>
-        )}
+        renderItem={({ item }) => {
+          const index = cards.findIndex((card) => card.id === item.id);
+          return (
+            <Card>
+              <ThemedText
+                fontSize="regular"
+                fontWeight="regular"
+                style={{ marginBottom: 15 }}
+              >
+                List {cards.findIndex((card) => card.id === item.id) + 1}
+              </ThemedText>
+              <Textfield
+                showTitle={false}
+                textfieldIcon="text-fields"
+                placeholderText={`Add a title to your note`}
+                title={""}
+                value={item.title}
+                onChangeText={(text) => handleTitleChange(item.id, text)}
+                hasNoInputError={hasClickedNext && !item.title}
+                maxLength={30}
+              />
+
+              {index > 0 && (
+                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+                  <RemoveButtonContent>
+                    <MaterialIcons
+                      name="delete"
+                      size={16}
+                      color="#ff4d4d"
+                      style={{ marginRight: 6, marginTop: 2 }}
+                    />
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="bold"
+                      style={{ color: "#ff4d4d" }}
+                    >
+                      remove
+                    </ThemedText>
+                  </RemoveButtonContent>
+                </RemoveButton>
+              )}
+            </Card>
+          );
+        }}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={
-          <AddButtonWrapper>
-            <AddButton
-              onPress={() => {
-                handleAddCard();
-                setHasClickedNext(false);
-              }}
-            />
-          </AddButtonWrapper>
+          cards.length < 10 ? (
+            <AddButtonWrapper>
+              <AddButton
+                onPress={() => {
+                  handleAddCard();
+                  setHasClickedNext(false);
+                }}
+              />
+            </AddButtonWrapper>
+          ) : null
         }
       />
 
