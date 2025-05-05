@@ -16,3 +16,11 @@ export type AttributeDTO = {
 export function isValidAttributeType(type: AttributeType): boolean {
   return ["text", "rating", "date", "multi-select"].includes(type);
 }
+export type AttributeDTORestructure = {
+  attributeID?: number;
+  attributeLabel: string;
+  type: AttributeType; // One of: "text", "rating", "date", "multi-select"
+  preview: boolean;
+  options?: string[] | null; // For storing options for Multiselect type or other settings
+  symbol?: string;
+};
