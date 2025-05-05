@@ -63,6 +63,7 @@ const insertGeneralPageAndReturnID = async (
           new Date().toISOString(),
           generalPageDTO.archived ? 1 : 0,
           generalPageDTO.pinned ? 1 : 0,
+          generalPageDTO.tag?.tagID,
         ],
         txn,
       );

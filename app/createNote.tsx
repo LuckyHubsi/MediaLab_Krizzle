@@ -85,9 +85,13 @@ export default function CreateNoteScreen() {
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
-      tagDTO = {
-        tag_label: selectedTag,
-      };
+      const matchingTag = tags.find((tag) => tag.tag_label === selectedTag);
+      if (matchingTag) {
+        tagDTO = {
+          tagID: matchingTag.tagID,
+          tag_label: matchingTag.tag_label,
+        };
+      }
     }
 
     const noteDTO: NoteDTO = {
