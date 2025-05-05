@@ -1,6 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
@@ -15,6 +14,7 @@ import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { insertItemAndReturnID } from "@/services/ItemService";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -115,7 +115,7 @@ export default function AddCollectionItem() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
+      <GradientBackground backgroundCardTopOffset={30} topPadding={50}>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View>
             <Header
@@ -143,7 +143,7 @@ export default function AddCollectionItem() {
             progressStep={10}
           ></BottomButtons>
         </View>
-      </ThemedView>
+      </GradientBackground>
     </SafeAreaView>
   );
 }

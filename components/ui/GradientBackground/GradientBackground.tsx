@@ -16,7 +16,7 @@ export type GradientBackgroundProps = ViewProps & {
 export function GradientBackground({
   lightColor,
   darkColor,
-  topPadding = 50,
+  topPadding = 30,
   style,
   children,
   backgroundCardTopOffset,
@@ -33,7 +33,7 @@ export function GradientBackground({
       <GradientBackgroundWrapper colors={["#4599E8", "#583FE7"]} />
       <BackgroundCard
         backgroundColor={backgroundColor}
-        topOffset={backgroundCardTopOffset} // ✅ Pass it here
+        topOffset={backgroundCardTopOffset}
       />
 
       {/* Foreground content */}

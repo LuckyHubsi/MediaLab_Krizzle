@@ -1,6 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
@@ -108,7 +107,7 @@ export default function EditCollectionItem() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <GradientBackground backgroundCardTopOffset={30}>
+      <GradientBackground backgroundCardTopOffset={30} topPadding={50}>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View>
             <Header
