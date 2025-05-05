@@ -6,4 +6,8 @@ const selectAllTagsQuery = `
 const insertTagQuery = `
   INSERT INTO tag (tag_label) VALUES (?);
 `;
-export { selectAllTagsQuery, insertTagQuery };
+
+const deleteTagQuery = `
+  DELETE FROM tag WHERE tagID = ?
+`;
+export { selectAllTagsQuery, insertTagQuery, deleteTagQuery };

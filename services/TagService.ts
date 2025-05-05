@@ -1,5 +1,9 @@
 import { executeQuery, fetchAll } from "@/utils/QueryHelper";
-import { insertTagQuery, selectAllTagsQuery } from "@/queries/TagQuery";
+import {
+  deleteTagQuery,
+  insertTagQuery,
+  selectAllTagsQuery,
+} from "@/queries/TagQuery";
 import { TagModel } from "@/models/TagModel";
 import { TagDTO } from "@/dto/TagDTO";
 import { TagMapper } from "@/utils/mapper/TagMapper";
@@ -39,5 +43,14 @@ export const insertTag = async (
     return true;
   } catch (error) {
     throw new DatabaseError("Failed to insert add new tag.");
+  }
+};
+
+export const deleteTag = async (tagID: number): Promise<boolean> => {
+  try {
+    await executeQuery(deleteTagQuery, [tagID]);
+    return true;
+  } catch (error) {
+    throw new DatabaseError("Failed to delete tag.");
   }
 };
