@@ -286,35 +286,31 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         titleLeftButton={"Back"}
         titleRightButton={"Add"}
         onDiscard={onBack!}
-        onNext={
-          //check if all textfields are filled
-          () => {
-            setHasClickedNext(true);
+        onNext={() => {
+          setHasClickedNext(true);
 
-            const isMainTitleFilled =
-              titleCard?.title && titleCard.title.trim() !== "";
+          const isMainTitleFilled = !!titleCard?.title?.trim();
 
-            // check if all titles and multi-select textfields are filled
-            const allOtherTitlesFilled = otherCards.every((card) => {
-              const isTitleFilled = card.title && card.title.trim() !== "";
-              const hasMultiSelectFilled =
-                card.itemType === "multi-select" &&
-                (!card.options ||
-                  card.options.length === 0 ||
-                  card.options.some((o) => o.trim() === ""));
-              return isTitleFilled && hasMultiSelectFilled;
-            });
-
-            if (!isMainTitleFilled || !allOtherTitlesFilled) {
-              Alert.alert(
-                "Please fill in all titles and select at least one option before continuing.",
-              );
-              return;
+          const allOtherTitlesFilled = otherCards.every((card) => {
+            const titleFilled = !!card.title?.trim();
+            if (card.itemType === "multi-select") {
+              const hasValidOptions =
+                (card?.options ?? []).length > 0 &&
+                (card.options ?? []).every((o) => o.trim() !== "");
+              return titleFilled && hasValidOptions;
             }
+            return titleFilled;
+          });
 
-            onNext?.();
+          if (!isMainTitleFilled || !allOtherTitlesFilled) {
+            Alert.alert(
+              "Please fill in all titles and select at least one option before continuing.",
+            );
+            return;
           }
-        }
+
+          onNext?.();
+        }}
         hasProgressIndicator={true}
         progressStep={3}
       />
