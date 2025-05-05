@@ -12,18 +12,27 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type CollectionListProps = {
   collectionLists: string[];
-  onSelect?: (selected: string) => void;
+  onSelect?: (selected: string | null) => void;
 };
 
 const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onSelect,
 }) => {
-  const [activeList, setActiveList] = useState(collectionLists[0]);
+  const [activeList, setActiveList] = useState<string | null>(
+    collectionLists[0],
+  );
   const themeMode = useActiveColorScheme() ?? "light";
   const handlePress = (collectionList: string) => {
-    setActiveList(collectionList);
-    onSelect?.(collectionList);
+    if (collectionList === activeList) {
+      // If the active list is clicked again, unselect it
+      setActiveList(null);
+      onSelect?.(null); // Pass null to indicate no selection
+    } else {
+      // Otherwise, set it as the active list
+      setActiveList(collectionList);
+      onSelect?.(collectionList);
+    }
   };
   return (
     <ScrollView
