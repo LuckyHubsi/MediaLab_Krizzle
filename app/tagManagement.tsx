@@ -8,51 +8,86 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
-import { TouchableWithoutFeedback } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { TagDTO } from "@/dto/TagDTO";
 import { Button } from "@/components/ui/Button/Button";
-import { getAllTags, insertTag } from "@/services/TagService";
+import {
+  deleteTagByID,
+  getAllTags,
+  insertTag,
+  updateTag,
+} from "@/services/TagService";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newTag, setNewTag] = useState("");
+  const [editMode, setEditMode] = useState(false);
+  const [editingTag, setEditingTag] = useState<TagDTO | null>(null);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
 
-  const addTag = async () => {
-    if (!newTag.trim()) return;
+  const handleTagSubmit = async () => {
+    const trimmedTag = newTag.trim();
+    if (!trimmedTag) return;
 
-    const newTagObject: TagDTO = {
-      tag_label: newTag.trim(),
-    };
+    const isDuplicate = tags.some(
+      (tag) =>
+        tag.tag_label === trimmedTag &&
+        (!editMode || tag.tagID !== editingTag?.tagID),
+    );
+
+    if (isDuplicate) {
+      alert("A tag with this name already exists.");
+      return;
+    }
 
     try {
-      const success = await insertTag(newTagObject);
-      if (success) {
-        const updatedTags = await getAllTags();
-        setTags(updatedTags);
-        setNewTag("");
-        setModalVisible(false);
-        Keyboard.dismiss();
+      let success = false;
+
+      if (editMode && editingTag) {
+        success = await updateTag({
+          ...editingTag,
+          tag_label: trimmedTag,
+        });
+      } else {
+        const newTagObject: TagDTO = { tag_label: trimmedTag };
+        success = await insertTag(newTagObject);
       }
+
+      if (success) setShouldRefetch(true);
     } catch (error) {
-      console.error("Error adding tag:", error);
+      console.error("Error saving tag:", error);
+    } finally {
+      setNewTag("");
+      setEditingTag(null);
+      setEditMode(false);
+      setModalVisible(false);
+      Keyboard.dismiss();
     }
   };
 
-  const deleteTag = (tagID: number) => {
-    setTags((prev) => prev.filter((t) => t.tagID !== tagID));
+  const deleteTag = async (tagID: number) => {
+    try {
+      const success = await deleteTagByID(tagID);
+      if (success) setShouldRefetch(true);
+    } catch (error) {
+      console.error("Failed to delete tag:", error);
+    }
   };
 
-  const editTag = (tagID: number) => {
-    // future editing logic here
+  const editTag = (tagDTO: TagDTO) => {
+    setNewTag(tagDTO.tag_label);
+    setEditingTag(tagDTO);
+    setEditMode(true);
+    setModalVisible(true);
   };
 
   useEffect(() => {
@@ -68,6 +103,23 @@ export default function TagManagementScreen() {
     fetchTags();
   }, []);
 
+  useEffect(() => {
+    if (!shouldRefetch) return;
+
+    const fetchUpdatedTags = async () => {
+      try {
+        const tagData = await getAllTags();
+        if (tagData) setTags(tagData);
+      } catch (error) {
+        console.error("Failed to refresh tags:", error);
+      } finally {
+        setShouldRefetch(false);
+      }
+    };
+
+    fetchUpdatedTags();
+  }, [shouldRefetch]);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
@@ -82,7 +134,7 @@ export default function TagManagementScreen() {
                 <TagListItem
                   tag={item.tag_label}
                   onDelete={() => deleteTag(item.tagID || 0)}
-                  onEdit={() => editTag(item.tagID || 0)}
+                  onEdit={() => editTag(item)}
                 />
               )}
             />
@@ -140,10 +192,10 @@ export default function TagManagementScreen() {
                   }}
                   value={newTag}
                   onChangeText={setNewTag}
-                  onSubmitEditing={addTag}
+                  onSubmitEditing={handleTagSubmit}
                   autoFocus
                 />
-                <TouchableOpacity onPress={addTag}>
+                <TouchableOpacity onPress={handleTagSubmit}>
                   <MaterialIcons
                     name="arrow-upward"
                     size={28}
