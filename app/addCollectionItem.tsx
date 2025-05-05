@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router } from "expo-router";
@@ -114,36 +114,37 @@ export default function AddCollectionItem() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <GradientBackground backgroundCardTopOffset={30} topPadding={50}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View>
-            <Header
-              title="Add Collection Item"
-              onIconPress={() => alert("Popup!")}
-            />
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 40, android: 45 })}
+      topPadding={Platform.select({ ios: 40, android: 30 })}
+    >
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View>
+          <Header
+            title="Add Collection Item"
+            onIconPress={() => alert("Popup!")}
+          />
 
-            <AddCollectionItemCard
-              attributes={attributes}
-              lists={lists}
-              attributeValues={attributeValues}
-              onInputChange={handleInputChange}
-              onListChange={handleListChange}
-              selectedCategoryID={selectedCategoryID}
-            />
-          </View>
-
-          {/* add correct function to discard/next */}
-          <BottomButtons
-            titleLeftButton={"Discard"}
-            titleRightButton={"Add"}
-            variant="discard"
-            onDiscard={router.back}
-            onNext={handleSaveItem}
-            progressStep={10}
-          ></BottomButtons>
+          <AddCollectionItemCard
+            attributes={attributes}
+            lists={lists}
+            attributeValues={attributeValues}
+            onInputChange={handleInputChange}
+            onListChange={handleListChange}
+            selectedCategoryID={selectedCategoryID}
+          />
         </View>
-      </GradientBackground>
-    </SafeAreaView>
+
+        {/* add correct function to discard/next */}
+        <BottomButtons
+          titleLeftButton={"Discard"}
+          titleRightButton={"Add"}
+          variant="discard"
+          onDiscard={router.back}
+          onNext={handleSaveItem}
+          progressStep={10}
+        ></BottomButtons>
+      </View>
+    </GradientBackground>
   );
 }

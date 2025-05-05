@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router, useLocalSearchParams } from "expo-router";
@@ -106,41 +106,42 @@ export default function EditCollectionItem() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <GradientBackground backgroundCardTopOffset={30} topPadding={50}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View>
-            <Header
-              title="Edit Collection Item"
-              onIconPress={() => alert("Popup!")}
-            />
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 40, android: 45 })}
+      topPadding={Platform.select({ ios: 40, android: 30 })}
+    >
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View>
+          <Header
+            title="Edit Collection Item"
+            onIconPress={() => alert("Popup!")}
+          />
 
-            <AddCollectionItemCard
-              attributes={attributes}
-              lists={lists}
-              attributeValues={attributeValues}
-              onInputChange={handleInputChange}
-              onListChange={handleListChange}
-              selectedCategoryID={selectedCategoryID}
-            />
-          </View>
-
-          <BottomButtons
-            titleLeftButton={"Cancel"}
-            titleRightButton={"Continue"}
-            variant="discard"
-            onDiscard={router.back}
-            onNext={() => {
-              console.log("Edited values", {
-                attributes,
-                attributeValues,
-                selectedCategoryID,
-              });
-            }}
-            progressStep={10}
+          <AddCollectionItemCard
+            attributes={attributes}
+            lists={lists}
+            attributeValues={attributeValues}
+            onInputChange={handleInputChange}
+            onListChange={handleListChange}
+            selectedCategoryID={selectedCategoryID}
           />
         </View>
-      </GradientBackground>
-    </SafeAreaView>
+
+        <BottomButtons
+          titleLeftButton={"Cancel"}
+          titleRightButton={"Continue"}
+          variant="discard"
+          onDiscard={router.back}
+          onNext={() => {
+            console.log("Edited values", {
+              attributes,
+              attributeValues,
+              selectedCategoryID,
+            });
+          }}
+          progressStep={10}
+        />
+      </View>
+    </GradientBackground>
   );
 }
