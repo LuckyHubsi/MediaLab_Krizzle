@@ -10,4 +10,11 @@ const insertTagQuery = `
 const deleteTagQuery = `
   DELETE FROM tag WHERE tagID = ?
 `;
-export { selectAllTagsQuery, insertTagQuery, deleteTagQuery };
+
+const updateTagQuery = `
+  UPDATE tag
+  SET tag_label = ?
+  WHERE tagID = ?;
+`;
+
+export { selectAllTagsQuery, insertTagQuery, deleteTagQuery, updateTagQuery };

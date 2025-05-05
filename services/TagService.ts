@@ -3,6 +3,7 @@ import {
   deleteTagQuery,
   insertTagQuery,
   selectAllTagsQuery,
+  updateTagQuery,
 } from "@/queries/TagQuery";
 import { TagModel } from "@/models/TagModel";
 import { TagDTO } from "@/dto/TagDTO";
@@ -52,5 +53,17 @@ export const deleteTag = async (tagID: number): Promise<boolean> => {
     return true;
   } catch (error) {
     throw new DatabaseError("Failed to delete tag.");
+  }
+};
+
+export const updateTag = async (
+  tag: TagDTO,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    await executeQuery(updateTagQuery, [tag.tag_label, tag.tagID], txn);
+    return true;
+  } catch (error) {
+    throw new DatabaseError("Failed to update tag.");
   }
 };
