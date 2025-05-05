@@ -13,6 +13,7 @@ import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
 } from "../query/GeneralPageQuery";
+import * as SQLite from "expo-sqlite";
 
 export class GeneralPageRepositoryImpl
   extends BaseRepositoryImpl
@@ -29,10 +30,13 @@ export class GeneralPageRepositoryImpl
     }
   }
 
-  async insertPage(page: NewGeneralPage): Promise<number> {
+  async insertPage(
+    page: NewGeneralPage,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<number> {
     try {
       const model = GeneralPageMapper.toInsertModel(page);
-      const pageID = super.executeTransaction(async (txn) => {
+      const pageID = await super.executeTransaction(async (txn) => {
         await super.executeQuery(
           insertNewPageQuery,
           [
