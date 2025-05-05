@@ -108,7 +108,7 @@ export default function EditCollectionItem() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <GradientBackground>
+      <GradientBackground backgroundCardTopOffset={30}>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View>
             <Header

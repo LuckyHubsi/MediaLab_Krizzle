@@ -14,9 +14,10 @@ export const GradientBackgroundWrapper = styled(LinearGradient).attrs({
 
 export const BackgroundCard = styled.View<{
   backgroundColor: string;
+  topOffset?: number;
 }>`
   position: absolute;
-  top: 30px;
+  top: ${({ topOffset = 30 }) => `${topOffset}px`};
   left: 0;
   right: 0;
   bottom: 0;

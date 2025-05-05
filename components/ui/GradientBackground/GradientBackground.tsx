@@ -10,6 +10,7 @@ export type GradientBackgroundProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
   topPadding?: number;
+  backgroundCardTopOffset?: number;
 };
 
 export function GradientBackground({
@@ -18,6 +19,7 @@ export function GradientBackground({
   topPadding = 50,
   style,
   children,
+  backgroundCardTopOffset,
   ...otherProps
 }: GradientBackgroundProps) {
   const backgroundColor = useThemeColor(
@@ -29,7 +31,10 @@ export function GradientBackground({
     <View style={{ flex: 1 }}>
       {/* Background layers */}
       <GradientBackgroundWrapper colors={["#4599E8", "#583FE7"]} />
-      <BackgroundCard backgroundColor={backgroundColor} />
+      <BackgroundCard
+        backgroundColor={backgroundColor}
+        topOffset={backgroundCardTopOffset} // ✅ Pass it here
+      />
 
       {/* Foreground content */}
       <StyledView topPadding={topPadding} style={style} {...otherProps}>
