@@ -61,7 +61,7 @@ export default function HomeScreen() {
   }
 
   const [widgets, setWidgets] = useState<Widget[]>([]);
-  const [selectedTag, setSelectedTag] = useState("All");
+  const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -135,10 +135,16 @@ export default function HomeScreen() {
 
   const filteredWidgets = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
+
     return widgets.filter((widget) => {
       const matchesTag =
-        selectedTag === "All" || widget.tag.tag_label === selectedTag;
+        selectedTag === "All" ||
+        (widget.tag &&
+          selectedTag.tag_label !== "All" &&
+          widget.tag.tagID === selectedTag.tagID);
+
       const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
+
       return matchesTag && matchesTitle;
     });
   }, [widgets, selectedTag, searchQuery]);
@@ -179,7 +185,7 @@ export default function HomeScreen() {
               />
 
               <TagList
-                tags={["All", ...tags.map((tag) => tag.tag_label)]}
+                tags={tags}
                 onSelect={(tag) => setSelectedTag(tag)}
                 onPress={() => {
                   router.push("/tagManagement");
@@ -227,7 +233,7 @@ export default function HomeScreen() {
                 >
                   {selectedTag === "All" && !searchQuery
                     ? "No entries found."
-                    : `No entries for "${selectedTag !== "All" ? selectedTag : searchQuery}"`}
+                    : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
                 </ThemedText>
               )}
             </>
