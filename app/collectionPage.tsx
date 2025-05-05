@@ -19,6 +19,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
 import { getItemsByPageId } from "@/services/ItemService";
+import { te } from "date-fns/locale";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function CollectionScreen() {
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
   const [items, setItems] = useState<ItemsDTO>();
+  const [selectedList, setSelectedList] = useState("All");
 
   useEffect(() => {
     (async () => {
@@ -56,6 +58,7 @@ export default function CollectionScreen() {
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
+        {/* //Header with back button and title */}
         <CustomStyledHeader
           title={title || "Collection"} //Here should be the title of the collection
           backBehavior="goHome" // Go back to home when back button is pressed
@@ -72,7 +75,7 @@ export default function CollectionScreen() {
           {/* //Hardcoded data for testing purposes */}
           <CollectionList
             collectionLists={listNames}
-            onPress={() => console.log("Pressed!")}
+            onSelect={(collectionList) => setSelectedList(collectionList)}
           />
           {/* //Hardcoded data for testing purposes */}
           <ScrollView showsVerticalScrollIndicator={false}>
