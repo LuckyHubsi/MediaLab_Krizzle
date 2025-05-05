@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
         <ThemedText fontSize="l" fontWeight="semibold">
-          {title}
+          {title.length > 20 ? `${title.slice(0, 20)}...` : title}
         </ThemedText>
       </TouchableOpacity>
 

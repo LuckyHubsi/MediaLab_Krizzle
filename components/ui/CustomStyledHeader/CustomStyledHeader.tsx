@@ -59,7 +59,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
 
         <ThemedText fontSize="xl" fontWeight="semibold">
-          {title}
+          {title.length > 18 ? `${title.slice(0, 18)}...` : title}
         </ThemedText>
       </TouchableOpacity>
 

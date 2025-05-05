@@ -20,6 +20,7 @@ type Props = {
   iconRight?: React.ReactNode;
   color: ColorKey;
   pageType?: PageType;
+  hasTruncatedTitle?: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
 };
@@ -31,6 +32,7 @@ const Widget: React.FC<Props> = ({
   iconRight,
   color,
   pageType,
+  hasTruncatedTitle = false,
   onPress,
   onLongPress,
 }) => {
@@ -38,6 +40,7 @@ const Widget: React.FC<Props> = ({
   const columns = width >= 768 ? 3 : 2;
   const spacing = 19 * (columns + 1);
   const cardWidth = (width - spacing) / columns;
+  const truncatedTitle = title.length > 15 ? `${title.slice(0, 15)}...` : title;
 
   const background = Colors.widget[color];
   const isGradient = Array.isArray(background);
@@ -74,7 +77,7 @@ const Widget: React.FC<Props> = ({
             {iconRight && <Icon>{iconRight}</Icon>}
           </IconsContainer>
         )}
-        <Title>{title}</Title>
+        <Title>{hasTruncatedTitle ? truncatedTitle : title}</Title>
         <Tag>{label}</Tag>
       </CardWrapper>
     </TouchableOpacity>
