@@ -260,7 +260,6 @@ export default function HomeScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={widgetToDelete?.title}
-        typeToDelete="widget"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (widgetToDelete) {

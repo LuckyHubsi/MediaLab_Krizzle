@@ -95,7 +95,6 @@ export default function NotesScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={title}
-        typeToDelete="note"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (pageId) {

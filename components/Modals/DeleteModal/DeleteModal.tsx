@@ -15,7 +15,6 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 interface DeleteModalProps {
   visible: boolean;
   title?: string;
-  typeToDelete: string;
   onCancel: () => void;
   onConfirm: () => void;
   onclose: () => void;
