@@ -22,7 +22,7 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { ScreenType } from "@/utils/enums/ScreenType";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -109,7 +109,7 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await getAllGeneralPageData(ScreenType.Archive);
+          const data = await getAllGeneralPageData(GeneralPageState.Archived);
 
           const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
 

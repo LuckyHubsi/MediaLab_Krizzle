@@ -25,7 +25,7 @@ import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
-import { ScreenType } from "@/utils/enums/ScreenType";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -109,20 +109,24 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const fetchWidgets = async () => {
+      (async () => {
         try {
-          const data = await getAllGeneralPageData(ScreenType.Home);
+          const pinnedData = await getAllGeneralPageData(
+            GeneralPageState.Pinned,
+          );
+          const pinnedEnrichedWidgets: Widget[] =
+            mapToEnrichedWidgets(pinnedData);
+          setPinnedWidgets(pinnedEnrichedWidgets);
 
+          const data = await getAllGeneralPageData(GeneralPageState.General);
           const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
-
           setWidgets(enrichedWidgets);
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
-      };
+      })();
 
       setShouldReload(false);
-      fetchWidgets();
     }, [shouldReload]),
   );
 

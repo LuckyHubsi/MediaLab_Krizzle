@@ -8,6 +8,7 @@ import {
   updateDateModifiedByPageIDQuery,
   updateArchivedByPageIDQuery,
   selectAllArchivedPageQuery,
+  selectAllPinnedPageQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -17,7 +18,7 @@ import {
   executeTransaction,
   getLastInsertId,
 } from "@/utils/QueryHelper";
-import { ScreenType } from "@/utils/enums/ScreenType";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
 import * as SQLite from "expo-sqlite";
 
@@ -29,18 +30,21 @@ import * as SQLite from "expo-sqlite";
  * @throws {DatabaseError} If the fetch fails.
  */
 const getAllGeneralPageData = async (
-  screenType: ScreenType,
+  pageState: GeneralPageState,
   txn?: SQLite.SQLiteDatabase,
 ): Promise<GeneralPageDTO[]> => {
   try {
     let queryString = "";
 
-    switch (screenType) {
-      case ScreenType.Home:
+    switch (pageState) {
+      case GeneralPageState.General:
         queryString = selectAllGeneralPageQuery;
         break;
-      case ScreenType.Archive:
+      case GeneralPageState.Archived:
         queryString = selectAllArchivedPageQuery;
+        break;
+      case GeneralPageState.Pinned:
+        queryString = selectAllPinnedPageQuery;
         break;
       default:
         break;

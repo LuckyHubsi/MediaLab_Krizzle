@@ -15,7 +15,7 @@ import {
 } from "../GeneralPageService";
 import { DatabaseError } from "@/utils/DatabaseError";
 import * as SQLite from "expo-sqlite";
-import { ScreenType } from "@/utils/enums/ScreenType";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
 // mock the QueryHelper functions
 jest.mock("@/utils/QueryHelper", () => ({
@@ -86,7 +86,7 @@ describe("GeneralPageService", () => {
         mockGeneralPageDTO,
       );
 
-      const result = await getAllGeneralPageData(ScreenType.Home);
+      const result = await getAllGeneralPageData(GeneralPageState.General);
 
       expect(result).toEqual([mockGeneralPageDTO]);
       expect(mockFetchAll).toHaveBeenCalled();
@@ -106,9 +106,9 @@ describe("GeneralPageService", () => {
     it("should throw DatabaseError if fetchAll fails", async () => {
       mockFetchAll.mockRejectedValue(new Error("Database error"));
 
-      await expect(getAllGeneralPageData(ScreenType.Home)).rejects.toThrow(
-        DatabaseError,
-      );
+      await expect(
+        getAllGeneralPageData(GeneralPageState.General),
+      ).rejects.toThrow(DatabaseError);
     });
   });
 
