@@ -65,7 +65,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
+  const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
   const [tags, setTags] = useState<TagDTO[]>([]);
 
   const getColorKeyFromValue = (
@@ -218,7 +218,7 @@ export default function HomeScreen() {
                           goToPage(item);
                         }}
                         onLongPress={() => {
-                          setWidgetToDelete(item);
+                          setSelectedWidget(item);
                           setShowModal(true);
                         }}
                       />
@@ -259,12 +259,12 @@ export default function HomeScreen() {
       />
       <DeleteModal
         visible={showDeleteModal}
-        title={widgetToDelete?.title}
+        title={selectedWidget?.title}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (widgetToDelete) {
+          if (selectedWidget) {
             try {
-              const widgetIdAsNumber = Number(widgetToDelete.id);
+              const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
@@ -272,7 +272,7 @@ export default function HomeScreen() {
               const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
               setWidgets(enrichedWidgets);
 
-              setWidgetToDelete(null);
+              setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {
               console.error("Error deleting page:", error);
