@@ -4,6 +4,7 @@ import {
   selectAllGeneralPageQuery,
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
+  selectGeneralPageByIdQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -35,6 +36,30 @@ const getAllGeneralPageData = async (
     return rawData.map(GeneralPageMapper.toDTO);
   } catch (error) {
     throw new DatabaseError("Error retrieving all pages.");
+  }
+};
+
+/**
+ * Retrieves general page data from the database by ID.
+ *
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
+ */
+const getGeneralPageByID = async (
+  pageID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<GeneralPageDTO | null> => {
+  try {
+    const generalPageData = await fetchFirst<GeneralPageModel>(
+      selectGeneralPageByIdQuery,
+      [pageID],
+      txn,
+    );
+
+    if (!generalPageData) return null;
+    return GeneralPageMapper.toDTO(generalPageData);
+  } catch (error) {
+    throw new DatabaseError("Error retrieving page by ID.");
   }
 };
 
@@ -101,6 +126,7 @@ const deleteGeneralPage = async (
 
 export {
   getAllGeneralPageData,
+  getGeneralPageByID,
   insertGeneralPageAndReturnID,
   deleteGeneralPage,
 };
