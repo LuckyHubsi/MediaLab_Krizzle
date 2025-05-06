@@ -58,7 +58,7 @@ export default function ArchiveScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [widgetToDelete, setWidgetToDelete] = useState<ArchivedWidget | null>(
+  const [selectedWidget, setSelectedWidget] = useState<ArchivedWidget | null>(
     null,
   );
 
@@ -188,7 +188,7 @@ export default function ArchiveScreen() {
                           goToPage(item);
                         }}
                         onLongPress={() => {
-                          setWidgetToDelete(item);
+                          setSelectedWidget(item);
                           setShowModal(true);
                         }}
                       />
@@ -228,13 +228,13 @@ export default function ArchiveScreen() {
       />
       <DeleteModal
         visible={showDeleteModal}
-        title={widgetToDelete?.title}
+        title={selectedWidget?.title}
         typeToDelete="widget"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (widgetToDelete) {
+          if (selectedWidget) {
             try {
-              const widgetIdAsNumber = Number(widgetToDelete.id);
+              const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
@@ -243,7 +243,7 @@ export default function ArchiveScreen() {
                 mapToEnrichedWidgets(data);
               setWidgets(enrichedWidgets);
 
-              setWidgetToDelete(null);
+              setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {
               console.error("Error deleting page:", error);
