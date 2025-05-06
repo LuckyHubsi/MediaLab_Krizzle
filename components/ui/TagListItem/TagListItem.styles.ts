@@ -7,6 +7,13 @@ export const Row = styled.View`
   padding: 10px 0;
 `;
 
+export const Column = styled.View`
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 10px 0;
+`;
+
 export const IconRow = styled.View`
   flex-direction: row;
   align-items: center;
