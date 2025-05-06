@@ -33,6 +33,7 @@ interface ItemTemplateCardProps {
   onPreviewToggle?: () => void;
   hasNoInputError?: boolean;
   hasNoMultiSelectableError?: boolean;
+  previewCount?: number;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -51,6 +52,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onPreviewToggle,
   hasNoInputError,
   hasNoMultiSelectableError,
+  previewCount,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -73,7 +75,17 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardTitle>
         <CardPreview onPress={onPreviewToggle}>
-          <ThemedText>Item Preview</ThemedText>
+          <ThemedText
+            colorVariant={
+              isPreview
+                ? "default"
+                : previewCount && previewCount > 2
+                  ? "grey"
+                  : "default"
+            }
+          >
+            Item Preview
+          </ThemedText>
           {isPreview ? (
             <MaterialIcons
               name="check-circle"
@@ -83,7 +95,13 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           ) : (
             <MaterialIcons
               name="radio-button-off"
-              color={Colors[colorScheme ?? "light"].text}
+              color={
+                isPreview
+                  ? Colors[colorScheme ?? "light"].text
+                  : previewCount && previewCount > 2
+                    ? Colors.grey50
+                    : "#000000"
+              }
               size={20}
             />
           )}

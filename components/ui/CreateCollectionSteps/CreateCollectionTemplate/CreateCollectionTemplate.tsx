@@ -282,6 +282,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 card.options.length === 0 ||
                 card.options.some((o) => o.trim() === ""))
             }
+            previewCount={previewCount}
           />
         ))}
 
