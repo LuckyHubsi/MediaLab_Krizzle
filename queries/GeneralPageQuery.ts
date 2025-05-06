@@ -8,6 +8,7 @@ const selectAllGeneralPageQuery: string = `
 
 const selectGeneralPageByIdQuery: string = `
     SELECT p.*, t.tag_label
+    FROM general_page_data p
     LEFT JOIN tag t ON p.tagID = t.tagID
     WHERE p.pageID = ?
 `;
