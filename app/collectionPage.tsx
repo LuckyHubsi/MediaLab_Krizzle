@@ -40,6 +40,7 @@ export default function CollectionScreen() {
   const [items, setItems] = useState<ItemsDTO>();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [shouldReload, setShouldReload] = useState<boolean>();
 
   useEffect(() => {
     (async () => {
@@ -59,8 +60,9 @@ export default function CollectionScreen() {
         const items: ItemsDTO = await getItemsByPageId(numericID);
         if (items) setItems(items);
       }
+      setShouldReload(false);
     })();
-  }, [pageId]);
+  }, [pageId, shouldReload]);
 
   return (
     <>
@@ -133,13 +135,17 @@ export default function CollectionScreen() {
             icon: "push-pin",
             onPress: async () => {
               if (
-                (collection && !collection.pinned) ||
+                (collection &&
+                  !collection.pinned &&
+                  collection.pin_count != null &&
+                  collection.pin_count < 4) ||
                 (collection && collection?.pinned)
               ) {
                 const success = await togglePagePin(
-                  Number(collection.collectionID),
+                  Number(collection.pageID),
                   collection.pinned,
                 );
+                setShouldReload(success);
               }
             },
           },

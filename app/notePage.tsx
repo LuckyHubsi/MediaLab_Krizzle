@@ -31,6 +31,7 @@ export default function NotesScreen() {
   const colorScheme = useColorScheme();
   const [showModal, setShowModal] = useState(false);
   const [noteData, setNoteData] = useState<NoteDTO | null>();
+  const [shouldReload, setShouldReload] = useState<boolean>();
 
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
@@ -49,12 +50,13 @@ export default function NotesScreen() {
           }
           setNoteContent(noteContent);
           setNoteData(noteDataByID);
+          setShouldReload(false);
         })();
       } else {
         console.error("Error fetching note data");
       }
     }
-  }, [pageId, colorScheme]);
+  }, [pageId, shouldReload, colorScheme]);
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
@@ -111,13 +113,17 @@ export default function NotesScreen() {
             icon: "push-pin",
             onPress: async () => {
               if (
-                (noteData && !noteData.pinned) ||
+                (noteData &&
+                  !noteData.pinned &&
+                  noteData.pin_count != null &&
+                  noteData.pin_count < 4) ||
                 (noteData && noteData?.pinned)
               ) {
                 const success = await togglePagePin(
-                  Number(noteData.noteID),
+                  Number(pageId),
                   noteData.pinned,
                 );
+                setShouldReload(success);
               }
             },
           },
