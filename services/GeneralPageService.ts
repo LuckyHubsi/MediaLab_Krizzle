@@ -5,6 +5,8 @@ import {
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
   selectGeneralPageByIdQuery,
+  updateDateModifiedByPageIDQuery,
+  updatePageByIDQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -105,6 +107,51 @@ const insertGeneralPageAndReturnID = async (
 };
 
 /**
+ * Updates the content of a page and updates the corresponding page's `date_modified` timestamp.
+ *
+ * @param pageID - The unique identifier of the page to update.
+ * @param newPageTitle - The new title to save for the page.
+ * @param newPageIcon - The new icon to save for the page.
+ * @param newPageColor - The new color to save for the page.
+ * @param newTagID - The new tagID to save for the page.
+ * @returns A Promise that resolves to `true` if the update was successful, or `false` if an error occurred.
+ */
+const updateGeneralPageData = async (
+  pageID: number,
+  newPageTitle: string,
+  newPageIcon: string,
+  newPageColor: string,
+  newTagID: number | null,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    if (!pageID) {
+      console.error("Page not found for the given ID.");
+      return false;
+    }
+
+    // update the page content
+    await executeQuery(
+      updatePageByIDQuery,
+      [newPageTitle, newPageIcon, newPageColor, newTagID, pageID],
+      txn,
+    );
+
+    // update the date_modified for the general page data
+    await executeQuery(
+      updateDateModifiedByPageIDQuery,
+      [new Date().toISOString(), pageID],
+      txn,
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error updating page content:", error);
+    return false;
+  }
+};
+
+/**
  * Deletes a page based on its ID from DB.
  *
  * @param {pageID} number - The pageID of the page to be deleted.
@@ -128,5 +175,6 @@ export {
   getAllGeneralPageData,
   getGeneralPageByID,
   insertGeneralPageAndReturnID,
+  updateGeneralPageData,
   deleteGeneralPage,
 };
