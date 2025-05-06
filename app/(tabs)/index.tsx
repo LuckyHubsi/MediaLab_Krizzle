@@ -260,7 +260,12 @@ export default function HomeScreen() {
             label: selectedWidget?.pinned ? "Unpin item" : "Pin item",
             icon: "push-pin",
             onPress: async () => {
-              if (selectedWidget) {
+              if (
+                (selectedWidget &&
+                  !selectedWidget.pinned &&
+                  pinnedWidgets.length < 4) ||
+                (selectedWidget && selectedWidget?.pinned)
+              ) {
                 const success = await togglePagePin(
                   Number(selectedWidget.id),
                   selectedWidget.pinned,
