@@ -151,14 +151,15 @@ export default function CollectionScreen() {
           },
           { label: "Edit", icon: "edit", onPress: () => {} },
           {
-            label: "Archive",
-            icon: "archive",
+            label: collection?.archived ? "Restore" : "Archive",
+            icon: collection?.archived ? "restore" : "archive",
             onPress: async () => {
               if (collection) {
                 const success = await togglePageArchive(
-                  Number(collection.collectionID),
+                  Number(pageId),
                   collection.archived,
                 );
+                setShouldReload(success);
               }
             },
           },

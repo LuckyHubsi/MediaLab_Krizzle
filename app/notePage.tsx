@@ -129,14 +129,15 @@ export default function NotesScreen() {
           },
           { label: "Edit", icon: "edit", onPress: () => {} },
           {
-            label: "Archive",
-            icon: "archive",
+            label: noteData?.archived ? "Restore" : "Archive",
+            icon: noteData?.archived ? "restore" : "archive",
             onPress: async () => {
               if (noteData) {
                 const success = await togglePageArchive(
-                  Number(noteData.noteID),
+                  Number(pageId),
                   noteData.archived,
                 );
+                setShouldReload(success);
               }
             },
           },
