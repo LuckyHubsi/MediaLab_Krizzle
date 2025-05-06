@@ -91,7 +91,8 @@ export default function HomeScreen() {
         id: String(widget.pageID),
         title: widget.page_title,
         tag: widget.tag || { tag_label: "Uncategorized" },
-        color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
+        color:
+          getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
         page_type: widget.page_type,
         iconLeft: widget.page_icon
           ? getMaterialIcon(widget.page_icon)

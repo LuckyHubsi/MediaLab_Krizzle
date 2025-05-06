@@ -157,7 +157,7 @@ export default function CreateNoteScreen() {
                   color={
                     (getWidgetColorKey(
                       selectedColor,
-                    ) as keyof typeof Colors.widget) || "blue"
+                    ) as keyof typeof Colors.widget) || "#4599E8"
                   }
                 />
               </View>
