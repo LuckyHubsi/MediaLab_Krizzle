@@ -1,5 +1,10 @@
 import { TagDTO } from "@/dto/TagDTO";
-import { NewTag, Tag, tagSchema } from "@/backend/domain/entity/Tag";
+import {
+  createNewTagSchema,
+  NewTag,
+  Tag,
+  tagSchema,
+} from "@/backend/domain/entity/Tag";
 import { TagModel } from "@/backend/repository/model/TagModel";
 import { z } from "zod";
 
@@ -20,14 +25,9 @@ export class TagMapper {
 
   static toNewEntity(dto: TagDTO): NewTag {
     try {
-      const parsedDTO = z
-        .object({
-          tagLabel: z.string().min(1).max(30),
-        })
-        .parse({ tagLabel: dto.tag_label });
-      return {
-        tagLabel: parsedDTO.tagLabel,
-      };
+      return createNewTagSchema.parse({
+        tagLabel: dto.tag_label,
+      });
     } catch (error: any) {
       console.error("Error mapping TagDTO to New Entity:", error.issues);
       throw new Error("Failed to map TagDTO to New Entity");
