@@ -1,18 +1,18 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 
-type ThemeProps = {
+type ColorSchemeProps = {
   colorScheme: "light" | "dark";
 };
 
 export const Overlay = styled.View`
   flex: 1;
+  background-color: rgba(0, 0, 0, 0.2);
   justify-content: flex-end;
-  background-color: rgba(0, 0, 0, 0.5);
 `;
 
-export const BottomSheet = styled.View<ThemeProps>`
-  background-color: ${({ colorScheme }: ThemeProps) =>
+export const BottomSheet = styled.View<ColorSchemeProps>`
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].background};
   padding: 20px;
   padding-top: 15px;
@@ -36,10 +36,10 @@ export const OptionsRow = styled.View`
   gap: 16px;
 `;
 
-export const OptionButton = styled.TouchableOpacity<ThemeProps>`
+export const OptionButton = styled.TouchableOpacity<ColorSchemeProps>`
   flex: 1;
   padding: 20px;
-  background-color: ${({ colorScheme }: ThemeProps) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#F1F1F1" : "#2D2D2D"};
   border-radius: 33px;
   align-items: center;

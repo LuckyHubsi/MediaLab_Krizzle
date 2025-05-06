@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
 import { FC } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import {
   MultiSelectContainer,

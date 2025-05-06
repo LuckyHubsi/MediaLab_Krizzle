@@ -8,8 +8,9 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import Textfield from "@/components/ui/Textfield/Textfield";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface AddMultiSelectablesProps {
   title: string;
@@ -22,7 +23,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   options,
   onOptionsChange,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   const handleAddButtonClick = () => {
     onOptionsChange([...options, ""]);

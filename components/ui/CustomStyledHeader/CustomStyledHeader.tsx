@@ -1,6 +1,5 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   StyledHeader,
   BackIcon,
@@ -10,6 +9,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { useNavigation, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface HeaderProps {
   title: string;
@@ -31,7 +31,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   otherBackBehavior,
 }) => {
   const router = useRouter();
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const navigation = useNavigation();
 
   const handleBackPress = () => {

@@ -1,11 +1,11 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useNavigation } from "expo-router";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyledHeader, BackIcon } from "./Header.styles";
 //import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface HeaderProps {
   title: string;
@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onIconPress,
 }) => {
   const navigation = useNavigation();
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   const color = colorScheme === "dark" ? "#fff" : "#000";
 

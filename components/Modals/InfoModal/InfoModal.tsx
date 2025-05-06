@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Modal, TouchableWithoutFeedback } from "react-native";
 import {
   PopupBackdrop,
   PopupContainer,
@@ -13,10 +8,9 @@ import {
   CTAButton,
   CTAButtonText,
 } from "./InfoModal.styles";
-import { useColorScheme } from "react-native";
-import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface InfoPopupProps {
   visible: boolean;
@@ -37,7 +31,7 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
   ctaText = "Got it",
   onConfirm,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   return (
     <Modal visible={visible} transparent animationType="fade">

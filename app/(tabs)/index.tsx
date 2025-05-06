@@ -22,6 +22,8 @@ import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -59,7 +61,9 @@ export default function HomeScreen() {
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const getColorKeyFromValue = (
     value: string,
@@ -153,7 +157,12 @@ export default function HomeScreen() {
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome />
+            <EmptyHome
+              text="Add your first note/collection"
+              buttonLabel="Start"
+              useModal={false}
+              onButtonPress={() => setModalVisible(true)}
+            />
           ) : (
             <>
               {/* <Button onPress={resetDatabase}>reset all</Button> */}
@@ -194,7 +203,7 @@ export default function HomeScreen() {
                         }}
                         onLongPress={() => {
                           setWidgetToDelete(item);
-                          setShowDeleteModal(true);
+                          setShowModal(true);
                         }}
                       />
                     )}
@@ -215,6 +224,27 @@ export default function HomeScreen() {
           )}
         </ThemedView>
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          { label: "Pin item", icon: "push-pin", onPress: () => {} },
+          { label: "Edit", icon: "edit", onPress: () => {} },
+          { label: "Archive", icon: "archive", onPress: () => {} },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
       <DeleteModal
         visible={showDeleteModal}
         title={widgetToDelete?.title}

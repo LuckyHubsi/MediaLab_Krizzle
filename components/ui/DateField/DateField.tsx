@@ -9,7 +9,7 @@ import {
   StyledPressable,
 } from "./DateField.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface DateFieldProps {
   title?: string;
@@ -34,7 +34,7 @@ const DateField: FC<DateFieldProps> = ({
     hideDatePicker();
   };
 
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   return (
     <DateFieldContainer>
