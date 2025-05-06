@@ -54,6 +54,7 @@ export default function ArchiveScreen() {
     [key: string]: any;
   }
 
+  const [shouldReload, setShouldReload] = useState<boolean>(false);
   const [widgets, setWidgets] = useState<ArchivedWidget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -114,8 +115,9 @@ export default function ArchiveScreen() {
         }
       };
 
+      setShouldReload(false);
       fetchWidgets();
-    }, []),
+    }, [shouldReload]),
   );
 
   const filteredWidgets = useMemo(() => {
@@ -238,10 +240,7 @@ export default function ArchiveScreen() {
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
-              const data = await getAllGeneralPageData();
-              const enrichedWidgets: ArchivedWidget[] =
-                mapToEnrichedWidgets(data);
-              setWidgets(enrichedWidgets);
+              setShouldReload(successfullyDeleted);
 
               setSelectedWidget(null);
               setShowDeleteModal(false);

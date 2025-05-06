@@ -57,6 +57,7 @@ export default function HomeScreen() {
     [key: string]: any;
   }
 
+  const [shouldReload, setShouldReload] = useState<boolean>(false);
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,8 +117,9 @@ export default function HomeScreen() {
         }
       };
 
+      setShouldReload(false);
       fetchWidgets();
-    }, []),
+    }, [shouldReload]),
   );
 
   const filteredWidgets = useMemo(() => {
@@ -257,9 +259,7 @@ export default function HomeScreen() {
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
-              const data = await getAllGeneralPageData();
-              const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
-              setWidgets(enrichedWidgets);
+              setShouldReload(successfullyDeleted);
 
               setSelectedWidget(null);
               setShowDeleteModal(false);
