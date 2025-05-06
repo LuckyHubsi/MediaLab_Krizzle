@@ -122,11 +122,10 @@ export default function TagManagementScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <CustomStyledHeader title="Tags management" />
       <ThemedView style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <CustomStyledHeader title="Tags management" />
-
-          <View style={{ flex: 1, marginTop: 20 }}>
+          <View style={{ flex: 1 }}>
             <FlatList
               data={tags}
               keyExtractor={(item) => item.tagID?.toString() || ""}
