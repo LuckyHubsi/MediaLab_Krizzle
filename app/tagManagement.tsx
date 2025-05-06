@@ -28,6 +28,7 @@ import {
 } from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
+import { resetDatabase } from "@/utils/DatabaseReset";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -42,7 +43,18 @@ export default function TagManagementScreen() {
 
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
+
     if (!trimmedTag) return;
+
+    if (!editMode && tags.length >= 100) {
+      alert("You can only have up to 100 tags.");
+      return;
+    }
+
+    if (trimmedTag.length > 30) {
+      alert("Tag name must be 30 characters or less.");
+      return;
+    }
 
     const isDuplicate = tags.some(
       (tag) =>
@@ -154,8 +166,8 @@ export default function TagManagementScreen() {
             )}
           />
         </View>
-
         <View>
+          <Button onPress={resetDatabase}>reset DB</Button>
           <Button onPress={() => setModalVisible(true)}>
             <ThemedText colorVariant="white">Add</ThemedText>
           </Button>
@@ -180,9 +192,9 @@ export default function TagManagementScreen() {
             style={{
               flex: 1,
               backgroundColor: "rgba(0,0,0,0.5)",
-              justifyContent: "flex-end", // 👈 Changed from "center"
+              justifyContent: "flex-end",
               alignItems: "center",
-              padding: 20, // 👈 Optional padding for aesthetics
+              padding: 20,
             }}
           >
             <TouchableWithoutFeedback>

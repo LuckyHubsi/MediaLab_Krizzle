@@ -8,10 +8,12 @@ export const Row = styled.View`
 `;
 
 export const Column = styled.View`
+  flex: 1;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   padding: 10px 0;
+  padding-right: 12px;
 `;
 
 export const IconRow = styled.View`

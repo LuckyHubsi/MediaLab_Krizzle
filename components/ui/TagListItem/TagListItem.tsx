@@ -23,7 +23,14 @@ export const TagListItem: React.FC<Props> = ({
   return (
     <Row>
       <Column>
-        <ThemedText>{tag}</ThemedText>
+        <ThemedText
+          style={{
+            flexWrap: "wrap",
+            flexShrink: 1,
+          }}
+        >
+          {tag}
+        </ThemedText>
         {tagCount !== undefined && tagCount > 0 ? (
           <ThemedText
             fontSize="s"
