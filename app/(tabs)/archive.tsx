@@ -14,6 +14,7 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import {
   deleteGeneralPage,
   getAllGeneralPageData,
+  togglePageArchive,
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -52,6 +53,7 @@ export default function ArchiveScreen() {
     page_icon?: string;
     page_type: PageType;
     color?: string;
+    archived: boolean;
     [key: string]: any;
   }
 
@@ -97,6 +99,7 @@ export default function ArchiveScreen() {
         iconRight: widget.page_type
           ? getIconForPageType(widget.page_type)
           : undefined,
+        archived: widget.archived,
       }));
       return enrichedWidgets;
     }
@@ -218,7 +221,19 @@ export default function ArchiveScreen() {
         onClose={() => setShowModal(false)}
         items={[
           { label: "Edit", icon: "edit", onPress: () => {} },
-          { label: "Restore", icon: "restore", onPress: () => {} },
+          {
+            label: "Restore",
+            icon: "restore",
+            onPress: async () => {
+              if (selectedWidget) {
+                const success = await togglePageArchive(
+                  Number(selectedWidget.id),
+                  selectedWidget.archived,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
           {
             label: "Delete",
             icon: "delete",

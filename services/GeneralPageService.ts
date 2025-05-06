@@ -178,7 +178,7 @@ const togglePageArchive = async (
         transaction || txn,
       );
 
-      updateDateModified;
+      updateDateModified(pageID);
 
       return true;
     });

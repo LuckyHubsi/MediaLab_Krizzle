@@ -16,6 +16,7 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import {
   deleteGeneralPage,
   getAllGeneralPageData,
+  togglePageArchive,
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -55,6 +56,7 @@ export default function HomeScreen() {
     page_icon?: string;
     page_type: PageType;
     color?: string;
+    archived: boolean;
     [key: string]: any;
   }
 
@@ -98,6 +100,7 @@ export default function HomeScreen() {
         iconRight: widget.page_type
           ? getIconForPageType(widget.page_type)
           : undefined,
+        archived: widget.archived,
       }));
 
       return enrichedWidgets;
