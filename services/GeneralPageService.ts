@@ -134,7 +134,6 @@ const togglePagePin = async (
   try {
     return await executeTransaction<boolean>(async (transaction) => {
       const newPinStatus = currentPinStatus ? 0 : 1;
-      const currentDate = new Date().toISOString();
 
       // Update pinned status
       await executeQuery(
@@ -143,7 +142,7 @@ const togglePagePin = async (
         transaction || txn,
       );
 
-      updateDateModified;
+      updateDateModified(pageID);
 
       return true;
     });
