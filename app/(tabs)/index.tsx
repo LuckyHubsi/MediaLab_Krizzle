@@ -24,6 +24,7 @@ import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
+import { ScreenType } from "@/utils/enums/ScreenType";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -107,7 +108,7 @@ export default function HomeScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await getAllGeneralPageData();
+          const data = await getAllGeneralPageData(ScreenType.Home);
 
           const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
 
@@ -232,7 +233,19 @@ export default function HomeScreen() {
         items={[
           { label: "Pin item", icon: "push-pin", onPress: () => {} },
           { label: "Edit", icon: "edit", onPress: () => {} },
-          { label: "Archive", icon: "archive", onPress: () => {} },
+          {
+            label: "Archive",
+            icon: "archive",
+            onPress: async () => {
+              if (selectedWidget) {
+                const success = await togglePageArchive(
+                  Number(selectedWidget.id),
+                  selectedWidget.archived,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
           {
             label: "Delete",
             icon: "delete",

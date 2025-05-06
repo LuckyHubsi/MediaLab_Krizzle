@@ -7,6 +7,7 @@ import {
   updatePinnedByPageIDQuery,
   updateDateModifiedByPageIDQuery,
   updateArchivedByPageIDQuery,
+  selectAllArchivedPageQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -16,6 +17,7 @@ import {
   executeTransaction,
   getLastInsertId,
 } from "@/utils/QueryHelper";
+import { ScreenType } from "@/utils/enums/ScreenType";
 import { GeneralPageMapper } from "@/utils/mapper/GeneralPageMapper";
 import * as SQLite from "expo-sqlite";
 
@@ -27,14 +29,23 @@ import * as SQLite from "expo-sqlite";
  * @throws {DatabaseError} If the fetch fails.
  */
 const getAllGeneralPageData = async (
+  screenType: ScreenType,
   txn?: SQLite.SQLiteDatabase,
 ): Promise<GeneralPageDTO[]> => {
   try {
-    const rawData = await fetchAll<GeneralPageModel>(
-      selectAllGeneralPageQuery,
-      [],
-      txn,
-    );
+    let queryString = "";
+
+    switch (screenType) {
+      case ScreenType.Home:
+        queryString = selectAllGeneralPageQuery;
+        break;
+      case ScreenType.Archive:
+        queryString = selectAllArchivedPageQuery;
+        break;
+      default:
+        break;
+    }
+    const rawData = await fetchAll<GeneralPageModel>(queryString, [], txn);
     return rawData.map(GeneralPageMapper.toDTO);
   } catch (error) {
     throw new DatabaseError("Error retrieving all pages.");
