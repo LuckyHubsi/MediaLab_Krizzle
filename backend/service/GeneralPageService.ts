@@ -21,8 +21,8 @@ export class GeneralPageService {
 
   async deletePage(pageId: number): Promise<boolean> {
     try {
-      const barndedPageID = pageID.parse(pageId);
-      await this.generalPageRepo.deletePage(barndedPageID);
+      const brandedPageID = pageID.parse(pageId);
+      await this.generalPageRepo.deletePage(brandedPageID);
       return true;
     } catch (error) {
       throw new ServiceError("Error deleting page.");
