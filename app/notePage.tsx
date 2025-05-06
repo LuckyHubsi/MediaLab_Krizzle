@@ -10,9 +10,15 @@ import { NoteDTO } from "@/dto/NoteDTO";
 import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import { deleteGeneralPage } from "@/services/GeneralPageService";
+import {
+  deleteGeneralPage,
+  togglePageArchive,
+  togglePagePin,
+} from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { set } from "date-fns";
 
 export default function NotesScreen() {
   const { pageId, title } = useLocalSearchParams<{
@@ -23,6 +29,8 @@ export default function NotesScreen() {
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
   const colorScheme = useColorScheme();
+  const [showModal, setShowModal] = useState(false);
+  const [noteData, setNoteData] = useState<NoteDTO | null>();
 
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
@@ -33,12 +41,14 @@ export default function NotesScreen() {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
-          let noteContent = noteData?.note_content;
+          const noteDataByID: NoteDTO | null =
+            await getNoteDataByPageID(numericID);
+          let noteContent = noteDataByID?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
           setNoteContent(noteContent);
+          setNoteData(noteDataByID);
         })();
       } else {
         console.error("Error fetching note data");
@@ -79,7 +89,7 @@ export default function NotesScreen() {
           title={title || "Note"}
           iconName="more-horiz"
           backBehavior="goHome"
-          onIconPress={() => setShowDeleteModal(true)}
+          onIconPress={() => setShowModal(true)}
           otherBackBehavior={() =>
             debouncedSave.flush(latestNoteContentRef.current)
           }
@@ -92,6 +102,48 @@ export default function NotesScreen() {
           }}
         />
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          {
+            label: noteData?.pinned ? "Unpin item" : "Pin item",
+            icon: "push-pin",
+            onPress: async () => {
+              if (
+                (noteData && !noteData.pinned) ||
+                (noteData && noteData?.pinned)
+              ) {
+                const success = await togglePagePin(
+                  Number(noteData.noteID),
+                  noteData.pinned,
+                );
+              }
+            },
+          },
+          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Archive",
+            icon: "archive",
+            onPress: async () => {
+              if (noteData) {
+                const success = await togglePageArchive(
+                  Number(noteData.noteID),
+                  noteData.archived,
+                );
+              }
+            },
+          },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
       <DeleteModal
         visible={showDeleteModal}
         title={title}
