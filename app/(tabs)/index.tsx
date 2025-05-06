@@ -189,7 +189,6 @@ export default function HomeScreen() {
                         iconRight={item.iconRight}
                         color={item.color as keyof typeof Colors.widget}
                         pageType={item.page_type}
-                        hasTruncatedTitle={true}
                         onPress={() => {
                           goToPage(item);
                         }}

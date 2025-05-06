@@ -31,3 +31,7 @@ export const IconContainer = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
+export const TitleContainer = styled.View`
+  max-width: 80%;
+`;
