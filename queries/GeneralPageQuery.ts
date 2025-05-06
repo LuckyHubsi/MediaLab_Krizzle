@@ -2,7 +2,7 @@ const selectAllGeneralPageQuery: string = `
     SELECT p.*, t.tag_label
     FROM general_page_data p
     LEFT JOIN tag t ON p.tagID = t.tagID
-    WHERE p.archived = 0
+    WHERE p.archived = 0 AND p.pinned = 0
     ORDER BY p.date_modified DESC;
 `;
 
@@ -11,6 +11,14 @@ const selectAllArchivedPageQuery: string = `
     FROM general_page_data p
     LEFT JOIN tag t ON p.tagID = t.tagID
     WHERE p.archived = 1
+    ORDER BY p.date_modified DESC;
+`;
+
+const selectAllPinnedPageQuery: string = `
+    SELECT p.*, t.tag_label
+    FROM general_page_data p
+    LEFT JOIN tag t ON p.tagID = t.tagID
+    WHERE p.pinned = 1
     ORDER BY p.date_modified DESC;
 `;
 
@@ -50,4 +58,5 @@ export {
   updateArchivedByPageIDQuery,
   deleteGeneralPageByIDQuery,
   selectAllArchivedPageQuery,
+  selectAllPinnedPageQuery,
 };
