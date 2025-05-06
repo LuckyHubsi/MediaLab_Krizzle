@@ -24,6 +24,7 @@ import {
   insertTag,
   updateTag,
 } from "@/services/TagService";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -33,6 +34,8 @@ export default function TagManagementScreen() {
   const [editMode, setEditMode] = useState(false);
   const [editingTag, setEditingTag] = useState<TagDTO | null>(null);
   const [shouldRefetch, setShouldRefetch] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [tagtoDelete, setTagToDelete] = useState<TagDTO | null>(null);
 
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
@@ -132,7 +135,10 @@ export default function TagManagementScreen() {
               renderItem={({ item }) => (
                 <TagListItem
                   tag={item.tag_label}
-                  onDelete={() => deleteTag(item.tagID || 0)}
+                  onDelete={() => {
+                    setTagToDelete(item);
+                    setShowDeleteModal(true);
+                  }}
                   onEdit={() => editTag(item)}
                   tagCount={item.usage_count}
                 />
@@ -207,6 +213,26 @@ export default function TagManagementScreen() {
           </TouchableOpacity>
         </Modal>
       </ThemedView>
+      <DeleteModal
+        visible={showDeleteModal}
+        title={tagtoDelete?.tag_label}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          if (tagtoDelete) {
+            try {
+              if (tagtoDelete?.tagID !== undefined) {
+                await deleteTag(tagtoDelete.tagID);
+              }
+
+              setTagToDelete(null);
+              setShowDeleteModal(false);
+            } catch (error) {
+              console.error("Error deleting tag:", error);
+            }
+          }
+        }}
+        onclose={() => setShowDeleteModal(false)}
+      />
     </SafeAreaView>
   );
 }
