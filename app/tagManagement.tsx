@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -158,59 +160,65 @@ export default function TagManagementScreen() {
           transparent
           onRequestClose={() => setModalVisible(false)}
         >
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => {
-              Keyboard.dismiss();
-              setModalVisible(false);
-            }}
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 150,
-            }}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
           >
-            <TouchableWithoutFeedback>
-              <View
-                style={{
-                  width: "85%",
-                  height: 58,
-                  backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
-                  borderRadius: 33,
-                  paddingHorizontal: 20,
-                  paddingVertical: 4,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
-                <TextInput
-                  placeholder="New tag name"
-                  placeholderTextColor="#999"
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {
+                Keyboard.dismiss();
+                setModalVisible(false);
+              }}
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                justifyContent: "flex-end", // 👈 Changed from "center"
+                alignItems: "center",
+                padding: 20, // 👈 Optional padding for aesthetics
+              }}
+            >
+              <TouchableWithoutFeedback>
+                <View
                   style={{
-                    flex: 1,
-                    borderColor: "#ccc",
-                    color: colorScheme === "light" ? "#000" : "#fff",
-                    paddingVertical: 8,
-                    fontSize: 16,
+                    width: "100%",
+                    maxWidth: 500,
+                    backgroundColor:
+                      colorScheme === "light" ? "#fff" : "#3D3D3D",
+                    borderRadius: 33,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
                   }}
-                  value={newTag}
-                  onChangeText={setNewTag}
-                  onSubmitEditing={handleTagSubmit}
-                  autoFocus
-                />
-                <TouchableOpacity onPress={handleTagSubmit}>
-                  <MaterialIcons
-                    name="arrow-upward"
-                    size={28}
-                    color={colorScheme === "light" ? "#000" : "#fff"}
+                >
+                  <TextInput
+                    placeholder="New tag name"
+                    placeholderTextColor="#999"
+                    style={{
+                      flex: 1,
+                      borderColor: "#ccc",
+                      color: colorScheme === "light" ? "#000" : "#fff",
+                      paddingVertical: 8,
+                      fontSize: 16,
+                    }}
+                    value={newTag}
+                    onChangeText={setNewTag}
+                    onSubmitEditing={handleTagSubmit}
+                    autoFocus
                   />
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
+                  <TouchableOpacity onPress={handleTagSubmit}>
+                    <MaterialIcons
+                      name="arrow-upward"
+                      size={28}
+                      color={colorScheme === "light" ? "#000" : "#fff"}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
         </Modal>
       </ThemedView>
       <DeleteModal
