@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -25,6 +27,7 @@ import {
   updateTag,
 } from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { StatusBar } from "react-native";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -125,38 +128,48 @@ export default function TagManagementScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
+      <View
+        style={{
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+      >
         <CustomStyledHeader title="Tags management" />
+      </View>
+      {/* <CustomStyledHeader title="Tags management" /> */}
+      <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
-            <FlatList
-              data={tags}
-              keyExtractor={(item) => item.tagID?.toString() || ""}
-              renderItem={({ item }) => (
-                <TagListItem
-                  tag={item.tag_label}
-                  onDelete={() => {
-                    setTagToDelete(item);
-                    setShowDeleteModal(true);
-                  }}
-                  onEdit={() => editTag(item)}
-                  tagCount={item.usage_count}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
-          </View>
+          <FlatList
+            data={tags}
+            keyExtractor={(item) => item.tagID?.toString() || ""}
+            renderItem={({ item }) => (
+              <TagListItem
+                tag={item.tag_label}
+                onDelete={() => {
+                  setTagToDelete(item);
+                  setShowDeleteModal(true);
+                }}
+                onEdit={() => editTag(item)}
+                tagCount={item.usage_count}
+              />
+            )}
+          />
         </View>
-        <Modal
-          visible={modalVisible}
-          animationType="fade"
-          transparent
-          onRequestClose={() => setModalVisible(false)}
+
+        <View>
+          <Button onPress={() => setModalVisible(true)}>
+            <ThemedText colorVariant="white">Add</ThemedText>
+          </Button>
+        </View>
+      </View>
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
         >
           <TouchableOpacity
             activeOpacity={1}
@@ -167,20 +180,20 @@ export default function TagManagementScreen() {
             style={{
               flex: 1,
               backgroundColor: "rgba(0,0,0,0.5)",
-              justifyContent: "center",
+              justifyContent: "flex-end", // 👈 Changed from "center"
               alignItems: "center",
-              marginTop: 150,
+              padding: 20, // 👈 Optional padding for aesthetics
             }}
           >
             <TouchableWithoutFeedback>
               <View
                 style={{
-                  width: "85%",
-                  height: 58,
+                  width: "100%",
+                  maxWidth: 500,
                   backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
                   borderRadius: 33,
                   paddingHorizontal: 20,
-                  paddingVertical: 4,
+                  paddingVertical: 10,
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 10,
@@ -211,8 +224,8 @@ export default function TagManagementScreen() {
               </View>
             </TouchableWithoutFeedback>
           </TouchableOpacity>
-        </Modal>
-      </ThemedView>
+        </KeyboardAvoidingView>
+      </Modal>
       <DeleteModal
         visible={showDeleteModal}
         title={tagtoDelete?.tag_label}
