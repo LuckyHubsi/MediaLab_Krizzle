@@ -188,7 +188,6 @@ export default function HomeScreen() {
             <EmptyHome />
           ) : (
             <>
-              {/* <Button onPress={resetDatabase}>reset all</Button> */}
               <SearchBar
                 placeholder="Search"
                 onSearch={(query) => setSearchQuery(query)}
