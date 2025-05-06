@@ -181,6 +181,12 @@ const togglePageArchive = async (
         transaction || txn,
       );
 
+      await executeQuery(
+        updatePinnedByPageIDQuery,
+        [0, pageID],
+        transaction || txn,
+      );
+
       updateDateModified(pageID);
 
       return true;
