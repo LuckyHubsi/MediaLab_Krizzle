@@ -135,6 +135,7 @@ export default function TagManagementScreen() {
                   tag={item.tag_label}
                   onDelete={() => deleteTag(item.tagID || 0)}
                   onEdit={() => editTag(item)}
+                  tagCount={item.usage_count}
                 />
               )}
             />
