@@ -27,7 +27,13 @@ const insertNewPageQuery: string = `
 `;
 
 const selectNoteByPageIDQuery: string = `
-    SELECT p.*, n.note_content
+    SELECT p.*, 
+    (
+        SELECT COUNT(*)
+        FROM general_page_data p
+        WHERE p.pinned = 1
+    ) AS pin_count,
+    n.note_content
     FROM general_page_data p
     INNER JOIN note n ON p.pageID = n.pageID
     WHERE p.pageID = ?;
