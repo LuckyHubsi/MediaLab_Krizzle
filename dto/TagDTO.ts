@@ -8,4 +8,5 @@
 export type TagDTO = {
   tagID?: number;
   tag_label: string;
+  usage_count?: number;
 };
