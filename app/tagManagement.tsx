@@ -125,8 +125,8 @@ export default function TagManagementScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <CustomStyledHeader title="Tags management" />
       <ThemedView style={{ flex: 1 }}>
+        <CustomStyledHeader title="Tags management" />
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
             <FlatList
