@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import { TagButton, TagText } from "./TagList.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
@@ -14,6 +14,13 @@ type TagListProps = {
 const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
   const [activeTag, setActiveTag] = useState<TagDTO | "All">("All");
   const themeMode = useActiveColorScheme() ?? "light";
+
+  useEffect(() => {
+    if (tags.length === 0) {
+      setActiveTag("All");
+      onSelect?.("All");
+    }
+  }, [tags, onSelect]);
 
   const handlePress = (tag: TagDTO) => {
     setActiveTag(tag);
@@ -42,7 +49,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
               name="check-circle"
               size={16}
               color="#FBFBFB"
-              style={{ marginRight: 5 }}
+              style={{ marginRight: 10 }}
             />
           )}
           <TagText active={activeTag === "All"} themeMode={themeMode}>
