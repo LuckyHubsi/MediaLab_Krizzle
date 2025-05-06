@@ -1,4 +1,4 @@
-import { Note } from "@/backend/domain/entity/Note";
+import { NewNote, Note } from "@/backend/domain/entity/Note";
 import { NoteRepository } from "../interfaces/NoteRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { NoteModel } from "../model/NoteModel";
@@ -33,16 +33,9 @@ export class NoteRepositoryImpl
     }
   }
 
-  async insertNote(
-    note: Omit<Note, "pageID" | "noteID" | "createdAt" | "updatedAt">,
-    pageId: number,
-  ): Promise<number | null> {
+  async insertNote(note: NewNote, pageId: PageID): Promise<number | null> {
     try {
-      const brandedPageId = pageID.parse(pageId);
-      await this.executeQuery(insertNoteQuery, [
-        note.noteContent,
-        brandedPageId,
-      ]);
+      await this.executeQuery(insertNoteQuery, [note.noteContent, pageId]);
       return pageId;
     } catch (error) {
       console.error("Error inserting note:", error);

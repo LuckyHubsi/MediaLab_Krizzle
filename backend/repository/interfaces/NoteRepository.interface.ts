@@ -1,5 +1,5 @@
 import { PageID } from "@/backend/domain/entity/GeneralPage";
-import { Note } from "../../domain/entity/Note";
+import { NewNote, Note } from "../../domain/entity/Note";
 import { BaseRepository } from "./BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
 import * as common from "../../domain/common/types";
@@ -7,7 +7,7 @@ import * as common from "../../domain/common/types";
 export interface NoteRepository extends BaseRepository {
   getByPageId(pageId: PageID): Promise<Note | null>;
   insertNote(
-    note: Omit<Note, "pageID" | "noteID" | "createdAt" | "updatedAt">,
+    note: NewNote,
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<number | null>;
