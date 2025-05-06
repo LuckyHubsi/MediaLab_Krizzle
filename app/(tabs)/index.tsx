@@ -17,6 +17,7 @@ import {
   deleteGeneralPage,
   getAllGeneralPageData,
   togglePageArchive,
+  togglePagePin,
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -57,11 +58,13 @@ export default function HomeScreen() {
     page_type: PageType;
     color?: string;
     archived: boolean;
+    pinned: boolean;
     [key: string]: any;
   }
 
   const [shouldReload, setShouldReload] = useState<boolean>(false);
   const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -101,6 +104,7 @@ export default function HomeScreen() {
           ? getIconForPageType(widget.page_type)
           : undefined,
         archived: widget.archived,
+        pinned: widget.pinned,
       }));
 
       return enrichedWidgets;
@@ -130,16 +134,22 @@ export default function HomeScreen() {
     }, [shouldReload]),
   );
 
-  const filteredWidgets = useMemo(() => {
+  const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
       const matchesTag = selectedTag === "All" || widget.tag === selectedTag;
       const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
       return matchesTag && matchesTitle;
     });
+  };
+
+  const filteredWidgets = useMemo(() => {
+    return filter(widgets);
   }, [widgets, selectedTag, searchQuery]);
 
-  useEffect(() => {}, [widgets]);
+  const filteredPinnedWidgets = useMemo(() => {
+    return filter(pinnedWidgets);
+  }, [pinnedWidgets, selectedTag, searchQuery]);
 
   const goToPage = (widget: Widget) => {
     const path =
@@ -149,6 +159,41 @@ export default function HomeScreen() {
       pathname: path,
       params: { pageId: widget.id, title: widget.title },
     });
+  };
+
+  const widgetDisplay = (headline: string, data: Widget[]): React.ReactNode => {
+    return (
+      <>
+        <ThemedText fontSize="regular" fontWeight="regular">
+          {headline}
+        </ThemedText>
+
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id}
+          numColumns={columns}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginBottom: 16,
+          }}
+          renderItem={({ item }) => (
+            <Widget
+              title={item.title}
+              label={item.tag}
+              iconLeft={item.iconLeft}
+              iconRight={item.iconRight}
+              color={item.color as keyof typeof Colors.widget}
+              pageType={item.page_type}
+              onPress={() => goToPage(item)}
+              onLongPress={() => {
+                setSelectedWidget(item);
+                setShowModal(true);
+              }}
+            />
+          )}
+        />
+      </>
+    );
   };
 
   return (
@@ -166,7 +211,7 @@ export default function HomeScreen() {
             Home
           </ThemedText>
 
-          {widgets.length === 0 ? (
+          {widgets.length === 0 && pinnedWidgets.length === 0 ? (
             <EmptyHome
               text="Add your first note/collection"
               buttonLabel="Start"
@@ -186,40 +231,13 @@ export default function HomeScreen() {
                 onSelect={(tag) => setSelectedTag(tag)}
               />
 
-              {filteredWidgets.length > 0 ? (
-                <>
-                  <ThemedText fontSize="regular" fontWeight="regular">
-                    Recent
-                  </ThemedText>
+              {filteredPinnedWidgets.length > 0 &&
+                widgetDisplay("Pinned", filteredPinnedWidgets)}
+              {filteredWidgets.length > 0 &&
+                widgetDisplay("Recent", filteredWidgets)}
 
-                  <FlatList
-                    data={filteredWidgets}
-                    keyExtractor={(item) => item.id}
-                    numColumns={columns}
-                    columnWrapperStyle={{
-                      justifyContent: "space-between",
-                      marginBottom: 16,
-                    }}
-                    renderItem={({ item }) => (
-                      <Widget
-                        title={item.title}
-                        label={item.tag}
-                        iconLeft={item.iconLeft}
-                        iconRight={item.iconRight}
-                        color={item.color as keyof typeof Colors.widget}
-                        pageType={item.page_type}
-                        onPress={() => {
-                          goToPage(item);
-                        }}
-                        onLongPress={() => {
-                          setSelectedWidget(item);
-                          setShowModal(true);
-                        }}
-                      />
-                    )}
-                  />
-                </>
-              ) : (
+              {filteredPinnedWidgets.length <= 0 &&
+              filteredWidgets.length <= 0 ? (
                 <ThemedText
                   fontSize="regular"
                   fontWeight="regular"
@@ -229,7 +247,7 @@ export default function HomeScreen() {
                     ? "No entries found."
                     : `No entries for "${selectedTag !== "All" ? selectedTag : searchQuery}"`}
                 </ThemedText>
-              )}
+              ) : null}
             </>
           )}
         </ThemedView>
@@ -238,7 +256,19 @@ export default function HomeScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Pin item", icon: "push-pin", onPress: () => {} },
+          {
+            label: selectedWidget?.pinned ? "Unpin item" : "Pin item",
+            icon: "push-pin",
+            onPress: async () => {
+              if (selectedWidget) {
+                const success = await togglePagePin(
+                  Number(selectedWidget.id),
+                  selectedWidget.pinned,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
           { label: "Edit", icon: "edit", onPress: () => {} },
           {
             label: "Archive",
