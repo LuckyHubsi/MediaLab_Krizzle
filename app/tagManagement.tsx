@@ -27,6 +27,7 @@ import {
   updateTag,
 } from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { StatusBar } from "react-native";
 
 export default function TagManagementScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -127,100 +128,104 @@ export default function TagManagementScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
+      <View
+        style={{
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+      >
         <CustomStyledHeader title="Tags management" />
+      </View>
+      {/* <CustomStyledHeader title="Tags management" /> */}
+      <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
-            <FlatList
-              data={tags}
-              keyExtractor={(item) => item.tagID?.toString() || ""}
-              renderItem={({ item }) => (
-                <TagListItem
-                  tag={item.tag_label}
-                  onDelete={() => {
-                    setTagToDelete(item);
-                    setShowDeleteModal(true);
-                  }}
-                  onEdit={() => editTag(item)}
-                  tagCount={item.usage_count}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
-          </View>
+          <FlatList
+            data={tags}
+            keyExtractor={(item) => item.tagID?.toString() || ""}
+            renderItem={({ item }) => (
+              <TagListItem
+                tag={item.tag_label}
+                onDelete={() => {
+                  setTagToDelete(item);
+                  setShowDeleteModal(true);
+                }}
+                onEdit={() => editTag(item)}
+                tagCount={item.usage_count}
+              />
+            )}
+          />
         </View>
-        <Modal
-          visible={modalVisible}
-          animationType="fade"
-          transparent
-          onRequestClose={() => setModalVisible(false)}
+
+        <View>
+          <Button onPress={() => setModalVisible(true)}>
+            <ThemedText colorVariant="white">Add</ThemedText>
+          </Button>
+        </View>
+      </View>
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {
+              Keyboard.dismiss();
+              setModalVisible(false);
+            }}
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "flex-end", // 👈 Changed from "center"
+              alignItems: "center",
+              padding: 20, // 👈 Optional padding for aesthetics
+            }}
           >
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => {
-                Keyboard.dismiss();
-                setModalVisible(false);
-              }}
-              style={{
-                flex: 1,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                justifyContent: "flex-end", // 👈 Changed from "center"
-                alignItems: "center",
-                padding: 20, // 👈 Optional padding for aesthetics
-              }}
-            >
-              <TouchableWithoutFeedback>
-                <View
+            <TouchableWithoutFeedback>
+              <View
+                style={{
+                  width: "100%",
+                  maxWidth: 500,
+                  backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
+                  borderRadius: 33,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <TextInput
+                  placeholder="New tag name"
+                  placeholderTextColor="#999"
                   style={{
-                    width: "100%",
-                    maxWidth: 500,
-                    backgroundColor:
-                      colorScheme === "light" ? "#fff" : "#3D3D3D",
-                    borderRadius: 33,
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
+                    flex: 1,
+                    borderColor: "#ccc",
+                    color: colorScheme === "light" ? "#000" : "#fff",
+                    paddingVertical: 8,
+                    fontSize: 16,
                   }}
-                >
-                  <TextInput
-                    placeholder="New tag name"
-                    placeholderTextColor="#999"
-                    style={{
-                      flex: 1,
-                      borderColor: "#ccc",
-                      color: colorScheme === "light" ? "#000" : "#fff",
-                      paddingVertical: 8,
-                      fontSize: 16,
-                    }}
-                    value={newTag}
-                    onChangeText={setNewTag}
-                    onSubmitEditing={handleTagSubmit}
-                    autoFocus
+                  value={newTag}
+                  onChangeText={setNewTag}
+                  onSubmitEditing={handleTagSubmit}
+                  autoFocus
+                />
+                <TouchableOpacity onPress={handleTagSubmit}>
+                  <MaterialIcons
+                    name="arrow-upward"
+                    size={28}
+                    color={colorScheme === "light" ? "#000" : "#fff"}
                   />
-                  <TouchableOpacity onPress={handleTagSubmit}>
-                    <MaterialIcons
-                      name="arrow-upward"
-                      size={28}
-                      color={colorScheme === "light" ? "#000" : "#fff"}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableWithoutFeedback>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        </Modal>
-      </ThemedView>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </Modal>
       <DeleteModal
         visible={showDeleteModal}
         title={tagtoDelete?.tag_label}
