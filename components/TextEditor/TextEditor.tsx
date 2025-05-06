@@ -160,7 +160,14 @@ const TextEditor: React.FC<TextEditorProps> = ({
           right: 0,
         }}
       >
-        <Toolbar editor={editor} items={toolbarItems} />
+        <View
+          accessible={true}
+          accessibilityLabel="Text formatting toolbar"
+          accessibilityRole="toolbar"
+          accessibilityViewIsModal={true}
+        >
+          <Toolbar editor={editor} items={toolbarItems} />
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
