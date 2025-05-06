@@ -160,6 +160,15 @@ export default function HomeScreen() {
     });
   };
 
+  const goToEditPage = (widget: Widget) => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: widget.id },
+    });
+  };
+
   return (
     <>
       <SafeAreaView>
@@ -245,8 +254,16 @@ export default function HomeScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Pin item", icon: "push-pin", onPress: () => {} },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          { label: "Pin Widget", icon: "push-pin", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              if (selectedWidget) {
+                goToEditPage(selectedWidget);
+              }
+            },
+          },
           { label: "Archive", icon: "archive", onPress: () => {} },
           {
             label: "Delete",
