@@ -1,17 +1,15 @@
 // Button.styles.ts
-import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
+import styled from "styled-components/native";
+import { ButtonProps } from "./Button";
 
-export const StyledButton = styled.TouchableOpacity<{
-  colorScheme: "light" | "dark";
-}>`
+export const StyledButton = styled.TouchableOpacity<ButtonProps>`
   align-items: center;
   justify-content: center;
   border-radius: 33px;
   text-align: center;
   width: 100%;
   padding-vertical: 18px;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].tint};
-  font-family: "Lexend_400Regular";
+  background-color: ${({ isRed }: ButtonProps) =>
+    isRed ? Colors.negative : Colors.tintColor};
 `;

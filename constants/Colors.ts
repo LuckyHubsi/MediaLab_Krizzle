@@ -10,6 +10,7 @@ export const Colors = {
   grey100: "#585858",
   grey200: "#242424",
   black: "#111111",
+  tintColor: "#4599E8",
   light: {
     text: "#11181C",
     background: "#FBFBFB",

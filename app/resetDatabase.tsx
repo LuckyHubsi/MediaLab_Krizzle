@@ -18,9 +18,6 @@ export default function ResetDatabaseScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const onResetPress = () => {
-    resetDatabase();
-  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -31,7 +28,7 @@ export default function ResetDatabaseScreen() {
         <CustomStyledHeader title="Reset Data" />
       </View>
       <ThemedView>
-        <ThemedText fontWeight="bold" colorVariant="primary">
+        <ThemedText fontWeight="bold" colorVariant="red">
           Erase All Data and Start Fresh
         </ThemedText>
         <ThemedText>
@@ -43,14 +40,14 @@ export default function ResetDatabaseScreen() {
         <ThemedText>
           By clicking the button below, you will agree to delete all data.
         </ThemedText>
-        <BottomButtons
-          variant={"back"}
-          singleButtonText={"Reset Data"}
-          onNext={() => {
+        <Button
+          onPress={() => {
             setShowDeleteModal(true);
           }}
-          progressStep={1}
-        />
+          isRed={true}
+        >
+          Reset all Data
+        </Button>
       </ThemedView>
 
       <DeleteModal
