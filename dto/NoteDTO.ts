@@ -7,4 +7,5 @@ import { GeneralPageDTO } from "./GeneralPageDTO";
 export type NoteDTO = GeneralPageDTO & {
   noteID?: number;
   note_content: string | null;
+  pin_count: number;
 };

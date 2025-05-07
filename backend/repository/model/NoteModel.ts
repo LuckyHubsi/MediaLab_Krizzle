@@ -6,4 +6,5 @@ import { GeneralPageModel } from "./GeneralPageModel";
 export type NoteModel = GeneralPageModel & {
   noteID: number;
   note_content: string | null;
+  pin_count: number;
 };

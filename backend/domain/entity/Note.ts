@@ -8,6 +8,7 @@ export type NoteID = z.infer<typeof noteID>;
 export const noteSchema = generalPageSchema.extend({
   noteID: noteID,
   noteContent: common.string20000,
+  pinCount: z.number().min(0).max(4),
 });
 
 export type Note = z.infer<typeof noteSchema>;
@@ -23,7 +24,7 @@ export const createNewNote = generalPageSchema
       ...data,
       createdAt: now,
       updatedAt: now,
-    } satisfies Omit<Note, "pageID" | "noteID">;
+    } satisfies Omit<Note, "pageID" | "noteID" | "pinCount">;
   });
 
 export type NewNote = z.infer<typeof createNewNote>;

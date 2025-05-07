@@ -23,6 +23,7 @@ export class NoteMapper {
       tag: entity.tag ? TagMapper.toDTO(entity.tag) : null,
       noteID: entity.noteID,
       note_content: entity.noteContent,
+      pin_count: entity.pinCount,
     };
   }
 
@@ -41,6 +42,7 @@ export class NoteMapper {
       tag_label: entity.tag?.tagLabel,
       noteID: entity.noteID,
       note_content: entity.noteContent,
+      pin_count: entity.pinCount,
     };
   }
 
@@ -59,6 +61,7 @@ export class NoteMapper {
       tag_label: entity.tag?.tagLabel,
       noteID: 0,
       note_content: entity.noteContent,
+      pin_count: 0,
     };
   }
 
@@ -101,6 +104,7 @@ export class NoteMapper {
         updatedAt: new Date(model.date_modified),
         noteID: model.noteID,
         noteContent: model.note_content,
+        pinCount: model.pin_count,
       });
     } catch (error) {
       console.error("Error mapping NoteModel to Entity:", error);
