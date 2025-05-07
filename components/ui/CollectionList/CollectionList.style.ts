@@ -1,8 +1,20 @@
+import { TouchableOpacity, Text } from "react-native";
 import styled from "styled-components/native";
+import { Colors } from "@/constants/Colors";
 
-export const CollectionListContainer = styled.View<{
-  colorScheme: "light" | "dark";
-}>`
+interface CollectionListProps {
+  active?: boolean;
+  themeMode?: "light" | "dark";
+}
+export const CollectionListContainer = styled(
+  TouchableOpacity,
+)<CollectionListProps>`
+  background-color: ${({ active, themeMode }: CollectionListProps) =>
+    active
+      ? Colors.widget.blue
+      : themeMode === "dark"
+        ? Colors.dark.pillBackground
+        : Colors.light.pillBackground};
   display: flex;
   width: 124px;
   height: 42px;
@@ -11,14 +23,16 @@ export const CollectionListContainer = styled.View<{
   gap: 10px;
   flex-shrink: 0;
   border-radius: 33px;
-  background: #4599e8;
   margin-right: 6px;
 `;
 
-export const CollectionListText = styled.Text<{
-  colorScheme: "light" | "dark";
-}>`
-  color: #ffffff;
+export const CollectionListText = styled(Text)<CollectionListProps>`
+  color: ${({ active, themeMode }: CollectionListProps) =>
+    active
+      ? "#fff"
+      : themeMode === "dark"
+        ? Colors.dark.text
+        : Colors.light.text};
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;

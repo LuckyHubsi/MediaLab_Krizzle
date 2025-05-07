@@ -1,5 +1,5 @@
-import { AttributeDTO } from "@/dto/AttributeDTO";
 import { ItemsDTO } from "@/dto/ItemsDTO";
+import { AttributeDTO } from "@/dto/AttributeDTO";
 import { ItemsModel } from "@/models/ItemsModel";
 
 export class ItemsMapper {
@@ -8,46 +8,59 @@ export class ItemsMapper {
     const pageID = model[0].pageID;
 
     const attributeMap = new Map<number, AttributeDTO>();
-    const itemMap = new Map<number, (string | number | null)[]>();
+    const itemMap = new Map<
+      number,
+      {
+        values: (string | number | null)[];
+        categoryID: number | null;
+        categoryName: string | null;
+      }
+    >();
 
-    for (const singleEntry of model) {
-      if (!attributeMap.has(singleEntry.attributeID)) {
-        attributeMap.set(singleEntry.attributeID, {
-          attributeID: singleEntry.attributeID,
-          attributeLabel: singleEntry.attribute_label,
-          type: singleEntry.type,
-          preview: !!singleEntry.preview,
-          symbol: singleEntry.rating_symbol
-            ? singleEntry.rating_symbol
-            : undefined,
-          options: singleEntry.multiselect_options
-            ? JSON.parse(singleEntry.multiselect_options)
+    for (const entry of model) {
+      if (!attributeMap.has(entry.attributeID)) {
+        attributeMap.set(entry.attributeID, {
+          attributeID: entry.attributeID,
+          attributeLabel: entry.attribute_label,
+          type: entry.type,
+          preview: !!entry.preview,
+          symbol: entry.rating_symbol ?? undefined,
+          options: entry.multiselect_options
+            ? JSON.parse(entry.multiselect_options)
             : null,
         });
       }
 
-      if (!itemMap.has(singleEntry.itemID)) {
-        itemMap.set(singleEntry.itemID, []);
+      if (!itemMap.has(entry.itemID)) {
+        itemMap.set(entry.itemID, {
+          values: [],
+          categoryID: entry.categoryID,
+          categoryName: entry.category_name,
+        });
       }
 
-      itemMap
-        .get(singleEntry.itemID)!
-        .push(
-          singleEntry.type === "multi-select" &&
-            typeof singleEntry.value === "string"
-            ? JSON.parse(singleEntry.value)
-            : singleEntry.value,
-        );
+      const value =
+        entry.type === "multi-select" && typeof entry.value === "string"
+          ? JSON.parse(entry.value)
+          : entry.value;
+
+      itemMap.get(entry.itemID)!.values.push(value);
     }
 
-    return {
+    const test = {
       collectionID,
       pageID,
       attributes: Array.from(attributeMap.values()),
-      items: Array.from(itemMap.entries()).map(([itemID, values]) => ({
-        itemID,
-        values,
-      })),
+      items: Array.from(itemMap.entries()).map(
+        ([itemID, { values, categoryID, categoryName }]) => ({
+          itemID,
+          values,
+          categoryID,
+          categoryName: categoryName ?? "All",
+        }),
+      ),
     };
+
+    return test;
   }
 }

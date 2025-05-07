@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, ScrollView } from "react-native";
@@ -46,6 +46,8 @@ export default function CollectionScreen() {
   const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
   const [shouldReload, setShouldReload] = useState<boolean>();
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
+  const [selectedList, setSelectedList] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useFocusEffect(
     useCallback(() => {
@@ -80,9 +82,38 @@ export default function CollectionScreen() {
     });
   };
 
+  const goToEditListsPage = () => {
+    const path = "/editCollectionLists";
+
+    router.push({
+      pathname: path,
+      params: { collectionId: collection?.collectionID },
+    });
+  };
+
+  const filteredItems = useMemo(() => {
+    if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
+
+    const lowerQuery = searchQuery.toLowerCase();
+
+    return items.items.filter((item) => {
+      const category = item.categoryName;
+
+      const matchesList = selectedList === "All" || category === selectedList;
+
+      const matchesTitle = item.values
+        .join(" ")
+        .toLowerCase()
+        .includes(lowerQuery);
+
+      return matchesList && matchesTitle;
+    });
+  }, [items, selectedList, searchQuery]);
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
+        {/* //Header with back button and title */}
         <CustomStyledHeader
           title={title || "Collection"} //Here should be the title of the collection
           backBehavior="goHome" // Go back to home when back button is pressed
@@ -98,37 +129,30 @@ export default function CollectionScreen() {
           />
           <CollectionList
             collectionLists={listNames}
-            onPress={() => console.log("Pressed!")}
+            onSelect={(collectionList) => {
+              setSelectedList(collectionList || "All");
+            }}
           />
+          {/* //Hardcoded data for testing purposes */}
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, gap: 12 }}>
-              {items?.items && items?.items.length ? (
-                items.items.map((item) => (
-                  <CollectionWidget
-                    key={item.itemID}
-                    attributes={items.attributes}
-                    item={item}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
-                      });
-                    }}
-                    onLongPress={() => {
-                      setSelectedItem(item);
-                      setShowItemModal(true);
-                    }}
-                  />
-                ))
-              ) : (
-                <ThemedText
-                  fontSize="regular"
-                  fontWeight="regular"
-                  style={{ textAlign: "center", marginTop: 25 }}
-                >
-                  No collection items found.
-                </ThemedText>
-              )}
+              {filteredItems.map((item) => (
+                <CollectionWidget
+                  key={item.itemID}
+                  attributes={items?.attributes || []} // Pass attributes to CollectionWidget
+                  item={item}
+                  onPress={() => {
+                    router.push({
+                      pathname: "/collectionItemPage",
+                      params: { itemId: item.itemID.toString() },
+                    });
+                  }}
+                  onLongPress={() => {
+                    setSelectedItem(item);
+                    setShowItemModal(true);
+                  }}
+                />
+              ))}
             </View>
           </ScrollView>
 
@@ -159,7 +183,7 @@ export default function CollectionScreen() {
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: collection?.pinned ? "Unpin item" : "Pin item",
+            label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
             onPress: async () => {
               if (
@@ -184,7 +208,13 @@ export default function CollectionScreen() {
               goToEditPage();
             },
           },
-          { label: "Edit Lists", icon: "edit-note", onPress: () => {} },
+          {
+            label: "Edit Lists",
+            icon: "edit-note",
+            onPress: () => {
+              goToEditListsPage();
+            },
+          },
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",

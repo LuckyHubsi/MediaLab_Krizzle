@@ -72,6 +72,10 @@ export default function RootLayout() {
             />
             <Stack.Screen name="editWidget" options={{ headerShown: false }} />
             <Stack.Screen
+              name="editCollectionLists"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="addCollectionItem"
               options={{ headerShown: false }}
             />
