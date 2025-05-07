@@ -2,18 +2,23 @@ import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import styled from "styled-components/native";
 
+type ColorSchemeProps = {
+  colorScheme: "light" | "dark";
+};
+
 export const GradientBorder = styled(LinearGradient).attrs({
   colors: ["#4599E8", "#583FE7"],
   start: { x: 0.14, y: 0 },
   end: { x: 1, y: 0 },
 })`
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 1px;
 `;
 
-export const CollapsibleCardContainer = styled.View`
-  background-color: ${Colors.grey200};
-  border-radius: 10px;
+export const CollapsibleCardContainer = styled.View<ColorSchemeProps>`
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
+    colorScheme === "light" ? Colors.white : Colors.grey200};
+  border-radius: 14px;
   padding: 12px 20px;
 `;
 

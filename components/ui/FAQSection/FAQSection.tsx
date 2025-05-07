@@ -1,48 +1,50 @@
 import CollapsibleCard from "./CollapsibleCard";
-import { ScrollView, Image } from "react-native";
+import { ScrollView, Image, View } from "react-native";
 import { CardsContainer, ImageContainer } from "./FAQSection.styles";
 
 const FAQSection = () => {
   return (
     <ScrollView>
-      <ImageContainer>
-        <Image
-          source={require("@/assets/images/krizzle_faq.png")}
-          style={{ width: "100%", height: 80 }}
-        />
-      </ImageContainer>
-      <CardsContainer>
-        <CollapsibleCard
-          faqTitle="Collection"
-          faqQuestion="What is a "
-          faqContent="Krizzle’s Collections let you group related Items  into a single custom Page. Add, edit and remove items as you wish."
-        />
-        <CollapsibleCard
-          faqTitle="Collection List"
-          faqQuestion="What is a "
-          faqContent="When creating a Collection you will be asked to add at least one List to your Collection. Krizzle’s Collections Lists make it possible for you to group together items within Collections. It’s perfect if you wish to have different grouped Lists within your Collections and toggle between them. Make Collections completely your own!"
-        />
-        <CollapsibleCard
-          faqQuestion="What is a "
-          faqTitle="Collection Item Template"
-          faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating and a multi-select. With a total of up to ten of these attributes you can create a form fully tailored to your own needs."
-        />
-        <CollapsibleCard
-          faqQuestion="What is a "
-          faqTitle="multi-select"
-          faqContent="When creating a Collection, you can add an Item Template with the “multi-select” type. A multi-select lets you define a custom list of options that fit your needs. Then, whenever you add a new Item to the Collection, you can simply choose the option—or options—that best apply to that Item."
-        />
-        <CollapsibleCard
-          faqQuestion="What is a "
-          faqTitle="Widget"
-          faqContent="A Krizzle Widget is a visual tile that represents either a Note or a Collection. It displays the title and tag you've assigned, making it easy to identify at a glance. During creation or editing, you can customize its color to better organize or personalize your layout. Widgets are automatically shown on your home page by default, giving you quick access to your most active content. When a Widget is no longer needed on the home page, you can move it to the archive to keep things tidy without deleting it."
-        />
-        <CollapsibleCard
-          faqQuestion="What is the "
-          faqTitle="Archive"
-          faqContent="Move Widgets to the Archive to declutter your home page. This is an easy way to have an organized home page without commiting to deleting old Widgets."
-        />
-      </CardsContainer>
+      <View style={{ paddingBottom: 25 }}>
+        <ImageContainer>
+          <Image
+            source={require("@/assets/images/krizzle_faq.png")}
+            style={{ width: "100%", height: 80 }}
+          />
+        </ImageContainer>
+        <CardsContainer>
+          <CollapsibleCard
+            faqTitle="Collection"
+            faqQuestion="What is a "
+            faqContent="Krizzle’s Collections let you group related Items  into a single custom Page. Add, edit and remove items as you wish."
+          />
+          <CollapsibleCard
+            faqTitle="Collection List"
+            faqQuestion="What is a "
+            faqContent="When creating a Collection you will be asked to add at least one List to your Collection. Krizzle’s Collections Lists make it possible for you to group together items within Collections. It’s perfect if you wish to have different grouped Lists within your Collections and toggle between them. Make Collections completely your own!"
+          />
+          <CollapsibleCard
+            faqQuestion="What is a "
+            faqTitle="Collection Item Template"
+            faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating and a multi-select. With a total of up to ten of these attributes you can create a form fully tailored to your own needs."
+          />
+          <CollapsibleCard
+            faqQuestion="What is a "
+            faqTitle="multi-select"
+            faqContent="When creating a Collection, you can add an Item Template with the “multi-select” type. A multi-select lets you define a custom list of options that fit your needs. Then, whenever you add a new Item to the Collection, you can simply choose the option—or options—that best apply to that Item."
+          />
+          <CollapsibleCard
+            faqQuestion="What is a "
+            faqTitle="Widget"
+            faqContent="A Krizzle Widget is a visual tile that represents either a Note or a Collection. It displays the title and tag you've assigned, making it easy to identify at a glance. During creation or editing, you can customize its color to better organize or personalize your layout. Widgets are automatically shown on your home page by default, giving you quick access to your most active content. When a Widget is no longer needed on the home page, you can move it to the archive to keep things tidy without deleting it."
+          />
+          <CollapsibleCard
+            faqQuestion="What is the "
+            faqTitle="Archive"
+            faqContent="Move Widgets to the Archive to declutter your home page. This is an easy way to have an organized home page without commiting to deleting old Widgets."
+          />
+        </CardsContainer>
+      </View>
     </ScrollView>
   );
 };
