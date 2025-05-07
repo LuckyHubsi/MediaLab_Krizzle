@@ -122,10 +122,26 @@ const insertMultiselectValueQuery: string = `
     INSERT INTO multiselect_values (itemID, attributeID, value) VALUES (?, ?, ?)
 `;
 
-const updateItem: string = `
+const updateItemQuery: string = `
     UPDATE item 
     SET category = ?
     WHERE itemID = ?
+`;
+
+const updateTextValueQuery: string = `
+    UPDATE text_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateDateValueQuery: string = `
+    UPDATE date_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateRatingValueQuery: string = `
+    UPDATE rating_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateMultiselectValueQuery: string = `
+    UPDATE multiselect_values SET value = ? WHERE itemID = ? AND attributeID = ?
 `;
 
 const deleteItemQuery: string = `
@@ -147,7 +163,11 @@ export {
   insertDateValueQuery,
   insertRatingValueQuery,
   insertMultiselectValueQuery,
-  updateItem,
+  updateItemQuery,
+  updateTextValueQuery,
+  updateRatingValueQuery,
+  updateDateValueQuery,
+  updateMultiselectValueQuery,
   deleteItemQuery,
   deleteItemAttributeValuesQuery,
 };
