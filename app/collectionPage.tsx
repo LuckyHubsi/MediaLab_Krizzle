@@ -82,6 +82,15 @@ export default function CollectionScreen() {
     });
   };
 
+  const goToEditListsPage = () => {
+    const path = "/editCollectionLists";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: pageId },
+    });
+  };
+
   const filteredItems = useMemo(() => {
     if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
 
@@ -121,9 +130,7 @@ export default function CollectionScreen() {
           <CollectionList
             collectionLists={listNames}
             onSelect={(collectionList) => {
-              //const selected = collectionList || "All";
               setSelectedList(collectionList || "All");
-              console.log("Collection List Items:", selectedList);
             }}
           />
           {/* //Hardcoded data for testing purposes */}
@@ -201,7 +208,13 @@ export default function CollectionScreen() {
               goToEditPage();
             },
           },
-          { label: "Edit Lists", icon: "edit-note", onPress: () => {} },
+          {
+            label: "Edit Lists",
+            icon: "edit-note",
+            onPress: () => {
+              goToEditListsPage();
+            },
+          },
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
