@@ -79,7 +79,6 @@ export default function CollectionItemScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={itemName}
-        typeToDelete="widget"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (item) {

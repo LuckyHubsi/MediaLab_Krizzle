@@ -191,6 +191,8 @@ export default function HomeScreen() {
       pathname: path,
       params: { widgetID: widget.id },
     });
+  };
+
   const widgetDisplay = (headline: string, data: Widget[]): React.ReactNode => {
     return (
       <>
@@ -307,14 +309,15 @@ export default function HomeScreen() {
             },
           },
           {
-            label: "Edit",
+            label: "Edit Widget",
             icon: "edit",
             onPress: () => {
               if (selectedWidget) {
                 goToEditPage(selectedWidget);
               }
             },
-          },          {
+          },
+          {
             label: "Archive",
             icon: "archive",
             onPress: async () => {
@@ -365,4 +368,4 @@ export default function HomeScreen() {
       />
     </>
   );
-}}
+}
