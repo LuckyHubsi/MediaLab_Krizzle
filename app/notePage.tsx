@@ -116,7 +116,7 @@ export default function NotesScreen() {
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: noteData?.pinned ? "Unpin item" : "Pin item",
+            label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
             onPress: async () => {
               if (
