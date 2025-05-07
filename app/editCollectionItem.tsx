@@ -195,12 +195,13 @@ export default function EditCollectionItem() {
                 attributeValues: updatedAttributeValues,
               };
 
-              console.log("Saving item:", JSON.stringify(updatedItem, null, 2));
-
               const success = await editItemByID(updatedItem);
 
               if (success) {
-                router.back();
+                router.replace({
+                  pathname: "/collectionItemPage",
+                  params: { itemId: itemId },
+                });
               } else {
                 console.log("Failed to save changes");
               }

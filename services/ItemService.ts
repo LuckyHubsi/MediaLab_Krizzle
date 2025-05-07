@@ -42,6 +42,7 @@ import * as SQLite from "expo-sqlite";
  */
 const getItemById = async (id: number): Promise<ItemDTO> => {
   try {
+    console.log("ID", id);
     // get raw result using the query
     const rawResult = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
 
