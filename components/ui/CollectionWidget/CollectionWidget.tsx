@@ -106,7 +106,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             {rating ? (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialIcons
-                  name="star"
+                  name={
+                    (attributes[ratingIndex]
+                      .symbol as keyof typeof MaterialIcons.glyphMap) || "star"
+                  }
                   size={24}
                   color="#E7C716"
                   style={{ marginRight: 6 }}
