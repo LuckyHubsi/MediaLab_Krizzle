@@ -8,9 +8,13 @@ import {
   LabelWrapper,
   RadioButtonOuter,
   RadioButtonInner,
+  ResetContainer,
+  ResetButton,
+  ResetButtonText,
 } from "./ThemeSelector.styles";
+import { useUserTheme } from "@/context/ThemeContext";
 
-type ThemeOption = "light" | "dark";
+type ThemeOption = "light" | "dark" | "system";
 
 type ThemeSelectorProps = {
   selected: ThemeOption;
@@ -18,33 +22,54 @@ type ThemeSelectorProps = {
 };
 
 export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
-  const systemColorScheme = useColorScheme();
+  const systemColorScheme = useColorScheme() ?? "light";
+  const { resetToSystemDefault } = useUserTheme();
+
+  const isSystemSelected = selected === "system";
 
   return (
-    <Container>
-      {(["light", "dark"] as ThemeOption[]).map((option) => (
-        <Card
-          key={option}
-          onPress={() => onSelect(option)}
-          isSelected={selected === option}
-        >
-          <PreviewImage
-            source={
-              option === "light"
-                ? require("@/assets/images/theme-light.png")
-                : require("@/assets/images/theme-dark.png")
-            }
-          />
-          <LabelWrapper>
-            <ThemedText fontSize="regular" fontWeight="regular">
-              {option === "light" ? "Light" : "Dark"}
-            </ThemedText>
-            <RadioButtonOuter>
-              {selected === option && <RadioButtonInner />}
-            </RadioButtonOuter>
-          </LabelWrapper>
-        </Card>
-      ))}
-    </Container>
+    <>
+      <Container>
+        {(["light", "dark"] as ThemeOption[]).map((option) => (
+          <Card
+            key={option}
+            onPress={() => onSelect(option)}
+            isSelected={selected === option}
+          >
+            <PreviewImage
+              source={
+                option === "system"
+                  ? systemColorScheme === "light"
+                    ? require("@/assets/images/theme-light.png")
+                    : require("@/assets/images/theme-dark.png")
+                  : option === "light"
+                    ? require("@/assets/images/theme-light.png")
+                    : require("@/assets/images/theme-dark.png")
+              }
+            />
+            <LabelWrapper>
+              <ThemedText fontSize="regular" fontWeight="regular">
+                {option === "light"
+                  ? "Light"
+                  : option === "dark"
+                    ? "Dark"
+                    : "System Default"}
+              </ThemedText>
+              <RadioButtonOuter>
+                {selected === option && <RadioButtonInner />}
+              </RadioButtonOuter>
+            </LabelWrapper>
+          </Card>
+        ))}
+      </Container>
+
+      {!isSystemSelected && (
+        <ResetContainer>
+          <ResetButton onPress={resetToSystemDefault}>
+            <ResetButtonText>Reset to System Default</ResetButtonText>
+          </ResetButton>
+        </ResetContainer>
+      )}
+    </>
   );
 };
