@@ -216,7 +216,7 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
                 );
               }
               break;
-            case AttributeType.Rating:
+            case AttributeType.Date:
               if ("ValueString" in value) {
                 await executeQuery(
                   updateRatingValueQuery,
@@ -235,10 +235,13 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
               }
               break;
             case AttributeType.Multiselect:
-              if ("ValueMultiselect" in value) {
+              if ("valueMultiselect" in value) {
+                const stringifiedValues = JSON.stringify(
+                  value.valueMultiselect,
+                );
                 await executeQuery(
                   updateMultiselectValueQuery,
-                  [value.ValueMultiselect, value.itemID, value.attributeID],
+                  [stringifiedValues, value.itemID, value.attributeID],
                   txn,
                 );
               }
