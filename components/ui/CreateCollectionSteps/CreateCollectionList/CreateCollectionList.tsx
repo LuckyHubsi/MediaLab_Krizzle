@@ -56,16 +56,18 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   }, []);
 
   useEffect(() => {
-    const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true),
-    );
-    const keyboardDidHide = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false),
-    );
-    return () => {
-      keyboardDidShow.remove();
-      keyboardDidHide.remove();
-    };
+    if (Platform.OS === "android") {
+      const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const keyboardDidHide = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        keyboardDidShow.remove();
+        keyboardDidHide.remove();
+      };
+    }
   }, []);
 
   const handleAddCard = () => {
@@ -174,7 +176,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           </AddButtonWrapper>
         )}
       </ScrollView>
-      {!keyboardVisible && (
+      {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
           <BottomButtons
             titleLeftButton="Back"

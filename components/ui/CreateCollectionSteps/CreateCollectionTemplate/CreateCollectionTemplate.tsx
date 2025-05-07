@@ -50,16 +50,18 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const otherCards = cards.slice(1);
 
   useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardVisible(true),
-    );
-    const hideSub = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardVisible(false),
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -316,7 +318,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {!keyboardVisible && (
+      {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
           <BottomButtons
             variant="back"
