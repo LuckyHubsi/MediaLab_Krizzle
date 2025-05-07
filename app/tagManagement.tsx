@@ -149,6 +149,11 @@ export default function TagManagementScreen() {
       </View>
       <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
+          {tags.length === 0 && (
+            <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
+              You don't have any tags yet.
+            </ThemedText>
+          )}
           <FlatList
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
