@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, ScrollView } from "react-native";
@@ -27,6 +27,7 @@ import {
   togglePagePin,
 } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function CollectionScreen() {
   const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
   const [shouldReload, setShouldReload] = useState<boolean>();
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useFocusEffect(
     useCallback(() => {
@@ -79,6 +81,17 @@ export default function CollectionScreen() {
     });
   };
 
+  const filteredItems = useMemo(() => {
+    if (!items) return [];
+    return items.items.filter((item) => {
+      const title = item.item_title ?? item.values?.[0]; // optional fallback
+      return (
+        typeof title === "string" &&
+        title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+  }, [items, searchQuery]);
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -93,32 +106,46 @@ export default function CollectionScreen() {
         <ThemedView topPadding={0}>
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
-            onSearch={(text) => {}}
+            onSearch={(text) => setSearchQuery(text)}
           />
           <CollectionList
             collectionLists={listNames}
             onPress={() => console.log("Pressed!")}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ flex: 1, gap: 12 }}>
-              {items?.items.map((item) => (
-                <CollectionWidget
-                  key={item.itemID}
-                  attributes={items.attributes}
-                  item={item}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/collectionItemPage",
-                      params: { itemId: item.itemID.toString() },
-                    });
-                  }}
-                  onLongPress={() => {
-                    setSelectedItem(item);
-                    setShowItemModal(true);
-                  }}
-                />
-              ))}
-            </View>
+            {filteredItems.length > 0 ? (
+              <View style={{ flex: 1, gap: 12 }}>
+                {filteredItems.map((item) => (
+                  <CollectionWidget
+                    key={item.itemID}
+                    attributes={items?.attributes || []}
+                    item={item}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/collectionItemPage",
+                        params: { itemId: item.itemID.toString() },
+                      });
+                    }}
+                    onLongPress={() => {
+                      setSelectedItem(item);
+                      setShowItemModal(true);
+                    }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <View style={{ marginTop: 24 }}>
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="regular"
+                  style={{ textAlign: "center" }}
+                >
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "No items in this collection yet."}
+                </ThemedText>
+              </View>
+            )}
           </ScrollView>
 
           <View
@@ -143,6 +170,7 @@ export default function CollectionScreen() {
           </View>
         </ThemedView>
       </SafeAreaView>
+
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
