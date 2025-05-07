@@ -83,7 +83,7 @@ export default function CollectionScreen() {
   };
 
   const goToEditListsPage = () => {
-    const path = "/editCollectionLists";
+    const path = "/listManagement";
 
     router.push({
       pathname: path,
