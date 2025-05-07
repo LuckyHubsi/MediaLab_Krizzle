@@ -70,6 +70,15 @@ export default function CollectionScreen() {
     }, [pageId, shouldReload]),
   );
 
+  const goToEditPage = () => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: pageId },
+    });
+  };
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -157,7 +166,13 @@ export default function CollectionScreen() {
               }
             },
           },
-          { label: "Edit Widget", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit Widget",
+            icon: "edit",
+            onPress: () => {
+              goToEditPage();
+            },
+          },
           { label: "Edit Lists", icon: "edit-note", onPress: () => {} },
           {
             label: collection?.archived ? "Restore" : "Archive",
