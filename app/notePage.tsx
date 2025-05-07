@@ -32,7 +32,7 @@ export default function NotesScreen() {
   const [showModal, setShowModal] = useState(false);
   const [noteData, setNoteData] = useState<NoteDTO | null>();
   const [shouldReload, setShouldReload] = useState<boolean>();
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
@@ -82,7 +82,14 @@ export default function NotesScreen() {
     return () => subscription.remove();
   }, [appState, noteContent, debouncedSave]);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const goToEditPage = () => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: pageId },
+    });
+  };
 
   return (
     <>
@@ -127,7 +134,13 @@ export default function NotesScreen() {
               }
             },
           },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              goToEditPage();
+            },
+          },
           {
             label: noteData?.archived ? "Restore" : "Archive",
             icon: noteData?.archived ? "restore" : "archive",
