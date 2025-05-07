@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import Widget from "@/components/ui/Widget/Widget";
@@ -36,6 +36,7 @@ import {
   updateGeneralPageData,
 } from "@/services/GeneralPageService";
 import { set } from "date-fns";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function EditWidgetScreen() {
   const navigation = useNavigation();
@@ -52,7 +53,7 @@ export default function EditWidgetScreen() {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
   const [tags, setTags] = useState<TagDTO[]>([]);
-
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
@@ -150,147 +151,157 @@ export default function EditWidgetScreen() {
     }, []),
   );
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
-          <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 100, android: 80 })}
+      topPadding={Platform.select({ ios: 0, android: 0 })}
+    >
+      <Card>
+        <View style={{ alignItems: "center", gap: 20 }}>
+          <Header title="Edit Widget" onIconPress={() => alert("Popup!")} />
+          <Widget
+            title={title || "Title"}
+            label={selectedTag?.tag_label ?? "No tag"}
+            pageType={PageType.Note}
+            iconLeft={
+              <MaterialIcons
+                name={selectedIcon || "help"}
+                size={20}
+                color="black"
+              />
+            }
+            iconRight={
+              <MaterialIcons name="description" size={20} color="black" />
+            }
+            color={
+              (getWidgetColorKey(
+                selectedColor,
+              ) as keyof typeof Colors.widget) || "#4599E8"
+            }
+          />
+        </View>
+      </Card>
+      <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+        <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+          <View style={{ width: "100%", gap: 20 }}>
             <Card>
-              <View style={{ alignItems: "center" }}>
-                <Header
-                  title="Edit Widget"
-                  onIconPress={() => alert("Popup!")}
-                />
-                <Widget
-                  title={title || "Title"}
-                  label={selectedTag?.tag_label ?? "No tag"}
-                  pageType={PageType.Note}
-                  iconLeft={
-                    <MaterialIcons
-                      name={selectedIcon || "help"}
-                      size={20}
-                      color="black"
-                    />
-                  }
-                  iconRight={
-                    <MaterialIcons name="description" size={20} color="black" />
-                  }
-                  color={
-                    (getWidgetColorKey(
-                      selectedColor,
-                    ) as keyof typeof Colors.widget) || "#4599E8"
-                  }
-                />
-              </View>
+              <TitleCard
+                placeholder="Add a title to your Note"
+                value={title}
+                onChangeText={(text) => {
+                  setTitle(text);
+                  if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                }}
+              />
+              {titleError && (
+                <ThemedText
+                  style={{
+                    marginTop: 5,
+                  }}
+                  fontSize="s"
+                  colorVariant="red"
+                >
+                  {titleError}
+                </ThemedText>
+              )}
+            </Card>
+            <DividerWithLabel label="optional" iconName="arrow-back" />
+            <Card>
+              <TagPicker
+                tags={tags}
+                selectedTag={selectedTag}
+                onSelectTag={(tag) => {
+                  setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
+                }}
+                onViewAllPress={() => router.push("/tagManagement")}
+              />
             </Card>
 
-            <View style={{ width: "100%", gap: 20 }}>
-              <Card>
-                <TitleCard
-                  placeholder="Add a title to your Note"
-                  value={title}
-                  onChangeText={(text) => {
-                    setTitle(text);
-                    if (text.trim().length > 0) setTitleError(null); // clear error while typing
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+                gap: 15,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <ChooseCard
+                  label={selectedColorLabel}
+                  selectedColor={selectedColor}
+                  onPress={() => {
+                    setPopupType("color");
+                    setPopupVisible(true);
                   }}
                 />
-                {titleError && (
-                  <ThemedText
-                    style={{
-                      marginTop: 5,
-                    }}
-                    fontSize="s"
-                    colorVariant="red"
-                  >
-                    {titleError}
-                  </ThemedText>
-                )}
-              </Card>
-              <DividerWithLabel label="optional" iconName="arrow-back" />
-              <Card>
-                <TagPicker
-                  tags={tags}
-                  selectedTag={selectedTag}
-                  onSelectTag={(tag) => {
-                    setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <ChooseCard
+                  label={selectedIconLabel}
+                  selectedColor={
+                    useColorScheme() === "dark"
+                      ? Colors.dark.cardBackground
+                      : Colors.light.cardBackground
+                  }
+                  selectedIcon={selectedIcon ?? undefined}
+                  onPress={() => {
+                    setPopupType("icon");
+                    setPopupVisible(true);
                   }}
-                  onViewAllPress={() => router.push("/tagManagement")}
                 />
-              </Card>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-between",
-                  gap: 15,
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <ChooseCard
-                    label={selectedColorLabel}
-                    selectedColor={selectedColor}
-                    onPress={() => {
-                      setPopupType("color");
-                      setPopupVisible(true);
-                    }}
-                  />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <ChooseCard
-                    label={selectedIconLabel}
-                    selectedColor={
-                      useColorScheme() === "dark"
-                        ? Colors.dark.cardBackground
-                        : Colors.light.cardBackground
-                    }
-                    selectedIcon={selectedIcon ?? undefined}
-                    onPress={() => {
-                      setPopupType("icon");
-                      setPopupVisible(true);
-                    }}
-                  />
-                </View>
               </View>
             </View>
           </View>
-          <View
-            style={{
-              marginTop: 20,
-              width: "100%",
-            }}
-          >
-            <Button onPress={updateWidget}>Save</Button>
-          </View>
-        </ScrollView>
-        <ChoosePopup
-          visible={popupVisible}
-          type={popupType}
-          items={
-            popupType === "color"
-              ? colorOptions.map((option, index) => ({
-                  id: `${option.color}-${index}`,
-                  value: option.color,
-                  label: option.label,
-                }))
-              : Icons.map((iconName, index) => ({
-                  id: `${iconName}-${index}`,
-                  value: iconName,
-                }))
+        </View>
+      </ScrollView>
+      {(Platform.OS !== "android" || !keyboardVisible) && (
+        <Button onPress={updateWidget}>Save</Button>
+      )}
+      <ChoosePopup
+        visible={popupVisible}
+        type={popupType}
+        items={
+          popupType === "color"
+            ? colorOptions.map((option, index) => ({
+                id: `${option.color}-${index}`,
+                value: option.color,
+                label: option.label,
+              }))
+            : Icons.map((iconName, index) => ({
+                id: `${iconName}-${index}`,
+                value: iconName,
+              }))
+        }
+        selectedItem={popupType === "color" ? selectedColor : selectedIcon}
+        onSelect={(itemValue) => {
+          if (popupType === "color") {
+            setSelectedColor(itemValue);
+          } else {
+            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
           }
-          selectedItem={popupType === "color" ? selectedColor : selectedIcon}
-          onSelect={(itemValue) => {
-            if (popupType === "color") {
-              setSelectedColor(itemValue);
-            } else {
-              setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
-            }
-          }}
-          onClose={() => setPopupVisible(false)}
-          onDone={() => setPopupVisible(false)}
-        />
-      </ThemedView>
-    </SafeAreaView>
+        }}
+        onClose={() => setPopupVisible(false)}
+        onDone={() => setPopupVisible(false)}
+      />
+    </GradientBackground>
   );
+}
+function setKeyboardVisible(arg0: boolean): void {
+  throw new Error("Function not implemented.");
 }
