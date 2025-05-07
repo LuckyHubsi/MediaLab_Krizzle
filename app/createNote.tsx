@@ -30,6 +30,7 @@ import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -130,146 +131,144 @@ export default function CreateNoteScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
-          <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 100, android: 80 })}
+      topPadding={Platform.select({ ios: 0, android: 0 })}
+    >
+      <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+        <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+          <Card>
+            <View style={{ alignItems: "center", gap: 20 }}>
+              <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+              <Widget
+                title={title || "Title"}
+                label={selectedTag?.tag_label ?? "No tag"}
+                pageType={PageType.Note}
+                iconLeft={
+                  <MaterialIcons
+                    name={selectedIcon || "help"}
+                    size={20}
+                    color="black"
+                  />
+                }
+                iconRight={
+                  <MaterialIcons name="description" size={20} color="black" />
+                }
+                color={
+                  (getWidgetColorKey(
+                    selectedColor,
+                  ) as keyof typeof Colors.widget) || "#4599E8"
+                }
+              />
+            </View>
+          </Card>
+
+          <View style={{ width: "100%", gap: 20 }}>
             <Card>
-              <View style={{ alignItems: "center", gap: 20 }}>
-                <Header
-                  title="Create Note"
-                  onIconPress={() => alert("Popup!")}
-                />
-                <Widget
-                  title={title || "Title"}
-                  label={selectedTag?.tag_label ?? "No tag"}
-                  pageType={PageType.Note}
-                  iconLeft={
-                    <MaterialIcons
-                      name={selectedIcon || "help"}
-                      size={20}
-                      color="black"
-                    />
-                  }
-                  iconRight={
-                    <MaterialIcons name="description" size={20} color="black" />
-                  }
-                  color={
-                    (getWidgetColorKey(
-                      selectedColor,
-                    ) as keyof typeof Colors.widget) || "#4599E8"
-                  }
-                />
-              </View>
+              <TitleCard
+                placeholder="Add a title to your Note"
+                value={title}
+                onChangeText={(text) => {
+                  setTitle(text);
+                  if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                }}
+              />
+              {titleError && (
+                <ThemedText
+                  style={{
+                    marginTop: 5,
+                  }}
+                  fontSize="s"
+                  colorVariant="red"
+                >
+                  {titleError}
+                </ThemedText>
+              )}
+            </Card>
+            <DividerWithLabel label="optional" iconName="arrow-back" />
+            <Card>
+              <TagPicker
+                tags={tags}
+                selectedTag={selectedTag}
+                onSelectTag={(tag) => {
+                  setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
+                }}
+                onViewAllPress={() => router.push("/tagManagement")}
+              />
             </Card>
 
-            <View style={{ width: "100%", gap: 20 }}>
-              <Card>
-                <TitleCard
-                  placeholder="Add a title to your Note"
-                  value={title}
-                  onChangeText={(text) => {
-                    setTitle(text);
-                    if (text.trim().length > 0) setTitleError(null); // clear error while typing
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+                gap: 15,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <ChooseCard
+                  label={selectedColorLabel}
+                  selectedColor={selectedColor}
+                  onPress={() => {
+                    setPopupType("color");
+                    setPopupVisible(true);
                   }}
                 />
-                {titleError && (
-                  <ThemedText
-                    style={{
-                      marginTop: 5,
-                    }}
-                    fontSize="s"
-                    colorVariant="red"
-                  >
-                    {titleError}
-                  </ThemedText>
-                )}
-              </Card>
-              <DividerWithLabel label="optional" iconName="arrow-back" />
-              <Card>
-                <TagPicker
-                  tags={tags}
-                  selectedTag={selectedTag}
-                  onSelectTag={(tag) => {
-                    setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <ChooseCard
+                  label={selectedIconLabel}
+                  selectedColor={
+                    useColorScheme() === "dark"
+                      ? Colors.dark.cardBackground
+                      : Colors.light.cardBackground
+                  }
+                  selectedIcon={selectedIcon ?? undefined}
+                  onPress={() => {
+                    setPopupType("icon");
+                    setPopupVisible(true);
                   }}
-                  onViewAllPress={() => router.push("/tagManagement")}
                 />
-              </Card>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-between",
-                  gap: 15,
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <ChooseCard
-                    label={selectedColorLabel}
-                    selectedColor={selectedColor}
-                    onPress={() => {
-                      setPopupType("color");
-                      setPopupVisible(true);
-                    }}
-                  />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <ChooseCard
-                    label={selectedIconLabel}
-                    selectedColor={
-                      useColorScheme() === "dark"
-                        ? Colors.dark.cardBackground
-                        : Colors.light.cardBackground
-                    }
-                    selectedIcon={selectedIcon ?? undefined}
-                    onPress={() => {
-                      setPopupType("icon");
-                      setPopupVisible(true);
-                    }}
-                  />
-                </View>
               </View>
             </View>
           </View>
-          <View
-            style={{
-              marginTop: 20,
-              width: "100%",
-            }}
-          >
-            <Button onPress={createNote}>Create</Button>
-          </View>
-        </ScrollView>
-        <ChoosePopup
-          visible={popupVisible}
-          type={popupType}
-          items={
-            popupType === "color"
-              ? colorOptions.map((option, index) => ({
-                  id: `${option.color}-${index}`,
-                  value: option.color,
-                  label: option.label,
-                }))
-              : Icons.map((iconName, index) => ({
-                  id: `${iconName}-${index}`,
-                  value: iconName,
-                }))
-          }
-          selectedItem={popupType === "color" ? selectedColor : selectedIcon}
-          onSelect={(itemValue) => {
-            if (popupType === "color") {
-              setSelectedColor(itemValue);
-            } else {
-              setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
-            }
+        </View>
+        <View
+          style={{
+            marginTop: 20,
+            width: "100%",
           }}
-          onClose={() => setPopupVisible(false)}
-          onDone={() => setPopupVisible(false)}
-        />
-      </ThemedView>
-    </SafeAreaView>
+        >
+          <Button onPress={createNote}>Create</Button>
+        </View>
+      </ScrollView>
+      <ChoosePopup
+        visible={popupVisible}
+        type={popupType}
+        items={
+          popupType === "color"
+            ? colorOptions.map((option, index) => ({
+                id: `${option.color}-${index}`,
+                value: option.color,
+                label: option.label,
+              }))
+            : Icons.map((iconName, index) => ({
+                id: `${iconName}-${index}`,
+                value: iconName,
+              }))
+        }
+        selectedItem={popupType === "color" ? selectedColor : selectedIcon}
+        onSelect={(itemValue) => {
+          if (popupType === "color") {
+            setSelectedColor(itemValue);
+          } else {
+            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
+          }
+        }}
+        onClose={() => setPopupVisible(false)}
+        onDone={() => setPopupVisible(false)}
+      />
+    </GradientBackground>
   );
 }
