@@ -27,6 +27,11 @@ export default function TabThreeScreen() {
           iconName="local-offer"
         />
         <SettingsLink
+          label="Frequently Asked Questions"
+          href="/faq"
+          iconName="help-outline"
+        />
+        <SettingsLink
           label="Reset Data"
           href="/resetDatabase"
           iconName="delete-forever"

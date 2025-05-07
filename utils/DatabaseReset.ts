@@ -17,10 +17,6 @@ export async function resetDatabase() {
     if (dbInfo.exists) {
       // delete database file
       await FileSystem.deleteAsync(DB_PATH);
-      Alert.alert(
-        "Database Reset",
-        "The database has been reset. Restarting the app...",
-      );
 
       // reload app to reinitialize database
       await reloadAsync();
