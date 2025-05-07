@@ -127,7 +127,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 />
               </TouchableOpacity>
             </IconTopRight>
-            <View style={{ alignItems: "center" }}>
+            <View style={{ alignItems: "center", gap: 20 }}>
               <Header
                 title="Create Collection"
                 onIconPress={() => alert("Popup!")}
