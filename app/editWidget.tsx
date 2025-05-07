@@ -129,7 +129,6 @@ export default function EditWidgetScreen() {
       const fetchGeneralPage = async () => {
         try {
           const generalPageData = await getGeneralPageByID(Number(widgetID));
-          console.log("General page data:", generalPageData);
           if (generalPageData) {
             setPageData(generalPageData);
             setTitle(generalPageData.page_title || "");
