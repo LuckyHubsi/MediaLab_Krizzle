@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWindowDimensions } from "react-native";
 import { customEditorHtml } from "./TextEditorCustomHtml";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { ThemedText } from "../ThemedText";
 
 interface TextEditorProps {
   initialContent: string;
@@ -111,7 +112,15 @@ const TextEditor: React.FC<TextEditorProps> = ({
     },
     onChange: async () => {
       const html = await editor.getHTML();
-      onChange(html);
+      const plainText = html.replace(/<[^>]*>/g, "").trim();
+
+      if (plainText.length <= 5000) {
+        setCharLimitExceeded(false);
+        onChange(html);
+      } else {
+        setCharLimitExceeded(true);
+        editor.undo();
+      }
     },
   });
 
@@ -138,7 +147,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const isLandscape = width > height;
   const headerHeight = isLandscape ? 32 : 68;
   const keyboardVerticalOffset = headerHeight + top;
-
+  const [charLimitExceeded, setCharLimitExceeded] = useState(false);
   return (
     <View
       style={{
@@ -162,6 +171,14 @@ const TextEditor: React.FC<TextEditorProps> = ({
       >
         <Toolbar editor={editor} items={toolbarItems} />
       </KeyboardAvoidingView>
+      {charLimitExceeded && (
+        <View style={{ padding: 8, backgroundColor: "red" }}>
+          <ThemedText fontWeight="bold" lightColor="white" darkColor="white">
+            Character limit exceeded! Please reduce the content to 5000
+            characters.
+          </ThemedText>
+        </View>
+      )}
     </View>
   );
 };
