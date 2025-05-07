@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import Widget from "@/components/ui/Widget/Widget";
@@ -45,7 +45,7 @@ export default function CreateNoteScreen() {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
   const [tags, setTags] = useState<TagDTO[]>([]);
-
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
@@ -130,39 +130,53 @@ export default function CreateNoteScreen() {
     }, []),
   );
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
+
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 80 })}
       topPadding={Platform.select({ ios: 0, android: 0 })}
     >
+      <Card>
+        <View style={{ alignItems: "center", gap: 20 }}>
+          <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+          <Widget
+            title={title || "Title"}
+            label={selectedTag?.tag_label ?? "No tag"}
+            pageType={PageType.Note}
+            iconLeft={
+              <MaterialIcons
+                name={selectedIcon || "help"}
+                size={20}
+                color="black"
+              />
+            }
+            iconRight={
+              <MaterialIcons name="description" size={20} color="black" />
+            }
+            color={
+              (getWidgetColorKey(
+                selectedColor,
+              ) as keyof typeof Colors.widget) || "#4599E8"
+            }
+          />
+        </View>
+      </Card>
       <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
-          <Card>
-            <View style={{ alignItems: "center", gap: 20 }}>
-              <Header title="Create Note" onIconPress={() => alert("Popup!")} />
-              <Widget
-                title={title || "Title"}
-                label={selectedTag?.tag_label ?? "No tag"}
-                pageType={PageType.Note}
-                iconLeft={
-                  <MaterialIcons
-                    name={selectedIcon || "help"}
-                    size={20}
-                    color="black"
-                  />
-                }
-                iconRight={
-                  <MaterialIcons name="description" size={20} color="black" />
-                }
-                color={
-                  (getWidgetColorKey(
-                    selectedColor,
-                  ) as keyof typeof Colors.widget) || "#4599E8"
-                }
-              />
-            </View>
-          </Card>
-
           <View style={{ width: "100%", gap: 20 }}>
             <Card>
               <TitleCard
@@ -234,15 +248,11 @@ export default function CreateNoteScreen() {
             </View>
           </View>
         </View>
-        <View
-          style={{
-            marginTop: 20,
-            width: "100%",
-          }}
-        >
-          <Button onPress={createNote}>Create</Button>
-        </View>
       </ScrollView>
+      {(Platform.OS !== "android" || !keyboardVisible) && (
+        <Button onPress={createNote}>Create</Button>
+      )}
+
       <ChoosePopup
         visible={popupVisible}
         type={popupType}
