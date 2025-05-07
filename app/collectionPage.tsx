@@ -201,7 +201,16 @@ export default function CollectionScreen() {
         visible={showItemModal}
         onClose={() => setShowItemModal(false)}
         items={[
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              router.push({
+                pathname: "/editCollectionItem",
+                params: { itemId: selectedItem?.itemID },
+              });
+            },
+          },
 
           {
             label: "Delete",
