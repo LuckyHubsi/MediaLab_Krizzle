@@ -145,9 +145,8 @@ export default function TagManagementScreen() {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <CustomStyledHeader title="Tags management" />
+        <CustomStyledHeader title="Tags" />
       </View>
-      {/* <CustomStyledHeader title="Tags management" /> */}
       <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
           <FlatList
@@ -167,7 +166,6 @@ export default function TagManagementScreen() {
           />
         </View>
         <View>
-          <Button onPress={resetDatabase}>reset DB</Button>
           <Button onPress={() => setModalVisible(true)}>
             <ThemedText colorVariant="white">Add</ThemedText>
           </Button>
