@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, ScrollView } from "react-native";
@@ -16,9 +16,9 @@ import {
   CollectionSelectable,
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
-import { getItemsByPageId } from "@/services/ItemService";
+import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import {
@@ -26,6 +26,7 @@ import {
   togglePageArchive,
   togglePagePin,
 } from "@/services/GeneralPageService";
+import { PreviewItemDTO } from "@/dto/ItemDTO";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -39,30 +40,35 @@ export default function CollectionScreen() {
   const [listNames, setListNames] = useState<string[]>([]);
   const [items, setItems] = useState<ItemsDTO>();
   const [showModal, setShowModal] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
   const [shouldReload, setShouldReload] = useState<boolean>();
+  const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
 
-  useEffect(() => {
-    (async () => {
-      const numericID = Number(pageId);
-      if (!isNaN(numericID)) {
-        const collectionData = await getCollectionByPageId(numericID);
-        if (collectionData) {
-          setCollection(collectionData);
-          if (collectionData.categories) {
-            const listNames = [];
-            for (const list of collectionData.categories) {
-              listNames.push(list.category_name);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionData = await getCollectionByPageId(numericID);
+          if (collectionData) {
+            setCollection(collectionData);
+            if (collectionData.categories) {
+              const listNames = [];
+              for (const list of collectionData.categories) {
+                listNames.push(list.category_name);
+              }
+              setListNames(listNames);
             }
-            setListNames(listNames);
           }
+          const items: ItemsDTO = await getItemsByPageId(numericID);
+          if (items) setItems(items);
         }
-        const items: ItemsDTO = await getItemsByPageId(numericID);
-        if (items) setItems(items);
-      }
-      setShouldReload(false);
-    })();
-  }, [pageId, shouldReload]);
+        setShouldReload(false);
+      })();
+    }, [pageId, shouldReload]),
+  );
 
   return (
     <>
@@ -80,12 +86,10 @@ export default function CollectionScreen() {
             placeholder="Search" // Placeholder text for the search bar
             onSearch={(text) => {}}
           />
-          {/* //Hardcoded data for testing purposes */}
           <CollectionList
             collectionLists={listNames}
             onPress={() => console.log("Pressed!")}
           />
-          {/* //Hardcoded data for testing purposes */}
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, gap: 12 }}>
               {items?.items.map((item) => (
@@ -98,6 +102,10 @@ export default function CollectionScreen() {
                       pathname: "/collectionItemPage",
                       params: { itemId: item.itemID.toString() },
                     });
+                  }}
+                  onLongPress={() => {
+                    setSelectedItem(item);
+                    setShowItemModal(true);
                   }}
                 />
               ))}
@@ -173,6 +181,22 @@ export default function CollectionScreen() {
           },
         ]}
       />
+      <QuickActionModal
+        visible={showItemModal}
+        onClose={() => setShowItemModal(false)}
+        items={[
+          { label: "Edit", icon: "edit", onPress: () => {} },
+
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowItemDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
       <DeleteModal
         visible={showDeleteModal}
         title={title}
@@ -186,11 +210,30 @@ export default function CollectionScreen() {
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {
-              console.error("Error deleting note:", error);
+              console.error("Error deleting collection:", error);
             }
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+      <DeleteModal
+        visible={showItemDeleteModal}
+        title={title}
+        onCancel={() => setShowItemDeleteModal(false)}
+        onConfirm={async () => {
+          if (selectedItem) {
+            try {
+              const itemIdAsNumber = Number(selectedItem.itemID);
+              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+
+              setShowItemDeleteModal(false);
+              setShouldReload(true);
+            } catch (error) {
+              console.error("Error deleting item:", error);
+            }
+          }
+        }}
+        onclose={() => setShowItemDeleteModal(false)}
       />
     </>
   );
