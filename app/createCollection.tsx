@@ -43,7 +43,7 @@ export default function CollectionTemplateScreen() {
       archived: false,
       pinned: false,
       categories: lists,
-      tag: null,
+      tag: collectionData.selectedTag,
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(

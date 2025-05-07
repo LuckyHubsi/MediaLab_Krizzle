@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,12 +28,14 @@ import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
+import { getAllTags } from "@/services/TagService";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
@@ -41,8 +43,7 @@ export default function CreateNoteScreen() {
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
-
-  const tags = ["Work", "Personal", "Urgent", "Ideas"];
+  const [tags, setTags] = useState<TagDTO[]>([]);
 
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = selectedIcon
@@ -84,10 +85,17 @@ export default function CreateNoteScreen() {
     let tagDTO: TagDTO | null = null;
 
     if (selectedTag !== null) {
-      tagDTO = {
-        tag_label: selectedTag,
-      };
+      const matchingTag = tags.find(
+        (tag) => tag.tag_label === selectedTag?.tag_label,
+      );
+      if (matchingTag) {
+        tagDTO = {
+          tagID: matchingTag.tagID,
+          tag_label: matchingTag.tag_label,
+        };
+      }
     }
+
     const noteDTO: NoteDTO = {
       page_type: PageType.Note,
       page_title: title,
@@ -106,6 +114,21 @@ export default function CreateNoteScreen() {
     });
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTags = async () => {
+        try {
+          const tagData = await getAllTags();
+          if (tagData) setTags(tagData);
+        } catch (error) {
+          console.error("Failed to load tags:", error);
+        }
+      };
+
+      fetchTags();
+    }, []),
+  );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ThemedView style={{ flex: 1 }}>
@@ -119,7 +142,7 @@ export default function CreateNoteScreen() {
                 />
                 <Widget
                   title={title || "Title"}
-                  label={selectedTag ?? "No tag"}
+                  label={selectedTag?.tag_label ?? "No tag"}
                   pageType={PageType.Note}
                   iconLeft={
                     <MaterialIcons
