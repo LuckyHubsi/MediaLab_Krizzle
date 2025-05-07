@@ -157,7 +157,8 @@ export default function CollectionScreen() {
               }
             },
           },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          { label: "Edit Widget", icon: "edit", onPress: () => {} },
+          { label: "Edit Lists", icon: "edit-note", onPress: () => {} },
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
