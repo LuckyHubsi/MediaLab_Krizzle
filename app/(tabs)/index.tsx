@@ -65,7 +65,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [widgetToDelete, setWidgetToDelete] = useState<Widget | null>(null);
+  const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
   const [tags, setTags] = useState<TagDTO[]>([]);
 
   const getColorKeyFromValue = (
@@ -91,7 +91,8 @@ export default function HomeScreen() {
         id: String(widget.pageID),
         title: widget.page_title,
         tag: widget.tag || { tag_label: "Uncategorized" },
-        color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
+        color:
+          getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
         page_type: widget.page_type,
         iconLeft: widget.page_icon
           ? getMaterialIcon(widget.page_icon)
@@ -159,6 +160,15 @@ export default function HomeScreen() {
     });
   };
 
+  const goToEditPage = (widget: Widget) => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: widget.id },
+    });
+  };
+
   return (
     <>
       <SafeAreaView>
@@ -178,7 +188,6 @@ export default function HomeScreen() {
             <EmptyHome />
           ) : (
             <>
-              {/* <Button onPress={resetDatabase}>reset all</Button> */}
               <SearchBar
                 placeholder="Search"
                 onSearch={(query) => setSearchQuery(query)}
@@ -218,7 +227,7 @@ export default function HomeScreen() {
                           goToPage(item);
                         }}
                         onLongPress={() => {
-                          setWidgetToDelete(item);
+                          setSelectedWidget(item);
                           setShowModal(true);
                         }}
                       />
@@ -244,8 +253,16 @@ export default function HomeScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Pin item", icon: "push-pin", onPress: () => {} },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          { label: "Pin Widget", icon: "push-pin", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              if (selectedWidget) {
+                goToEditPage(selectedWidget);
+              }
+            },
+          },
           { label: "Archive", icon: "archive", onPress: () => {} },
           {
             label: "Delete",
@@ -259,12 +276,12 @@ export default function HomeScreen() {
       />
       <DeleteModal
         visible={showDeleteModal}
-        title={widgetToDelete?.title}
+        title={selectedWidget?.title}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (widgetToDelete) {
+          if (selectedWidget) {
             try {
-              const widgetIdAsNumber = Number(widgetToDelete.id);
+              const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
@@ -272,7 +289,7 @@ export default function HomeScreen() {
               const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
               setWidgets(enrichedWidgets);
 
-              setWidgetToDelete(null);
+              setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {
               console.error("Error deleting page:", error);
