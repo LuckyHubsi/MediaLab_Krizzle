@@ -6,12 +6,26 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { Card } from "@/components/ui/Card/Card";
 import { ThemeSelector } from "@/components/ui/ThemeSelector/ThemeSelector";
 import { useUserTheme } from "@/context/ThemeContext";
-import { useColorScheme } from "react-native";
+import { useColorScheme, ActivityIndicator } from "react-native";
 
 export default function AppearanceScreen() {
-  const { userTheme, setUserTheme } = useUserTheme();
+  const { userTheme, saveUserTheme, isLoading } = useUserTheme();
   const systemColorScheme = useColorScheme() ?? "light";
   const selectedTheme = userTheme === "system" ? systemColorScheme : userTheme;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView>
+        <CustomStyledHeader title={"Appearance"} iconName="more-horiz" />
+        <ThemedView
+          style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
+        >
+          <ActivityIndicator size="large" />
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView>
       <CustomStyledHeader title={"Appearance"} iconName="more-horiz" />
@@ -22,7 +36,7 @@ export default function AppearanceScreen() {
         <Card>
           <ThemeSelector
             selected={selectedTheme}
-            onSelect={(theme) => setUserTheme(theme)}
+            onSelect={(theme) => saveUserTheme(theme)}
           />
         </Card>
       </ThemedView>
