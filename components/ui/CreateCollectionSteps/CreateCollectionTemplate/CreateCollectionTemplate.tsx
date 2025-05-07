@@ -1,5 +1,13 @@
 import { FC, useState, useEffect } from "react";
-import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import {
   ItemCountContainer,
@@ -35,36 +43,24 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const cards = data.templates;
 
   const [hasClickedNext, setHasClickedNext] = useState(false);
-
-  const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
-    "short-text",
-    "calendar-today",
-    "layers",
-  ];
-
-  const getIconForType = (type: string) => {
-    switch (type) {
-      case "text":
-        return "short-text";
-      case "date":
-        return "calendar-today";
-      case "multi-select":
-        return "layers";
-      case "rating":
-        return "star-rate";
-      default:
-        return "short-text";
-    }
-  };
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const titleCard = cards[0];
   const otherCards = cards.slice(1);
 
-  const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
-
-  const [showHelp, setShowHelp] = useState(false);
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true),
+    );
+    const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false),
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (!titleCard) {
@@ -84,6 +80,23 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       }));
     }
   }, []);
+
+  const getIconForType = (type: string) => {
+    switch (type) {
+      case "text":
+        return "short-text";
+      case "date":
+        return "calendar-today";
+      case "multi-select":
+        return "layers";
+      case "rating":
+        return "star-rate";
+      default:
+        return "short-text";
+    }
+  };
+
+  const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
 
   const handleAddCard = () => {
     if (otherCards.length >= 10) return;
@@ -183,158 +196,170 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  const iconColor =
+    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
+
   return (
     <>
-      <Card>
-        <CardText>
-          <CardHeader>
-            <ThemedText fontSize="l" fontWeight="bold">
-              Adding Templates
-            </ThemedText>
-            <TouchableOpacity onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={Colors.primary}
-              />
-            </TouchableOpacity>
-          </CardHeader>
-          <ThemedText
-            fontSize="s"
-            fontWeight="light"
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            Create a Template for your Collection Items.
-          </ThemedText>
-        </CardText>
-      </Card>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+          <Card>
+            <CardText>
+              <CardHeader>
+                <ThemedText fontSize="l" fontWeight="bold">
+                  Adding Templates
+                </ThemedText>
+                <TouchableOpacity onPress={() => setShowHelp(true)}>
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={Colors.primary}
+                  />
+                </TouchableOpacity>
+              </CardHeader>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Create a Template for your Collection Items.
+              </ThemedText>
+            </CardText>
+          </Card>
 
-      <ItemCountContainer>
-        <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-            {otherCards.length}
-          </ThemedText>
-          <ThemedText
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            /10 Item Types
-          </ThemedText>
-        </ItemCount>
-        <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={previewCount <= 2 ? "primary" : "red"}>
-            {Math.min(previewCount, 3)}
-          </ThemedText>
-          <ThemedText
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            /3 Item Previews
-          </ThemedText>
-        </ItemCount>
-      </ItemCountContainer>
+          <ItemCountContainer>
+            <ItemCount colorScheme={colorScheme}>
+              <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
+                {otherCards.length}
+              </ThemedText>
+              <ThemedText
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                /10 Item Types
+              </ThemedText>
+            </ItemCount>
+            <ItemCount colorScheme={colorScheme}>
+              <ThemedText colorVariant={previewCount <= 2 ? "primary" : "red"}>
+                {Math.min(previewCount, 3)}
+              </ThemedText>
+              <ThemedText
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                /3 Item Previews
+              </ThemedText>
+            </ItemCount>
+          </ItemCountContainer>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 75 }}>
-        {titleCard && (
-          <ItemTemplateCard
-            isTitleCard={true}
-            itemType={titleCard.itemType}
-            textfieldIcon={getIconForType(titleCard.itemType)}
-            isPreview={true}
-            title={titleCard.title}
-            onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
-            hasNoInputError={
-              hasClickedNext &&
-              (!titleCard.title || titleCard.title.trim() === "")
-            }
+          {titleCard && (
+            <ItemTemplateCard
+              isTitleCard
+              itemType={titleCard.itemType}
+              textfieldIcon={getIconForType(titleCard.itemType)}
+              isPreview
+              title={titleCard.title}
+              onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
+              hasNoInputError={
+                hasClickedNext &&
+                (!titleCard.title || titleCard.title.trim() === "")
+              }
+            />
+          )}
+
+          <ThemedText colorVariant="grey" style={{ margin: 10 }}>
+            Your Templates:
+          </ThemedText>
+
+          {otherCards.map((card) => (
+            <ItemTemplateCard
+              key={card.id}
+              isTitleCard={false}
+              isPreview={card.isPreview}
+              itemType={card.itemType}
+              textfieldIcon={getIconForType(card.itemType)}
+              title={card.title}
+              rating={card.rating}
+              options={card.options}
+              onTypeChange={(newType) => handleTypeChange(card.id, newType)}
+              onTitleChange={(text) => handleTitleChange(card.id, text)}
+              onRatingChange={(newRating) =>
+                handleRatingChange(card.id, newRating)
+              }
+              onOptionsChange={(newOptions) =>
+                handleOptionsChange(card.id, newOptions)
+              }
+              onRemove={() => handleRemoveCard(card.id)}
+              onPreviewToggle={() => handlePreviewToggle(card.id)}
+              hasNoInputError={
+                hasClickedNext && (!card.title || card.title.trim() === "")
+              }
+              hasNoMultiSelectableError={
+                hasClickedNext &&
+                card.itemType === "multi-select" &&
+                (!card.options ||
+                  card.options.length === 0 ||
+                  card.options.some((o) => o.trim() === ""))
+              }
+              previewCount={previewCount}
+            />
+          ))}
+
+          <AddButton
+            onPress={() => {
+              handleAddCard();
+              setHasClickedNext(false);
+            }}
+            isDisabled={otherCards.length >= 10}
           />
-        )}
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-        <ThemedText colorVariant="grey" style={{ margin: 10 }}>
-          Your Templates:
-        </ThemedText>
+      {!keyboardVisible && (
+        <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
+          <BottomButtons
+            variant="back"
+            titleLeftButton="Back"
+            titleRightButton="Add"
+            onDiscard={onBack!}
+            onNext={() => {
+              setHasClickedNext(true);
 
-        {otherCards.map((card) => (
-          <ItemTemplateCard
-            key={card.id}
-            isTitleCard={false}
-            isPreview={card.isPreview}
-            itemType={card.itemType}
-            textfieldIcon={getIconForType(card.itemType)}
-            title={card.title}
-            rating={card.rating}
-            options={card.options}
-            onTypeChange={(newType) => handleTypeChange(card.id, newType)}
-            onTitleChange={(text) => handleTitleChange(card.id, text)}
-            onRatingChange={(newRating) =>
-              handleRatingChange(card.id, newRating)
-            }
-            onOptionsChange={(newOptions) =>
-              handleOptionsChange(card.id, newOptions)
-            }
-            onRemove={() => handleRemoveCard(card.id)}
-            onPreviewToggle={() => handlePreviewToggle(card.id)}
-            hasNoInputError={
-              hasClickedNext && (!card.title || card.title.trim() === "")
-            }
-            hasNoMultiSelectableError={
-              hasClickedNext &&
-              card.itemType === "multi-select" &&
-              (!card.options ||
-                card.options.length === 0 ||
-                card.options.some((o) => o.trim() === ""))
-            }
-            previewCount={previewCount}
+              const isMainTitleFilled = !!titleCard?.title?.trim();
+
+              const allOtherTitlesFilled = otherCards.every((card) => {
+                const titleFilled = !!card.title?.trim();
+                if (card.itemType === "multi-select") {
+                  const hasValidOptions =
+                    (card?.options ?? []).length > 0 &&
+                    (card.options ?? []).every((o) => o.trim() !== "");
+                  return titleFilled && hasValidOptions;
+                }
+                return titleFilled;
+              });
+
+              if (!isMainTitleFilled || !allOtherTitlesFilled) {
+                Alert.alert(
+                  "Please fill in all titles and select at least one option before continuing.",
+                );
+                return;
+              }
+
+              onNext?.();
+            }}
+            hasProgressIndicator
+            progressStep={3}
           />
-        ))}
-
-        <AddButton
-          onPress={() => {
-            handleAddCard();
-            setHasClickedNext(false);
-          }}
-          isDisabled={otherCards.length >= 10}
-        />
-      </ScrollView>
-
-      <BottomButtons
-        variant={"back"}
-        titleLeftButton={"Back"}
-        titleRightButton={"Add"}
-        onDiscard={onBack!}
-        onNext={() => {
-          setHasClickedNext(true);
-
-          const isMainTitleFilled = !!titleCard?.title?.trim();
-
-          const allOtherTitlesFilled = otherCards.every((card) => {
-            const titleFilled = !!card.title?.trim();
-            if (card.itemType === "multi-select") {
-              const hasValidOptions =
-                (card?.options ?? []).length > 0 &&
-                (card.options ?? []).every((o) => o.trim() !== "");
-              return titleFilled && hasValidOptions;
-            }
-            return titleFilled;
-          });
-
-          if (!isMainTitleFilled || !allOtherTitlesFilled) {
-            Alert.alert(
-              "Please fill in all titles and select at least one option before continuing.",
-            );
-            return;
-          }
-
-          onNext?.();
-        }}
-        hasProgressIndicator={true}
-        progressStep={3}
-      />
+        </View>
+      )}
 
       {showHelp && (
         <InfoPopup
           visible={showHelp}
           onClose={() => setShowHelp(false)}
           image={require("@/assets/images/item_template_popup.png")}
-          title=" What is an Item Template?"
+          title="What is an Item Template?"
           description={`Item Templates regulate what kind of fields you can enter for each (new) item of the Collection. For example, inside your Books Collection you could create a Template for each Book you want to put into the Collection. Like genres!  📚`}
         />
       )}
