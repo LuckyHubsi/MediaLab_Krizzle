@@ -19,6 +19,13 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
 import { getItemsByPageId } from "@/services/ItemService";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import {
+  deleteGeneralPage,
+  togglePageArchive,
+  togglePagePin,
+} from "@/services/GeneralPageService";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -31,6 +38,9 @@ export default function CollectionScreen() {
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
   const [items, setItems] = useState<ItemsDTO>();
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [shouldReload, setShouldReload] = useState<boolean>();
 
   useEffect(() => {
     (async () => {
@@ -50,8 +60,9 @@ export default function CollectionScreen() {
         const items: ItemsDTO = await getItemsByPageId(numericID);
         if (items) setItems(items);
       }
+      setShouldReload(false);
     })();
-  }, [pageId]);
+  }, [pageId, shouldReload]);
 
   return (
     <>
@@ -62,7 +73,7 @@ export default function CollectionScreen() {
           iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => alert("Popup!")} // action when icon menu is pressed
+          onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
         />
         <ThemedView topPadding={0}>
           <SearchBar
@@ -115,6 +126,73 @@ export default function CollectionScreen() {
           </View>
         </ThemedView>
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          {
+            label: collection?.pinned ? "Unpin item" : "Pin item",
+            icon: "push-pin",
+            onPress: async () => {
+              if (
+                (collection &&
+                  !collection.pinned &&
+                  collection.pin_count != null &&
+                  collection.pin_count < 4) ||
+                (collection && collection?.pinned)
+              ) {
+                const success = await togglePagePin(
+                  Number(collection.pageID),
+                  collection.pinned,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: collection?.archived ? "Restore" : "Archive",
+            icon: collection?.archived ? "restore" : "archive",
+            onPress: async () => {
+              if (collection) {
+                const success = await togglePageArchive(
+                  Number(pageId),
+                  collection.archived,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
+      <DeleteModal
+        visible={showDeleteModal}
+        title={title}
+        typeToDelete="note"
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          if (pageId) {
+            try {
+              const widgetIdAsNumber = Number(pageId);
+              const successfullyDeleted =
+                await deleteGeneralPage(widgetIdAsNumber);
+              setShowDeleteModal(false);
+              router.replace("/");
+            } catch (error) {
+              console.error("Error deleting note:", error);
+            }
+          }
+        }}
+        onclose={() => setShowDeleteModal(false)}
+      />
     </>
   );
 }

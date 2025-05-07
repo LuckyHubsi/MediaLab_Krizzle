@@ -29,6 +29,7 @@ export class GeneralPageMapper {
       archived: model.archived === 1,
       pinned: model.pinned === 1,
       tag,
+      pin_count: model.pin_count,
     };
   }
 }

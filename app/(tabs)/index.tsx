@@ -16,6 +16,8 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import {
   deleteGeneralPage,
   getAllGeneralPageData,
+  togglePageArchive,
+  togglePagePin,
 } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -27,6 +29,8 @@ import { resetDatabase } from "@/utils/DatabaseReset";
 import { Button } from "@/components/ui/Button/Button";
 import { TagDTO } from "@/dto/TagDTO";
 import { getAllTags } from "@/services/TagService";
+import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
 export const getMaterialIcon = (name: string, size = 20, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -57,16 +61,21 @@ export default function HomeScreen() {
     page_icon?: string;
     page_type: PageType;
     color?: string;
+    archived: boolean;
+    pinned: boolean;
     [key: string]: any;
   }
 
+  const [shouldReload, setShouldReload] = useState<boolean>(false);
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
+  const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
   const [tags, setTags] = useState<TagDTO[]>([]);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const getColorKeyFromValue = (
     value: string,
@@ -100,6 +109,8 @@ export default function HomeScreen() {
         iconRight: widget.page_type
           ? getIconForPageType(widget.page_type)
           : undefined,
+        archived: widget.archived,
+        pinned: widget.pinned,
       }));
 
       return enrichedWidgets;
@@ -108,17 +119,22 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const fetchWidgets = async () => {
+      (async () => {
         try {
-          const data = await getAllGeneralPageData();
+          const pinnedData = await getAllGeneralPageData(
+            GeneralPageState.Pinned,
+          );
+          const pinnedEnrichedWidgets: Widget[] =
+            mapToEnrichedWidgets(pinnedData);
+          setPinnedWidgets(pinnedEnrichedWidgets);
 
+          const data = await getAllGeneralPageData(GeneralPageState.General);
           const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
-
           setWidgets(enrichedWidgets);
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
-      };
+      })();
 
       const fetchTags = async () => {
         try {
@@ -130,11 +146,11 @@ export default function HomeScreen() {
       };
 
       fetchTags();
-      fetchWidgets();
-    }, []),
+      setShouldReload(false);
+    }, [shouldReload]),
   );
 
-  const filteredWidgets = useMemo(() => {
+  const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
 
     return widgets.filter((widget) => {
@@ -148,7 +164,15 @@ export default function HomeScreen() {
 
       return matchesTag && matchesTitle;
     });
+  };
+
+  const filteredWidgets = useMemo(() => {
+    return filter(widgets);
   }, [widgets, selectedTag, searchQuery]);
+
+  const filteredPinnedWidgets = useMemo(() => {
+    return filter(pinnedWidgets);
+  }, [pinnedWidgets, selectedTag, searchQuery]);
 
   const goToPage = (widget: Widget) => {
     const path =
@@ -167,6 +191,39 @@ export default function HomeScreen() {
       pathname: path,
       params: { widgetID: widget.id },
     });
+  const widgetDisplay = (headline: string, data: Widget[]): React.ReactNode => {
+    return (
+      <>
+        <ThemedText fontSize="regular" fontWeight="regular">
+          {headline}
+        </ThemedText>
+
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id}
+          numColumns={columns}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginBottom: 16,
+          }}
+          renderItem={({ item }) => (
+            <Widget
+              title={item.title}
+              label={item.tag.tag_label}
+              iconLeft={item.iconLeft}
+              iconRight={item.iconRight}
+              color={item.color as keyof typeof Colors.widget}
+              pageType={item.page_type}
+              onPress={() => goToPage(item)}
+              onLongPress={() => {
+                setSelectedWidget(item);
+                setShowModal(true);
+              }}
+            />
+          )}
+        />
+      </>
+    );
   };
 
   return (
@@ -184,8 +241,13 @@ export default function HomeScreen() {
             Home
           </ThemedText>
 
-          {widgets.length === 0 ? (
-            <EmptyHome />
+          {widgets.length === 0 && pinnedWidgets.length === 0 ? (
+            <EmptyHome
+              text="Add your first note/collection"
+              buttonLabel="Start"
+              useModal={false}
+              onButtonPress={() => setModalVisible(true)}
+            />
           ) : (
             <>
               <SearchBar
@@ -201,40 +263,13 @@ export default function HomeScreen() {
                 }}
               />
 
-              {filteredWidgets.length > 0 ? (
-                <>
-                  <ThemedText fontSize="regular" fontWeight="regular">
-                    Recent
-                  </ThemedText>
+              {filteredPinnedWidgets.length > 0 &&
+                widgetDisplay("Pinned", filteredPinnedWidgets)}
+              {filteredWidgets.length > 0 &&
+                widgetDisplay("Recent", filteredWidgets)}
 
-                  <FlatList
-                    data={filteredWidgets}
-                    keyExtractor={(item) => item.id}
-                    numColumns={columns}
-                    columnWrapperStyle={{
-                      justifyContent: "space-between",
-                      marginBottom: 16,
-                    }}
-                    renderItem={({ item }) => (
-                      <Widget
-                        title={item.title}
-                        label={item.tag.tag_label}
-                        iconLeft={item.iconLeft}
-                        iconRight={item.iconRight}
-                        color={item.color as keyof typeof Colors.widget}
-                        pageType={item.page_type}
-                        onPress={() => {
-                          goToPage(item);
-                        }}
-                        onLongPress={() => {
-                          setSelectedWidget(item);
-                          setShowModal(true);
-                        }}
-                      />
-                    )}
-                  />
-                </>
-              ) : (
+              {filteredPinnedWidgets.length <= 0 &&
+              filteredWidgets.length <= 0 ? (
                 <ThemedText
                   fontSize="regular"
                   fontWeight="regular"
@@ -244,7 +279,7 @@ export default function HomeScreen() {
                     ? "No entries found."
                     : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
                 </ThemedText>
-              )}
+              ) : null}
             </>
           )}
         </ThemedView>
@@ -253,7 +288,24 @@ export default function HomeScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Pin Widget", icon: "push-pin", onPress: () => {} },
+          {
+            label: selectedWidget?.pinned ? "Unpin Widget" : "Pin Widget",
+            icon: "push-pin",
+            onPress: async () => {
+              if (
+                (selectedWidget &&
+                  !selectedWidget.pinned &&
+                  pinnedWidgets.length < 4) ||
+                (selectedWidget && selectedWidget?.pinned)
+              ) {
+                const success = await togglePagePin(
+                  Number(selectedWidget.id),
+                  selectedWidget.pinned,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
           {
             label: "Edit",
             icon: "edit",
@@ -262,8 +314,19 @@ export default function HomeScreen() {
                 goToEditPage(selectedWidget);
               }
             },
+          },          {
+            label: "Archive",
+            icon: "archive",
+            onPress: async () => {
+              if (selectedWidget) {
+                const success = await togglePageArchive(
+                  Number(selectedWidget.id),
+                  selectedWidget.archived,
+                );
+                setShouldReload(success);
+              }
+            },
           },
-          { label: "Archive", icon: "archive", onPress: () => {} },
           {
             label: "Delete",
             icon: "delete",
@@ -273,6 +336,10 @@ export default function HomeScreen() {
             danger: true,
           },
         ]}
+      />
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
       />
       <DeleteModal
         visible={showDeleteModal}
@@ -285,9 +352,7 @@ export default function HomeScreen() {
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
-              const data = await getAllGeneralPageData();
-              const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
-              setWidgets(enrichedWidgets);
+              setShouldReload(successfullyDeleted);
 
               setSelectedWidget(null);
               setShowDeleteModal(false);
@@ -300,4 +365,4 @@ export default function HomeScreen() {
       />
     </>
   );
-}
+}}

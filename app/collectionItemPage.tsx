@@ -5,9 +5,10 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
-import { getItemById } from "@/services/ItemService";
+import { deleteItemById, getItemById } from "@/services/ItemService";
 import { ItemDTO } from "@/dto/ItemDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -16,12 +17,22 @@ export default function CollectionItemScreen() {
 
   const [item, setItem] = useState<ItemDTO>();
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemName, setItemName] = useState<string>("");
 
   useEffect(() => {
     (async () => {
       const numericItemId = Number(itemId);
       const item = await getItemById(numericItemId);
       setItem(item);
+
+      if (
+        item &&
+        item.attributeValues &&
+        "valueString" in item.attributeValues[0]
+      ) {
+        setItemName(item?.attributeValues[0]?.valueString || "");
+      }
     })();
   }, [itemId]);
 
@@ -58,10 +69,31 @@ export default function CollectionItemScreen() {
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => {},
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
             danger: true,
           },
         ]}
+      />
+      <DeleteModal
+        visible={showDeleteModal}
+        title={itemName}
+        typeToDelete="widget"
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          if (item) {
+            try {
+              const itemIdAsNumber = Number(item.itemID);
+              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+
+              setShowDeleteModal(false);
+            } catch (error) {
+              console.error("Error deleting item:", error);
+            }
+          }
+        }}
+        onclose={() => setShowDeleteModal(false)}
       />
     </>
   );
