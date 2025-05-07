@@ -123,13 +123,13 @@ const insertMultiselectValueQuery: string = `
 `;
 
 const updateItem: string = `
-    UPDATE items 
+    UPDATE item 
     SET category = ?
     WHERE itemID = ?
 `;
 
 const deleteItemQuery: string = `
-    DELETE FROM items WHERE itemID = ? RETURNING pageID
+    DELETE FROM item WHERE itemID = ? RETURNING pageID
 `;
 
 const deleteItemAttributeValuesQuery: string = `
