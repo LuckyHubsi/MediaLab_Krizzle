@@ -51,3 +51,21 @@ export const RadioButtonInner = styled.View`
   border-radius: 6px;
   background-color: #007aff;
 `;
+
+export const ResetContainer = styled.View`
+  margin-top: 20px;
+  align-items: center;
+`;
+
+export const ResetButton = styled.TouchableOpacity`
+  padding-vertical: 8px;
+  padding-horizontal: 16px;
+  border-radius: 8px;
+  border-width: 1px;
+  border-color: #ccc;
+`;
+
+export const ResetButtonText = styled.Text`
+  color: #ff3b30; /* iOS red for destructive actions */
+  font-size: 14px;
+`;
