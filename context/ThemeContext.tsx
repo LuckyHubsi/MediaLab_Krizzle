@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useColorScheme as useSystemColorScheme } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type ThemeOption = "light" | "dark" | "system";
+const THEME_STORAGE_KEY = "user-theme-preference";
 
 type UserThemeContextType = {
   userTheme: ThemeOption;
-  setUserTheme: (theme: ThemeOption) => void;
+  saveUserTheme: (theme: ThemeOption) => void;
+  isLoading: boolean;
 };
 
 const UserThemeContext = createContext<UserThemeContextType | undefined>(
@@ -14,9 +17,36 @@ const UserThemeContext = createContext<UserThemeContextType | undefined>(
 
 export function UserThemeProvider({ children }: { children: React.ReactNode }) {
   const [userTheme, setUserTheme] = useState<ThemeOption>("system");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSavedTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme !== null) {
+          setUserTheme(savedTheme as ThemeOption);
+        }
+      } catch (error) {
+        console.error("Failed to load preferred theme:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedTheme();
+  }, []);
+
+  const saveUserTheme = async (theme: ThemeOption) => {
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, theme);
+      setUserTheme(theme);
+    } catch (error) {
+      console.error("Failed to save preferred theme:", error);
+    }
+  };
 
   return (
-    <UserThemeContext.Provider value={{ userTheme, setUserTheme }}>
+    <UserThemeContext.Provider value={{ userTheme, saveUserTheme, isLoading }}>
       {children}
     </UserThemeContext.Provider>
   );
