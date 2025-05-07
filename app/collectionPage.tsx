@@ -245,7 +245,7 @@ export default function CollectionScreen() {
       />
       <DeleteModal
         visible={showItemDeleteModal}
-        title={title}
+        title={selectedItem?.values[0]?.toString() || ""}
         onCancel={() => setShowItemDeleteModal(false)}
         onConfirm={async () => {
           if (selectedItem) {
@@ -254,7 +254,7 @@ export default function CollectionScreen() {
               const successfullyDeleted = await deleteItemById(itemIdAsNumber);
 
               setShowItemDeleteModal(false);
-              setShouldReload(true);
+              setShouldReload(successfullyDeleted);
             } catch (error) {
               console.error("Error deleting item:", error);
             }
