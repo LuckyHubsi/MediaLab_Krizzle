@@ -257,7 +257,7 @@ export default function HomeScreen() {
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: selectedWidget?.pinned ? "Unpin item" : "Pin item",
+            label: selectedWidget?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
             onPress: async () => {
               if (
@@ -274,7 +274,7 @@ export default function HomeScreen() {
               }
             },
           },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          { label: "Edit Widget", icon: "edit", onPress: () => {} },
           {
             label: "Archive",
             icon: "archive",
