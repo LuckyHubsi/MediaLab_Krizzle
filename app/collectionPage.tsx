@@ -27,6 +27,7 @@ import {
   togglePagePin,
 } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -62,8 +63,8 @@ export default function CollectionScreen() {
               setListNames(listNames);
             }
           }
-          const items: ItemsDTO = await getItemsByPageId(numericID);
-          if (items) setItems(items);
+          const retrievedItems: ItemsDTO = await getItemsByPageId(numericID);
+          if (retrievedItems) setItems(retrievedItems);
         }
         setShouldReload(false);
       })();
@@ -101,23 +102,33 @@ export default function CollectionScreen() {
           />
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, gap: 12 }}>
-              {items?.items.map((item) => (
-                <CollectionWidget
-                  key={item.itemID}
-                  attributes={items.attributes}
-                  item={item}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/collectionItemPage",
-                      params: { itemId: item.itemID.toString() },
-                    });
-                  }}
-                  onLongPress={() => {
-                    setSelectedItem(item);
-                    setShowItemModal(true);
-                  }}
-                />
-              ))}
+              {items?.items && items?.items.length ? (
+                items.items.map((item) => (
+                  <CollectionWidget
+                    key={item.itemID}
+                    attributes={items.attributes}
+                    item={item}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/collectionItemPage",
+                        params: { itemId: item.itemID.toString() },
+                      });
+                    }}
+                    onLongPress={() => {
+                      setSelectedItem(item);
+                      setShowItemModal(true);
+                    }}
+                  />
+                ))
+              ) : (
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="regular"
+                  style={{ textAlign: "center", marginTop: 25 }}
+                >
+                  No collection items found.
+                </ThemedText>
+              )}
             </View>
           </ScrollView>
 

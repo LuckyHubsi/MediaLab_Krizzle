@@ -75,10 +75,16 @@ const getItemsByPageId = async (pageID: number): Promise<ItemsDTO> => {
       pageID,
     ]);
 
-    if (rawResults) {
-      return ItemsMapper.toDTO(rawResults);
+    if (rawResults && rawResults.length > 0) {
+      const dto = ItemsMapper.toDTO(rawResults);
+      return dto;
     } else {
-      throw new DatabaseError("Error retrieving items by page id");
+      return {
+        collectionID: pageID,
+        pageID,
+        attributes: [],
+        items: [],
+      };
     }
   } catch (error) {
     throw new DatabaseError("Error retrieving items by page id");
