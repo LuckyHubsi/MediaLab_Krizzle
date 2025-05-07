@@ -15,7 +15,7 @@ export const ItemCountContainer = styled.View`
 `;
 
 export const ItemCount = styled.View`
-  width: 50%;
+  width: 48%;
   flex-direction: row;
   border-radius: 33px;
   border: 1px solid

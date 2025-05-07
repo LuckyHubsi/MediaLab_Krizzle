@@ -9,6 +9,9 @@ export const StyledChooseCard = styled.View<{ colorScheme: "light" | "dark" }>`
   padding: 20px;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].cardBackground};
+  border-width: 1px;
+  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? "#EAEAEA" : "#242424"};
   border-radius: 33px;
   position: relative;
 `;

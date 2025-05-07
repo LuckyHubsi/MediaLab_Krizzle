@@ -13,4 +13,7 @@ export const StyledCard = styled(View)<{
     Colors[colorScheme].cardBackground};
   border-radius: 33px;
   padding: 20px;
+  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? "#EAEAEA" : "#242424"};
+  border-width: 1px;
 `;
