@@ -3,11 +3,11 @@ import { useColorScheme as useSystemColorScheme } from "react-native";
 import { themeStorage } from "@/utils/themeStorage";
 
 export type ThemeOption = "light" | "dark" | "system";
-const THEME_STORAGE_KEY = "user-theme-preference";
 
 type UserThemeContextType = {
   userTheme: ThemeOption;
   saveUserTheme: (theme: ThemeOption) => void;
+  resetToSystemDefault: () => void;
   isLoading: boolean;
 };
 
@@ -45,8 +45,17 @@ export function UserThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const resetToSystemDefault = async () => {
+    const cleared = await themeStorage.clearTheme();
+    if (cleared) {
+      saveUserTheme("system");
+    }
+  };
+
   return (
-    <UserThemeContext.Provider value={{ userTheme, saveUserTheme, isLoading }}>
+    <UserThemeContext.Provider
+      value={{ userTheme, saveUserTheme, resetToSystemDefault, isLoading }}
+    >
       {children}
     </UserThemeContext.Provider>
   );
