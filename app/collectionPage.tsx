@@ -176,7 +176,6 @@ export default function CollectionScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={title}
-        typeToDelete="note"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (pageId) {
