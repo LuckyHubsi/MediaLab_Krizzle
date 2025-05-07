@@ -198,7 +198,7 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
   try {
     const success = await executeTransaction<boolean>(async (txn) => {
       // updates category
-      sawait executeQuery(
+      await executeQuery(
         updateItemQuery,
         [itemDTO.categoryID, itemDTO.itemID],
         txn,
