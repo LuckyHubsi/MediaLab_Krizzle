@@ -207,7 +207,7 @@ export default function HomeScreen() {
                 onPress={() => router.push("/tagManagement")}
               />
 
-              <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+              <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
                 {filteredPinnedWidgets.length > 0 && (
                   <>
                     <ThemedText
