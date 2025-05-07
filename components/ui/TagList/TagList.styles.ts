@@ -14,6 +14,10 @@ export const TagButton = styled(TouchableOpacity)<TagProps>`
       : themeMode === "dark"
         ? Colors.dark.pillBackground
         : Colors.light.pillBackground};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   border-radius: 33px;
   margin-right: 10px;
   padding: 6px 16px;

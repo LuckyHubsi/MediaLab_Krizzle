@@ -21,7 +21,7 @@ export default function CollectionTemplateScreen() {
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
     selectedTag: null,
-    selectedColor: "",
+    selectedColor: "#4599E8",
     selectedIcon: undefined,
     lists: [],
     templates: [],
@@ -43,7 +43,7 @@ export default function CollectionTemplateScreen() {
       archived: false,
       pinned: false,
       categories: lists,
-      tag: null,
+      tag: collectionData.selectedTag,
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(

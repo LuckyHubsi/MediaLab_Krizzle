@@ -10,11 +10,12 @@ import {
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { TagDTO } from "@/dto/TagDTO";
 
 interface TagPickerProps {
-  tags: string[];
-  selectedTag: string | null;
-  onSelectTag: (tag: string) => void;
+  tags: TagDTO[];
+  selectedTag: TagDTO | null;
+  onSelectTag: (tag: TagDTO) => void;
   onViewAllPress: () => void;
 }
 
@@ -34,7 +35,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         </ThemedText>
         <TouchableOpacity onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
-            View all
+            Edit Tags
             <BackIcon
               name="chevron-forward-outline"
               colorScheme={colorScheme}
@@ -45,9 +46,9 @@ export const TagPicker: React.FC<TagPickerProps> = ({
 
       <TagScrollView horizontal showsHorizontalScrollIndicator={false}>
         {tags.map((tag) => {
-          const isSelected = selectedTag === tag;
+          const isSelected = selectedTag?.tagID === tag.tagID;
           return (
-            <TouchableOpacity key={tag} onPress={() => onSelectTag(tag)}>
+            <TouchableOpacity key={tag.tagID} onPress={() => onSelectTag(tag)}>
               <TagPill isSelected={isSelected} colorScheme={colorScheme}>
                 {isSelected && (
                   <MaterialIcons
@@ -58,7 +59,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
                   />
                 )}
                 <ThemedText fontSize="s" fontWeight="regular">
-                  {tag}
+                  {tag.tag_label}
                 </ThemedText>
               </TagPill>
             </TouchableOpacity>

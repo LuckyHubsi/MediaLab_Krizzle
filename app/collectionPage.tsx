@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, ScrollView } from "react-native";
@@ -16,9 +16,17 @@ import {
   CollectionSelectable,
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
-import { getItemsByPageId } from "@/services/ItemService";
+import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import {
+  deleteGeneralPage,
+  togglePageArchive,
+  togglePagePin,
+} from "@/services/GeneralPageService";
+import { PreviewItemDTO } from "@/dto/ItemDTO";
 import { te } from "date-fns/locale";
 
 export default function CollectionScreen() {
@@ -32,29 +40,47 @@ export default function CollectionScreen() {
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
   const [items, setItems] = useState<ItemsDTO>();
+  const [showModal, setShowModal] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
+  const [shouldReload, setShouldReload] = useState<boolean>();
+  const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      const numericID = Number(pageId);
-      if (!isNaN(numericID)) {
-        const collectionData = await getCollectionByPageId(numericID);
-        if (collectionData) {
-          setCollection(collectionData);
-          if (collectionData.categories) {
-            const listNames = [];
-            for (const list of collectionData.categories) {
-              listNames.push(list.category_name);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionData = await getCollectionByPageId(numericID);
+          if (collectionData) {
+            setCollection(collectionData);
+            if (collectionData.categories) {
+              const listNames = [];
+              for (const list of collectionData.categories) {
+                listNames.push(list.category_name);
+              }
+              setListNames(listNames);
             }
-            setListNames(listNames);
           }
+          const items: ItemsDTO = await getItemsByPageId(numericID);
+          if (items) setItems(items);
         }
-        const items: ItemsDTO = await getItemsByPageId(numericID);
-        if (items) setItems(items);
-      }
-    })();
-  }, [pageId]);
+        setShouldReload(false);
+      })();
+    }, [pageId, shouldReload]),
+  );
+
+  const goToEditPage = () => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: pageId },
+    });
+  };
 
   const filteredItems = useMemo(() => {
     if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
@@ -85,14 +111,13 @@ export default function CollectionScreen() {
           iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => alert("Popup!")} // action when icon menu is pressed
+          onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
         />
         <ThemedView topPadding={0}>
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
             onSearch={(text) => {}}
           />
-          {/* //Hardcoded data for testing purposes */}
           <CollectionList
             collectionLists={listNames}
             onSelect={(collectionList) => {
@@ -114,6 +139,10 @@ export default function CollectionScreen() {
                       pathname: "/collectionItemPage",
                       params: { itemId: item.itemID.toString() },
                     });
+                  }}
+                  onLongPress={() => {
+                    setSelectedItem(item);
+                    setShowItemModal(true);
                   }}
                 />
               ))}
@@ -142,6 +171,114 @@ export default function CollectionScreen() {
           </View>
         </ThemedView>
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          {
+            label: collection?.pinned ? "Unpin item" : "Pin item",
+            icon: "push-pin",
+            onPress: async () => {
+              if (
+                (collection &&
+                  !collection.pinned &&
+                  collection.pin_count != null &&
+                  collection.pin_count < 4) ||
+                (collection && collection?.pinned)
+              ) {
+                const success = await togglePagePin(
+                  Number(collection.pageID),
+                  collection.pinned,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          {
+            label: "Edit Widget",
+            icon: "edit",
+            onPress: () => {
+              goToEditPage();
+            },
+          },
+          { label: "Edit Lists", icon: "edit-note", onPress: () => {} },
+          {
+            label: collection?.archived ? "Restore" : "Archive",
+            icon: collection?.archived ? "restore" : "archive",
+            onPress: async () => {
+              if (collection) {
+                const success = await togglePageArchive(
+                  Number(pageId),
+                  collection.archived,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
+      <QuickActionModal
+        visible={showItemModal}
+        onClose={() => setShowItemModal(false)}
+        items={[
+          { label: "Edit", icon: "edit", onPress: () => {} },
+
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowItemDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
+      <DeleteModal
+        visible={showDeleteModal}
+        title={title}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          if (pageId) {
+            try {
+              const widgetIdAsNumber = Number(pageId);
+              const successfullyDeleted =
+                await deleteGeneralPage(widgetIdAsNumber);
+              setShowDeleteModal(false);
+              router.replace("/");
+            } catch (error) {
+              console.error("Error deleting collection:", error);
+            }
+          }
+        }}
+        onclose={() => setShowDeleteModal(false)}
+      />
+      <DeleteModal
+        visible={showItemDeleteModal}
+        title={title}
+        onCancel={() => setShowItemDeleteModal(false)}
+        onConfirm={async () => {
+          if (selectedItem) {
+            try {
+              const itemIdAsNumber = Number(selectedItem.itemID);
+              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+
+              setShowItemDeleteModal(false);
+              setShouldReload(true);
+            } catch (error) {
+              console.error("Error deleting item:", error);
+            }
+          }
+        }}
+        onclose={() => setShowItemDeleteModal(false)}
+      />
     </>
   );
 }

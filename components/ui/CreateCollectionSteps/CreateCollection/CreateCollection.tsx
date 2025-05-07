@@ -1,6 +1,6 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { router } from "expo-router";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { Alert, TouchableOpacity, useColorScheme, View } from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
@@ -24,11 +24,15 @@ import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { TagDTO } from "@/dto/TagDTO";
+import { PageType } from "@/utils/enums/PageType";
+import { useFocusEffect } from "@react-navigation/native";
+import { getAllTags } from "@/services/TagService";
 
 interface CreateCollectionProps {
   data: {
     title: string;
-    selectedTag: string | null;
+    selectedTag: TagDTO | null;
     selectedColor: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
     lists: { id: string; title: string }[];
@@ -39,7 +43,7 @@ interface CreateCollectionProps {
 }
 export type CollectionData = {
   title: string;
-  selectedTag: string | null;
+  selectedTag: TagDTO | null;
   selectedColor: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   lists: { id: string; title: string }[];
@@ -63,11 +67,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   const selectedColor = data.selectedColor;
   const selectedIcon = data.selectedIcon;
 
+  const [hasClickedNext, setHasClickedNext] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
   const [showHelp, setShowHelp] = useState(false);
-  const tags = ["Work", "Personal", "Urgent", "Ideas"];
+  const [tags, setTags] = useState<TagDTO[]>([]);
   const iconColor =
     colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
@@ -93,32 +98,20 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           Colors.widget[key as keyof typeof Colors.widget].includes(value)),
     ) as keyof typeof Colors.widget | undefined;
 
-  //   const createNote = async () => {
-  //     if (title.trim().length === 0) {
-  //       setTitleError("Title is required.");
-  //       return;
-  //     }
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTags = async () => {
+        try {
+          const tagData = await getAllTags();
+          if (tagData) setTags(tagData);
+        } catch (error) {
+          console.error("Failed to load tags:", error);
+        }
+      };
 
-  //     setTitleError(null);
-
-  //     const tagDTO: TagDTO | null = selectedTag
-  //       ? { tag_label: selectedTag }
-  //       : null;
-
-  //     const noteDTO: NoteDTO = {
-  //       page_type: PageType.Note,
-  //       page_title: title,
-  //       page_icon: selectedIcon,
-  //       page_color: (selectedColor as keyof typeof Colors.widget) || "blue",
-  //       archived: false,
-  //       pinned: false,
-  //       note_content: null,
-  //       tag: tagDTO,
-  //     };
-
-  //     const id = await insertNote(noteDTO);
-  //     router.replace({ pathname: "/notePage", params: { id, title } });
-  //   };
+      fetchTags();
+    }, []),
+  );
 
   return (
     <>
@@ -141,7 +134,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               />
               <Widget
                 title={title || "Title"}
-                label={selectedTag ?? "No tag"}
+                label={selectedTag?.tag_label ?? "No tag"}
+                pageType={PageType.Collection}
                 iconLeft={
                   <MaterialIcons
                     name={selectedIcon || "help"}
@@ -155,7 +149,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 color={
                   (getWidgetColorKey(
                     selectedColor,
-                  ) as keyof typeof Colors.widget) || "blue"
+                  ) as keyof typeof Colors.widget) || "#4599E8"
                 }
               />
             </View>
@@ -168,6 +162,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               onChangeText={(text) => {
                 setData((prev: any) => ({ ...prev, title: text }));
               }}
+              hasNoInputError={
+                hasClickedNext && (!data.title || data.title.trim() === "")
+              }
             />
             {titleError && (
               <ThemedText
@@ -186,12 +183,13 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <TagPicker
               tags={tags}
               selectedTag={selectedTag}
-              onSelectTag={(tag) =>
-                setData((prev: { selectedTag: string }) => ({
+              onSelectTag={(tag) => {
+                setData((prev: any) => ({
                   ...prev,
-                  selectedTag: prev.selectedTag === tag ? null : tag,
-                }))
-              }
+                  selectedTag:
+                    prev.selectedTag?.tagID === tag.tagID ? null : tag,
+                }));
+              }}
               onViewAllPress={() => router.push("/tagManagement")}
             />
           </Card>
@@ -229,7 +227,16 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               variant={"back"}
               titleLeftButton={"Back"}
               titleRightButton={"Add"}
-              onNext={onNext!}
+              onNext={() => {
+                setHasClickedNext(true);
+                //check if textfield is filled
+                if (!data.title || data.title.trim() === "") {
+                  Alert.alert("Please fill in the title before continuing.");
+                  return;
+                }
+
+                onNext?.();
+              }}
               hasProgressIndicator={true}
               progressStep={1}
             />

@@ -7,9 +7,31 @@ import { StyledEmptyHome } from "./emptyHome.styles";
 import { ModalSelection } from "../Modals/CreateNCModal/CreateNCModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
-export const EmptyHome: FC = () => {
+interface EmptyHomeProps {
+  text?: string;
+  showButton?: boolean;
+  buttonLabel?: string;
+  onButtonPress?: () => void;
+  useModal?: boolean;
+}
+
+export const EmptyHome: FC<EmptyHomeProps> = ({
+  text = "Add your first note/collection",
+  showButton = true,
+  buttonLabel = "Start",
+  onButtonPress,
+  useModal = true,
+}) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const handlePress = () => {
+    if (useModal) {
+      setModalVisible(true);
+    } else if (onButtonPress) {
+      onButtonPress();
+    }
+  };
 
   return (
     <StyledEmptyHome colorScheme={colorScheme}>
@@ -18,19 +40,23 @@ export const EmptyHome: FC = () => {
         style={{ width: 65, height: 70 }}
       />
       <ThemedText fontSize="regular" fontWeight="regular">
-        Add your first note/collection
+        {text}
       </ThemedText>
-      <Button
-        color={Colors[colorScheme].tint}
-        size="medium"
-        onPress={() => setModalVisible(true)}
-      >
-        Start
-      </Button>
-      <ModalSelection
-        isVisible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-      />
+      {showButton && (
+        <Button
+          color={Colors[colorScheme].tint}
+          size="medium"
+          onPress={handlePress}
+        >
+          {buttonLabel}
+        </Button>
+      )}
+      {useModal && (
+        <ModalSelection
+          isVisible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+        />
+      )}
     </StyledEmptyHome>
   );
 };

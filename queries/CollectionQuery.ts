@@ -2,6 +2,11 @@ const collectionSelectByPageIdQuery: string = `
     SELECT
         p.*,
         c.collectionID,
+        (
+            SELECT COUNT(*)
+            FROM general_page_data p
+            WHERE p.pinned = 1
+        ) AS pin_count,
         c.item_templateID AS templateID,
         json_group_array(
             DISTINCT json_object(

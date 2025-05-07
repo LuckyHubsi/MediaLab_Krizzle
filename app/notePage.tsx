@@ -10,9 +10,15 @@ import { NoteDTO } from "@/dto/NoteDTO";
 import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import { deleteGeneralPage } from "@/services/GeneralPageService";
+import {
+  deleteGeneralPage,
+  togglePageArchive,
+  togglePagePin,
+} from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
+import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { set } from "date-fns";
 
 export default function NotesScreen() {
   const { pageId, title } = useLocalSearchParams<{
@@ -23,7 +29,10 @@ export default function NotesScreen() {
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
   const colorScheme = useColorScheme();
-
+  const [showModal, setShowModal] = useState(false);
+  const [noteData, setNoteData] = useState<NoteDTO | null>();
+  const [shouldReload, setShouldReload] = useState<boolean>();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
@@ -33,18 +42,21 @@ export default function NotesScreen() {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const noteData: NoteDTO | null = await getNoteDataByPageID(numericID);
-          let noteContent = noteData?.note_content;
+          const noteDataByID: NoteDTO | null =
+            await getNoteDataByPageID(numericID);
+          let noteContent = noteDataByID?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
           setNoteContent(noteContent);
+          setNoteData(noteDataByID);
+          setShouldReload(false);
         })();
       } else {
         console.error("Error fetching note data");
       }
     }
-  }, [pageId, colorScheme]);
+  }, [pageId, shouldReload, colorScheme]);
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
@@ -70,7 +82,14 @@ export default function NotesScreen() {
     return () => subscription.remove();
   }, [appState, noteContent, debouncedSave]);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const goToEditPage = () => {
+    const path = "/editWidget";
+
+    router.push({
+      pathname: path,
+      params: { widgetID: pageId },
+    });
+  };
 
   return (
     <>
@@ -79,7 +98,7 @@ export default function NotesScreen() {
           title={title || "Note"}
           iconName="more-horiz"
           backBehavior="goHome"
-          onIconPress={() => setShowDeleteModal(true)}
+          onIconPress={() => setShowModal(true)}
           otherBackBehavior={() =>
             debouncedSave.flush(latestNoteContentRef.current)
           }
@@ -92,10 +111,62 @@ export default function NotesScreen() {
           }}
         />
       </SafeAreaView>
+      <QuickActionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        items={[
+          {
+            label: noteData?.pinned ? "Unpin item" : "Pin item",
+            icon: "push-pin",
+            onPress: async () => {
+              if (
+                (noteData &&
+                  !noteData.pinned &&
+                  noteData.pin_count != null &&
+                  noteData.pin_count < 4) ||
+                (noteData && noteData?.pinned)
+              ) {
+                const success = await togglePagePin(
+                  Number(pageId),
+                  noteData.pinned,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              goToEditPage();
+            },
+          },
+          {
+            label: noteData?.archived ? "Restore" : "Archive",
+            icon: noteData?.archived ? "restore" : "archive",
+            onPress: async () => {
+              if (noteData) {
+                const success = await togglePageArchive(
+                  Number(pageId),
+                  noteData.archived,
+                );
+                setShouldReload(success);
+              }
+            },
+          },
+          {
+            label: "Delete",
+            icon: "delete",
+            onPress: () => {
+              setShowDeleteModal(true);
+            },
+            danger: true,
+          },
+        ]}
+      />
       <DeleteModal
         visible={showDeleteModal}
         title={title}
-        typeToDelete="note"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (pageId) {

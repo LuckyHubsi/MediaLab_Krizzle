@@ -5,6 +5,7 @@ import {
   BackIcon,
   IconContainer,
   Icon,
+  TitleContainer,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { useNavigation, useRouter } from "expo-router";
@@ -58,9 +59,16 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
 
-        <ThemedText fontSize="xl" fontWeight="semibold">
-          {title}
-        </ThemedText>
+        <TitleContainer>
+          <ThemedText
+            fontSize="xl"
+            fontWeight="semibold"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </ThemedText>
+        </TitleContainer>
       </TouchableOpacity>
 
       {/* Optional right icon */}

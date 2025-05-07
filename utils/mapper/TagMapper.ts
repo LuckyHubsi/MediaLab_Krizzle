@@ -15,6 +15,7 @@ export class TagMapper {
     return {
       tagID: model.tagID,
       tag_label: model.tag_label,
+      usage_count: model.usage_count,
     };
   }
 }
