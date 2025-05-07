@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import {
   ItemCountContainer,
@@ -33,6 +33,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const maxPreviewCount = 2;
   const colorScheme = useActiveColorScheme();
   const cards = data.templates;
+
+  const [hasClickedNext, setHasClickedNext] = useState(false);
 
   const textfieldIconArray: ("short-text" | "calendar-today" | "layers")[] = [
     "short-text",
@@ -149,23 +151,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
   const handlePreviewToggle = (id: number) => {
     const currentCard = otherCards.find((c) => c.id === id);
-    const currentlyActive = otherCards.filter((c) => c.isPreview).length;
-
     if (!currentCard) return;
 
-    const willBePreviewed = !currentCard.isPreview;
-    const validToggle = willBePreviewed
-      ? currentlyActive < maxPreviewCount
-      : true;
+    const currentlyActivePreviews = otherCards.filter((c) => c.isPreview);
+    const isCurrentlyPreviewed = currentCard.isPreview;
+    const newPreviewState = !isCurrentlyPreviewed;
 
-    if (validToggle) {
-      setData((prev) => ({
-        ...prev,
-        templates: prev.templates.map((card) =>
-          card.id === id ? { ...card, isPreview: !card.isPreview } : card,
-        ),
-      }));
+    if (newPreviewState) {
+      const typeAlreadyUsed = currentlyActivePreviews.some(
+        (card) => card.itemType === currentCard.itemType,
+      );
+      const underMaxPreviewCount =
+        currentlyActivePreviews.length < maxPreviewCount;
+
+      if (!underMaxPreviewCount) {
+        Alert.alert("Only 3 Item Previews are allowed");
+        return;
+      }
+
+      if (typeAlreadyUsed) {
+        Alert.alert("One Type can only be set as preview once");
+        return;
+      }
     }
+
+    setData((prev) => ({
+      ...prev,
+      templates: prev.templates.map((card) =>
+        card.id === id ? { ...card, isPreview: newPreviewState } : card,
+      ),
+    }));
   };
 
   return (
@@ -226,6 +241,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             isPreview={true}
             title={titleCard.title}
             onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
+            hasNoInputError={
+              hasClickedNext &&
+              (!titleCard.title || titleCard.title.trim() === "")
+            }
           />
         )}
 
@@ -253,11 +272,25 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             }
             onRemove={() => handleRemoveCard(card.id)}
             onPreviewToggle={() => handlePreviewToggle(card.id)}
+            hasNoInputError={
+              hasClickedNext && (!card.title || card.title.trim() === "")
+            }
+            hasNoMultiSelectableError={
+              hasClickedNext &&
+              card.itemType === "multi-select" &&
+              (!card.options ||
+                card.options.length === 0 ||
+                card.options.some((o) => o.trim() === ""))
+            }
+            previewCount={previewCount}
           />
         ))}
 
         <AddButton
-          onPress={handleAddCard}
+          onPress={() => {
+            handleAddCard();
+            setHasClickedNext(false);
+          }}
           isDisabled={otherCards.length >= 10}
         />
       </ScrollView>
@@ -267,7 +300,31 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         titleLeftButton={"Back"}
         titleRightButton={"Add"}
         onDiscard={onBack!}
-        onNext={onNext!}
+        onNext={() => {
+          setHasClickedNext(true);
+
+          const isMainTitleFilled = !!titleCard?.title?.trim();
+
+          const allOtherTitlesFilled = otherCards.every((card) => {
+            const titleFilled = !!card.title?.trim();
+            if (card.itemType === "multi-select") {
+              const hasValidOptions =
+                (card?.options ?? []).length > 0 &&
+                (card.options ?? []).every((o) => o.trim() !== "");
+              return titleFilled && hasValidOptions;
+            }
+            return titleFilled;
+          });
+
+          if (!isMainTitleFilled || !allOtherTitlesFilled) {
+            Alert.alert(
+              "Please fill in all titles and select at least one option before continuing.",
+            );
+            return;
+          }
+
+          onNext?.();
+        }}
         hasProgressIndicator={true}
         progressStep={3}
       />

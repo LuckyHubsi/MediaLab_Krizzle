@@ -19,7 +19,7 @@ type Props = {
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
   color: ColorKey;
-  pageType: PageType;
+  pageType?: PageType;
   onPress?: () => void;
   onLongPress?: () => void;
 };
@@ -38,6 +38,7 @@ const Widget: React.FC<Props> = ({
   const columns = width >= 768 ? 3 : 2;
   const spacing = 19 * (columns + 1);
   const cardWidth = (width - spacing) / columns;
+  // const truncatedTitle = title.length > 15 ? `${title.slice(0, 15)}...` : title;
 
   const background = Colors.widget[color];
   const isGradient = Array.isArray(background);

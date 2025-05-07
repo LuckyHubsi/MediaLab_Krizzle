@@ -83,21 +83,21 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
               }
               break;
             case AttributeType.Rating:
-              if (
-                "valueNumber" in attributeValue &&
-                attributeValue.valueNumber &&
-                attributeValue.valueNumber !== 0
-              ) {
-                elements.push(
-                  <RatingPicker
-                    key={attributeValue.attributeID}
-                    title="Rating"
-                    selectedIcon={attributeValue.symbol}
-                    editable={false}
-                    value={attributeValue.valueNumber}
-                  ></RatingPicker>,
-                );
-              }
+              elements.push(
+                <RatingPicker
+                  key={attributeValue.attributeID}
+                  title="Rating"
+                  selectedIcon={
+                    attributeValue.symbol as keyof typeof MaterialIcons.glyphMap
+                  }
+                  editable={false}
+                  value={
+                    "valueNumber" in attributeValue
+                      ? attributeValue.valueNumber || 0
+                      : 0
+                  }
+                ></RatingPicker>,
+              );
               break;
             case AttributeType.Multiselect:
               if (

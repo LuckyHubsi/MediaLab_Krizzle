@@ -10,7 +10,6 @@ import { Colors } from "@/constants/Colors";
 interface RatingPickerProps {
   title?: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
-  outlinedIcon?: keyof typeof MaterialIcons.glyphMap;
   editable?: boolean;
   value?: number;
   onChange?: (rating: number) => void;
@@ -19,7 +18,6 @@ interface RatingPickerProps {
 const RatingPicker: React.FC<RatingPickerProps> = ({
   title,
   selectedIcon = "star",
-  outlinedIcon = "star-border",
   editable = true,
   value = 0,
   onChange,
@@ -32,9 +30,10 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
 
   const handlePress = (index: number) => {
     const newRating = index + 1;
-    setRating(newRating);
+    const updatedRating = newRating === rating ? 0 : newRating;
+    setRating(updatedRating);
     if (onChange) {
-      onChange(newRating);
+      onChange(updatedRating);
     }
   };
 

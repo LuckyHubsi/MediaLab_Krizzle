@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 
 import {
@@ -31,6 +31,9 @@ interface ItemTemplateCardProps {
   onOptionsChange?: (options: string[]) => void;
   onRemove?: () => void;
   onPreviewToggle?: () => void;
+  hasNoInputError?: boolean;
+  hasNoMultiSelectableError?: boolean;
+  previewCount?: number;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -47,6 +50,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onOptionsChange,
   onRemove,
   onPreviewToggle,
+  hasNoInputError,
+  hasNoMultiSelectableError,
+  previewCount,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -69,7 +75,17 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardTitle>
         <CardPreview onPress={onPreviewToggle}>
-          <ThemedText>Item Preview</ThemedText>
+          <ThemedText
+            colorVariant={
+              isPreview
+                ? "default"
+                : previewCount && previewCount > 2
+                  ? "grey"
+                  : "default"
+            }
+          >
+            Item Preview
+          </ThemedText>
           {isPreview ? (
             <MaterialIcons
               name="check-circle"
@@ -79,7 +95,13 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           ) : (
             <MaterialIcons
               name="radio-button-off"
-              color={Colors[colorScheme ?? "light"].text}
+              color={
+                isPreview
+                  ? Colors[colorScheme ?? "light"].text
+                  : previewCount && previewCount > 2
+                    ? Colors.grey50
+                    : "#000000"
+              }
               size={20}
             />
           )}
@@ -114,6 +136,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
+        hasNoInputError={hasNoInputError}
+        maxLength={30}
       />
 
       {itemType === "rating" && rating !== undefined && onRatingChange && (
@@ -131,6 +155,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             title=""
             options={options}
             onOptionsChange={onOptionsChange}
+            hasNoInputError={hasNoMultiSelectableError}
           />
         )}
 

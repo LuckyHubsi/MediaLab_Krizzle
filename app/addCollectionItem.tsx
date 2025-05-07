@@ -106,7 +106,26 @@ export default function AddCollectionItem() {
     };
   };
 
+  const [hasClickedNext, setHasClickedNext] = useState(false);
+
+  const validateFields = () => {
+    return attributes.every((attribute) => {
+      if (attribute.type === AttributeType.Text) {
+        const value = attributeValues[attribute.attributeID || 0];
+        return value && value.trim() !== "";
+      }
+      return true;
+    });
+  };
+
   const handleSaveItem = async () => {
+    const allFieldsValid = validateFields();
+
+    if (!allFieldsValid) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
     const itemDTO = mapToItemDTO(attributes || []);
     const itemId = await insertItemAndReturnID(itemDTO);
     router.replace({
@@ -131,16 +150,19 @@ export default function AddCollectionItem() {
               attributeValues={attributeValues}
               onInputChange={handleInputChange}
               onListChange={handleListChange}
+              hasNoInputError={hasClickedNext && !validateFields()}
             />
           </View>
 
-          {/* add correct function to discard/next */}
           <BottomButtons
             titleLeftButton={"Discard"}
             titleRightButton={"Add"}
             variant="discard"
             onDiscard={router.back}
-            onNext={handleSaveItem}
+            onNext={() => {
+              handleSaveItem();
+              setHasClickedNext(true);
+            }}
             progressStep={10}
           ></BottomButtons>
         </View>
