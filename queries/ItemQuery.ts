@@ -124,7 +124,7 @@ const insertMultiselectValueQuery: string = `
 
 const updateItemQuery: string = `
     UPDATE item 
-    SET category = ?
+    SET categoryID = ?
     WHERE itemID = ?
 `;
 
