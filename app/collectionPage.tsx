@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, ScrollView } from "react-native";
@@ -33,6 +33,7 @@ export default function CollectionScreen() {
   const [listNames, setListNames] = useState<string[]>([]);
   const [items, setItems] = useState<ItemsDTO>();
   const [selectedList, setSelectedList] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -55,6 +56,25 @@ export default function CollectionScreen() {
     })();
   }, [pageId]);
 
+  const filteredItems = useMemo(() => {
+    if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
+
+    const lowerQuery = searchQuery.toLowerCase();
+
+    return items.items.filter((item) => {
+      const category = item.categoryName;
+
+      const matchesList = selectedList === "All" || category === selectedList;
+
+      const matchesTitle = item.values
+        .join(" ")
+        .toLowerCase()
+        .includes(lowerQuery);
+
+      return matchesList && matchesTitle;
+    });
+  }, [items, selectedList, searchQuery]);
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -75,15 +95,19 @@ export default function CollectionScreen() {
           {/* //Hardcoded data for testing purposes */}
           <CollectionList
             collectionLists={listNames}
-            onSelect={(collectionList) => setSelectedList(collectionList)}
+            onSelect={(collectionList) => {
+              //const selected = collectionList || "All";
+              setSelectedList(collectionList || "All");
+              console.log("Collection List Items:", selectedList);
+            }}
           />
           {/* //Hardcoded data for testing purposes */}
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, gap: 12 }}>
-              {items?.items.map((item) => (
+              {filteredItems.map((item) => (
                 <CollectionWidget
                   key={item.itemID}
-                  attributes={items.attributes}
+                  attributes={items?.attributes || []} // Pass attributes to CollectionWidget
                   item={item}
                   onPress={() => {
                     router.push({
