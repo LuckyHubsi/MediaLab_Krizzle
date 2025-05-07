@@ -13,11 +13,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 interface CollapsibleCardProps {
   faqTitle: string;
   faqContent: string;
+  faqQuestion?: string;
 }
 
 const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
   faqTitle,
   faqContent,
+  faqQuestion,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -25,7 +27,13 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
     <GradientBorder>
       <CollapsibleCardContainer>
         <CardHeader onPress={() => setExpanded(!expanded)}>
-          <ThemedText fontWeight="bold">{faqTitle}</ThemedText>
+          <ThemedText fontWeight="bold">
+            {faqQuestion}
+            <ThemedText colorVariant="primary" fontWeight="bold">
+              {faqTitle}
+            </ThemedText>
+            ?
+          </ThemedText>
           <MaterialIcons
             name={expanded ? "keyboard-arrow-up" : "keyboard-arrow-down"}
             size={20}

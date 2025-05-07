@@ -36,3 +36,15 @@ export const GradientTopBorder = styled(LinearGradient).attrs({
 export const CollapsibleCardContent = styled.View`
   padding: 10px 0px;
 `;
+
+export const CardsContainer = styled.View`
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const ImageContainer = styled.View`
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+`;
