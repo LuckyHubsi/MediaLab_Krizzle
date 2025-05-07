@@ -11,4 +11,6 @@ export type ItemsModel = {
   multiselect_options: string | null;
   itemID: number;
   value: string | number | null;
+  categoryID: number | null;
+  category_name: string | null;
 };

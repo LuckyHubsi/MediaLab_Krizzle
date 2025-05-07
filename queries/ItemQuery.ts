@@ -74,6 +74,7 @@ const itemSelectByPageIdQuery: string = `
         a.type,
         a.preview,
         i.categoryID,
+        cc.category_name,
         rs.symbol AS rating_symbol,
         (
             SELECT json_group_array(mo.options)
