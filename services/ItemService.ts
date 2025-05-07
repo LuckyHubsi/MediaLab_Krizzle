@@ -42,7 +42,6 @@ import * as SQLite from "expo-sqlite";
  */
 const getItemById = async (id: number): Promise<ItemDTO> => {
   try {
-    console.log("ID", id);
     // get raw result using the query
     const rawResult = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
 
@@ -59,6 +58,7 @@ const getItemById = async (id: number): Promise<ItemDTO> => {
       };
 
       const dto = ItemMapper.toDTO(parsedModel);
+
       return dto;
     } else {
       throw new DatabaseError("Error retrieving item by ID");
@@ -198,7 +198,7 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
   try {
     const success = await executeTransaction<boolean>(async (txn) => {
       // updates category
-      await executeQuery(
+      sawait executeQuery(
         updateItemQuery,
         [itemDTO.categoryID, itemDTO.itemID],
         txn,
@@ -220,7 +220,7 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
             case AttributeType.Date:
               if ("valueString" in value) {
                 await executeQuery(
-                  updateRatingValueQuery,
+                  updateDateValueQuery,
                   [value.valueString, value.itemID, value.attributeID],
                   txn,
                 );
@@ -265,6 +265,7 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
 
     return success;
   } catch (error) {
+    console.error("Transaction error:", error);
     throw new DatabaseError("Failed to edit item");
   }
 };
