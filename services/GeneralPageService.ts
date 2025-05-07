@@ -4,8 +4,10 @@ import {
   selectAllGeneralPageQuery,
   insertNewPageQuery,
   deleteGeneralPageByIDQuery,
-  updatePinnedByPageIDQuery,
+  selectGeneralPageByIdQuery,
   updateDateModifiedByPageIDQuery,
+  updatePageByIDQuery,
+  updatePinnedByPageIDQuery,
   updateArchivedByPageIDQuery,
   selectAllArchivedPageQuery,
   selectAllPinnedPageQuery,
@@ -57,6 +59,30 @@ const getAllGeneralPageData = async (
 };
 
 /**
+ * Retrieves general page data from the database by ID.
+ *
+ * @param {SQLite.SQLiteDatabase} [txn] - Optional SQLite transaction object when its called inside a transaction.
+ * @returns {Promise<GeneralPageDTO[]>} A promise that resolves to an array of GeneralPageDTO objects.
+ */
+const getGeneralPageByID = async (
+  pageID: number,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<GeneralPageDTO | null> => {
+  try {
+    const generalPageData = await fetchFirst<GeneralPageModel>(
+      selectGeneralPageByIdQuery,
+      [pageID],
+      txn,
+    );
+
+    if (!generalPageData) return null;
+    return GeneralPageMapper.toDTO(generalPageData);
+  } catch (error) {
+    throw new DatabaseError("Error retrieving page by ID.");
+  }
+};
+
+/**
  * Inserts a new page into the database and returns its ID.
  *
  * @param {GeneralPageDTO} generalPageDTO - The DTO representing the general page data to insert.
@@ -81,6 +107,7 @@ const insertGeneralPageAndReturnID = async (
           new Date().toISOString(),
           generalPageDTO.archived ? 1 : 0,
           generalPageDTO.pinned ? 1 : 0,
+          generalPageDTO.tag?.tagID,
         ],
         txn,
       );
@@ -96,6 +123,50 @@ const insertGeneralPageAndReturnID = async (
   }
 };
 
+/**
+ * Updates the content of a page and updates the corresponding page's `date_modified` timestamp.
+ *
+ * @param pageID - The unique identifier of the page to update.
+ * @param newPageTitle - The new title to save for the page.
+ * @param newPageIcon - The new icon to save for the page.
+ * @param newPageColor - The new color to save for the page.
+ * @param newTagID - The new tagID to save for the page.
+ * @returns A Promise that resolves to `true` if the update was successful, or `false` if an error occurred.
+ */
+const updateGeneralPageData = async (
+  pageID: number,
+  newPageTitle: string,
+  newPageIcon: string,
+  newPageColor: string,
+  newTagID: number | null,
+  txn?: SQLite.SQLiteDatabase,
+): Promise<boolean> => {
+  try {
+    if (!pageID) {
+      console.error("Page not found for the given ID.");
+      return false;
+    }
+
+    // update the page content
+    await executeQuery(
+      updatePageByIDQuery,
+      [newPageTitle, newPageIcon, newPageColor, newTagID, pageID],
+      txn,
+    );
+
+    // update the date_modified for the general page data
+    await executeQuery(
+      updateDateModifiedByPageIDQuery,
+      [new Date().toISOString(), pageID],
+      txn,
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error updating page content:", error);
+    return false;
+  }
+};
 /**
  * Updates the date modified of a page to the current date and time.
  *
@@ -218,7 +289,9 @@ const deleteGeneralPage = async (
 
 export {
   getAllGeneralPageData,
+  getGeneralPageByID,
   insertGeneralPageAndReturnID,
+  updateGeneralPageData,
   updateDateModified,
   togglePagePin,
   togglePageArchive,

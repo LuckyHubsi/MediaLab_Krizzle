@@ -1,5 +1,11 @@
-import React, { FC, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import {
+  Keyboard,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Card } from "@/components/ui/Card/Card";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
@@ -36,8 +42,33 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   onBack,
   onNext,
 }) => {
+  const [hasClickedNext, setHasClickedNext] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const colorScheme = useActiveColorScheme();
   const cards = data.lists;
+
+  useEffect(() => {
+    if (data.lists.length === 0) {
+      const initialCard = { id: Date.now().toString(), title: "" };
+      setData((prev) => ({ ...prev, lists: [initialCard] }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const keyboardDidHide = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        keyboardDidShow.remove();
+        keyboardDidHide.remove();
+      };
+    }
+  }, []);
 
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString(), title: "" };
@@ -63,17 +94,13 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
-  const colorScheme = useActiveColorScheme();
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
-
   return (
     <>
       <Card>
         <CardText>
           <CardHeader>
             <ThemedText fontSize="l" fontWeight="bold">
-              Adding Lists{" "}
+              Adding Lists
             </ThemedText>
             <TouchableOpacity onPress={() => setShowHelp(true)}>
               <MaterialIcons
@@ -92,65 +119,84 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           </ThemedText>
         </CardText>
       </Card>
-
-      <FlatList
-        data={cards}
-        keyExtractor={(item) => item.id}
+      <ScrollView
+        keyboardShouldPersistTaps="always"
         contentContainerStyle={ListContent}
-        renderItem={({ item }) => (
-          <Card>
+        showsVerticalScrollIndicator={false}
+      >
+        {cards.map((item, index) => (
+          <Card key={item.id}>
             <ThemedText
               fontSize="regular"
               fontWeight="regular"
               style={{ marginBottom: 15 }}
             >
-              List {cards.findIndex((card) => card.id === item.id) + 1}
+              List {index + 1}
             </ThemedText>
             <Textfield
               showTitle={false}
               textfieldIcon="text-fields"
-              placeholderText={`Add a title to your note`}
-              title={""}
+              placeholderText="Add a title to your note"
+              title=""
               value={item.title}
               onChangeText={(text) => handleTitleChange(item.id, text)}
+              hasNoInputError={hasClickedNext && !item.title}
+              maxLength={30}
             />
-            <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-              <RemoveButtonContent>
-                <MaterialIcons
-                  name="delete"
-                  size={16}
-                  color="#ff4d4d"
-                  style={{ marginRight: 6, marginTop: 2 }}
-                />
-                <ThemedText
-                  fontSize="s"
-                  fontWeight="bold"
-                  style={{ color: "#ff4d4d" }}
-                >
-                  remove
-                </ThemedText>
-              </RemoveButtonContent>
-            </RemoveButton>
+            {index > 0 && (
+              <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+                <RemoveButtonContent>
+                  <MaterialIcons
+                    name="delete"
+                    size={16}
+                    color="#ff4d4d"
+                    style={{ marginRight: 6, marginTop: 2 }}
+                  />
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="bold"
+                    style={{ color: "#ff4d4d" }}
+                  >
+                    remove
+                  </ThemedText>
+                </RemoveButtonContent>
+              </RemoveButton>
+            )}
           </Card>
-        )}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={
+        ))}
+
+        {cards.length < 10 && (
           <AddButtonWrapper>
-            <AddButton onPress={handleAddCard} />
+            <AddButton
+              onPress={() => {
+                handleAddCard();
+                setHasClickedNext(false);
+              }}
+            />
           </AddButtonWrapper>
-        }
-      />
-
-      <BottomButtons
-        titleLeftButton="Back"
-        titleRightButton="Next"
-        onDiscard={onBack!}
-        onNext={onNext!}
-        variant="back"
-        hasProgressIndicator={true}
-        progressStep={2}
-      />
-
+        )}
+      </ScrollView>
+      {(Platform.OS !== "android" || !keyboardVisible) && (
+        <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
+          <BottomButtons
+            titleLeftButton="Back"
+            titleRightButton="Next"
+            onDiscard={onBack!}
+            onNext={() => {
+              setHasClickedNext(true);
+              const allTitlesFilled = cards.every(
+                (card) => card.title && card.title.trim() !== "",
+              );
+              if (allTitlesFilled) {
+                onNext?.();
+              }
+            }}
+            variant="back"
+            hasProgressIndicator={true}
+            progressStep={2}
+          />
+        </View>
+      )}
       {showHelp && (
         <InfoPopup
           visible={showHelp}

@@ -1,4 +1,4 @@
-import { FlatList, Image } from "react-native";
+import { ScrollView, View, Image, Pressable } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -10,7 +10,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import {
@@ -25,6 +25,8 @@ import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { TagDTO } from "@/dto/TagDTO";
+import { getAllTags } from "@/services/TagService";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
@@ -53,7 +55,7 @@ export default function HomeScreen() {
   interface Widget {
     id: string;
     title: string;
-    tag: string;
+    tag: TagDTO;
     page_icon?: string;
     page_type: PageType;
     color?: string;
@@ -62,53 +64,49 @@ export default function HomeScreen() {
     [key: string]: any;
   }
 
-  const [shouldReload, setShouldReload] = useState<boolean>(false);
+  const [shouldReload, setShouldReload] = useState(false);
   const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
   const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
-  const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
+  const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
 
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
     const colorKeys = Object.keys(Colors.widget);
-
     return colorKeys.find((key) => {
       const currentColor = Colors.widget[key as keyof typeof Colors.widget];
       return (
-        value === key || // if the value is already the color key like "rose"
-        (typeof currentColor === "string" && currentColor === value) || // hex match
-        (Array.isArray(currentColor) && currentColor.includes(value)) // match inside gradients
+        value === key ||
+        (typeof currentColor === "string" && currentColor === value) ||
+        (Array.isArray(currentColor) && currentColor.includes(value))
       );
     }) as keyof typeof Colors.widget | undefined;
   };
 
   const mapToEnrichedWidgets = (data: GeneralPageDTO[] | null): Widget[] => {
-    if (data == null) {
-      return [];
-    } else {
-      const enrichedWidgets: Widget[] = (data || []).map((widget) => ({
-        id: String(widget.pageID),
-        title: widget.page_title,
-        tag: widget.tag?.tag_label || "Uncategorized",
-        color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "blue",
-        page_type: widget.page_type,
-        iconLeft: widget.page_icon
-          ? getMaterialIcon(widget.page_icon)
-          : undefined,
-        iconRight: widget.page_type
-          ? getIconForPageType(widget.page_type)
-          : undefined,
-        archived: widget.archived,
-        pinned: widget.pinned,
-      }));
-
-      return enrichedWidgets;
-    }
+    if (!data) return [];
+    return data.map((widget) => ({
+      id: String(widget.pageID),
+      title: widget.page_title,
+      tag: widget.tag || { tag_label: "Uncategorized" },
+      color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
+      page_type: widget.page_type,
+      iconLeft: widget.page_icon
+        ? getMaterialIcon(widget.page_icon)
+        : undefined,
+      iconRight: widget.page_type
+        ? getIconForPageType(widget.page_type)
+        : undefined,
+      archived: widget.archived,
+      pinned: widget.pinned,
+    }));
   };
 
   useFocusEffect(
@@ -118,15 +116,23 @@ export default function HomeScreen() {
           const pinnedData = await getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
-          const pinnedEnrichedWidgets: Widget[] =
-            mapToEnrichedWidgets(pinnedData);
+          const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
           setPinnedWidgets(pinnedEnrichedWidgets);
 
           const data = await getAllGeneralPageData(GeneralPageState.General);
-          const enrichedWidgets: Widget[] = mapToEnrichedWidgets(data);
+          const enrichedWidgets = mapToEnrichedWidgets(data);
           setWidgets(enrichedWidgets);
         } catch (error) {
           console.error("Error loading widgets:", error);
+        }
+      })();
+
+      (async () => {
+        try {
+          const tagData = await getAllTags();
+          if (tagData) setTags(tagData);
+        } catch (error) {
+          console.error("Failed to load tags:", error);
         }
       })();
 
@@ -137,63 +143,37 @@ export default function HomeScreen() {
   const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
-      const matchesTag = selectedTag === "All" || widget.tag === selectedTag;
+      const matchesTag =
+        selectedTag === "All" ||
+        (widget.tag &&
+          selectedTag.tag_label !== "All" &&
+          widget.tag.tagID === selectedTag.tagID);
+
       const matchesTitle = widget.title.toLowerCase().includes(lowerQuery);
       return matchesTag && matchesTitle;
     });
   };
 
-  const filteredWidgets = useMemo(() => {
-    return filter(widgets);
-  }, [widgets, selectedTag, searchQuery]);
-
-  const filteredPinnedWidgets = useMemo(() => {
-    return filter(pinnedWidgets);
-  }, [pinnedWidgets, selectedTag, searchQuery]);
+  const filteredWidgets = useMemo(
+    () => filter(widgets),
+    [widgets, selectedTag, searchQuery],
+  );
+  const filteredPinnedWidgets = useMemo(
+    () => filter(pinnedWidgets),
+    [pinnedWidgets, selectedTag, searchQuery],
+  );
 
   const goToPage = (widget: Widget) => {
     const path =
       widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
-
     router.push({
       pathname: path,
       params: { pageId: widget.id, title: widget.title },
     });
   };
 
-  const widgetDisplay = (headline: string, data: Widget[]): React.ReactNode => {
-    return (
-      <>
-        <ThemedText fontSize="regular" fontWeight="regular">
-          {headline}
-        </ThemedText>
-
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
-          numColumns={columns}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            marginBottom: 16,
-          }}
-          renderItem={({ item }) => (
-            <Widget
-              title={item.title}
-              label={item.tag}
-              iconLeft={item.iconLeft}
-              iconRight={item.iconRight}
-              color={item.color as keyof typeof Colors.widget}
-              pageType={item.page_type}
-              onPress={() => goToPage(item)}
-              onLongPress={() => {
-                setSelectedWidget(item);
-                setShowModal(true);
-              }}
-            />
-          )}
-        />
-      </>
-    );
+  const goToEditPage = (widget: Widget) => {
+    router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
 
   return (
@@ -220,44 +200,158 @@ export default function HomeScreen() {
             />
           ) : (
             <>
-              {/* <Button onPress={resetDatabase}>reset all</Button> */}
-              <SearchBar
-                placeholder="Search"
-                onSearch={(query) => setSearchQuery(query)}
-              />
-
+              <SearchBar placeholder="Search" onSearch={setSearchQuery} />
               <TagList
-                tags={["All", "Books", "Cafés", "Lists", "To-Dos"]}
+                tags={tags}
                 onSelect={(tag) => setSelectedTag(tag)}
+                onPress={() => router.push("/tagManagement")}
               />
 
-              {filteredPinnedWidgets.length > 0 &&
-                widgetDisplay("Pinned", filteredPinnedWidgets)}
-              {filteredWidgets.length > 0 &&
-                widgetDisplay("Recent", filteredWidgets)}
+              <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                {filteredPinnedWidgets.length > 0 && (
+                  <>
+                    <ThemedText
+                      fontSize="regular"
+                      fontWeight="regular"
+                      style={{ marginBottom: 8 }}
+                    >
+                      Pinned
+                    </ThemedText>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        rowGap: 16,
+                        marginBottom: 24,
+                      }}
+                    >
+                      {filteredPinnedWidgets.map((item) => (
+                        <Widget
+                          key={item.id}
+                          title={item.title}
+                          label={item.tag.tag_label}
+                          iconLeft={item.iconLeft}
+                          iconRight={item.iconRight}
+                          color={item.color as keyof typeof Colors.widget}
+                          pageType={item.page_type}
+                          onPress={() => goToPage(item)}
+                          onLongPress={() => {
+                            setSelectedWidget(item);
+                            setShowModal(true);
+                          }}
+                        />
+                      ))}
+                    </View>
+                  </>
+                )}
 
-              {filteredPinnedWidgets.length <= 0 &&
-              filteredWidgets.length <= 0 ? (
-                <ThemedText
-                  fontSize="regular"
-                  fontWeight="regular"
-                  style={{ textAlign: "center", marginTop: 25 }}
-                >
-                  {selectedTag === "All" && !searchQuery
-                    ? "No entries found."
-                    : `No entries for "${selectedTag !== "All" ? selectedTag : searchQuery}"`}
-                </ThemedText>
-              ) : null}
+                {filteredWidgets.length > 0 && (
+                  <>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 8,
+                      }}
+                    >
+                      <ThemedText fontSize="regular" fontWeight="regular">
+                        Recent
+                      </ThemedText>
+                      <Pressable onPress={() => setShowSortModal(true)}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            gap: 6,
+                          }}
+                        >
+                          <ThemedText fontSize="s" fontWeight="regular">
+                            Sort by
+                          </ThemedText>
+                          <MaterialIcons
+                            name="filter-list"
+                            size={20}
+                            color={Colors[colorScheme || "light"].text}
+                          />
+                        </View>
+                      </Pressable>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        rowGap: 16,
+                      }}
+                    >
+                      {filteredWidgets.map((item) => (
+                        <Widget
+                          key={item.id}
+                          title={item.title}
+                          label={item.tag.tag_label}
+                          iconLeft={item.iconLeft}
+                          iconRight={item.iconRight}
+                          color={item.color as keyof typeof Colors.widget}
+                          pageType={item.page_type}
+                          onPress={() => goToPage(item)}
+                          onLongPress={() => {
+                            setSelectedWidget(item);
+                            setShowModal(true);
+                          }}
+                        />
+                      ))}
+                    </View>
+                  </>
+                )}
+
+                {filteredPinnedWidgets.length <= 0 &&
+                  filteredWidgets.length <= 0 && (
+                    <ThemedText
+                      fontSize="regular"
+                      fontWeight="regular"
+                      style={{ textAlign: "center", marginTop: 25 }}
+                    >
+                      {selectedTag === "All" && !searchQuery
+                        ? "No entries found."
+                        : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
+                    </ThemedText>
+                  )}
+              </ScrollView>
             </>
           )}
         </ThemedView>
       </SafeAreaView>
+
+      <QuickActionModal
+        visible={showSortModal}
+        onClose={() => setShowSortModal(false)}
+        items={[
+          {
+            label: "Last modified",
+            icon: "swap-vert", // or "arrow-upward"/"arrow-downward"
+            onPress: () => {
+              console.log("Sort by last modified");
+              setShowSortModal(false);
+            },
+          },
+          {
+            label: "Alphabet",
+            icon: "sort-by-alpha",
+            onPress: () => {
+              console.log("Sort alphabetically");
+              setShowSortModal(false);
+            },
+          },
+        ]}
+      />
+
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: selectedWidget?.pinned ? "Unpin item" : "Pin item",
+            label: selectedWidget?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
             onPress: async () => {
               if (
@@ -274,7 +368,11 @@ export default function HomeScreen() {
               }
             },
           },
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit Widget",
+            icon: "edit",
+            onPress: () => selectedWidget && goToEditPage(selectedWidget),
+          },
           {
             label: "Archive",
             icon: "archive",
@@ -291,31 +389,28 @@ export default function HomeScreen() {
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => {
-              setShowDeleteModal(true);
-            },
+            onPress: () => setShowDeleteModal(true),
             danger: true,
           },
         ]}
       />
+
       <ModalSelection
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
       />
+
       <DeleteModal
         visible={showDeleteModal}
         title={selectedWidget?.title}
-        typeToDelete="widget"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const widgetIdAsNumber = Number(selectedWidget.id);
-              const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
-
+              const successfullyDeleted = await deleteGeneralPage(
+                Number(selectedWidget.id),
+              );
               setShouldReload(successfullyDeleted);
-
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

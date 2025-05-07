@@ -70,12 +70,7 @@ export default function RootLayout() {
               name="createCollection"
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="addLists" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="collectionTemplate"
-              options={{ headerShown: false }}
-            />
-
+            <Stack.Screen name="editWidget" options={{ headerShown: false }} />
             <Stack.Screen
               name="addCollectionItem"
               options={{ headerShown: false }}
@@ -85,6 +80,10 @@ export default function RootLayout() {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="appearance" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="editCollectionItem"
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />

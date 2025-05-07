@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import {
   InputWrapper,
   StyledTextInput,
-  TextfieldContainter,
+  TextfieldContainer,
 } from "./Textfield.styles";
 import { FC } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -17,6 +17,9 @@ interface TextfieldProps {
   textfieldIcon?: keyof typeof MaterialIcons.glyphMap;
   onChangeText?: (text: string) => void;
   value?: string;
+  hasNoInputError?: boolean;
+  maxLength?: number;
+  multiline?: boolean;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -27,11 +30,13 @@ const Textfield: FC<TextfieldProps> = ({
   textfieldIcon = "short-text",
   onChangeText,
   value,
+  hasNoInputError,
+  maxLength,
 }) => {
   const colorScheme = useActiveColorScheme();
 
   return (
-    <TextfieldContainter>
+    <TextfieldContainer>
       {showTitle ? <ThemedText fontWeight="regular">{title}</ThemedText> : null}
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
@@ -48,9 +53,15 @@ const Textfield: FC<TextfieldProps> = ({
             colorScheme === "light" ? Colors.grey100 : Colors.grey50
           }
           placeholder={placeholderText}
+          maxLength={maxLength}
         />
       </InputWrapper>
-    </TextfieldContainter>
+      {hasNoInputError && (
+        <ThemedText fontSize="s" colorVariant={"red"}>
+          This field is required, please enter a text.
+        </ThemedText>
+      )}
+    </TextfieldContainer>
   );
 };
 

@@ -30,14 +30,22 @@ import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
+import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import {
+  getGeneralPageByID,
+  updateGeneralPageData,
+} from "@/services/GeneralPageService";
+import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
-export default function CreateNoteScreen() {
+export default function EditWidgetScreen() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const { widgetID } = useLocalSearchParams<{ widgetID: string }>();
+  const [pageData, setPageData] = useState<GeneralPageDTO | null>();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("#4599E8");
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
   >(null);
@@ -75,7 +83,7 @@ export default function CreateNoteScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
-  const createNote = async () => {
+  const updateWidget = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
       return;
@@ -97,22 +105,15 @@ export default function CreateNoteScreen() {
       }
     }
 
-    const noteDTO: NoteDTO = {
-      page_type: PageType.Note,
-      page_title: title,
-      page_icon: selectedIcon ?? undefined,
-      page_color: (selectedColor as keyof typeof Colors.widget) || "#4599E8",
-      archived: false,
-      pinned: false,
-      note_content: null,
-      tag: tagDTO,
-    };
+    await updateGeneralPageData(
+      Number(widgetID),
+      title,
+      selectedIcon || "",
+      selectedColor,
+      tagDTO?.tagID || null,
+    );
 
-    const id = await insertNote(noteDTO);
-    router.replace({
-      pathname: "/notePage",
-      params: { pageId: id, title: title },
-    });
+    router.back();
   };
 
   useFocusEffect(
@@ -126,7 +127,27 @@ export default function CreateNoteScreen() {
         }
       };
 
+      const fetchGeneralPage = async () => {
+        try {
+          const generalPageData = await getGeneralPageByID(Number(widgetID));
+          if (generalPageData) {
+            setPageData(generalPageData);
+            setTitle(generalPageData.page_title || "");
+            setSelectedColor(generalPageData.page_color || "");
+            setSelectedIcon(
+              (generalPageData.page_icon as
+                | keyof typeof MaterialIcons.glyphMap
+                | null) || null,
+            );
+            setSelectedTag(generalPageData.tag || null);
+          }
+        } catch (error) {
+          console.error("Failed to load page data:", error);
+        }
+      };
+
       fetchTags();
+      fetchGeneralPage();
     }, []),
   );
 
@@ -152,7 +173,7 @@ export default function CreateNoteScreen() {
     >
       <Card>
         <View style={{ alignItems: "center", gap: 20 }}>
-          <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+          <Header title="Edit Widget" onIconPress={() => alert("Popup!")} />
           <Widget
             title={title || "Title"}
             label={selectedTag?.tag_label ?? "No tag"}
@@ -250,9 +271,8 @@ export default function CreateNoteScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <Button onPress={createNote}>Create</Button>
+        <Button onPress={updateWidget}>Save</Button>
       )}
-
       <ChoosePopup
         visible={popupVisible}
         type={popupType}
@@ -281,4 +301,7 @@ export default function CreateNoteScreen() {
       />
     </GradientBackground>
   );
+}
+function setKeyboardVisible(arg0: boolean): void {
+  throw new Error("Function not implemented.");
 }

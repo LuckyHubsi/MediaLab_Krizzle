@@ -21,12 +21,14 @@ type CollectionWidgetProps = {
   attributes: AttributeDTO[];
   item: Item;
   onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   attributes,
   item,
   onPress,
+  onLongPress,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
@@ -49,8 +51,20 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const multiSelect =
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
 
+  const handleLongPress = () => {
+    if (onLongPress) {
+      onLongPress();
+    } else {
+      console.log("Long press detected on widget:", title);
+    }
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onPress}
+      onLongPress={handleLongPress}
+    >
       <CollectionCardContainer colorScheme={colorScheme}>
         {/* Title */}
         <CollectionTitle colorScheme={colorScheme}>{title}</CollectionTitle>

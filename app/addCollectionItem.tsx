@@ -1,12 +1,10 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router } from "expo-router";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,8 +13,8 @@ import { getCollectionCategories } from "@/services/CollectionCategoriesService"
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
-import { Button } from "@/components/ui/Button/Button";
 import { insertItemAndReturnID } from "@/services/ItemService";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -33,6 +31,7 @@ export default function AddCollectionItem() {
   const [selectedCategoryID, setSelectedCategoryID] = useState<number | null>(
     null,
   );
+  const [hasClickedNext, setHasClickedNext] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -40,7 +39,6 @@ export default function AddCollectionItem() {
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
         const template = await getTemplate(numericTemplateID);
-
         if (template && template.attributes) {
           setAttributes(template.attributes);
         }
@@ -61,36 +59,33 @@ export default function AddCollectionItem() {
     }));
   };
 
-  const handleListChange = (categoryID: number) => {
+  const handleListChange = (categoryID: number | null) => {
     setSelectedCategoryID(categoryID);
+  };
+
+  const validateFields = () => {
+    return attributes.every((attribute) => {
+      if (attribute.type === AttributeType.Text) {
+        const value = attributeValues[attribute.attributeID || 0];
+        return value && value.trim() !== "";
+      }
+      return true;
+    });
   };
 
   const mapToItemDTO = (attributes: AttributeDTO[]): ItemDTO => {
     const attributeValueDTOs: ItemAttributeValueDTO[] = attributes.map(
       (attribute) => {
         const value = attributeValues[attribute.attributeID || 0];
-
         switch (attribute.type) {
           case AttributeType.Text:
-            return {
-              ...attribute,
-              valueString: value,
-            };
+            return { ...attribute, valueString: value };
           case AttributeType.Date:
-            return {
-              ...attribute,
-              valueString: value ? value.toISOString() : undefined,
-            };
+            return { ...attribute, valueString: value?.toISOString() };
           case AttributeType.Rating:
-            return {
-              ...attribute,
-              valueNumber: value,
-            };
+            return { ...attribute, valueNumber: value };
           case AttributeType.Multiselect:
-            return {
-              ...attribute,
-              valueMultiselect: value,
-            };
+            return { ...attribute, valueMultiselect: value };
           default:
             return { ...attribute };
         }
@@ -99,15 +94,19 @@ export default function AddCollectionItem() {
 
     return {
       pageID: Number(pageId),
-      categoryID: Number(selectedCategoryID)
-        ? Number(selectedCategoryID)
-        : null,
+      categoryID: selectedCategoryID ? Number(selectedCategoryID) : null,
       attributeValues: attributeValueDTOs,
     };
   };
 
   const handleSaveItem = async () => {
-    const itemDTO = mapToItemDTO(attributes || []);
+    setHasClickedNext(true);
+    const allFieldsValid = validateFields();
+    if (!allFieldsValid) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    const itemDTO = mapToItemDTO(attributes);
     const itemId = await insertItemAndReturnID(itemDTO);
     router.replace({
       pathname: "/collectionItemPage",
@@ -116,35 +115,37 @@ export default function AddCollectionItem() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View>
-            <Header
-              title="Add Collection Item"
-              onIconPress={() => alert("Popup!")}
-            />
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
+      topPadding={Platform.select({ ios: 20, android: 30 })}
+    >
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View>
+          <Header
+            title="Add Collection Item"
+            onIconPress={() => alert("Popup!")}
+          />
 
-            <AddCollectionItemCard
-              attributes={attributes}
-              lists={lists}
-              attributeValues={attributeValues}
-              onInputChange={handleInputChange}
-              onListChange={handleListChange}
-            />
-          </View>
-
-          {/* add correct function to discard/next */}
-          <BottomButtons
-            titleLeftButton={"Discard"}
-            titleRightButton={"Add"}
-            variant="discard"
-            onDiscard={router.back}
-            onNext={handleSaveItem}
-            progressStep={10}
-          ></BottomButtons>
+          <AddCollectionItemCard
+            attributes={attributes}
+            lists={lists}
+            attributeValues={attributeValues}
+            onInputChange={handleInputChange}
+            onListChange={handleListChange}
+            selectedCategoryID={selectedCategoryID}
+            hasNoInputError={hasClickedNext && !validateFields()}
+          />
         </View>
-      </ThemedView>
-    </SafeAreaView>
+
+        <BottomButtons
+          titleLeftButton="Discard"
+          titleRightButton="Add"
+          variant="discard"
+          onDiscard={router.back}
+          onNext={handleSaveItem}
+          progressStep={10}
+        />
+      </View>
+    </GradientBackground>
   );
 }

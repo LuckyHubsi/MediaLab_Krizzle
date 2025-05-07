@@ -10,13 +10,16 @@ import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
   attributeValues: Record<number, any>;
   onInputChange: (attributeID: number, value: any) => void;
-  onListChange: (categoryID: number) => void;
+  hasNoInputError?: boolean;
+  onListChange: (categoryID: number | null) => void;
+  selectedCategoryID?: number | null;
 }
 
 const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
@@ -25,6 +28,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   attributeValues,
   onInputChange,
   onListChange,
+  hasNoInputError,
+  selectedCategoryID,
 }) => {
   const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
@@ -51,20 +56,37 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
 
-    const selectedListDTO = lists.find((list) => list.category_name === value);
+    if (value === "Select an option...") {
+      onListChange(null);
+      return;
+    }
 
-    if (selectedListDTO && selectedListDTO.collectionCategoryID) {
+    const selectedListDTO = lists.find((list) => list.category_name === value);
+    if (selectedListDTO?.collectionCategoryID != null) {
       onListChange(selectedListDTO.collectionCategoryID);
     }
   };
-
   useEffect(() => {
+    if (!lists.length) return;
+
     const listArray: string[] = [];
+    let matchedName = "";
+
     lists.forEach((list) => {
       listArray.push(list.category_name);
+      if (
+        selectedCategoryID != null &&
+        Number(list.collection_categoryID) === Number(selectedCategoryID)
+      ) {
+        matchedName = list.category_name;
+      }
     });
     setListStrings(listArray);
-  }, [lists]);
+    // ✅ Only override selectedList if we found a match
+    if (matchedName) {
+      setSelectedList(matchedName);
+    }
+  }, [lists, selectedCategoryID]);
 
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];
@@ -83,6 +105,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 onChangeText={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
                 }
+                hasNoInputError={hasNoInputError}
+                maxLength={750}
               />,
             );
             break;
@@ -103,7 +127,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
               <RatingPicker
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
-                selectedIcon={attribute.symbol || "star"}
+                selectedIcon={
+                  (attribute.symbol as keyof typeof MaterialIcons.glyphMap) ||
+                  "star"
+                }
                 value={currentValue || 0}
                 onChange={(rating) =>
                   onInputChange(Number(attribute.attributeID), rating)
