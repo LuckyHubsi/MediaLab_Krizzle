@@ -11,8 +11,9 @@ import { Button } from "../Button/Button";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface BottomButtonsProps {
-  titleLeftButton: string;
-  titleRightButton: string;
+  titleLeftButton?: string;
+  titleRightButton?: string;
+  singleButtonText?: string;
   onDiscard?: () => void;
   onNext: () => void;
   variant?: "discard" | "back";
@@ -23,6 +24,7 @@ interface BottomButtonsProps {
 const BottomButtons: FC<BottomButtonsProps> = ({
   titleLeftButton,
   titleRightButton,
+  singleButtonText,
   onDiscard,
   onNext,
   variant,
@@ -40,7 +42,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
       )}
 
       {progressStep && progressStep === 1 && (
-        <Button onPress={onNext} children={"Next"} />
+        <Button onPress={onNext} children={singleButtonText} />
       )}
 
       {progressStep && progressStep > 1 && (

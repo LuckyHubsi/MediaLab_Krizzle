@@ -18,6 +18,7 @@ interface DeleteModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   onclose: () => void;
+  titleHasApostrophes?: boolean;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -26,6 +27,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onCancel,
   onConfirm,
   onclose,
+  titleHasApostrophes = true,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
@@ -42,7 +44,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
           <ModalBox colorScheme={colorScheme}>
             <OverlayTextBox>
               <ThemedText fontSize="regular" fontWeight="semibold">
-                Do you want to delete "{title}"?
+                {titleHasApostrophes
+                  ? `Do you want to delete "${title}"?`
+                  : `Do you want to delete ${title}?`}
               </ThemedText>
               <ThemedText fontSize="s" fontWeight="regular">
                 You cannot undo this action

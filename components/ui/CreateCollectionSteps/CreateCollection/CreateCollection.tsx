@@ -225,8 +225,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           <ButtonContainer>
             <BottomButtons
               variant={"back"}
-              titleLeftButton={"Back"}
-              titleRightButton={"Add"}
+              singleButtonText="Next"
               onNext={() => {
                 setHasClickedNext(true);
                 //check if textfield is filled
