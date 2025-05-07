@@ -202,7 +202,7 @@ export default function CollectionScreen() {
         onClose={() => setShowItemModal(false)}
         items={[
           {
-            label: "Edit",
+            label: "Edit Item",
             icon: "edit",
             onPress: () => {
               router.push({
