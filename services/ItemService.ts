@@ -208,28 +208,28 @@ const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
         for (const value of itemDTO.attributeValues) {
           switch (value.type) {
             case AttributeType.Text:
-              if ("ValueString" in value) {
+              if ("valueString" in value) {
                 await executeQuery(
                   updateTextValueQuery,
-                  [value.ValueString, value.itemID, value.attributeID],
+                  [value.valueString, value.itemID, value.attributeID],
                   txn,
                 );
               }
               break;
             case AttributeType.Date:
-              if ("ValueString" in value) {
+              if ("valueString" in value) {
                 await executeQuery(
                   updateRatingValueQuery,
-                  [value.ValueString, value.itemID, value.attributeID],
+                  [value.valueString, value.itemID, value.attributeID],
                   txn,
                 );
               }
               break;
             case AttributeType.Rating:
-              if ("ValueNumber" in value) {
+              if ("valueNumber" in value) {
                 await executeQuery(
                   updateRatingValueQuery,
-                  [value.ValueNumber, value.itemID, value.attributeID],
+                  [value.valueNumber, value.itemID, value.attributeID],
                   txn,
                 );
               }
