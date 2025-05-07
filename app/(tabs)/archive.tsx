@@ -171,10 +171,6 @@ export default function ArchiveScreen() {
 
               {filteredWidgets.length > 0 ? (
                 <>
-                  <ThemedText fontSize="regular" fontWeight="regular">
-                    Archive
-                  </ThemedText>
-
                   <FlatList
                     data={filteredWidgets}
                     keyExtractor={(item) => item.id}
