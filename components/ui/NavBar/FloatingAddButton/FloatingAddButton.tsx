@@ -15,7 +15,7 @@ export const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
 
   return (
     <StyledButtonContainer onPress={onPress}>
-      <MaterialIcons name="add" size={40} color={color} />
+      <MaterialIcons name="add" size={40} color={"white"} />
     </StyledButtonContainer>
   );
 };
