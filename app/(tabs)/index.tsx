@@ -102,9 +102,7 @@ export default function HomeScreen() {
       tag: widget.tag || { tag_label: "Uncategorized" },
       color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
       page_type: widget.page_type,
-      iconLeft: widget.page_icon
-        ? getMaterialIcon(widget.page_icon)
-        : undefined,
+      icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
       archived: widget.archived,
       pinned: widget.pinned,
     }));
@@ -232,8 +230,7 @@ export default function HomeScreen() {
                           key={item.id}
                           title={item.title}
                           label={item.tag.tag_label}
-                          iconLeft={item.iconLeft}
-                          iconRight={item.iconRight}
+                          icon={item.icon}
                           color={item.color as keyof typeof Colors.widget}
                           pageType={item.page_type}
                           onPress={() => goToPage(item)}
@@ -291,8 +288,7 @@ export default function HomeScreen() {
                           key={item.id}
                           title={item.title}
                           label={item.tag.tag_label}
-                          iconLeft={item.iconLeft}
-                          iconRight={item.iconRight}
+                          icon={item.icon}
                           color={item.color as keyof typeof Colors.widget}
                           pageType={item.page_type}
                           onPress={() => goToPage(item)}

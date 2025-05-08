@@ -93,11 +93,13 @@ const Widget: React.FC<Props> = ({
         <Title>{title}</Title>
 
         {/* Tag below */}
-        {label.trim().toLowerCase() !== "uncategorized" && (
-          <Tag numberOfLines={1} ellipsizeMode="tail">
-            {label}
-          </Tag>
-        )}
+        {label &&
+          label.trim() !== "" &&
+          label.trim().toLowerCase() !== "uncategorized" && (
+            <Tag numberOfLines={1} ellipsizeMode="tail">
+              {label}
+            </Tag>
+          )}
       </CardWrapper>
     </TouchableOpacity>
   );

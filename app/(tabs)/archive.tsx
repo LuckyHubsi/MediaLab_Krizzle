@@ -94,9 +94,7 @@ export default function ArchiveScreen() {
         color:
           getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
         page_type: widget.page_type,
-        iconLeft: widget.page_icon
-          ? getMaterialIcon(widget.page_icon)
-          : undefined,
+        icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
         archived: widget.archived,
       }));
       return enrichedWidgets;
@@ -180,8 +178,7 @@ export default function ArchiveScreen() {
                       <Widget
                         title={item.title}
                         label={item.tag}
-                        iconLeft={item.iconLeft}
-                        iconRight={item.iconRight}
+                        icon={item.icon}
                         color={item.color as keyof typeof Colors.widget}
                         pageType={item.page_type}
                         onPress={() => {
