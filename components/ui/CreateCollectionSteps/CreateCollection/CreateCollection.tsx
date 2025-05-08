@@ -231,11 +231,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <View style={{ flex: 1 }}>
               <ChooseCard
                 label={selectedIconLabel}
-                selectedColor={
-                  useColorScheme() === "dark"
-                    ? Colors.dark.cardBackground
-                    : Colors.light.cardBackground
-                }
+                selectedColor={Colors[colorScheme].cardBackground}
                 selectedIcon={selectedIcon}
                 onPress={() => {
                   setPopupType("icon");

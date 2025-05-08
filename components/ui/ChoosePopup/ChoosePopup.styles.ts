@@ -23,7 +23,7 @@ export const ItemsGrid = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 8px;
   row-gap: 15px;
   padding: 0 20px;
 `;

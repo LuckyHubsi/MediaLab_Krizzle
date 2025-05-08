@@ -37,10 +37,11 @@ import {
 } from "@/services/GeneralPageService";
 import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function EditWidgetScreen() {
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const { widgetID } = useLocalSearchParams<{ widgetID: string }>();
   const [pageData, setPageData] = useState<GeneralPageDTO | null>();
   const [title, setTitle] = useState("");
@@ -256,11 +257,7 @@ export default function EditWidgetScreen() {
               <View style={{ flex: 1 }}>
                 <ChooseCard
                   label={selectedIconLabel}
-                  selectedColor={
-                    useColorScheme() === "dark"
-                      ? Colors.dark.cardBackground
-                      : Colors.light.cardBackground
-                  }
+                  selectedColor={Colors[colorScheme].cardBackground}
                   selectedIcon={selectedIcon ?? undefined}
                   onPress={() => {
                     setPopupType("icon");

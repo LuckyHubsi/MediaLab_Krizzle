@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { View, ScrollView, Keyboard } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
@@ -26,15 +24,15 @@ import { PageType } from "@/utils/enums/PageType";
 import { insertNote } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
-import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#4599E8");
@@ -235,11 +233,7 @@ export default function CreateNoteScreen() {
               <View style={{ flex: 1 }}>
                 <ChooseCard
                   label={selectedIconLabel}
-                  selectedColor={
-                    useColorScheme() === "dark"
-                      ? Colors.dark.cardBackground
-                      : Colors.light.cardBackground
-                  }
+                  selectedColor={Colors[colorScheme].cardBackground}
                   selectedIcon={selectedIcon ?? undefined}
                   onPress={() => {
                     setPopupType("icon");
