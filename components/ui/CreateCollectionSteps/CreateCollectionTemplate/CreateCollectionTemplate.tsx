@@ -207,7 +207,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={{ paddingBottom: 100, gap: 10 }}>
+        <View style={{ gap: 10, paddingBottom: 10 }}>
           <Card>
             <CardText>
               <CardHeader>
@@ -254,7 +254,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               </ThemedText>
             </ItemCount>
           </ItemCountContainer>
-
+        </View>
+        <ScrollView contentContainerStyle={{ paddingBottom: 10, gap: 10 }}>
           {titleCard && (
             <ItemTemplateCard
               isTitleCard

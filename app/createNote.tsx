@@ -252,7 +252,9 @@ export default function CreateNoteScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <Button onPress={createNote}>Create</Button>
+        <View style={{ marginBottom: 10 }}>
+          <Button onPress={createNote}>Create</Button>
+        </View>
       )}
 
       <ChoosePopup

@@ -273,7 +273,9 @@ export default function EditWidgetScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <Button onPress={updateWidget}>Save</Button>
+        <View style={{ marginBottom: 10 }}>
+          <Button onPress={updateWidget}>Save</Button>
+        </View>
       )}
       <ChoosePopup
         visible={popupVisible}
