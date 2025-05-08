@@ -10,6 +10,7 @@ interface Props {
   onEdit: () => void;
   onDelete: () => void;
   tagCount?: number;
+  tagCountLoading?: boolean;
 }
 
 export const TagListItem: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const TagListItem: React.FC<Props> = ({
   onEdit,
   onDelete,
   tagCount,
+  tagCountLoading,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
@@ -37,7 +39,7 @@ export const TagListItem: React.FC<Props> = ({
             fontWeight="light"
             colorVariant="lightGrey"
           >{`Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`}</ThemedText>
-        ) : (
+        ) : !tagCountLoading ? null : (
           <ThemedText fontSize="s" fontWeight="light" colorVariant="lightGrey">
             Unused
           </ThemedText>

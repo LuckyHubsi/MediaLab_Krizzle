@@ -166,7 +166,7 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
       />
 
       <BottomButtons
-        titleLeftButton="Back"
+        titleLeftButton="Cancel"
         titleRightButton="Save"
         onDiscard={onBack!}
         onNext={() => {
