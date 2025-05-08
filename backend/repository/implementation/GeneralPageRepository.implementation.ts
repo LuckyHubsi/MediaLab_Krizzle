@@ -15,6 +15,7 @@ import {
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
   selectGeneralPageByIdQuery,
+  updateArchivedByPageIDQuery,
   updateDateModifiedByPageIDQuery,
   updatePageByIDQuery,
   updatePinnedByPageIDQuery,
@@ -157,6 +158,32 @@ export class GeneralPageRepositoryImpl
         await this.executeQuery(
           updatePinnedByPageIDQuery,
           [newPinStatus, pageID],
+          txn,
+        );
+
+        await this.executeQuery(updateDateModifiedByPageIDQuery, [
+          new Date().toISOString,
+          pageID,
+        ]);
+      });
+
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update pinned state");
+    }
+  }
+
+  async updateArchive(
+    pageID: PageID,
+    currentArchiveStatus: boolean,
+  ): Promise<boolean> {
+    try {
+      const newArchiveStatus = currentArchiveStatus ? 0 : 1;
+
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updateArchivedByPageIDQuery,
+          [newArchiveStatus, 0, pageID],
           txn,
         );
 

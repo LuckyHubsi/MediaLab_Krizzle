@@ -81,6 +81,22 @@ export class GeneralPageService {
     }
   }
 
+  async togglePageArchive(
+    pageId: number,
+    currentArchiveStatus: boolean,
+  ): Promise<boolean> {
+    try {
+      const brandedPageID = pageID.parse(pageId);
+      await this.generalPageRepo.updateArchive(
+        brandedPageID,
+        currentArchiveStatus,
+      );
+      return true;
+    } catch (error) {
+      throw new ServiceError("Error updating pin status.");
+    }
+  }
+
   async deletePage(pageId: number): Promise<boolean> {
     try {
       const brandedPageID = pageID.parse(pageId);

@@ -22,4 +22,8 @@ export interface GeneralPageRepository extends BaseRepository {
   ): Promise<number>;
   deletePage(pageID: PageID): Promise<boolean>;
   updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean>;
+  updateArchive(
+    pageID: PageID,
+    currentArchiveStatus: boolean,
+  ): Promise<boolean>;
 }

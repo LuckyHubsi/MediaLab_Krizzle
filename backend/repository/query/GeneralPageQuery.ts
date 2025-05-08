@@ -58,6 +58,10 @@ const updatePinnedByPageIDQuery: string = `
     UPDATE general_page_data SET pinned = ? WHERE pageID = ?
 `;
 
+const updateArchivedByPageIDQuery: string = `
+    UPDATE general_page_data SET archived = ?, pinned = ? WHERE pageID = ?
+`;
+
 export {
   selectAllPagesByLastModifiedQuery,
   selectAllPagesByAlphabetQuery,
@@ -69,4 +73,5 @@ export {
   updatePageByIDQuery,
   selectGeneralPageByIdQuery,
   updatePinnedByPageIDQuery,
+  updateArchivedByPageIDQuery,
 };

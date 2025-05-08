@@ -17,6 +17,7 @@ jest.mock(
       updateGeneralPageData: jest.fn(),
       deletePage: jest.fn(),
       updatePin: jest.fn(),
+      updateArchive: jest.fn(),
     },
   }),
 );
@@ -293,6 +294,31 @@ describe("GeneralPageService", () => {
         ServiceError,
       );
       expect(mockGeneralPageRepository.updatePin).toHaveBeenCalledWith(
+        1 as any,
+        true,
+      );
+    });
+  });
+
+  describe("togglePageArchive", () => {
+    it("should return true if updating the archive state was successful", async () => {
+      const mockPageID = 1;
+      mockGeneralPageRepository.updateArchive.mockResolvedValue(true);
+
+      const result = await generalPageService.togglePageArchive(1, true);
+
+      expect(result).toEqual(true);
+    });
+
+    it("should throw ServiceError if update archive state fails", async () => {
+      mockGeneralPageRepository.updateArchive.mockRejectedValue(
+        new Error("Repository error"),
+      );
+
+      await expect(
+        generalPageService.togglePageArchive(1, true),
+      ).rejects.toThrow(ServiceError);
+      expect(mockGeneralPageRepository.updateArchive).toHaveBeenCalledWith(
         1 as any,
         true,
       );
