@@ -8,6 +8,7 @@ import {
   Tag,
   CardSolid,
   CardGradient,
+  PreviewWrapper,
 } from "./Widget.style";
 import { PageType } from "@/utils/enums/PageType";
 import { ThemedText } from "@/components/ThemedText";
@@ -73,12 +74,15 @@ const Widget: React.FC<Props> = ({
     >
       <CardWrapper {...cardProps}>
         {isPreview && (
-          <ThemedText
-            fontSize="s"
-            style={{ position: "absolute", top: 15, left: 15, zIndex: 1 }}
-          >
-            Preview
-          </ThemedText>
+          <PreviewWrapper>
+            <ThemedText
+              fontSize="s"
+              fontWeight="light"
+              style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
+            >
+              Preview
+            </ThemedText>
+          </PreviewWrapper>
         )}
         {iconLeft && (
           <IconsContainer>{iconLeft && <Icon>{iconLeft}</Icon>}</IconsContainer>
