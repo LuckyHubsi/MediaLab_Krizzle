@@ -353,6 +353,7 @@ export default function HomeScreen() {
           {
             label: selectedWidget?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
+            disabled: !selectedWidget?.pinned && pinnedWidgets.length >= 4,
             onPress: async () => {
               if (
                 (selectedWidget &&

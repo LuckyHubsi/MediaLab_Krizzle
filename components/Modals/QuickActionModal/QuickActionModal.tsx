@@ -16,6 +16,7 @@ export type QuickActionItem = {
   icon: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
   danger?: boolean;
+  disabled?: boolean;
 };
 
 type QuickActionModalProps = {
@@ -47,24 +48,40 @@ export default function QuickActionModal({
                 <PopupItem
                   key={index}
                   onPress={() => {
-                    item.onPress?.();
-                    onClose();
+                    if (!item.disabled) {
+                      item.onPress?.();
+                      onClose();
+                    }
                   }}
                   colorScheme={colorScheme}
                   isLast={index === items.length - 1}
+                  disabled={item.disabled}
                 >
                   <ThemedText
                     fontSize="regular"
                     fontWeight="regular"
-                    colorVariant={item.danger ? "red" : "default"}
+                    colorVariant={
+                      item.disabled
+                        ? "disabled"
+                        : item.danger
+                          ? "red"
+                          : "default"
+                    }
                   >
                     {item.label}
                   </ThemedText>
+
                   <IconContainer>
                     <MaterialIcons
                       name={item.icon}
                       size={20}
-                      color={item.danger ? Colors.negative : themeColors.icon}
+                      color={
+                        item.disabled
+                          ? Colors[colorScheme].disabled
+                          : item.danger
+                            ? Colors.negative
+                            : Colors[colorScheme].text
+                      }
                     />
                   </IconContainer>
                 </PopupItem>
