@@ -12,17 +12,57 @@ import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
+  selectAllArchivedPagesQuery,
+  selectAllPagesByAlphabetQuery,
+  selectAllPagesByLastModifiedQuery,
+  selectAllPinnedPagesQuery,
 } from "../query/GeneralPageQuery";
 import * as SQLite from "expo-sqlite";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 
 export class GeneralPageRepositoryImpl
   extends BaseRepositoryImpl
   implements GeneralPageRepository
 {
-  async getAllPages(): Promise<GeneralPage[]> {
+  async getAllPagesSortedByModified(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
-        selectAllGeneralPageQuery,
+        selectAllPagesByLastModifiedQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError(
+        "Failed to fetch all pages sorted by last modified.",
+      );
+    }
+  }
+
+  async getAllPagesSortedByAlphabet(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByAlphabetQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  async getAllPinnedPages(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPinnedPagesQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  async getAllArchivedPages(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllArchivedPagesQuery,
       );
       return result.map(GeneralPageMapper.toEntity);
     } catch (error) {

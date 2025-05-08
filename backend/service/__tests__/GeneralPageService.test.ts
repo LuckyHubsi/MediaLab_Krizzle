@@ -3,12 +3,16 @@ import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPa
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { ServiceError } from "@/backend/util/error/ServiceError";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 
 jest.mock(
   "@/backend/repository/implementation/GeneralPageRepository.implementation",
   () => ({
     generalPageRepository: {
-      getAllPages: jest.fn(),
+      getAllPagesSortedByModified: jest.fn(),
+      getAllPagesSortedByAlphabet: jest.fn(),
+      getAllPinnedPages: jest.fn(),
+      getAllArchivedPages: jest.fn(),
       deletePage: jest.fn(),
     },
   }),
@@ -54,32 +58,137 @@ describe("GeneralPageService", () => {
   });
 
   describe("getAllPages", () => {
-    it("should return an array of GeneralPageDTO objects", async () => {
-      mockGeneralPageRepository.getAllPages.mockResolvedValue([
+    it("should return an array of GeneralPageDTO objects for sorted by last modified", async () => {
+      mockGeneralPageRepository.getAllPagesSortedByModified.mockResolvedValue([
         mockGeneralPage,
       ]);
       (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
         mockGeneralPageDTO,
       );
 
-      const result = await generalPageService.getAllPages();
+      const result = await generalPageService.getAllGeneralPageData(
+        GeneralPageState.GeneralModfied,
+      );
 
       expect(result).toEqual([mockGeneralPageDTO]);
-      expect(mockGeneralPageRepository.getAllPages).toHaveBeenCalled();
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalled();
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByAlphabet,
+      ).toHaveBeenCalledTimes(0);
+      expect(mockGeneralPageRepository.getAllPinnedPages).toHaveBeenCalledTimes(
+        0,
+      );
+      expect(
+        mockGeneralPageRepository.getAllArchivedPages,
+      ).toHaveBeenCalledTimes(0);
+      expect((GeneralPageMapper.toDTO as jest.Mock).mock.calls[0][0]).toEqual(
+        mockGeneralPage,
+      );
+    });
+
+    it("should return an array of GeneralPageDTO objects for sorted by alphabet", async () => {
+      mockGeneralPageRepository.getAllPagesSortedByAlphabet.mockResolvedValue([
+        mockGeneralPage,
+      ]);
+      (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
+        mockGeneralPageDTO,
+      );
+
+      const result = await generalPageService.getAllGeneralPageData(
+        GeneralPageState.GeneralAlphabet,
+      );
+
+      expect(result).toEqual([mockGeneralPageDTO]);
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByAlphabet,
+      ).toHaveBeenCalled();
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalledTimes(0);
+      expect(mockGeneralPageRepository.getAllPinnedPages).toHaveBeenCalledTimes(
+        0,
+      );
+      expect(
+        mockGeneralPageRepository.getAllArchivedPages,
+      ).toHaveBeenCalledTimes(0);
+      expect((GeneralPageMapper.toDTO as jest.Mock).mock.calls[0][0]).toEqual(
+        mockGeneralPage,
+      );
+    });
+
+    it("should return an array of GeneralPageDTO objects for pinned pages", async () => {
+      mockGeneralPageRepository.getAllPinnedPages.mockResolvedValue([
+        mockGeneralPage,
+      ]);
+      (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
+        mockGeneralPageDTO,
+      );
+
+      const result = await generalPageService.getAllGeneralPageData(
+        GeneralPageState.Pinned,
+      );
+
+      expect(result).toEqual([mockGeneralPageDTO]);
+      expect(mockGeneralPageRepository.getAllPinnedPages).toHaveBeenCalled();
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalledTimes(0);
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByAlphabet,
+      ).toHaveBeenCalledTimes(0);
+      expect(
+        mockGeneralPageRepository.getAllArchivedPages,
+      ).toHaveBeenCalledTimes(0);
+      expect((GeneralPageMapper.toDTO as jest.Mock).mock.calls[0][0]).toEqual(
+        mockGeneralPage,
+      );
+    });
+
+    it("should return an array of GeneralPageDTO objects for archived pages", async () => {
+      mockGeneralPageRepository.getAllArchivedPages.mockResolvedValue([
+        mockGeneralPage,
+      ]);
+      (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
+        mockGeneralPageDTO,
+      );
+
+      const result = await generalPageService.getAllGeneralPageData(
+        GeneralPageState.GeneralAlphabet,
+      );
+
+      expect(result).toEqual([mockGeneralPageDTO]);
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByAlphabet,
+      ).toHaveBeenCalled();
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalledTimes(0);
+      expect(mockGeneralPageRepository.getAllPinnedPages).toHaveBeenCalledTimes(
+        0,
+      );
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalledTimes(0);
       expect((GeneralPageMapper.toDTO as jest.Mock).mock.calls[0][0]).toEqual(
         mockGeneralPage,
       );
     });
 
     it("should throw ServiceError if getAllPages fails", async () => {
-      mockGeneralPageRepository.getAllPages.mockRejectedValue(
+      mockGeneralPageRepository.getAllPagesSortedByModified.mockRejectedValue(
         new Error("Repository error"),
       );
 
-      await expect(generalPageService.getAllPages()).rejects.toThrow(
-        ServiceError,
-      );
-      expect(mockGeneralPageRepository.getAllPages).toHaveBeenCalled();
+      await expect(
+        generalPageService.getAllGeneralPageData(
+          GeneralPageState.GeneralModfied,
+        ),
+      ).rejects.toThrow(ServiceError);
+      expect(
+        mockGeneralPageRepository.getAllPagesSortedByModified,
+      ).toHaveBeenCalled();
     });
   });
 
