@@ -5,7 +5,6 @@ import {
 } from "@/backend/domain/entity/GeneralPage";
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
-import { GeneralPageModel } from "@/models/GeneralPageModel";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
@@ -16,9 +15,11 @@ import {
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
   selectGeneralPageByIdQuery,
+  updatePageByIDQuery,
 } from "../query/GeneralPageQuery";
 import * as SQLite from "expo-sqlite";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { GeneralPageModel } from "../model/GeneralPageModel";
 
 export class GeneralPageRepositoryImpl
   extends BaseRepositoryImpl
@@ -82,6 +83,27 @@ export class GeneralPageRepositoryImpl
       }
     } catch (error) {
       throw new RepositoryError("Failed to fetch page by id.");
+    }
+  }
+
+  async updateGeneralPageData(
+    pageID: PageID,
+    updatedPage: NewGeneralPage,
+  ): Promise<boolean> {
+    try {
+      const pageModel: GeneralPageModel =
+        GeneralPageMapper.toInsertModel(updatedPage);
+      await this.executeQuery(updatePageByIDQuery, [
+        pageModel.page_title,
+        pageModel.page_icon,
+        pageModel.page_color,
+        pageModel.tagID,
+        pageModel.date_modified,
+        pageID,
+      ]);
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update page.");
     }
   }
 

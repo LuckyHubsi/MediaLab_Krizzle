@@ -12,6 +12,10 @@ export interface GeneralPageRepository extends BaseRepository {
   getAllPinnedPages(): Promise<GeneralPage[]>;
   getAllArchivedPages(): Promise<GeneralPage[]>;
   getByPageID(pageID: PageID): Promise<GeneralPage>;
+  updateGeneralPageData(
+    pageID: PageID,
+    updatedPage: NewGeneralPage,
+  ): Promise<boolean>;
   insertPage(
     page: NewGeneralPage,
     txn?: SQLite.SQLiteDatabase,

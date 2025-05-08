@@ -1,4 +1,4 @@
-import { pageID } from "@/backend/domain/entity/GeneralPage";
+import { PageID, pageID } from "@/backend/domain/entity/GeneralPage";
 import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { ServiceError } from "@/backend/util/error/ServiceError";
@@ -14,20 +14,40 @@ jest.mock(
       getAllPinnedPages: jest.fn(),
       getAllArchivedPages: jest.fn(),
       getByPageID: jest.fn(),
+      updateGeneralPageData: jest.fn(),
       deletePage: jest.fn(),
     },
   }),
 );
 
+jest.mock("@/backend/domain/entity/GeneralPage", () => ({
+  pageID: {
+    parse: jest.fn(() => 1 as PageID),
+  },
+}));
+
 jest.mock("@/backend/util/mapper/GeneralPageMapper", () => ({
   GeneralPageMapper: {
     toDTO: jest.fn(),
+    toNewEntity: jest.fn(),
   },
 }));
 
 describe("GeneralPageService", () => {
   const mockGeneralPage = {
     pageID: 1,
+    pageType: "note",
+    pageTitle: "test page",
+    pageIcon: "test icon",
+    pageColor: "test color",
+    archived: false,
+    pinned: true,
+    tag: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as any;
+
+  const mockNewGeneralPage = {
     pageType: "note",
     pageTitle: "test page",
     pageIcon: "test icon",
@@ -219,6 +239,37 @@ describe("GeneralPageService", () => {
       expect(mockGeneralPageRepository.getByPageID).toHaveBeenCalledWith(
         pageID.parse(mockPageID),
       );
+    });
+  });
+
+  describe("updateGeneralPageData", () => {
+    it("should return true if update was successful", async () => {
+      const mockPageID = 1;
+      mockGeneralPageRepository.getByPageID.mockResolvedValue(mockGeneralPage);
+      (GeneralPageMapper.toNewEntity as jest.Mock).mockReturnValue(
+        mockNewGeneralPage,
+      );
+
+      const result =
+        await generalPageService.updateGeneralPageData(mockGeneralPageDTO);
+
+      expect(result).toEqual(true);
+      expect(GeneralPageMapper.toNewEntity).toHaveBeenCalledWith(
+        mockGeneralPageDTO,
+      );
+    });
+
+    it("should throw ServiceError if update page fails", async () => {
+      mockGeneralPageRepository.updateGeneralPageData.mockRejectedValue(
+        new Error("Repository error"),
+      );
+
+      await expect(
+        generalPageService.updateGeneralPageData(mockGeneralPageDTO),
+      ).rejects.toThrow(ServiceError);
+      expect(
+        mockGeneralPageRepository.updateGeneralPageData,
+      ).toHaveBeenCalledWith(1 as any, mockNewGeneralPage);
     });
   });
 

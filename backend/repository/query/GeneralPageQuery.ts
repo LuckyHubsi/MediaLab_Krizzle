@@ -45,6 +45,11 @@ const updateDateModifiedByPageIDQuery: string = `
     UPDATE general_page_data SET date_modified = ? WHERE pageID = ?
 `;
 
+const updatePageByIDQuery: string = `
+    UPDATE general_page_data SET page_title = ?, page_icon = ?, page_color = ?, tagID = ? , date_modified = ?
+    WHERE pageID = ?
+`;
+
 const deleteGeneralPageByIDQuery: string = `
     DELETE FROM general_page_data WHERE pageID = ?
 `;
@@ -57,5 +62,6 @@ export {
   insertNewPageQuery,
   updateDateModifiedByPageIDQuery,
   deleteGeneralPageByIDQuery,
+  updatePageByIDQuery,
   selectGeneralPageByIdQuery,
 };
