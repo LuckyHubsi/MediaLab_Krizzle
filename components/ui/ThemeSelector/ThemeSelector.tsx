@@ -9,10 +9,9 @@ import {
   RadioButtonOuter,
   RadioButtonInner,
   ResetContainer,
-  ResetButton,
-  ResetButtonText,
 } from "./ThemeSelector.styles";
 import { useUserTheme } from "@/context/ThemeContext";
+import { Button } from "../Button/Button";
 
 type ThemeOption = "light" | "dark" | "system";
 
@@ -65,9 +64,15 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
 
       {!isSystemSelected && (
         <ResetContainer>
-          <ResetButton onPress={resetToSystemDefault}>
-            <ResetButtonText>Reset to System Default</ResetButtonText>
-          </ResetButton>
+          <Button onPress={resetToSystemDefault}>
+            <ThemedText
+              fontSize="regular"
+              fontWeight="regular"
+              colorVariant="white"
+            >
+              Reset to System Default
+            </ThemedText>
+          </Button>
         </ResetContainer>
       )}
     </>
