@@ -25,16 +25,3 @@ export const ListCOntainer = styled.View`
   border-radius: 33px;
   background: #4599e8;
 `;
-
-export const CollectionListText = styled.Text<{
-  colorScheme: "light" | "dark";
-}>`
-  color: #ffffff;
-  font-family: Lexend;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px; /* 150% */
-  letter-spacing: -0.4px;
-  text-align: center;
-`;

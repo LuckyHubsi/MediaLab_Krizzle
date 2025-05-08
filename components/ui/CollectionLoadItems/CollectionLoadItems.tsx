@@ -145,8 +145,13 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
             color="#FFFFFF"
             style={{ marginRight: 10 }}
           />
-
-          <CollectionListText>{listName}</CollectionListText>
+          <ThemedText
+            fontSize="regular"
+            fontWeight="regular"
+            colorVariant="white"
+          >
+            {listName}
+          </ThemedText>
         </View>
       </ListCOntainer>
       {renderRepresentation()}
