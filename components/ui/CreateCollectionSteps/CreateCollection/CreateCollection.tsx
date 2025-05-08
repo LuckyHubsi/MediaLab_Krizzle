@@ -137,39 +137,45 @@ const CreateCollection: FC<CreateCollectionProps> = ({
 
   return (
     <>
-      <Card>
-        <IconTopRight>
-          <TouchableOpacity onPress={() => setShowHelp(true)}>
-            <MaterialIcons name="help-outline" size={26} color={iconColor} />
-          </TouchableOpacity>
-        </IconTopRight>
-        <View style={{ alignItems: "center", gap: 20 }}>
-          <Header
-            title="Create Collection"
-            onIconPress={() => alert("Popup!")}
-          />
-          <Widget
-            title={title || "Title"}
-            label={selectedTag?.tag_label ?? "No tag"}
-            pageType={PageType.Collection}
-            iconLeft={
+      <View style={{ marginBottom: 8 }}>
+        <Card>
+          <IconTopRight>
+            <TouchableOpacity onPress={() => setShowHelp(true)}>
               <MaterialIcons
-                name={selectedIcon || "help"}
-                size={20}
-                color="black"
+                name="help-outline"
+                size={26}
+                color={Colors.primary}
               />
-            }
-            iconRight={
-              <MaterialIcons name="description" size={20} color="black" />
-            }
-            color={
-              (getWidgetColorKey(
-                selectedColor,
-              ) as keyof typeof Colors.widget) || "#4599E8"
-            }
-          />
-        </View>
-      </Card>
+            </TouchableOpacity>
+          </IconTopRight>
+          <View style={{ alignItems: "center", gap: 20 }}>
+            <Header
+              title="Create Collection"
+              onIconPress={() => alert("Popup!")}
+            />
+            <Widget
+              title={title || "Title"}
+              label={selectedTag?.tag_label ?? "No tag"}
+              pageType={PageType.Collection}
+              iconLeft={
+                <MaterialIcons
+                  name={selectedIcon || "help"}
+                  size={20}
+                  color="black"
+                />
+              }
+              iconRight={
+                <MaterialIcons name="description" size={20} color="black" />
+              }
+              color={
+                (getWidgetColorKey(
+                  selectedColor,
+                ) as keyof typeof Colors.widget) || "#4599E8"
+              }
+            />
+          </View>
+        </Card>
+      </View>
       <ScrollContainer>
         <ContentWrapper>
           <Card>

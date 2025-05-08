@@ -171,31 +171,33 @@ export default function EditWidgetScreen() {
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 80 })}
       topPadding={Platform.select({ ios: 0, android: 0 })}
     >
-      <Card>
-        <View style={{ alignItems: "center", gap: 20 }}>
-          <Header title="Edit Widget" onIconPress={() => alert("Popup!")} />
-          <Widget
-            title={title || "Title"}
-            label={selectedTag?.tag_label ?? "No tag"}
-            pageType={PageType.Note}
-            iconLeft={
-              <MaterialIcons
-                name={selectedIcon || "help"}
-                size={20}
-                color="black"
-              />
-            }
-            iconRight={
-              <MaterialIcons name="description" size={20} color="black" />
-            }
-            color={
-              (getWidgetColorKey(
-                selectedColor,
-              ) as keyof typeof Colors.widget) || "#4599E8"
-            }
-          />
-        </View>
-      </Card>
+      <View style={{ marginBottom: 8 }}>
+        <Card>
+          <View style={{ alignItems: "center", gap: 20 }}>
+            <Header title="Edit Widget" onIconPress={() => alert("Popup!")} />
+            <Widget
+              title={title || "Title"}
+              label={selectedTag?.tag_label ?? "No tag"}
+              pageType={PageType.Note}
+              iconLeft={
+                <MaterialIcons
+                  name={selectedIcon || "help"}
+                  size={20}
+                  color="black"
+                />
+              }
+              iconRight={
+                <MaterialIcons name="description" size={20} color="black" />
+              }
+              color={
+                (getWidgetColorKey(
+                  selectedColor,
+                ) as keyof typeof Colors.widget) || "#4599E8"
+              }
+            />
+          </View>
+        </Card>
+      </View>
       <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
           <View style={{ width: "100%", gap: 20 }}>

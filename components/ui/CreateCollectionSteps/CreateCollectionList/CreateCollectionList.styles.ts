@@ -11,7 +11,7 @@ export const AddButtonWrapper = styled.View`
 `;
 
 export const ListContent = {
-  paddingTop: 20,
+  paddingTop: 6,
   gap: 20,
 };
 

@@ -207,7 +207,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 100, gap: 10 }}>
           <Card>
             <CardText>
               <CardHeader>
@@ -250,7 +250,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                /3 Item Previews
+                /3 Preview
               </ThemedText>
             </ItemCount>
           </ItemCountContainer>
@@ -270,7 +270,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             />
           )}
 
-          <ThemedText colorVariant="grey" style={{ margin: 10 }}>
+          <ThemedText
+            colorVariant="grey"
+            style={{ marginLeft: 10, marginTop: 10 }}
+          >
             Your Templates:
           </ThemedText>
 

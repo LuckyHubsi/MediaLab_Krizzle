@@ -12,6 +12,7 @@ export const ItemCountContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+  padding: 10px 0 0 0;
 `;
 
 export const ItemCount = styled.View`
