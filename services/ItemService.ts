@@ -13,8 +13,13 @@ import {
   insertMultiselectValueQuery,
   insertRatingValueQuery,
   itemSelectByPageIdQuery,
+  updateItemQuery,
   deleteItemQuery,
   deleteItemAttributeValuesQuery,
+  updateMultiselectValueQuery,
+  updateRatingValueQuery,
+  updateDateValueQuery,
+  updateTextValueQuery,
 } from "@/queries/ItemQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { AttributeType } from "@/utils/enums/AttributeType";
@@ -53,6 +58,7 @@ const getItemById = async (id: number): Promise<ItemDTO> => {
       };
 
       const dto = ItemMapper.toDTO(parsedModel);
+
       return dto;
     } else {
       throw new DatabaseError("Error retrieving item by ID");
@@ -188,6 +194,89 @@ const insertItemAttributeValue = async (
 };
 
 /**
+ * Edits an item and all its associated attribute values.
+ *
+ * @param {ItemDTO} itemDTO - The DTO representing the updated item data.
+ * @returns {Promise<boolean>} A promise that resolves to true if the edit was successful.
+ * @throws {DatabaseError} When transaction fails.
+ */
+const editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
+  try {
+    const success = await executeTransaction<boolean>(async (txn) => {
+      // updates category
+      await executeQuery(
+        updateItemQuery,
+        [itemDTO.categoryID, itemDTO.itemID],
+        txn,
+      );
+
+      // updates attribute values
+      if (itemDTO.attributeValues) {
+        for (const value of itemDTO.attributeValues) {
+          switch (value.type) {
+            case AttributeType.Text:
+              if ("valueString" in value) {
+                await executeQuery(
+                  updateTextValueQuery,
+                  [value.valueString, value.itemID, value.attributeID],
+                  txn,
+                );
+              }
+              break;
+            case AttributeType.Date:
+              if ("valueString" in value) {
+                await executeQuery(
+                  updateDateValueQuery,
+                  [value.valueString, value.itemID, value.attributeID],
+                  txn,
+                );
+              }
+              break;
+            case AttributeType.Rating:
+              if ("valueNumber" in value) {
+                await executeQuery(
+                  updateRatingValueQuery,
+                  [value.valueNumber, value.itemID, value.attributeID],
+                  txn,
+                );
+              }
+              break;
+            case AttributeType.Multiselect:
+              if ("valueMultiselect" in value) {
+                const stringifiedValues = JSON.stringify(
+                  value.valueMultiselect,
+                );
+                await executeQuery(
+                  updateMultiselectValueQuery,
+                  [stringifiedValues, value.itemID, value.attributeID],
+                  txn,
+                );
+              }
+              break;
+            default:
+              break;
+          }
+        }
+      }
+
+      // updates date modified
+      await executeQuery(
+        updateDateModifiedByPageIDQuery,
+        [new Date().toISOString(), itemDTO.pageID],
+        txn,
+      );
+
+      return true;
+    });
+
+    return success;
+  } catch (error) {
+    console.error("Transaction error:", error);
+    throw new DatabaseError("Failed to edit item");
+  }
+};
+
+/**
  * Deletes an item and all its associated attribute values from the database.
  *
  * @param {number} itemID - The ID of the item to delete.
@@ -204,7 +293,7 @@ const deleteItemById = async (itemID: number): Promise<boolean> => {
         txn,
       );
 
-      // deletes item and gets the page id
+      // deletes item
       const result = await fetchFirst<{ pageID: number }>(
         deleteItemQuery,
         [itemID],
@@ -236,5 +325,6 @@ export {
   getItemsByPageId,
   insertItemAndReturnID,
   insertItemAttributeValue,
+  editItemByID,
   deleteItemById,
 };
