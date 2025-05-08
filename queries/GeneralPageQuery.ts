@@ -6,6 +6,14 @@ const selectAllGeneralPageQuery: string = `
     ORDER BY p.date_modified DESC;
 `;
 
+const selectAllGeneralPageSortAlphabetQuery: string = `
+    SELECT p.*, t.tag_label
+    FROM general_page_data p
+    LEFT JOIN tag t ON p.tagID = t.tagID
+    WHERE p.archived = 0 AND p.pinned = 0
+    ORDER BY p.page_title ASC;
+`;
+
 const selectAllArchivedPageQuery: string = `
     SELECT p.*, t.tag_label
     FROM general_page_data p
@@ -79,4 +87,5 @@ export {
   deleteGeneralPageByIDQuery,
   selectAllArchivedPageQuery,
   selectAllPinnedPageQuery,
+  selectAllGeneralPageSortAlphabetQuery,
 };

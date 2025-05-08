@@ -1,5 +1,6 @@
 export enum GeneralPageState {
   Archived = "archived",
   Pinned = "pinned",
-  General = "general",
+  GeneralModfied = "generalModified",
+  GeneralAlphabet = "generalAlphabet",
 }
