@@ -29,6 +29,7 @@ import { TagDTO } from "@/dto/TagDTO";
 import { getAllTags } from "@/services/TagService";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -46,7 +47,7 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
