@@ -168,6 +168,7 @@ export default function CreateNoteScreen() {
                   selectedColor,
                 ) as keyof typeof Colors.widget) || "#4599E8"
               }
+              isPreview={true}
             />
           </View>
         </Card>

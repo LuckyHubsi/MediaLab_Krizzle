@@ -23,6 +23,7 @@ type Props = {
   pageType?: PageType;
   onPress?: () => void;
   onLongPress?: () => void;
+  isPreview?: boolean;
 };
 
 const Widget: React.FC<Props> = ({
@@ -34,6 +35,7 @@ const Widget: React.FC<Props> = ({
   pageType,
   onPress,
   onLongPress,
+  isPreview,
 }) => {
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
@@ -70,6 +72,14 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
     >
       <CardWrapper {...cardProps}>
+        {isPreview && (
+          <ThemedText
+            fontSize="s"
+            style={{ position: "absolute", top: 15, left: 15, zIndex: 1 }}
+          >
+            Preview
+          </ThemedText>
+        )}
         {iconLeft && (
           <IconsContainer>{iconLeft && <Icon>{iconLeft}</Icon>}</IconsContainer>
         )}

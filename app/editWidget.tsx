@@ -192,6 +192,7 @@ export default function EditWidgetScreen() {
                   selectedColor,
                 ) as keyof typeof Colors.widget) || "#4599E8"
               }
+              isPreview={true}
             />
           </View>
         </Card>
