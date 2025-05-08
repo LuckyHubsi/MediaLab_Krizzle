@@ -10,6 +10,7 @@ import {
   CardGradient,
 } from "./Widget.style";
 import { PageType } from "@/utils/enums/PageType";
+import { ThemedText } from "@/components/ThemedText";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -22,6 +23,7 @@ type Props = {
   pageType?: PageType;
   onPress?: () => void;
   onLongPress?: () => void;
+  isPreview?: boolean;
 };
 
 const Widget: React.FC<Props> = ({
@@ -33,6 +35,7 @@ const Widget: React.FC<Props> = ({
   pageType,
   onPress,
   onLongPress,
+  isPreview,
 }) => {
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
@@ -69,14 +72,32 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
     >
       <CardWrapper {...cardProps}>
-        {(iconLeft || iconRight) && (
-          <IconsContainer>
-            {iconLeft && <Icon>{iconLeft}</Icon>}
-            {iconRight && <Icon>{iconRight}</Icon>}
-          </IconsContainer>
+        {isPreview && (
+          <ThemedText
+            fontSize="s"
+            style={{ position: "absolute", top: 15, left: 15, zIndex: 1 }}
+          >
+            Preview
+          </ThemedText>
         )}
+        {iconLeft && (
+          <IconsContainer>{iconLeft && <Icon>{iconLeft}</Icon>}</IconsContainer>
+        )}
+        {pageType && (
+          <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
+            {pageType === PageType.Collection ? "collection" : "note"}
+          </ThemedText>
+        )}
+
+        {/* Title */}
         <Title>{title}</Title>
-        <Tag>{label}</Tag>
+
+        {/* Tag below */}
+        {label.trim().toLowerCase() !== "uncategorized" && (
+          <Tag numberOfLines={1} ellipsizeMode="tail">
+            {label}
+          </Tag>
+        )}
       </CardWrapper>
     </TouchableOpacity>
   );

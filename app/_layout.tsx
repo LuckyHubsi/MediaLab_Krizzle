@@ -72,6 +72,10 @@ export default function RootLayout() {
             />
             <Stack.Screen name="editWidget" options={{ headerShown: false }} />
             <Stack.Screen
+              name="editCollectionLists"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="addCollectionItem"
               options={{ headerShown: false }}
             />
@@ -79,8 +83,16 @@ export default function RootLayout() {
               name="collectionItemPage"
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="listManagement"
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="appearance" options={{ headerShown: false }} />
             <Stack.Screen name="faq" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="editCollectionItem"
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="+not-found" />
             <Stack.Screen
               name="resetDatabase"

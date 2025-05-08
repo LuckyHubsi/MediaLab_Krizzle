@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
 import { deleteItemById, getItemById } from "@/services/ItemService";
@@ -20,21 +25,24 @@ export default function CollectionItemScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemName, setItemName] = useState<string>("");
 
-  useEffect(() => {
-    (async () => {
-      const numericItemId = Number(itemId);
-      const item = await getItemById(numericItemId);
-      setItem(item);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const numericItemId = Number(itemId);
+        const item = await getItemById(numericItemId);
 
-      if (
-        item &&
-        item.attributeValues &&
-        "valueString" in item.attributeValues[0]
-      ) {
-        setItemName(item?.attributeValues[0]?.valueString || "");
-      }
-    })();
-  }, [itemId]);
+        setItem(item);
+
+        if (
+          item &&
+          item.attributeValues &&
+          "valueString" in item.attributeValues[0]
+        ) {
+          setItemName(item?.attributeValues[0]?.valueString || "");
+        }
+      })();
+    }, [itemId]),
+  );
 
   return (
     <>
@@ -65,9 +73,18 @@ export default function CollectionItemScreen() {
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
-          { label: "Edit", icon: "edit", onPress: () => {} },
           {
-            label: "Delete",
+            label: "Edit Item",
+            icon: "edit",
+            onPress: () => {
+              router.push({
+                pathname: "/editCollectionItem",
+                params: { itemId },
+              });
+            },
+          },
+          {
+            label: "Delete Item",
             icon: "delete",
             onPress: () => {
               setShowDeleteModal(true);

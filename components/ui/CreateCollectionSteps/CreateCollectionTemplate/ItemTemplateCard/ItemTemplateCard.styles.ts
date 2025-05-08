@@ -11,22 +11,13 @@ export const TemplateSelectCard = styled.View`
     colorScheme === "light"
       ? Colors.light.background
       : Colors.dark.cardBackground};
-  border-radius: 20px;
+  border-radius: 33px;
   margin-top: 10px;
   padding: 20px;
   gap: 15px;
-  border: 1px solid
-    ${({ colorScheme }: ThemeProps) =>
-      colorScheme === "light" ? Colors.grey25 : Colors.dark.cardBackground};
-
-  /* Shadows */
-  shadow-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    Colors[colorScheme].cardShadowColor};
-  shadow-offset: 0px 0px;
-  shadow-opacity: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light" ? 0.05 : 0.02};
-  shadow-radius: 20px;
-  elevation: 6;
+  border-width: 1px;
+  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? "#EAEAEA" : "#242424"};
 `;
 export const CardTitleRow = styled.View`
   flex-direction: row;

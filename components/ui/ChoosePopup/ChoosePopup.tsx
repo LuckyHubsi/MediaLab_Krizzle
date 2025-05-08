@@ -116,7 +116,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                               <MaterialIcons
                                 name={item.value as any}
                                 size={24}
-                                color="#fff"
+                                color={Colors[colorScheme].text}
                               />
                             )}
                           </ItemCircle>

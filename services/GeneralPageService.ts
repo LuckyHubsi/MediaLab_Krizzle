@@ -11,6 +11,7 @@ import {
   updateArchivedByPageIDQuery,
   selectAllArchivedPageQuery,
   selectAllPinnedPageQuery,
+  selectAllGeneralPageSortAlphabetQuery,
 } from "@/queries/GeneralPageQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import {
@@ -39,8 +40,11 @@ const getAllGeneralPageData = async (
     let queryString = "";
 
     switch (pageState) {
-      case GeneralPageState.General:
+      case GeneralPageState.GeneralModfied:
         queryString = selectAllGeneralPageQuery;
+        break;
+      case GeneralPageState.GeneralAlphabet:
+        queryString = selectAllGeneralPageSortAlphabetQuery;
         break;
       case GeneralPageState.Archived:
         queryString = selectAllArchivedPageQuery;

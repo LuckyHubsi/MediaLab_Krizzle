@@ -31,13 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
         style={{ flexDirection: "row", alignItems: "center" }}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
-        <ThemedText
-          fontSize="l"
-          fontWeight="semibold"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={{ maxWidth: "80%" }}
-        >
+        <ThemedText fontSize="l" fontWeight="semibold">
           {title}
         </ThemedText>
       </TouchableOpacity>

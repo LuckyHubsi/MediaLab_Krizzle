@@ -36,4 +36,5 @@ export const TagText = styled(Text)<TagProps>`
   font-weight: 400;
   line-height: 20px;
   letter-spacing: -0.4px;
+  font-family: "Lexend_400Regular";
 `;

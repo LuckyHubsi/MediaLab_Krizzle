@@ -27,8 +27,8 @@ export const IconsContainer = styled.View`
 `;
 
 export const Icon = styled.View`
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 35px;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.7);
   justify-content: center;

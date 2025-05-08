@@ -57,3 +57,8 @@ export const RadioButtonInner = styled.View`
   border-radius: 6px;
   background-color: #007aff;
 `;
+
+export const ResetContainer = styled.View`
+  margin-top: 20px;
+  align-items: center;
+`;

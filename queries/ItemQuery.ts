@@ -74,6 +74,7 @@ const itemSelectByPageIdQuery: string = `
         a.type,
         a.preview,
         i.categoryID,
+        cc.category_name,
         rs.symbol AS rating_symbol,
         (
             SELECT json_group_array(mo.options)
@@ -122,10 +123,26 @@ const insertMultiselectValueQuery: string = `
     INSERT INTO multiselect_values (itemID, attributeID, value) VALUES (?, ?, ?)
 `;
 
-const updateItem: string = `
+const updateItemQuery: string = `
     UPDATE item 
-    SET category = ?
+    SET categoryID = ?
     WHERE itemID = ?
+`;
+
+const updateTextValueQuery: string = `
+    UPDATE text_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateDateValueQuery: string = `
+    UPDATE date_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateRatingValueQuery: string = `
+    UPDATE rating_value SET value = ? WHERE itemID = ? AND attributeID = ?
+`;
+
+const updateMultiselectValueQuery: string = `
+    UPDATE multiselect_values SET value = ? WHERE itemID = ? AND attributeID = ?
 `;
 
 const deleteItemQuery: string = `
@@ -147,7 +164,11 @@ export {
   insertDateValueQuery,
   insertRatingValueQuery,
   insertMultiselectValueQuery,
-  updateItem,
+  updateItemQuery,
+  updateTextValueQuery,
+  updateRatingValueQuery,
+  updateDateValueQuery,
+  updateMultiselectValueQuery,
   deleteItemQuery,
   deleteItemAttributeValuesQuery,
 };

@@ -12,98 +12,108 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { TagDTO } from "@/dto/TagDTO";
 import { Button } from "@/components/ui/Button/Button";
-import {
-  deleteTagByID,
-  getAllTags,
-  insertTag,
-  updateTag,
-} from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
-import { useActiveColorScheme } from "@/context/ThemeContext";
-import { Colors } from "@/constants/Colors";
+import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import {
+  deleteCollectionCategoryByID,
+  getCollectionCategories,
+  insertCollectionCategory,
+  updateCollectionCategory,
+} from "@/services/CollectionCategoriesService";
+import { useLocalSearchParams } from "expo-router";
 
-export default function TagManagementScreen() {
-  const colorScheme = useActiveColorScheme() ?? "light";
-  const [tags, setTags] = useState<TagDTO[]>([]);
+export default function ListManagementScreen() {
+  const { collectionId } = useLocalSearchParams<{
+    collectionId: string;
+  }>();
+
+  const colorScheme = useColorScheme() ?? "light";
+  const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newTag, setNewTag] = useState("");
+  const [newList, setNewList] = useState("");
   const [editMode, setEditMode] = useState(false);
-  const [editingTag, setEditingTag] = useState<TagDTO | null>(null);
+  const [editingList, setEditingList] = useState<CollectionCategoryDTO | null>(
+    null,
+  );
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [tagtoDelete, setTagToDelete] = useState<TagDTO | null>(null);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [listToDelete, setListToDelete] =
+    useState<CollectionCategoryDTO | null>(null);
 
-  const handleTagSubmit = async () => {
-    const trimmedTag = newTag.trim();
+  const handleListSubmit = async () => {
+    const trimmedList = newList.trim();
 
-    if (!trimmedTag) return;
+    if (!trimmedList) return;
 
-    if (!editMode && tags.length >= 100) {
-      alert("You can only have up to 100 tags.");
+    if (!editMode && lists.length >= 10) {
+      alert("You can only have up to 10 lists.");
       return;
     }
 
-    if (trimmedTag.length > 30) {
-      alert("Tag name must be 30 characters or less.");
+    if (trimmedList.length > 30) {
+      alert("List name must be 30 characters or less.");
       return;
     }
 
-    const isDuplicate = tags.some(
-      (tag) =>
-        tag.tag_label === trimmedTag &&
-        (!editMode || tag.tagID !== editingTag?.tagID),
-    );
+    // const isDuplicate = lists.some(
+    //   (tag) =>
+    //     tag.tag_label === trimmedTag &&
+    //     (!editMode || tag.tagID !== editingTag?.tagID),
+    // );
 
-    if (isDuplicate) {
-      alert("A tag with this name already exists.");
-      return;
-    }
+    // if (isDuplicate) {
+    //   alert("A tag with this name already exists.");
+    //   return;
+    // }
 
     try {
       let success = false;
 
-      if (editMode && editingTag) {
-        success = await updateTag({
-          ...editingTag,
-          tag_label: trimmedTag,
+      if (editMode && editingList) {
+        success = await updateCollectionCategory({
+          ...editingList,
+          category_name: trimmedList,
         });
       } else {
-        const newTagObject: TagDTO = { tag_label: trimmedTag };
-        success = await insertTag(newTagObject);
+        const newListObject: CollectionCategoryDTO = {
+          category_name: trimmedList,
+          collectionID: Number(collectionId),
+        };
+        success = await insertCollectionCategory(newListObject);
       }
 
       if (success) setShouldRefetch(true);
     } catch (error) {
-      console.error("Error saving tag:", error);
+      console.error("Error saving list:", error);
     } finally {
-      setNewTag("");
-      setEditingTag(null);
+      setNewList("");
+      setEditingList(null);
       setEditMode(false);
       setModalVisible(false);
       Keyboard.dismiss();
     }
   };
 
-  const deleteTag = async (tagID: number) => {
+  const deleteList = async (listID: number) => {
     try {
-      const success = await deleteTagByID(tagID);
+      const success = await deleteCollectionCategoryByID(listID);
       if (success) setShouldRefetch(true);
     } catch (error) {
-      console.error("Failed to delete tag:", error);
+      console.error("Failed to delete list:", error);
     }
   };
 
-  const editTag = (tagDTO: TagDTO) => {
-    setNewTag(tagDTO.tag_label);
-    setEditingTag(tagDTO);
+  const editList = (categoryDTO: CollectionCategoryDTO) => {
+    setNewList(categoryDTO.category_name);
+    setEditingList(categoryDTO);
     setEditMode(true);
     setModalVisible(true);
   };
@@ -111,10 +121,10 @@ export default function TagManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const tagData = await getAllTags();
-        if (tagData) setTags(tagData);
+        const listData = await getCollectionCategories(Number(collectionId));
+        if (listData) setLists(listData);
       } catch (error) {
-        console.error("Failed to load tags:", error);
+        console.error("Failed to load lists:", error);
       }
     };
 
@@ -126,10 +136,10 @@ export default function TagManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const tagData = await getAllTags();
-        if (tagData) setTags(tagData);
+        const listData = await getCollectionCategories(Number(collectionId));
+        if (listData) setLists(listData);
       } catch (error) {
-        console.error("Failed to refresh tags:", error);
+        console.error("Failed to refresh lists:", error);
       } finally {
         setShouldRefetch(false);
       }
@@ -138,63 +148,38 @@ export default function TagManagementScreen() {
     fetchUpdatedTags();
   }, [shouldRefetch]);
 
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      const showSub = Keyboard.addListener("keyboardDidShow", () =>
-        setKeyboardVisible(true),
-      );
-      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
-        setKeyboardVisible(false),
-      );
-      return () => {
-        showSub.remove();
-        hideSub.remove();
-      };
-    }
-  }, []);
-
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <CustomStyledHeader title="Tags" />
+        <CustomStyledHeader title="Edit Lists" />
       </View>
-
       <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
-          {tags.length === 0 && (
-            <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
-              You don't have any tags yet.
-            </ThemedText>
-          )}
           <FlatList
-            data={tags}
-            keyExtractor={(item) => item.tagID?.toString() || ""}
+            data={lists}
+            keyExtractor={(item) => item.collectionCategoryID?.toString() || ""}
             renderItem={({ item }) => (
               <TagListItem
-                tag={item.tag_label}
+                tag={item.category_name}
                 onDelete={() => {
-                  setTagToDelete(item);
+                  setListToDelete(item);
                   setShowDeleteModal(true);
                 }}
-                onEdit={() => editTag(item)}
-                tagCount={item.usage_count}
+                onEdit={() => editList(item)}
+                tagCountLoading={false}
               />
             )}
           />
         </View>
-        {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View style={{ paddingBottom: 10 }}>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
-          </View>
-        )}
+        <View>
+          <Button onPress={() => setModalVisible(true)}>
+            <ThemedText colorVariant="white">Add</ThemedText>
+          </Button>
+        </View>
       </View>
       <Modal
         visible={modalVisible}
@@ -225,7 +210,7 @@ export default function TagManagementScreen() {
                 style={{
                   width: "100%",
                   maxWidth: 500,
-                  backgroundColor: Colors[colorScheme].cardBackground,
+                  backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
                   borderRadius: 33,
                   paddingHorizontal: 20,
                   paddingVertical: 10,
@@ -240,20 +225,20 @@ export default function TagManagementScreen() {
                   style={{
                     flex: 1,
                     borderColor: "#ccc",
-                    color: Colors[colorScheme].text,
+                    color: colorScheme === "light" ? "#000" : "#fff",
                     paddingVertical: 8,
                     fontSize: 16,
                   }}
-                  value={newTag}
-                  onChangeText={setNewTag}
-                  onSubmitEditing={handleTagSubmit}
+                  value={newList}
+                  onChangeText={setNewList}
+                  onSubmitEditing={handleListSubmit}
                   autoFocus
                 />
-                <TouchableOpacity onPress={handleTagSubmit}>
+                <TouchableOpacity onPress={handleListSubmit}>
                   <MaterialIcons
                     name="arrow-upward"
                     size={28}
-                    color={Colors[colorScheme].text}
+                    color={colorScheme === "light" ? "#000" : "#fff"}
                   />
                 </TouchableOpacity>
               </View>
@@ -263,19 +248,19 @@ export default function TagManagementScreen() {
       </Modal>
       <DeleteModal
         visible={showDeleteModal}
-        title={tagtoDelete?.tag_label}
+        title={listToDelete?.category_name}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (tagtoDelete) {
+          if (listToDelete) {
             try {
-              if (tagtoDelete?.tagID !== undefined) {
-                await deleteTag(tagtoDelete.tagID);
+              if (listToDelete?.collectionCategoryID !== undefined) {
+                await deleteList(listToDelete.collectionCategoryID);
               }
 
-              setTagToDelete(null);
+              setListToDelete(null);
               setShowDeleteModal(false);
             } catch (error) {
-              console.error("Error deleting tag:", error);
+              console.error("Error deleting list:", error);
             }
           }
         }}
@@ -283,7 +268,4 @@ export default function TagManagementScreen() {
       />
     </SafeAreaView>
   );
-}
-function setKeyboardVisible(arg0: boolean): void {
-  throw new Error("Function not implemented.");
 }

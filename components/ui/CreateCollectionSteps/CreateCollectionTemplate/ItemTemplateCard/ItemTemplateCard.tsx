@@ -11,7 +11,10 @@ import {
   CardPreview,
 } from "./ItemTemplateCard.styles";
 import { Colors } from "@/constants/Colors";
-import { getPickerStyles } from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
+import {
+  AndroidPickerWrapper,
+  getPickerStyles,
+} from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
@@ -107,27 +110,28 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
-
-      <RNPickerSelect
-        onValueChange={(value) => {
-          if (onTypeChange) onTypeChange(value);
-        }}
-        style={pickerStyles}
-        value={itemType}
-        items={
-          isTitleCard
-            ? [{ label: "Text", value: "text" }]
-            : typeArray
-                .filter((item) => item !== "item")
-                .map((item) => ({
-                  label: item,
-                  value: item,
-                }))
-        }
-        {...(!isTitleCard && {
-          Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
-        })}
-      />
+      <AndroidPickerWrapper colorScheme={colorScheme}>
+        <RNPickerSelect
+          onValueChange={(value) => {
+            if (onTypeChange) onTypeChange(value);
+          }}
+          style={pickerStyles}
+          value={itemType}
+          items={
+            isTitleCard
+              ? [{ label: "Text", value: "text" }]
+              : typeArray
+                  .filter((item) => item !== "item")
+                  .map((item) => ({
+                    label: item,
+                    value: item,
+                  }))
+          }
+          {...(!isTitleCard && {
+            Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
+          })}
+        />
+      </AndroidPickerWrapper>
 
       <Textfield
         showTitle={false}

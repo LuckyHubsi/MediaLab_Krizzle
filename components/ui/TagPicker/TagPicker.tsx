@@ -25,7 +25,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
   onSelectTag,
   onViewAllPress,
 }) => {
-  const colorScheme = useActiveColorScheme() ?? "light";
+  const themeMode = useActiveColorScheme() ?? "light";
 
   return (
     <Container>
@@ -36,10 +36,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         <TouchableOpacity onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
             Edit Tags
-            <BackIcon
-              name="chevron-forward-outline"
-              colorScheme={colorScheme}
-            />
+            <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
           </ThemedText>
         </TouchableOpacity>
       </HeaderRow>
@@ -49,7 +46,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           const isSelected = selectedTag?.tagID === tag.tagID;
           return (
             <TouchableOpacity key={tag.tagID} onPress={() => onSelectTag(tag)}>
-              <TagPill isSelected={isSelected} colorScheme={colorScheme}>
+              <TagPill isSelected={isSelected} colorScheme={themeMode}>
                 {isSelected && (
                   <MaterialIcons
                     name="check-circle"
@@ -65,6 +62,19 @@ export const TagPicker: React.FC<TagPickerProps> = ({
             </TouchableOpacity>
           );
         })}
+        {tags.length === 0 && (
+          <TouchableOpacity onPress={() => onViewAllPress()}>
+            <TagPill onPress={onViewAllPress} colorScheme={themeMode}>
+              <MaterialIcons
+                name="add"
+                size={16}
+                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+                style={{ marginRight: 5 }}
+              />
+              <ThemedText>Add a tag</ThemedText>
+            </TagPill>
+          </TouchableOpacity>
+        )}
       </TagScrollView>
     </Container>
   );
