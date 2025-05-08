@@ -104,6 +104,10 @@ export default function CollectionItemScreen() {
               const successfullyDeleted = await deleteItemById(itemIdAsNumber);
 
               setShowDeleteModal(false);
+              router.replace({
+                pathname: "/collectionPage",
+                params: { itemId: item.pageID },
+              });
             } catch (error) {
               console.error("Error deleting item:", error);
             }
