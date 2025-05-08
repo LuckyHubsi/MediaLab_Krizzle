@@ -75,6 +75,9 @@ export default function HomeScreen() {
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [sortingMode, setSortingMode] = useState<GeneralPageState>(
+    GeneralPageState.GeneralModfied,
+  );
 
   const getColorKeyFromValue = (
     value: string,
@@ -116,7 +119,7 @@ export default function HomeScreen() {
           const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
           setPinnedWidgets(pinnedEnrichedWidgets);
 
-          const data = await getAllGeneralPageData(GeneralPageState.General);
+          const data = await getAllGeneralPageData(sortingMode);
           const enrichedWidgets = mapToEnrichedWidgets(data);
           setWidgets(enrichedWidgets);
         } catch (error) {
@@ -134,7 +137,7 @@ export default function HomeScreen() {
       })();
 
       setShouldReload(false);
-    }, [shouldReload]),
+    }, [shouldReload, sortingMode]),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -325,18 +328,20 @@ export default function HomeScreen() {
         onClose={() => setShowSortModal(false)}
         items={[
           {
-            label: "Last modified",
+            label: "Last modified descending",
             icon: "swap-vert", // or "arrow-upward"/"arrow-downward"
+            disabled: sortingMode === GeneralPageState.GeneralModfied,
             onPress: () => {
-              console.log("Sort by last modified");
+              setSortingMode(GeneralPageState.GeneralModfied);
               setShowSortModal(false);
             },
           },
           {
-            label: "Alphabet",
+            label: "Alphabet ascending",
             icon: "sort-by-alpha",
+            disabled: sortingMode === GeneralPageState.GeneralAlphabet,
             onPress: () => {
-              console.log("Sort alphabetically");
+              setSortingMode(GeneralPageState.GeneralAlphabet);
               setShowSortModal(false);
             },
           },
