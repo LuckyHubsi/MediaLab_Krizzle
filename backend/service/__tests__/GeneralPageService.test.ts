@@ -16,6 +16,7 @@ jest.mock(
       getByPageID: jest.fn(),
       updateGeneralPageData: jest.fn(),
       deletePage: jest.fn(),
+      updatePin: jest.fn(),
     },
   }),
 );
@@ -270,6 +271,31 @@ describe("GeneralPageService", () => {
       expect(
         mockGeneralPageRepository.updateGeneralPageData,
       ).toHaveBeenCalledWith(1 as any, mockNewGeneralPage);
+    });
+  });
+
+  describe("togglePagePin", () => {
+    it("should return true if updating the pin state was successful", async () => {
+      const mockPageID = 1;
+      mockGeneralPageRepository.updatePin.mockResolvedValue(true);
+
+      const result = await generalPageService.togglePagePin(1, true);
+
+      expect(result).toEqual(true);
+    });
+
+    it("should throw ServiceError if update pin state fails", async () => {
+      mockGeneralPageRepository.updatePin.mockRejectedValue(
+        new Error("Repository error"),
+      );
+
+      await expect(generalPageService.togglePagePin(1, true)).rejects.toThrow(
+        ServiceError,
+      );
+      expect(mockGeneralPageRepository.updatePin).toHaveBeenCalledWith(
+        1 as any,
+        true,
+      );
     });
   });
 

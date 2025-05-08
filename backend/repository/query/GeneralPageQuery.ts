@@ -54,6 +54,10 @@ const deleteGeneralPageByIDQuery: string = `
     DELETE FROM general_page_data WHERE pageID = ?
 `;
 
+const updatePinnedByPageIDQuery: string = `
+    UPDATE general_page_data SET pinned = ? WHERE pageID = ?
+`;
+
 export {
   selectAllPagesByLastModifiedQuery,
   selectAllPagesByAlphabetQuery,
@@ -64,4 +68,5 @@ export {
   deleteGeneralPageByIDQuery,
   updatePageByIDQuery,
   selectGeneralPageByIdQuery,
+  updatePinnedByPageIDQuery,
 };

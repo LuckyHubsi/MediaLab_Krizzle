@@ -21,4 +21,5 @@ export interface GeneralPageRepository extends BaseRepository {
     txn?: SQLite.SQLiteDatabase,
   ): Promise<number>;
   deletePage(pageID: PageID): Promise<boolean>;
+  updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean>;
 }

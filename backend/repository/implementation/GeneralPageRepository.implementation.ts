@@ -15,7 +15,9 @@ import {
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
   selectGeneralPageByIdQuery,
+  updateDateModifiedByPageIDQuery,
   updatePageByIDQuery,
+  updatePinnedByPageIDQuery,
 } from "../query/GeneralPageQuery";
 import * as SQLite from "expo-sqlite";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
@@ -144,6 +146,29 @@ export class GeneralPageRepositoryImpl
       return true;
     } catch (error) {
       throw new RepositoryError("Failed to delete teh page");
+    }
+  }
+
+  async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
+    try {
+      const newPinStatus = currentPinStatus ? 0 : 1;
+
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updatePinnedByPageIDQuery,
+          [newPinStatus, pageID],
+          txn,
+        );
+
+        await this.executeQuery(updateDateModifiedByPageIDQuery, [
+          new Date().toISOString,
+          pageID,
+        ]);
+      });
+
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update pinned state");
     }
   }
 }
