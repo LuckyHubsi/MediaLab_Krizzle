@@ -30,6 +30,13 @@ const selectAllPinnedPagesQuery: string = `
     ORDER BY p.date_modified DESC;
 `;
 
+const selectGeneralPageByIdQuery: string = `
+    SELECT p.*, t.tag_label
+    FROM general_page_data p
+    LEFT JOIN tag t ON p.tagID = t.tagID
+    WHERE p.pageID = ?
+`;
+
 const insertNewPageQuery: string = `
     INSERT INTO general_page_data (page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `;
@@ -50,4 +57,5 @@ export {
   insertNewPageQuery,
   updateDateModifiedByPageIDQuery,
   deleteGeneralPageByIDQuery,
+  selectGeneralPageByIdQuery,
 };

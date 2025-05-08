@@ -6,7 +6,6 @@ import {
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { GeneralPageModel } from "@/models/GeneralPageModel";
-import { selectAllGeneralPageQuery } from "@/queries/GeneralPageQuery";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
@@ -16,6 +15,7 @@ import {
   selectAllPagesByAlphabetQuery,
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
+  selectGeneralPageByIdQuery,
 } from "../query/GeneralPageQuery";
 import * as SQLite from "expo-sqlite";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
@@ -67,6 +67,21 @@ export class GeneralPageRepositoryImpl
       return result.map(GeneralPageMapper.toEntity);
     } catch (error) {
       throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  async getByPageID(pageID: PageID): Promise<GeneralPage> {
+    try {
+      const result = await this.fetchFirst<GeneralPageModel>(
+        selectGeneralPageByIdQuery,
+      );
+      if (result) {
+        return GeneralPageMapper.toEntity(result);
+      } else {
+        throw new RepositoryError("Failed to fetch page by id.");
+      }
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch page by id.");
     }
   }
 

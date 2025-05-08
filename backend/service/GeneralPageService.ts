@@ -3,7 +3,7 @@ import { generalPageRepository } from "../repository/implementation/GeneralPageR
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { GeneralPageMapper } from "../util/mapper/GeneralPageMapper";
-import { GeneralPage, pageID } from "../domain/entity/GeneralPage";
+import { GeneralPage, PageID, pageID } from "../domain/entity/GeneralPage";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 
 export class GeneralPageService {
@@ -35,6 +35,16 @@ export class GeneralPageService {
       return pages.map(GeneralPageMapper.toDTO);
     } catch (error) {
       throw new ServiceError("Error retrieving all pages.");
+    }
+  }
+
+  async getGeneralPageByID(pageId: number): Promise<GeneralPageDTO> {
+    try {
+      const brandedPageID: PageID = pageID.parse(pageId);
+      const page = await generalPageRepository.getByPageID(brandedPageID);
+      return GeneralPageMapper.toDTO(page);
+    } catch (error) {
+      throw new ServiceError("Error retrieving page by id.");
     }
   }
 

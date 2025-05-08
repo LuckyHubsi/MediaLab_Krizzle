@@ -13,6 +13,7 @@ jest.mock(
       getAllPagesSortedByAlphabet: jest.fn(),
       getAllPinnedPages: jest.fn(),
       getAllArchivedPages: jest.fn(),
+      getByPageID: jest.fn(),
       deletePage: jest.fn(),
     },
   }),
@@ -189,6 +190,35 @@ describe("GeneralPageService", () => {
       expect(
         mockGeneralPageRepository.getAllPagesSortedByModified,
       ).toHaveBeenCalled();
+    });
+  });
+
+  describe("getGeneralPageByID", () => {
+    it("should return a GeneralPageDTO object by ID", async () => {
+      const mockPageID = 1;
+      mockGeneralPageRepository.getByPageID.mockResolvedValue(mockGeneralPage);
+      (GeneralPageMapper.toDTO as jest.Mock).mockReturnValue(
+        mockGeneralPageDTO,
+      );
+
+      const result = await generalPageService.getGeneralPageByID(mockPageID);
+
+      expect(result).toEqual(mockGeneralPageDTO);
+      expect(GeneralPageMapper.toDTO).toHaveBeenCalledWith(mockGeneralPage);
+    });
+
+    it("should throw ServiceError if fetch page fails", async () => {
+      const mockPageID = 1;
+      mockGeneralPageRepository.getByPageID.mockRejectedValue(
+        new Error("Repository error"),
+      );
+
+      await expect(
+        generalPageService.getGeneralPageByID(mockPageID),
+      ).rejects.toThrow(ServiceError);
+      expect(mockGeneralPageRepository.getByPageID).toHaveBeenCalledWith(
+        pageID.parse(mockPageID),
+      );
     });
   });
 
