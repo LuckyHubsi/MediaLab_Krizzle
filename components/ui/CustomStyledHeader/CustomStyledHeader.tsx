@@ -8,7 +8,7 @@ import {
   TitleContainer,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, usePathname, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
@@ -18,8 +18,14 @@ interface HeaderProps {
   iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   onIconMenuPress?: () => void;
-  backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
+  backBehavior?:
+    | "default"
+    | "goHome"
+    | "goArchive"
+    | "goSettings"
+    | "goCollection";
   otherBackBehavior?: () => void;
+  param?: string;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -30,6 +36,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   onIconMenuPress,
   backBehavior = "default",
   otherBackBehavior,
+  param,
 }) => {
   const router = useRouter();
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -46,6 +53,11 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       router.replace("/archive");
     } else if (backBehavior === "goSettings") {
       router.replace("/settings");
+    } else if (backBehavior === "goCollection") {
+      router.replace({
+        pathname: "/collectionPage",
+        params: { pageId: param },
+      });
     } else {
       navigation.goBack();
     }

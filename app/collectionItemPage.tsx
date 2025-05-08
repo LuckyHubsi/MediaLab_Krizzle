@@ -56,6 +56,7 @@ export default function CollectionItemScreen() {
           onIconMenuPress={() => {
             setShowModal(true);
           }} // action when icon menu is pressed
+          param={item?.pageID.toString()}
         />
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
