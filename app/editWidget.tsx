@@ -23,18 +23,15 @@ import {
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { PageType } from "@/utils/enums/PageType";
-import { insertNote } from "@/services/NoteService";
+import { noteService } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { getAllTags } from "@/services/TagService";
+import { tagService } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
-import {
-  getGeneralPageByID,
-  updateGeneralPageData,
-} from "@/services/GeneralPageService";
+import { generalPageService } from "@/services/GeneralPageService";
 import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
@@ -106,7 +103,7 @@ export default function EditWidgetScreen() {
       }
     }
 
-    await updateGeneralPageData(
+    await generalPageService.updateGeneralPageData(
       Number(widgetID),
       title,
       selectedIcon || "",
@@ -121,7 +118,7 @@ export default function EditWidgetScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -130,7 +127,7 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const generalPageData = await getGeneralPageByID(Number(widgetID));
+          const generalPageData = await generalPageService.getGeneralPageByID(Number(widgetID));
           if (generalPageData) {
             setPageData(generalPageData);
             setTitle(generalPageData.page_title || "");

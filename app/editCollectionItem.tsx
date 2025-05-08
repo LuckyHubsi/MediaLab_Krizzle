@@ -5,12 +5,12 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { editItemByID, getItemById } from "@/services/ItemService";
-import { getTemplate } from "@/services/ItemTemplateService";
+import { itemService } from "@/services/ItemService";
+import { itemTemplateService } from "@/services/ItemTemplateService";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { getCollectionByPageId } from "@/services/CollectionService";
+import { collectionService } from "@/services/CollectionService";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
@@ -35,13 +35,17 @@ export default function EditCollectionItem() {
     (async () => {
       try {
         const numericItemId = Number(itemId);
-        const item = await getItemById(numericItemId);
+        const item = await itemService.getItemById(numericItemId);
         if (!item) throw new Error("Item not found.");
 
-        const collection = await getCollectionByPageId(item.pageID);
+        const collection = await collectionService.getCollectionByPageId(
+          item.pageID,
+        );
         if (!collection) throw new Error("Collection not found.");
 
-        const template = await getTemplate(collection.templateID!);
+        const template = await itemTemplateService.getTemplate(
+          collection.templateID!,
+        );
 
         setAttributes(template.attributes || []);
         setLists(collection.categories);
@@ -140,7 +144,7 @@ export default function EditCollectionItem() {
           onNext={async () => {
             try {
               const numericItemId = Number(itemId);
-              const currentItem = await getItemById(numericItemId);
+              const currentItem = await itemService.getItemById(numericItemId);
 
               if (!currentItem.attributeValues) {
                 throw new Error("Current item has no attribute values");
@@ -201,7 +205,7 @@ export default function EditCollectionItem() {
                 attributeValues: updatedAttributeValues || [],
               };
 
-              const success = await editItemByID(updatedItem);
+              const success = await itemService.editItemByID(updatedItem);
 
               if (success) {
                 router.replace({

@@ -25,7 +25,7 @@ import { noteService } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { getAllTags } from "@/services/TagService";
+import { tagService } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
@@ -104,6 +104,7 @@ export default function CreateNoteScreen() {
       pinned: false,
       note_content: null,
       tag: tagDTO,
+      pin_count: 0,
     };
 
     const id = await noteService.insertNote(noteDTO);
@@ -117,7 +118,7 @@ export default function CreateNoteScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);

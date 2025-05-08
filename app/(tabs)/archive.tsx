@@ -11,11 +11,7 @@ import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  togglePageArchive,
-} from "@/services/GeneralPageService";
+import { generalPageService } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
@@ -105,7 +101,9 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await getAllGeneralPageData(GeneralPageState.Archived);
+          const data = await generalPageService.getAllGeneralPageData(
+            GeneralPageState.Archived,
+          );
 
           const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
 
@@ -215,7 +213,7 @@ export default function ArchiveScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await togglePageArchive(
+                const success = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
@@ -242,7 +240,7 @@ export default function ArchiveScreen() {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 

@@ -22,12 +22,7 @@ import { Button } from "@/components/ui/Button/Button";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import {
-  deleteCollectionCategoryByID,
-  getCollectionCategories,
-  insertCollectionCategory,
-  updateCollectionCategory,
-} from "@/services/CollectionCategoriesService";
+import { collectionCategoryService } from "@/services/CollectionCategoriesService";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/Colors";
 
@@ -79,7 +74,7 @@ export default function ListManagementScreen() {
       let success = false;
 
       if (editMode && editingList) {
-        success = await updateCollectionCategory({
+        success = await collectionCategoryService.updateCollectionCategory({
           ...editingList,
           category_name: trimmedList,
         });
@@ -88,7 +83,10 @@ export default function ListManagementScreen() {
           category_name: trimmedList,
           collectionID: Number(collectionId),
         };
-        success = await insertCollectionCategory(newListObject);
+        success =
+          await collectionCategoryService.insertCollectionCategory(
+            newListObject,
+          );
       }
 
       if (success) setShouldRefetch(true);
@@ -105,7 +103,8 @@ export default function ListManagementScreen() {
 
   const deleteList = async (listID: number) => {
     try {
-      const success = await deleteCollectionCategoryByID(listID);
+      const success =
+        await collectionCategoryService.deleteCollectionCategoryByID(listID);
       if (success) setShouldRefetch(true);
     } catch (error) {
       console.error("Failed to delete list:", error);
@@ -122,7 +121,10 @@ export default function ListManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const listData = await getCollectionCategories(Number(collectionId));
+        const listData =
+          await collectionCategoryService.getCollectionCategories(
+            Number(collectionId),
+          );
         if (listData) setLists(listData);
       } catch (error) {
         console.error("Failed to load lists:", error);
@@ -137,7 +139,10 @@ export default function ListManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const listData = await getCollectionCategories(Number(collectionId));
+        const listData =
+          await collectionCategoryService.getCollectionCategories(
+            Number(collectionId),
+          );
         if (listData) setLists(listData);
       } catch (error) {
         console.error("Failed to refresh lists:", error);

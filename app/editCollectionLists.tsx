@@ -9,7 +9,7 @@ import EditCollectionLists from "@/components/ui/EditCollectionLists/EditCollect
 import { ro } from "date-fns/locale";
 import { router, useLocalSearchParams } from "expo-router";
 import { CollectionData } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
-import { getCollectionCategories } from "@/services/CollectionCategoriesService";
+import { collectionCategoryService } from "@/services/CollectionCategoriesService";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 
 export default function EditCollectionListsScreen() {
@@ -30,7 +30,8 @@ export default function EditCollectionListsScreen() {
   useEffect(() => {
     (async () => {
       const numericId = Number(collectionId);
-      const collectionLists = await getCollectionCategories(numericId);
+      const collectionLists =
+        await collectionCategoryService.getCollectionCategories(numericId);
 
       // const collectionListsWithId = collectionLists.map((list) => ({
       //   id: list.collectionCategoryID?.toString() || "",
