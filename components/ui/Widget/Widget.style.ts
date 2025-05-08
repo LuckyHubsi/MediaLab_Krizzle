@@ -58,3 +58,10 @@ export const Tag = styled.Text`
   align-self: flex-start;
   font-weight: 400;
 `;
+
+export const PreviewWrapper = styled.View`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+`;

@@ -154,14 +154,12 @@ export default function CreateNoteScreen() {
             <Header title="Create Note" onIconPress={() => alert("Popup!")} />
             <Widget
               title={title || "Title"}
-              label={selectedTag?.tag_label ?? "No tag"}
+              label={selectedTag?.tag_label ?? ""}
               pageType={PageType.Note}
-              iconLeft={
-                <MaterialIcons
-                  name={selectedIcon || "help"}
-                  size={22}
-                  color="black"
-                />
+              icon={
+                selectedIcon ? (
+                  <MaterialIcons name={selectedIcon} size={22} color="black" />
+                ) : undefined
               }
               color={
                 (getWidgetColorKey(

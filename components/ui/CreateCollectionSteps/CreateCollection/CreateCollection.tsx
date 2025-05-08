@@ -155,14 +155,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             />
             <Widget
               title={title || "Title"}
-              label={selectedTag?.tag_label ?? "No tag"}
+              label={selectedTag?.tag_label?.trim() || ""}
               pageType={PageType.Collection}
-              iconLeft={
-                <MaterialIcons
-                  name={selectedIcon || "help"}
-                  size={22}
-                  color="black"
-                />
+              icon={
+                selectedIcon ? (
+                  <MaterialIcons name={selectedIcon} size={22} color="black" />
+                ) : undefined
               }
               color={
                 (getWidgetColorKey(
