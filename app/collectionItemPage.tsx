@@ -107,7 +107,7 @@ export default function CollectionItemScreen() {
               setShowDeleteModal(false);
               router.replace({
                 pathname: "/collectionPage",
-                params: { itemId: item.pageID },
+                params: { pageId: item.pageID },
               });
             } catch (error) {
               console.error("Error deleting item:", error);
