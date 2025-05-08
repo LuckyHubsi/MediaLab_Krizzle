@@ -32,9 +32,8 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
     <>
       <Container>
         {(["light", "dark"] as ThemeOption[]).map((option) => (
-          <ModeContainer>
+          <ModeContainer key={option}>
             <Card
-              key={option}
               onPress={() => onSelect(option)}
               isSelected={selected === option}
             >
