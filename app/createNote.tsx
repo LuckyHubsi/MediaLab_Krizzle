@@ -156,7 +156,7 @@ export default function CreateNoteScreen() {
               title={title || "Title"}
               label={selectedTag?.tag_label ?? "No tag"}
               pageType={PageType.Note}
-              iconLeft={
+              icon={
                 <MaterialIcons
                   name={selectedIcon || "help"}
                   size={22}

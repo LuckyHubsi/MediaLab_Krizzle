@@ -18,8 +18,7 @@ type ColorKey = keyof typeof Colors.widget;
 type Props = {
   title: string;
   label: string;
-  iconLeft?: React.ReactNode;
-  iconRight?: React.ReactNode;
+  icon?: React.ReactNode;
   color: ColorKey;
   pageType?: PageType;
   onPress?: () => void;
@@ -30,8 +29,7 @@ type Props = {
 const Widget: React.FC<Props> = ({
   title,
   label,
-  iconLeft,
-  iconRight,
+  icon,
   color,
   pageType,
   onPress,
@@ -84,9 +82,7 @@ const Widget: React.FC<Props> = ({
             </ThemedText>
           </PreviewWrapper>
         )}
-        {iconLeft && (
-          <IconsContainer>{iconLeft && <Icon>{iconLeft}</Icon>}</IconsContainer>
-        )}
+        {icon && <IconsContainer>{icon && <Icon>{icon}</Icon>}</IconsContainer>}
         {pageType && (
           <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
             {pageType === PageType.Collection ? "collection" : "note"}

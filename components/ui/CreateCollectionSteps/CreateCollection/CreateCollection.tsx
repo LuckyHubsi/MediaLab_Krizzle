@@ -157,7 +157,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               title={title || "Title"}
               label={selectedTag?.tag_label ?? "No tag"}
               pageType={PageType.Collection}
-              iconLeft={
+              icon={
                 <MaterialIcons
                   name={selectedIcon || "help"}
                   size={22}
