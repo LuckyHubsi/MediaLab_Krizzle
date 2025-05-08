@@ -246,6 +246,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             variant={"back"}
             titleLeftButton={"Back"}
             titleRightButton={"Add"}
+            singleButtonText={"Next"}
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
