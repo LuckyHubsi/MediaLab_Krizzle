@@ -145,8 +145,8 @@ export default function CreateNoteScreen() {
 
   return (
     <GradientBackground
-      backgroundCardTopOffset={Platform.select({ ios: 100, android: 80 })}
-      topPadding={Platform.select({ ios: 0, android: 0 })}
+      backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
+      topPadding={Platform.select({ ios: 0, android: 15 })}
     >
       <View style={{ marginBottom: 8 }}>
         <Card>
