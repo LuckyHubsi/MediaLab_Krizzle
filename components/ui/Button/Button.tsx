@@ -14,7 +14,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 }) => {
   return (
     <StyledButton onPress={onPress} isRed={isRed}>
-      <ThemedText fontSize="regular" fontWeight="bold">
+      <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
         {children}
       </ThemedText>
     </StyledButton>

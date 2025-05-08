@@ -76,6 +76,7 @@ const Widget: React.FC<Props> = ({
             <ThemedText
               fontSize="s"
               fontWeight="light"
+              colorVariant="white"
               style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
             >
               Preview
