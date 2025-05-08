@@ -160,12 +160,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               iconLeft={
                 <MaterialIcons
                   name={selectedIcon || "help"}
-                  size={20}
+                  size={22}
                   color="black"
                 />
-              }
-              iconRight={
-                <MaterialIcons name="description" size={20} color="black" />
               }
               color={
                 (getWidgetColorKey(

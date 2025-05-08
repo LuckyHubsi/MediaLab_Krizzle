@@ -30,7 +30,7 @@ import { getAllTags } from "@/services/TagService";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
-export const getMaterialIcon = (name: string, size = 20, color = "black") => {
+export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
@@ -100,9 +100,6 @@ export default function HomeScreen() {
       page_type: widget.page_type,
       iconLeft: widget.page_icon
         ? getMaterialIcon(widget.page_icon)
-        : undefined,
-      iconRight: widget.page_type
-        ? getIconForPageType(widget.page_type)
         : undefined,
       archived: widget.archived,
       pinned: widget.pinned,

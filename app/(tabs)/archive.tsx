@@ -24,7 +24,7 @@ import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 
-export const getMaterialIcon = (name: string, size = 20, color = "black") => {
+export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
@@ -96,9 +96,6 @@ export default function ArchiveScreen() {
         page_type: widget.page_type,
         iconLeft: widget.page_icon
           ? getMaterialIcon(widget.page_icon)
-          : undefined,
-        iconRight: widget.page_type
-          ? getIconForPageType(widget.page_type)
           : undefined,
         archived: widget.archived,
       }));
