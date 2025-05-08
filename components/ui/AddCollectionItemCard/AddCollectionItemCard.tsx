@@ -61,11 +61,39 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       return;
     }
 
-    const selectedListDTO = lists.find((list) => list.category_name === value);
-    if (selectedListDTO?.collectionCategoryID != null) {
-      onListChange(selectedListDTO.collectionCategoryID);
+    const selectedCategory = lists.find((list) => list.category_name === value);
+
+    if (selectedCategory) {
+      const categoryIdProperty =
+        "collection_categoryID" in selectedCategory
+          ? "collection_categoryID"
+          : "collectionCategoryID" in selectedCategory
+            ? "collectionCategoryID"
+            : null;
+
+      if (!categoryIdProperty) {
+        console.error(
+          "ERROR: Category object doesn't have a valid ID property!",
+          selectedCategory,
+        );
+        return;
+      }
+
+      const categoryId = selectedCategory[categoryIdProperty];
+
+      if (categoryId != null) {
+        onListChange(Number(categoryId));
+      } else {
+        console.error("ERROR: Category ID is null or undefined!");
+      }
+    } else {
+      console.error(
+        "ERROR: No matching category found for selected value:",
+        value,
+      );
     }
   };
+
   useEffect(() => {
     if (!lists.length) return;
 
@@ -81,9 +109,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         matchedName = list.category_name;
       }
     });
+
     setListStrings(listArray);
-    // ✅ Only override selectedList if we found a match
-    if (matchedName) {
+
+    if (matchedName && matchedName !== selectedList) {
       setSelectedList(matchedName);
     }
   }, [lists, selectedCategoryID]);

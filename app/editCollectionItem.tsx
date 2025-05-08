@@ -23,6 +23,7 @@ export default function EditCollectionItem() {
     {},
   );
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
+  const [item, setItem] = useState<ItemDTO>();
   const [selectedCategoryID, setSelectedCategoryID] = useState<number | null>(
     null,
   );
@@ -45,7 +46,7 @@ export default function EditCollectionItem() {
         setAttributes(template.attributes || []);
         setLists(collection.categories);
         setSelectedCategoryID(item.categoryID || null);
-
+        setItem(item);
         const mappedValues: Record<number, any> = {};
 
         item.attributeValues?.forEach((attrValue) => {
@@ -104,7 +105,9 @@ export default function EditCollectionItem() {
   };
 
   const handleListChange = (categoryID: number | null) => {
-    setSelectedCategoryID(categoryID);
+    const numericCategoryID = categoryID !== null ? Number(categoryID) : null;
+
+    setSelectedCategoryID(numericCategoryID);
   };
 
   return (
@@ -150,6 +153,7 @@ export default function EditCollectionItem() {
                 }
               });
 
+              // maps attribute values
               const updatedAttributeValues = attributes
                 .map((attr) => {
                   const attrID = attr.attributeID;
@@ -189,10 +193,12 @@ export default function EditCollectionItem() {
                 })
                 .filter(Boolean) as ItemAttributeValueDTO[];
 
+              // directly creates item with explicit conversion
               const updatedItem: ItemDTO = {
-                ...currentItem,
+                itemID: Number(itemId),
+                pageID: Number(currentItem.pageID),
                 categoryID: selectedCategoryID,
-                attributeValues: updatedAttributeValues,
+                attributeValues: updatedAttributeValues || [],
               };
 
               const success = await editItemByID(updatedItem);
