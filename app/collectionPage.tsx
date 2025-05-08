@@ -178,6 +178,7 @@ export default function CollectionScreen() {
           {
             label: collection?.pinned ? "Unpin item" : "Pin item",
             icon: "push-pin",
+            disabled: !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
             onPress: async () => {
               if (
                 (collection &&
