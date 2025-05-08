@@ -1,6 +1,6 @@
 import { pageID } from "@/backend/domain/entity/GeneralPage";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "../../enum/PageType";
+import { PageType } from "../../../../shared/enum/PageType";
 import { NewNote, Note, noteID } from "@/backend/domain/entity/Note";
 import { NoteModel } from "@/backend/repository/model/NoteModel";
 import { TagMapper } from "../TagMapper";

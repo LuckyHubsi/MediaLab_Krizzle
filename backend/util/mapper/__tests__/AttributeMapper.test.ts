@@ -3,7 +3,7 @@ import {
   attributeID,
   NewAttribute,
 } from "@/backend/domain/common/Attribute";
-import { AttributeType } from "../../enum/AttributeType";
+import { AttributeType } from "../../../../shared/enum/AttributeType";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
 import { AttributeMapper } from "../AttributeMapper";
 import { AttributeDTORestructure } from "@/dto/AttributeDTO";

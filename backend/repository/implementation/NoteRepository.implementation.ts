@@ -3,7 +3,7 @@ import { NoteRepository } from "../interfaces/NoteRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { NoteModel } from "../model/NoteModel";
 import { updateDateModifiedByPageIDQuery } from "../query/GeneralPageQuery";
-import { PageType } from "@/backend/util/enum/PageType";
+import { PageType } from "@/shared/enum/PageType";
 import { NoteMapper } from "@/backend/util/mapper/NoteMapper";
 import {
   insertNoteQuery,

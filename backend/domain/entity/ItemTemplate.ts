@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as common from "@/backend/domain/common/types";
 import { attributeSchema, createNewAttributeSchema } from "../common/Attribute";
-import { AttributeType } from "@/backend/util/enum/AttributeType";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 export const itemTemplateID = common.positiveInt.brand<"ItemTemplateId">();
 export type ItemTemplateID = z.infer<typeof itemTemplateID>;

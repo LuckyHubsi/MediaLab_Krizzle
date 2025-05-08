@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as common from "../common/types";
 import { tagSchema } from "./Tag";
-import { PageType } from "@/backend/util/enum/PageType";
+import { PageType } from "@/shared/enum/PageType";
 
 export const pageID = common.positiveInt.brand<"PageId">();
 export type PageID = z.infer<typeof pageID>;

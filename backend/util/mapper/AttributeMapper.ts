@@ -7,7 +7,7 @@ import {
 } from "@/backend/domain/common/Attribute";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
 import { AttributeDTORestructure } from "@/dto/AttributeDTO";
-import { AttributeType } from "../enum/AttributeType";
+import { AttributeType } from "../../../shared/enum/AttributeType";
 
 export class AttributeMapper {
   static toDTO(entity: Attribute): AttributeDTORestructure {
