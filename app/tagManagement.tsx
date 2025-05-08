@@ -12,8 +12,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
@@ -28,10 +26,11 @@ import {
 } from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
-import { resetDatabase } from "@/utils/DatabaseReset";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 export default function TagManagementScreen() {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newTag, setNewTag] = useState("");
@@ -40,6 +39,7 @@ export default function TagManagementScreen() {
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagtoDelete, setTagToDelete] = useState<TagDTO | null>(null);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
@@ -138,8 +138,25 @@ export default function TagManagementScreen() {
     fetchUpdatedTags();
   }, [shouldRefetch]);
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
+    >
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -147,6 +164,7 @@ export default function TagManagementScreen() {
       >
         <CustomStyledHeader title="Tags" />
       </View>
+
       <View style={{ flex: 1, paddingHorizontal: 20 }}>
         <View style={{ flex: 1 }}>
           <FlatList
@@ -165,11 +183,13 @@ export default function TagManagementScreen() {
             )}
           />
         </View>
-        <View>
-          <Button onPress={() => setModalVisible(true)}>
-            <ThemedText colorVariant="white">Add</ThemedText>
-          </Button>
-        </View>
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <View style={{ paddingBottom: 10 }}>
+            <Button onPress={() => setModalVisible(true)}>
+              <ThemedText colorVariant="white">Add</ThemedText>
+            </Button>
+          </View>
+        )}
       </View>
       <Modal
         visible={modalVisible}
@@ -200,7 +220,7 @@ export default function TagManagementScreen() {
                 style={{
                   width: "100%",
                   maxWidth: 500,
-                  backgroundColor: colorScheme === "light" ? "#fff" : "#3D3D3D",
+                  backgroundColor: Colors[colorScheme].cardBackground,
                   borderRadius: 33,
                   paddingHorizontal: 20,
                   paddingVertical: 10,
@@ -215,7 +235,7 @@ export default function TagManagementScreen() {
                   style={{
                     flex: 1,
                     borderColor: "#ccc",
-                    color: colorScheme === "light" ? "#000" : "#fff",
+                    color: Colors[colorScheme].text,
                     paddingVertical: 8,
                     fontSize: 16,
                   }}
@@ -228,7 +248,7 @@ export default function TagManagementScreen() {
                   <MaterialIcons
                     name="arrow-upward"
                     size={28}
-                    color={colorScheme === "light" ? "#000" : "#fff"}
+                    color={Colors[colorScheme].text}
                   />
                 </TouchableOpacity>
               </View>
@@ -258,4 +278,7 @@ export default function TagManagementScreen() {
       />
     </SafeAreaView>
   );
+}
+function setKeyboardVisible(arg0: boolean): void {
+  throw new Error("Function not implemented.");
 }

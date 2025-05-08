@@ -17,8 +17,9 @@ interface AddCollectionItemProps {
   lists: CollectionCategoryDTO[];
   attributeValues: Record<number, any>;
   onInputChange: (attributeID: number, value: any) => void;
-  onListChange: (categoryID: number) => void;
   hasNoInputError?: boolean;
+  onListChange: (categoryID: number | null) => void;
+  selectedCategoryID?: number | null;
 }
 
 const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
@@ -28,6 +29,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   onInputChange,
   onListChange,
   hasNoInputError,
+  selectedCategoryID,
 }) => {
   const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
@@ -54,20 +56,37 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
 
-    const selectedListDTO = lists.find((list) => list.category_name === value);
+    if (value === "Select an option...") {
+      onListChange(null);
+      return;
+    }
 
-    if (selectedListDTO && selectedListDTO.collectionCategoryID) {
+    const selectedListDTO = lists.find((list) => list.category_name === value);
+    if (selectedListDTO?.collectionCategoryID != null) {
       onListChange(selectedListDTO.collectionCategoryID);
     }
   };
-
   useEffect(() => {
+    if (!lists.length) return;
+
     const listArray: string[] = [];
+    let matchedName = "";
+
     lists.forEach((list) => {
       listArray.push(list.category_name);
+      if (
+        selectedCategoryID != null &&
+        Number(list.collection_categoryID) === Number(selectedCategoryID)
+      ) {
+        matchedName = list.category_name;
+      }
     });
     setListStrings(listArray);
-  }, [lists]);
+    // ✅ Only override selectedList if we found a match
+    if (matchedName) {
+      setSelectedList(matchedName);
+    }
+  }, [lists, selectedCategoryID]);
 
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];

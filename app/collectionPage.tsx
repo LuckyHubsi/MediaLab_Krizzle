@@ -125,7 +125,7 @@ export default function CollectionScreen() {
         <ThemedView topPadding={0}>
           <SearchBar
             placeholder="Search" // Placeholder text for the search bar
-            onSearch={(text) => {}}
+            onSearch={(text) => setSearchQuery(text)}
           />
           <CollectionList
             collectionLists={listNames}
@@ -135,25 +135,39 @@ export default function CollectionScreen() {
           />
           {/* //Hardcoded data for testing purposes */}
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={{ flex: 1, gap: 12 }}>
-              {filteredItems.map((item) => (
-                <CollectionWidget
-                  key={item.itemID}
-                  attributes={items?.attributes || []} // Pass attributes to CollectionWidget
-                  item={item}
-                  onPress={() => {
-                    router.push({
-                      pathname: "/collectionItemPage",
-                      params: { itemId: item.itemID.toString() },
-                    });
-                  }}
-                  onLongPress={() => {
-                    setSelectedItem(item);
-                    setShowItemModal(true);
-                  }}
-                />
-              ))}
-            </View>
+            {filteredItems.length > 0 ? (
+              <View style={{ flex: 1, gap: 12 }}>
+                {filteredItems.map((item) => (
+                  <CollectionWidget
+                    key={item.itemID}
+                    attributes={items?.attributes || []}
+                    item={item}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/collectionItemPage",
+                        params: { itemId: item.itemID.toString() },
+                      });
+                    }}
+                    onLongPress={() => {
+                      setSelectedItem(item);
+                      setShowItemModal(true);
+                    }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <View style={{ marginTop: 24 }}>
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="regular"
+                  style={{ textAlign: "center" }}
+                >
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "No items in this collection yet."}
+                </ThemedText>
+              </View>
+            )}
           </ScrollView>
 
           <View
@@ -178,6 +192,7 @@ export default function CollectionScreen() {
           </View>
         </ThemedView>
       </SafeAreaView>
+
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
@@ -185,6 +200,7 @@ export default function CollectionScreen() {
           {
             label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
             icon: "push-pin",
+            disabled: !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
             onPress: async () => {
               if (
                 (collection &&
@@ -242,7 +258,16 @@ export default function CollectionScreen() {
         visible={showItemModal}
         onClose={() => setShowItemModal(false)}
         items={[
-          { label: "Edit", icon: "edit", onPress: () => {} },
+          {
+            label: "Edit",
+            icon: "edit",
+            onPress: () => {
+              router.push({
+                pathname: "/editCollectionItem",
+                params: { itemId: selectedItem?.itemID },
+              });
+            },
+          },
 
           {
             label: "Delete",

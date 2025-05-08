@@ -20,6 +20,7 @@ export type ThemedTextProps = TextProps & {
     | "white"
     | "lightGrey"
     | "primary"
+    | "disabled"
     | "viewAll";
 };
 
@@ -32,6 +33,8 @@ const colorVariants = {
   white: () => Colors.white,
   primary: () => Colors.primary,
   viewAll: () => (useColorScheme() === "dark" ? Colors.grey50 : Colors.grey100),
+  disabled: () =>
+    useColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
 };
 
 export function ThemedText({

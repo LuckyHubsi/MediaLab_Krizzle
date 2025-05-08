@@ -9,13 +9,6 @@ export const CollectionCardContainer = styled.View<{
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     colorScheme === "light" ? "#FBFBFB" : "#242424"};
-  /* Shadow for iOS */
-  shadow-color: #000;
-  shadow-offset: 0px 2px; /* Corrected syntax */
-  shadow-opacity: 0.1;
-  shadow-radius: 10px;
-  /* Shadow for Android */
-  elevation: 5;
   width: 100%;
   padding: 20px;
   flex-direction: column;

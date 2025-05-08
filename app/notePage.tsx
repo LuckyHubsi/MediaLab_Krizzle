@@ -118,6 +118,10 @@ export default function NotesScreen() {
           {
             label: noteData?.pinned ? "Unpin item" : "Pin item",
             icon: "push-pin",
+            disabled:
+              noteData?.pinned === false &&
+              noteData?.pin_count != null &&
+              noteData.pin_count >= 4,
             onPress: async () => {
               if (
                 (noteData &&

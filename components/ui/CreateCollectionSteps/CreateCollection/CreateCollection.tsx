@@ -1,6 +1,13 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { router } from "expo-router";
-import { Alert, TouchableOpacity, useColorScheme, View } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  Platform,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
@@ -79,7 +86,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
     : "Choose Icon";
-
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => ({
     id: key,
     color: value,
@@ -113,48 +120,61 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     }, []),
   );
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
+
   return (
     <>
+      <View style={{ marginBottom: 8 }}>
+        <Card>
+          <IconTopRight>
+            <TouchableOpacity onPress={() => setShowHelp(true)}>
+              <MaterialIcons
+                name="help-outline"
+                size={26}
+                color={Colors.primary}
+              />
+            </TouchableOpacity>
+          </IconTopRight>
+          <View style={{ alignItems: "center", gap: 20 }}>
+            <Header
+              title="Create Collection"
+              onIconPress={() => alert("Popup!")}
+            />
+            <Widget
+              title={title || "Title"}
+              label={selectedTag?.tag_label ?? "No tag"}
+              pageType={PageType.Collection}
+              iconLeft={
+                <MaterialIcons
+                  name={selectedIcon || "help"}
+                  size={22}
+                  color="black"
+                />
+              }
+              color={
+                (getWidgetColorKey(
+                  selectedColor,
+                ) as keyof typeof Colors.widget) || "#4599E8"
+              }
+            />
+          </View>
+        </Card>
+      </View>
       <ScrollContainer>
         <ContentWrapper>
-          <Card>
-            <IconTopRight>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={iconColor}
-                />
-              </TouchableOpacity>
-            </IconTopRight>
-            <View style={{ alignItems: "center" }}>
-              <Header
-                title="Create Collection"
-                onIconPress={() => alert("Popup!")}
-              />
-              <Widget
-                title={title || "Title"}
-                label={selectedTag?.tag_label ?? "No tag"}
-                pageType={PageType.Collection}
-                iconLeft={
-                  <MaterialIcons
-                    name={selectedIcon || "help"}
-                    size={20}
-                    color="black"
-                  />
-                }
-                iconRight={
-                  <MaterialIcons name="description" size={20} color="black" />
-                }
-                color={
-                  (getWidgetColorKey(
-                    selectedColor,
-                  ) as keyof typeof Colors.widget) || "#4599E8"
-                }
-              />
-            </View>
-          </Card>
-
           <Card>
             <TitleCard
               placeholder="Add a title to your Note"
@@ -208,11 +228,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <View style={{ flex: 1 }}>
               <ChooseCard
                 label={selectedIconLabel}
-                selectedColor={
-                  useColorScheme() === "dark"
-                    ? Colors.dark.cardBackground
-                    : Colors.light.cardBackground
-                }
+                selectedColor={Colors[colorScheme].cardBackground}
                 selectedIcon={selectedIcon}
                 onPress={() => {
                   setPopupType("icon");
@@ -221,28 +237,28 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               />
             </View>
           </TwoColumnRow>
-
-          <ButtonContainer>
-            <BottomButtons
-              variant={"back"}
-              titleLeftButton={"Back"}
-              titleRightButton={"Add"}
-              onNext={() => {
-                setHasClickedNext(true);
-                //check if textfield is filled
-                if (!data.title || data.title.trim() === "") {
-                  Alert.alert("Please fill in the title before continuing.");
-                  return;
-                }
-
-                onNext?.();
-              }}
-              hasProgressIndicator={true}
-              progressStep={1}
-            />
-          </ButtonContainer>
         </ContentWrapper>
       </ScrollContainer>
+      {(Platform.OS !== "android" || !keyboardVisible) && (
+        <ButtonContainer>
+          <BottomButtons
+            variant={"back"}
+            titleLeftButton={"Back"}
+            titleRightButton={"Add"}
+            onNext={() => {
+              setHasClickedNext(true);
+              if (!data.title || data.title.trim() === "") {
+                Alert.alert("Please fill in the title before continuing.");
+                return;
+              }
+              onNext?.();
+            }}
+            hasProgressIndicator={true}
+            progressStep={1}
+          />
+        </ButtonContainer>
+      )}
+
       <ChoosePopup
         visible={popupVisible}
         type={popupType}
@@ -292,3 +308,6 @@ const CreateCollection: FC<CreateCollectionProps> = ({
 };
 
 export default CreateCollection;
+function setKeyboardVisible(arg0: boolean): void {
+  throw new Error("Function not implemented.");
+}

@@ -10,6 +10,7 @@ import {
   CardGradient,
 } from "./Widget.style";
 import { PageType } from "@/utils/enums/PageType";
+import { ThemedText } from "@/components/ThemedText";
 
 type ColorKey = keyof typeof Colors.widget;
 
@@ -69,14 +70,24 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
     >
       <CardWrapper {...cardProps}>
-        {(iconLeft || iconRight) && (
-          <IconsContainer>
-            {iconLeft && <Icon>{iconLeft}</Icon>}
-            {iconRight && <Icon>{iconRight}</Icon>}
-          </IconsContainer>
+        {iconLeft && (
+          <IconsContainer>{iconLeft && <Icon>{iconLeft}</Icon>}</IconsContainer>
         )}
+        {pageType && (
+          <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
+            {pageType === PageType.Collection ? "collection" : "note"}
+          </ThemedText>
+        )}
+
+        {/* Title */}
         <Title>{title}</Title>
-        <Tag>{label}</Tag>
+
+        {/* Tag below */}
+        {label.trim().toLowerCase() !== "uncategorized" && (
+          <Tag numberOfLines={1} ellipsizeMode="tail">
+            {label}
+          </Tag>
+        )}
       </CardWrapper>
     </TouchableOpacity>
   );
