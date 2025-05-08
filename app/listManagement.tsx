@@ -166,8 +166,12 @@ export default function ListManagementScreen() {
               <TagListItem
                 tag={item.category_name}
                 onDelete={() => {
-                  setListToDelete(item);
-                  setShowDeleteModal(true);
+                  if (lists.length > 1) {
+                    setListToDelete(item);
+                    setShowDeleteModal(true);
+                  } else {
+                    alert("You must have at least one list.");
+                  }
                 }}
                 onEdit={() => editList(item)}
                 tagCountLoading={false}
