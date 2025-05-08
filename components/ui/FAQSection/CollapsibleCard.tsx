@@ -10,17 +10,24 @@ import {
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Image } from "react-native";
 
 interface CollapsibleCardProps {
   faqTitle: string;
   faqContent: string;
   faqQuestion?: string;
+  faqExampleHeading?: string;
+  faqExampleImage?: string;
+  imageHeight?: number;
 }
 
 const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
   faqTitle,
   faqContent,
   faqQuestion,
+  faqExampleHeading,
+  faqExampleImage,
+  imageHeight,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const colorScheme = useActiveColorScheme();
@@ -48,7 +55,27 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
         {expanded && (
           <CollapsibleCardContent>
             <GradientTopBorder />
-            <ThemedText>{faqContent}</ThemedText>
+            <ThemedText style={{ marginBottom: 12 }}>{faqContent}</ThemedText>
+            {faqExampleHeading && (
+              <>
+                <GradientTopBorder />
+                <ThemedText
+                  fontWeight="bold"
+                  style={{
+                    textAlign: "center",
+                    marginBottom: faqExampleImage ? 12 : 0,
+                  }}
+                >
+                  {faqExampleHeading}
+                </ThemedText>
+              </>
+            )}
+            {faqExampleImage && (
+              <Image
+                source={faqExampleImage as any}
+                style={{ width: "100%", height: imageHeight }}
+              />
+            )}
           </CollapsibleCardContent>
         )}
       </CollapsibleCardContainer>
