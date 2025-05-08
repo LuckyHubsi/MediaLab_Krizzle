@@ -4,6 +4,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -95,118 +96,120 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   };
 
   return (
-    <>
-      <Card>
-        <CardText>
-          <CardHeader>
-            <ThemedText fontSize="l" fontWeight="bold">
-              Adding Lists
-            </ThemedText>
-            <TouchableOpacity onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={Colors.primary}
-              />
-            </TouchableOpacity>
-          </CardHeader>
-          <ThemedText
-            fontSize="s"
-            fontWeight="light"
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            Add Lists to organize your Collections
-          </ThemedText>
-        </CardText>
-      </Card>
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-        contentContainerStyle={ListContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {cards.map((item, index) => (
-          <Card key={item.id}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={{ flex: 1 }}>
+        <Card>
+          <CardText>
+            <CardHeader>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Adding Lists
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </CardHeader>
             <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
+              fontSize="s"
+              fontWeight="light"
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
             >
-              List {index + 1}
+              Add Lists to organize your Collections
             </ThemedText>
-            <Textfield
-              showTitle={false}
-              textfieldIcon="text-fields"
-              placeholderText="Add a title to your note"
-              title=""
-              value={item.title}
-              onChangeText={(text) => handleTitleChange(item.id, text)}
-              hasNoInputError={hasClickedNext && !item.title}
-              maxLength={30}
-            />
-            {index > 0 && (
-              <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                <RemoveButtonContent>
-                  <MaterialIcons
-                    name="delete"
-                    size={16}
-                    color="#ff4d4d"
-                    style={{ marginRight: 6, marginTop: 2 }}
-                  />
-                  <ThemedText
-                    fontSize="s"
-                    fontWeight="bold"
-                    style={{ color: "#ff4d4d" }}
-                  >
-                    remove
-                  </ThemedText>
-                </RemoveButtonContent>
-              </RemoveButton>
-            )}
-          </Card>
-        ))}
+          </CardText>
+        </Card>
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          contentContainerStyle={ListContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {cards.map((item, index) => (
+            <Card key={item.id}>
+              <ThemedText
+                fontSize="regular"
+                fontWeight="regular"
+                style={{ marginBottom: 15 }}
+              >
+                List {index + 1}
+              </ThemedText>
+              <Textfield
+                showTitle={false}
+                textfieldIcon="text-fields"
+                placeholderText="Add a title to your note"
+                title=""
+                value={item.title}
+                onChangeText={(text) => handleTitleChange(item.id, text)}
+                hasNoInputError={hasClickedNext && !item.title}
+                maxLength={30}
+              />
+              {index > 0 && (
+                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+                  <RemoveButtonContent>
+                    <MaterialIcons
+                      name="delete"
+                      size={16}
+                      color="#ff4d4d"
+                      style={{ marginRight: 6, marginTop: 2 }}
+                    />
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="bold"
+                      style={{ color: "#ff4d4d" }}
+                    >
+                      remove
+                    </ThemedText>
+                  </RemoveButtonContent>
+                </RemoveButton>
+              )}
+            </Card>
+          ))}
 
-        {cards.length < 10 && (
-          <AddButtonWrapper>
-            <AddButton
-              onPress={() => {
-                handleAddCard();
-                setHasClickedNext(false);
+          {cards.length < 10 && (
+            <AddButtonWrapper>
+              <AddButton
+                onPress={() => {
+                  handleAddCard();
+                  setHasClickedNext(false);
+                }}
+              />
+            </AddButtonWrapper>
+          )}
+        </ScrollView>
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
+            <BottomButtons
+              titleLeftButton="Back"
+              titleRightButton="Next"
+              onDiscard={onBack!}
+              onNext={() => {
+                setHasClickedNext(true);
+                const allTitlesFilled = cards.every(
+                  (card) => card.title && card.title.trim() !== "",
+                );
+                if (allTitlesFilled) {
+                  onNext?.();
+                }
               }}
+              variant="back"
+              hasProgressIndicator={true}
+              progressStep={2}
             />
-          </AddButtonWrapper>
+          </View>
         )}
-      </ScrollView>
-      {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
-          <BottomButtons
-            titleLeftButton="Back"
-            titleRightButton="Next"
-            onDiscard={onBack!}
-            onNext={() => {
-              setHasClickedNext(true);
-              const allTitlesFilled = cards.every(
-                (card) => card.title && card.title.trim() !== "",
-              );
-              if (allTitlesFilled) {
-                onNext?.();
-              }
-            }}
-            variant="back"
-            hasProgressIndicator={true}
-            progressStep={2}
+        {showHelp && (
+          <InfoPopup
+            visible={showHelp}
+            onClose={() => setShowHelp(false)}
+            image={require("@/assets/images/list-guide.png")}
+            title="What is a Collection List?"
+            description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
           />
-        </View>
-      )}
-      {showHelp && (
-        <InfoPopup
-          visible={showHelp}
-          onClose={() => setShowHelp(false)}
-          image={require("@/assets/images/list-guide.png")}
-          title="What is a Collection List?"
-          description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
-        />
-      )}
-    </>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
