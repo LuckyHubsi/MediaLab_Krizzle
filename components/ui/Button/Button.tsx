@@ -1,25 +1,20 @@
 import React, { FC, PropsWithChildren } from "react";
 import { StyledButton } from "./Button.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useActiveColorScheme } from "@/context/ThemeContext";
 
-interface ButtonProps {
-  size?: "small" | "medium" | "large";
+export interface ButtonProps {
   onPress?: () => void;
-  color?: string;
+  isRed?: boolean;
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   children,
-  size = "medium",
   onPress,
-  color,
+  isRed = false,
 }) => {
-  const colorScheme = useActiveColorScheme() ?? "light";
-
   return (
-    <StyledButton onPress={onPress} colorScheme={colorScheme}>
-      <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
+    <StyledButton onPress={onPress} isRed={isRed}>
+      <ThemedText fontSize="regular" fontWeight="bold">
         {children}
       </ThemedText>
     </StyledButton>

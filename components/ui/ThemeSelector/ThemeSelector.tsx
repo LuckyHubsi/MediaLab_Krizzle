@@ -8,8 +8,10 @@ import {
   LabelWrapper,
   RadioButtonOuter,
   RadioButtonInner,
+  ModeContainer,
   ResetContainer,
 } from "./ThemeSelector.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useUserTheme } from "@/context/ThemeContext";
 import { Button } from "../Button/Button";
 
@@ -30,22 +32,24 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
     <>
       <Container>
         {(["light", "dark"] as ThemeOption[]).map((option) => (
-          <Card
-            key={option}
-            onPress={() => onSelect(option)}
-            isSelected={selected === option}
-          >
-            <PreviewImage
-              source={
-                option === "system"
-                  ? systemColorScheme === "light"
-                    ? require("@/assets/images/theme-light.png")
-                    : require("@/assets/images/theme-dark.png")
-                  : option === "light"
-                    ? require("@/assets/images/theme-light.png")
-                    : require("@/assets/images/theme-dark.png")
-              }
-            />
+          <ModeContainer>
+            <Card
+              key={option}
+              onPress={() => onSelect(option)}
+              isSelected={selected === option}
+            >
+              <PreviewImage
+                source={
+                  option === "system"
+                    ? systemColorScheme === "light"
+                      ? require("@/assets/images/theme_light.png")
+                      : require("@/assets/images/theme_dark.png")
+                    : option === "light"
+                      ? require("@/assets/images/theme_light.png")
+                      : require("@/assets/images/theme_dark.png")
+                }
+              />
+            </Card>
             <LabelWrapper>
               <ThemedText fontSize="regular" fontWeight="regular">
                 {option === "light"
@@ -54,14 +58,13 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
                     ? "Dark"
                     : "System Default"}
               </ThemedText>
-              <RadioButtonOuter>
+              <RadioButtonOuter isSelected={selected === option}>
                 {selected === option && <RadioButtonInner />}
               </RadioButtonOuter>
             </LabelWrapper>
-          </Card>
+          </ModeContainer>
         ))}
       </Container>
-
       {!isSystemSelected && (
         <ResetContainer>
           <Button onPress={resetToSystemDefault}>

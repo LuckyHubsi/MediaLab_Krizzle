@@ -160,7 +160,6 @@ export default function ArchiveScreen() {
             <EmptyHome text="Archive is empty" showButton={false} />
           ) : (
             <>
-              {/* <Button onPress={resetDatabase}>reset all</Button> */}
               <SearchBar
                 placeholder="Search"
                 onSearch={(query) => setSearchQuery(query)}

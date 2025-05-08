@@ -88,11 +88,16 @@ export default function RootLayout() {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="appearance" options={{ headerShown: false }} />
+            <Stack.Screen name="faq" options={{ headerShown: false }} />
             <Stack.Screen
               name="editCollectionItem"
               options={{ headerShown: false }}
             />
             <Stack.Screen name="+not-found" />
+            <Stack.Screen
+              name="resetDatabase"
+              options={{ headerShown: false }}
+            />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>

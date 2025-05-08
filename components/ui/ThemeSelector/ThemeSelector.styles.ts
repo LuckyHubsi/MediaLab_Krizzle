@@ -1,6 +1,11 @@
+import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 
 type ThemeOption = "light" | "dark";
+
+export const ModeContainer = styled.View`
+  flex-direction: column;
+`;
 
 export const Container = styled.View`
   flex-direction: row;
@@ -34,13 +39,14 @@ export const LabelWrapper = styled.View`
   align-items: center;
 `;
 
-export const RadioButtonOuter = styled.View`
+export const RadioButtonOuter = styled.View<CardProps>`
   margin-top: 8px;
   width: 24px;
   height: 24px;
   border-radius: 12px;
   border-width: 2px;
-  border-color: #007aff;
+  border-color: ${({ isSelected }: CardProps) =>
+    isSelected ? Colors.primary : Colors.grey50};
   justify-content: center;
   align-items: center;
 `;
