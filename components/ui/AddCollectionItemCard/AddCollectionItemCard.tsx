@@ -86,11 +86,6 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       } else {
         console.error("ERROR: Category ID is null or undefined!");
       }
-    } else {
-      console.error(
-        "ERROR: No matching category found for selected value:",
-        value,
-      );
     }
   };
 
