@@ -41,9 +41,9 @@ const CollectionList: React.FC<CollectionListProps> = ({
       style={{ maxHeight: 42 }}
     >
       <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
-        {collectionLists.map((collectionList) => (
+        {collectionLists.map((collectionList, index) => (
           <CollectionListContainer
-            key={collectionList}
+            key={`${collectionList}-${index}`}
             active={collectionList === activeList}
             themeMode={themeMode}
             onPress={() => handlePress(collectionList)}
