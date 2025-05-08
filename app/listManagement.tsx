@@ -29,6 +29,7 @@ import {
   updateCollectionCategory,
 } from "@/services/CollectionCategoriesService";
 import { useLocalSearchParams } from "expo-router";
+import { Colors } from "@/constants/Colors";
 
 export default function ListManagementScreen() {
   const { collectionId } = useLocalSearchParams<{
@@ -149,7 +150,9 @@ export default function ListManagementScreen() {
   }, [shouldRefetch]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
+    >
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
