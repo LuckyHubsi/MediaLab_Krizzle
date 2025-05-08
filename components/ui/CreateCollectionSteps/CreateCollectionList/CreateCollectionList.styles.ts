@@ -8,6 +8,7 @@ import styled from "styled-components/native";
 export const AddButtonWrapper = styled.View`
   width: 100%;
   align-items: center;
+  margin-bottom: 20px;
 `;
 
 export const ListContent = {

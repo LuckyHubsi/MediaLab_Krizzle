@@ -1,15 +1,16 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   StyledHeader,
   BackIcon,
   IconContainer,
   Icon,
+  TitleContainer,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, usePathname, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface HeaderProps {
   title: string;
@@ -17,8 +18,14 @@ interface HeaderProps {
   iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   onIconMenuPress?: () => void;
-  backBehavior?: "default" | "goHome" | "goArchive" | "goSettings";
+  backBehavior?:
+    | "default"
+    | "goHome"
+    | "goArchive"
+    | "goSettings"
+    | "goCollection";
   otherBackBehavior?: () => void;
+  param?: string;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -29,9 +36,10 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   onIconMenuPress,
   backBehavior = "default",
   otherBackBehavior,
+  param,
 }) => {
   const router = useRouter();
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -45,6 +53,11 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       router.replace("/archive");
     } else if (backBehavior === "goSettings") {
       router.replace("/settings");
+    } else if (backBehavior === "goCollection") {
+      router.replace({
+        pathname: "/collectionPage",
+        params: { pageId: param },
+      });
     } else {
       navigation.goBack();
     }
@@ -58,9 +71,16 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
 
-        <ThemedText fontSize="xl" fontWeight="semibold">
-          {title}
-        </ThemedText>
+        <TitleContainer>
+          <ThemedText
+            fontSize="xl"
+            fontWeight="semibold"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </ThemedText>
+        </TitleContainer>
       </TouchableOpacity>
 
       {/* Optional right icon */}

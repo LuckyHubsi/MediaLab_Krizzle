@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { TouchableOpacity } from "react-native";
 import { StyledChooseCard, Circle, EditButton } from "./ChooseCard.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 interface ChooseCardProps {
   label: string;
@@ -18,7 +19,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
   selectedIcon,
   onPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -28,7 +29,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
           <MaterialIcons
             name="edit"
             size={20}
-            color={colorScheme === "light" ? "black" : "white"}
+            color={Colors[colorScheme].text}
           />
         </EditButton>
 
@@ -38,7 +39,7 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
             <MaterialIcons
               name={selectedIcon}
               size={26}
-              color={colorScheme === "light" ? "black" : "white"}
+              color={Colors[colorScheme].text}
             />
           )}
         </Circle>

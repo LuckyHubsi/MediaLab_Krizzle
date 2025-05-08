@@ -7,4 +7,5 @@
 export type TagModel = {
   tagID: number;
   tag_label: string;
+  usage_count: number;
 };

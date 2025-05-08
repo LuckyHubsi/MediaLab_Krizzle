@@ -10,6 +10,7 @@ import {
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/dto/AttributeDTO";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type Item = {
   itemID: number;
@@ -20,14 +21,16 @@ type CollectionWidgetProps = {
   attributes: AttributeDTO[];
   item: Item;
   onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   attributes,
   item,
   onPress,
+  onLongPress,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   // Find indexes for each type
   const titleIndex = attributes.findIndex((attr) => attr.type === "text");
@@ -48,8 +51,20 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const multiSelect =
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
 
+  const handleLongPress = () => {
+    if (onLongPress) {
+      onLongPress();
+    } else {
+      console.log("Long press detected on widget:", title);
+    }
+  };
+
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onPress}
+      onLongPress={handleLongPress}
+    >
       <CollectionCardContainer colorScheme={colorScheme}>
         {/* Title */}
         <CollectionTitle colorScheme={colorScheme}>{title}</CollectionTitle>
@@ -91,7 +106,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             {rating ? (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialIcons
-                  name="star"
+                  name={
+                    (attributes[ratingIndex]
+                      .symbol as keyof typeof MaterialIcons.glyphMap) || "star"
+                  }
                   size={24}
                   color="#E7C716"
                   style={{ marginRight: 6 }}

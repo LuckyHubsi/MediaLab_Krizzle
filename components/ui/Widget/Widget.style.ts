@@ -27,19 +27,23 @@ export const IconsContainer = styled.View`
 `;
 
 export const Icon = styled.View`
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 35px;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.7);
   justify-content: center;
   align-items: center;
 `;
 
-export const Title = styled.Text`
+export const Title = styled.Text.attrs({
+  numberOfLines: 1,
+  ellipsizeMode: "tail",
+})`
   font-family: Lexend_400Regular;
   color: white;
   font-weight: 700;
   font-size: 16px;
+  max-width: 90%;
 `;
 
 export const Tag = styled.Text`
@@ -53,4 +57,11 @@ export const Tag = styled.Text`
   background-color: rgba(255, 255, 255, 0.7);
   align-self: flex-start;
   font-weight: 400;
+`;
+
+export const PreviewWrapper = styled.View`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
 `;

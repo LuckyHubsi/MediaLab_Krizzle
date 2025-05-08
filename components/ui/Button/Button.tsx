@@ -1,25 +1,19 @@
 import React, { FC, PropsWithChildren } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { TouchableOpacity, Text } from "react-native";
 import { StyledButton } from "./Button.styles";
 import { ThemedText } from "@/components/ThemedText";
 
-interface ButtonProps {
-  size?: "small" | "medium" | "large";
+export interface ButtonProps {
   onPress?: () => void;
-  color?: string;
+  isRed?: boolean;
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   children,
-  size = "medium",
   onPress,
-  color,
+  isRed = false,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
-
   return (
-    <StyledButton onPress={onPress} colorScheme={colorScheme}>
+    <StyledButton onPress={onPress} isRed={isRed}>
       <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
         {children}
       </ThemedText>

@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 
-export const TextfieldContainter = styled.View`
+export const TextfieldContainer = styled.View`
   width: 100%;
   gap: 8px;
 `;

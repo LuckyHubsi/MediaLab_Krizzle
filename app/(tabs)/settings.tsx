@@ -3,6 +3,9 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "react-native";
+import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
+import { resetDatabase } from "@/utils/DatabaseReset";
+import { Button } from "@/components/ui/Button/Button";
 
 export default function TabThreeScreen() {
   return (
@@ -17,7 +20,22 @@ export default function TabThreeScreen() {
         <ThemedText fontSize="xl" fontWeight="bold">
           Settings
         </ThemedText>
-        <ThemedText>Lorem ipsum</ThemedText>
+        <SettingsLink label="Appearance" href="/appearance" iconName="tune" />
+        <SettingsLink
+          label="Tag Management"
+          href="/tagManagement"
+          iconName="local-offer"
+        />
+        <SettingsLink
+          label="Frequently Asked Questions"
+          href="/faq"
+          iconName="help-outline"
+        />
+        <SettingsLink
+          label="Reset Data"
+          href="/resetDatabase"
+          iconName="delete-forever"
+        />
       </ThemedView>
     </SafeAreaView>
   );

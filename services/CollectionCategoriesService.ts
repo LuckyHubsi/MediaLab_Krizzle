@@ -1,8 +1,10 @@
 import { executeQuery, fetchAll } from "@/utils/QueryHelper";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import {
+  deleteCategoryQuery,
   insertCollectionCategoryQuery,
   selectCategoriesByCollectionIdQuery,
+  updateCategoryQuery,
 } from "@/queries/CollectionCategoryQuery";
 import { CollectionCategoryModel } from "@/models/CollectionCategoryModel";
 import { CollectionCategoryMapper } from "@/utils/mapper/CollectionCategoryMapper";
@@ -21,13 +23,14 @@ class CollectionCategoryService {
   public insertCollectionCategory = async (
     categoryDTO: CollectionCategoryDTO,
     txn?: SQLite.SQLiteDatabase,
-  ): Promise<void> => {
+  ): Promise<boolean> => {
     try {
       await executeQuery(
         insertCollectionCategoryQuery,
         [categoryDTO.category_name, categoryDTO.collectionID],
         txn,
       );
+      return true;
     } catch (error) {
       throw new DatabaseError("Error inserting list:", error);
     }
@@ -54,6 +57,33 @@ class CollectionCategoryService {
       return categories.map(CollectionCategoryMapper.toDTO);
     } catch (error) {
       throw new DatabaseError("Failed to retrieve collection categories");
+    }
+  };
+
+  updateCollectionCategory = async (
+    category: CollectionCategoryDTO,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean> => {
+    try {
+      await executeQuery(
+        updateCategoryQuery,
+        [category.category_name, category.collectionCategoryID],
+        txn,
+      );
+      return true;
+    } catch (error) {
+      throw new DatabaseError("Failed to update category.");
+    }
+  };
+
+  deleteCollectionCategoryByID = async (
+    categoryID: number,
+  ): Promise<boolean> => {
+    try {
+      await executeQuery(deleteCategoryQuery, [categoryID]);
+      return true;
+    } catch (error) {
+      throw new DatabaseError("Failed to delete category.");
     }
   };
 }

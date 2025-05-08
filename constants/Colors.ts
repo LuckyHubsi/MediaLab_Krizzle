@@ -8,7 +8,9 @@ export const Colors = {
   grey25: "#EAEAEA",
   grey50: "#ABABAB",
   grey100: "#585858",
+  grey200: "#242424",
   black: "#111111",
+  tintColor: "#4599E8",
   light: {
     text: "#11181C",
     background: "#FBFBFB",
@@ -31,6 +33,7 @@ export const Colors = {
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
     textFieldBorder: "#585858",
     placeholder: "#585858",
+    disabled: "#ABABAB",
   },
   dark: {
     text: "#ECEDEE",
@@ -53,6 +56,7 @@ export const Colors = {
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
     textFieldBorder: "#ffffff",
     placeholder: "#ABABAB",
+    disabled: "#585858",
   },
   widget: {
     white: "#ffffff",

@@ -13,6 +13,13 @@ import {
   insertMultiselectValueQuery,
   insertRatingValueQuery,
   itemSelectByPageIdQuery,
+  updateItemQuery,
+  deleteItemQuery,
+  deleteItemAttributeValuesQuery,
+  updateMultiselectValueQuery,
+  updateRatingValueQuery,
+  updateDateValueQuery,
+  updateTextValueQuery,
 } from "@/queries/ItemQuery";
 import { DatabaseError } from "@/utils/DatabaseError";
 import { AttributeType } from "@/utils/enums/AttributeType";
@@ -34,7 +41,7 @@ class ItemService {
    * @param {number} id - The ID of the item to retrieve.
    * @returns {Promise<ItemDTO | null>} A promise that resolves to an ItemDTO object or null if not found.
    */
-  public getItemById = async (id: number): Promise<ItemDTO> => {
+  getItemById = async (id: number): Promise<ItemDTO> => {
     try {
       // get raw result using the query
       const rawResult = await fetchFirst<ItemModel>(itemSelectByIdQuery, [id]);
@@ -52,6 +59,7 @@ class ItemService {
         };
 
         const dto = ItemMapper.toDTO(parsedModel);
+
         return dto;
       } else {
         throw new DatabaseError("Error retrieving item by ID");
@@ -68,16 +76,22 @@ class ItemService {
    * @returns {Promise<ItemsDTO[]>} A promise that resolves to an ItemsDTO.
    * @throws {DatabaseError} If fetch fails.
    */
-  public getItemsByPageId = async (pageID: number): Promise<ItemsDTO> => {
+  getItemsByPageId = async (pageID: number): Promise<ItemsDTO> => {
     try {
       const rawResults = await fetchAll<ItemsModel>(itemSelectByPageIdQuery, [
         pageID,
       ]);
 
-      if (rawResults) {
-        return ItemsMapper.toDTO(rawResults);
+      if (rawResults && rawResults.length > 0) {
+        const dto = ItemsMapper.toDTO(rawResults);
+        return dto;
       } else {
-        throw new DatabaseError("Error retrieving items by page id");
+        return {
+          collectionID: pageID,
+          pageID,
+          attributes: [],
+          items: [],
+        };
       }
     } catch (error) {
       throw new DatabaseError("Error retrieving items by page id");
@@ -92,7 +106,7 @@ class ItemService {
    *
    * @throws {DatabaseError} When transaction fails.
    */
-  public insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
+  insertItemAndReturnID = async (itemDTO: ItemDTO): Promise<number> => {
     try {
       const itemID = await executeTransaction<number>(async (txn) => {
         await executeQuery(
@@ -113,11 +127,7 @@ class ItemService {
                 this.insertItemAttributeValue(insertDateValueQuery, value, txn);
                 break;
               case AttributeType.Rating:
-                this.insertItemAttributeValue(
-                  insertRatingValueQuery,
-                  value,
-                  txn,
-                );
+                this.insertItemAttributeValue(insertRatingValueQuery, value, txn);
                 break;
               case AttributeType.Multiselect:
                 this.insertItemAttributeValue(
@@ -157,7 +167,7 @@ class ItemService {
    * @param {ItemAttributeValueDTO} valueDTO - The DTO representing the attribute value to insert.
    * @returns {Promise<number | null>} A promise that resolves to the inserted value's ID, or null if the insertion fails.
    */
-  public insertItemAttributeValue = async (
+  insertItemAttributeValue = async (
     query: string,
     valueDTO: ItemAttributeValueDTO,
     txn?: SQLite.SQLiteDatabase,
@@ -185,6 +195,133 @@ class ItemService {
       }
     } catch (error) {
       throw new DatabaseError("Failed to insert item value");
+    }
+  };
+
+  /**
+   * Edits an item and all its associated attribute values.
+   *
+   * @param {ItemDTO} itemDTO - The DTO representing the updated item data.
+   * @returns {Promise<boolean>} A promise that resolves to true if the edit was successful.
+   * @throws {DatabaseError} When transaction fails.
+   */
+  editItemByID = async (itemDTO: ItemDTO): Promise<boolean> => {
+    try {
+      const success = await executeTransaction<boolean>(async (txn) => {
+        // updates category
+        await executeQuery(
+          updateItemQuery,
+          [itemDTO.categoryID, itemDTO.itemID],
+          txn,
+        );
+
+        // updates attribute values
+        if (itemDTO.attributeValues) {
+          for (const value of itemDTO.attributeValues) {
+            switch (value.type) {
+              case AttributeType.Text:
+                if ("valueString" in value) {
+                  await executeQuery(
+                    updateTextValueQuery,
+                    [value.valueString, value.itemID, value.attributeID],
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Date:
+                if ("valueString" in value) {
+                  await executeQuery(
+                    updateDateValueQuery,
+                    [value.valueString, value.itemID, value.attributeID],
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Rating:
+                if ("valueNumber" in value) {
+                  await executeQuery(
+                    updateRatingValueQuery,
+                    [value.valueNumber, value.itemID, value.attributeID],
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Multiselect:
+                if ("valueMultiselect" in value) {
+                  const stringifiedValues = JSON.stringify(
+                    value.valueMultiselect,
+                  );
+                  await executeQuery(
+                    updateMultiselectValueQuery,
+                    [stringifiedValues, value.itemID, value.attributeID],
+                    txn,
+                  );
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+        // updates date modified
+        await executeQuery(
+          updateDateModifiedByPageIDQuery,
+          [new Date().toISOString(), itemDTO.pageID],
+          txn,
+        );
+
+        return true;
+      });
+
+      return success;
+    } catch (error) {
+      console.error("Transaction error:", error);
+      throw new DatabaseError("Failed to edit item");
+    }
+  };
+
+  /**
+   * Deletes an item and all its associated attribute values from the database.
+   *
+   * @param {number} itemID - The ID of the item to delete.
+   * @returns {Promise<boolean>} A promise that resolves to true if the deletion was successful.
+   * @throws {DatabaseError} When transaction fails.
+   */
+  deleteItemById = async (itemID: number): Promise<boolean> => {
+    try {
+      const success = await executeTransaction<boolean>(async (txn) => {
+        // deletes all of the item's attribute values
+        await executeQuery(
+          deleteItemAttributeValuesQuery,
+          [itemID, itemID, itemID, itemID],
+          txn,
+        );
+
+        // deletes item
+        const result = await fetchFirst<{ pageID: number }>(
+          deleteItemQuery,
+          [itemID],
+          txn,
+        );
+
+        if (!result) {
+          throw new DatabaseError(`Item with ID ${itemID} not found.`);
+        }
+
+        // updates date modified of the page
+        await executeQuery(
+          updateDateModifiedByPageIDQuery,
+          [new Date().toISOString(), result.pageID],
+          txn,
+        );
+
+        return true;
+      });
+
+      return success;
+    } catch (error) {
+      throw new DatabaseError("Failed to delete item");
     }
   };
 }

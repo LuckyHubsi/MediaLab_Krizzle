@@ -14,6 +14,8 @@ import { PageType } from "@/utils/enums/PageType";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { Platform } from "react-native";
 
 export default function CollectionTemplateScreen() {
   const [step, setStep] = useState<"create" | "list" | "template">("create");
@@ -21,7 +23,7 @@ export default function CollectionTemplateScreen() {
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
     selectedTag: null,
-    selectedColor: "",
+    selectedColor: "#4599E8",
     selectedIcon: undefined,
     lists: [],
     templates: [],
@@ -43,7 +45,7 @@ export default function CollectionTemplateScreen() {
       archived: false,
       pinned: false,
       categories: lists,
-      tag: null,
+      tag: collectionData.selectedTag,
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(
@@ -80,32 +82,33 @@ export default function CollectionTemplateScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ThemedView style={{ flex: 1 }}>
-        {step === "create" && (
-          <CreateCollection
-            data={collectionData}
-            setData={setCollectionData}
-            onNext={() => setStep("list")}
-          />
-        )}
-        {step === "list" && (
-          <CreateCollectionList
-            data={collectionData}
-            setData={setCollectionData}
-            onBack={() => setStep("create")}
-            onNext={() => setStep("template")}
-          />
-        )}
-        {step === "template" && (
-          <CreateCollectionTemplate
-            data={collectionData}
-            setData={setCollectionData}
-            onBack={() => setStep("list")}
-            onNext={createCollection}
-          />
-        )}
-      </ThemedView>
-    </SafeAreaView>
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
+      topPadding={Platform.select({ ios: 0, android: 15 })}
+    >
+      {step === "create" && (
+        <CreateCollection
+          data={collectionData}
+          setData={setCollectionData}
+          onNext={() => setStep("list")}
+        />
+      )}
+      {step === "list" && (
+        <CreateCollectionList
+          data={collectionData}
+          setData={setCollectionData}
+          onBack={() => setStep("create")}
+          onNext={() => setStep("template")}
+        />
+      )}
+      {step === "template" && (
+        <CreateCollectionTemplate
+          data={collectionData}
+          setData={setCollectionData}
+          onBack={() => setStep("list")}
+          onNext={createCollection}
+        />
+      )}
+    </GradientBackground>
   );
 }

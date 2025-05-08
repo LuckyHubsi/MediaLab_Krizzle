@@ -27,4 +27,5 @@ export const TwoColumnRow = styled.View`
 
 export const ButtonContainer = styled.View`
   width: 100%;
+  margin-bottom: 10px;
 `;

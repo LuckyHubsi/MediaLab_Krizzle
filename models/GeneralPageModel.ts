@@ -15,4 +15,5 @@ export type GeneralPageModel = {
   pinned: 0 | 1; // indicates if the page is pinned (0 = false, 1 = true)
   tagID?: number | null; // optional ID of the associated tag
   tag_label?: string; // optional label of the associated tag
+  pin_count?: number;
 };

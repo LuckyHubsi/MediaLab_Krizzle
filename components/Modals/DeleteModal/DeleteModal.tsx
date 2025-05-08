@@ -6,29 +6,30 @@ import {
   ButtonRow,
   Action,
   ActionText,
+  OverlayTextBox,
 } from "./DeleteModal.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface DeleteModalProps {
   visible: boolean;
   title?: string;
-  typeToDelete: string;
   onCancel: () => void;
   onConfirm: () => void;
   onclose: () => void;
+  titleHasApostrophes?: boolean;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
   visible,
   title,
-  typeToDelete,
   onCancel,
   onConfirm,
   onclose,
+  titleHasApostrophes = true,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
 
   return (
@@ -41,12 +42,16 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onclose}>
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
-            <ThemedText fontSize="regular" fontWeight="semibold">
-              Do you want to delete "{title}"?
-            </ThemedText>
-            <ThemedText fontSize="s" fontWeight="regular">
-              You cannot undo this action
-            </ThemedText>
+            <OverlayTextBox>
+              <ThemedText fontSize="regular" fontWeight="semibold">
+                {titleHasApostrophes
+                  ? `Do you want to delete "${title}"?`
+                  : `Do you want to delete ${title}?`}
+              </ThemedText>
+              <ThemedText fontSize="s" fontWeight="regular">
+                You cannot undo this action
+              </ThemedText>
+            </OverlayTextBox>
             <ButtonRow>
               <Action onPress={onConfirm} colorScheme={colorScheme}>
                 <ActionText color="red">Delete</ActionText>

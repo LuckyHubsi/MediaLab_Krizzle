@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 
 import {
@@ -11,11 +11,14 @@ import {
   CardPreview,
 } from "./ItemTemplateCard.styles";
 import { Colors } from "@/constants/Colors";
-import { getPickerStyles } from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import {
+  AndroidPickerWrapper,
+  getPickerStyles,
+} from "@/components/ui/CollectionListDropdown/CollectionListDropdown.styles";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -31,6 +34,9 @@ interface ItemTemplateCardProps {
   onOptionsChange?: (options: string[]) => void;
   onRemove?: () => void;
   onPreviewToggle?: () => void;
+  hasNoInputError?: boolean;
+  hasNoMultiSelectableError?: boolean;
+  previewCount?: number;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -47,8 +53,11 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   onOptionsChange,
   onRemove,
   onPreviewToggle,
+  hasNoInputError,
+  hasNoMultiSelectableError,
+  previewCount,
 }) => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   const typeArray = ["item", "text", "date", "multi-select", "rating"];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
@@ -69,7 +78,17 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardTitle>
         <CardPreview onPress={onPreviewToggle}>
-          <ThemedText>Item Preview</ThemedText>
+          <ThemedText
+            colorVariant={
+              isPreview
+                ? "default"
+                : previewCount && previewCount > 2
+                  ? "grey"
+                  : "default"
+            }
+          >
+            Item Preview
+          </ThemedText>
           {isPreview ? (
             <MaterialIcons
               name="check-circle"
@@ -79,33 +98,40 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           ) : (
             <MaterialIcons
               name="radio-button-off"
-              color={Colors[colorScheme ?? "light"].text}
+              color={
+                isPreview
+                  ? Colors[colorScheme ?? "light"].text
+                  : previewCount && previewCount > 2
+                    ? Colors.grey50
+                    : "#000000"
+              }
               size={20}
             />
           )}
         </CardPreview>
       </CardTitleRow>
-
-      <RNPickerSelect
-        onValueChange={(value) => {
-          if (onTypeChange) onTypeChange(value);
-        }}
-        style={pickerStyles}
-        value={itemType}
-        items={
-          isTitleCard
-            ? [{ label: "Text", value: "text" }]
-            : typeArray
-                .filter((item) => item !== "item")
-                .map((item) => ({
-                  label: item,
-                  value: item,
-                }))
-        }
-        {...(!isTitleCard && {
-          Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
-        })}
-      />
+      <AndroidPickerWrapper colorScheme={colorScheme}>
+        <RNPickerSelect
+          onValueChange={(value) => {
+            if (onTypeChange) onTypeChange(value);
+          }}
+          style={pickerStyles}
+          value={itemType}
+          items={
+            isTitleCard
+              ? [{ label: "Text", value: "text" }]
+              : typeArray
+                  .filter((item) => item !== "item")
+                  .map((item) => ({
+                    label: item,
+                    value: item,
+                  }))
+          }
+          {...(!isTitleCard && {
+            Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
+          })}
+        />
+      </AndroidPickerWrapper>
 
       <Textfield
         showTitle={false}
@@ -114,6 +140,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
+        hasNoInputError={hasNoInputError}
+        maxLength={30}
       />
 
       {itemType === "rating" && rating !== undefined && onRatingChange && (
@@ -131,6 +159,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             title=""
             options={options}
             onOptionsChange={onOptionsChange}
+            hasNoInputError={hasNoMultiSelectableError}
           />
         )}
 
