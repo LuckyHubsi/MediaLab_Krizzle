@@ -161,10 +161,12 @@ export class GeneralPageRepositoryImpl
           txn,
         );
 
-        await this.executeQuery(updateDateModifiedByPageIDQuery, [
-          new Date().toISOString,
-          pageID,
-        ]);
+        const modfiedAt = new Date();
+        await this.executeQuery(
+          updateDateModifiedByPageIDQuery,
+          [modfiedAt.toISOString(), pageID],
+          txn,
+        );
       });
 
       return true;
@@ -187,8 +189,9 @@ export class GeneralPageRepositoryImpl
           txn,
         );
 
+        const modfiedAt = new Date();
         await this.executeQuery(updateDateModifiedByPageIDQuery, [
-          new Date().toISOString,
+          modfiedAt.toISOString(),
           pageID,
         ]);
       });
