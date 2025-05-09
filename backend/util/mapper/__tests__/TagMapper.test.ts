@@ -9,16 +9,19 @@ describe("TagMapper", () => {
   const mockTag: Tag = {
     tagID: mockTagID,
     tagLabel: "test tag",
+    usageCount: 2,
   };
 
   const mockTagDTO: TagDTO = {
     tagID: 1,
     tag_label: "test tag",
+    usage_count: 2,
   };
 
   const mockTagModel: TagModel = {
     tagID: 1,
     tag_label: "test tag",
+    usage_count: 2,
   };
 
   const mockNewTag: NewTag = {
@@ -67,6 +70,7 @@ describe("TagMapper", () => {
       const invalidTagModel: TagModel = {
         tagID: -1,
         tag_label: "test tag",
+        usage_count: 2,
       };
 
       expect(() => TagMapper.toEntity(invalidTagModel)).toThrow(
@@ -78,6 +82,7 @@ describe("TagMapper", () => {
       const invalidTagModel: TagModel = {
         tagID: 1,
         tag_label: "",
+        usage_count: 2,
       };
 
       expect(() => TagMapper.toEntity(invalidTagModel)).toThrow(
