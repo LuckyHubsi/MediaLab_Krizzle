@@ -190,10 +190,11 @@ export class GeneralPageRepositoryImpl
         );
 
         const modfiedAt = new Date();
-        await this.executeQuery(updateDateModifiedByPageIDQuery, [
-          modfiedAt.toISOString(),
-          pageID,
-        ]);
+        await this.executeQuery(
+          updateDateModifiedByPageIDQuery,
+          [modfiedAt.toISOString(), pageID],
+          txn,
+        );
       });
 
       return true;
