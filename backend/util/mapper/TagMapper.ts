@@ -13,6 +13,7 @@ export class TagMapper {
     return {
       tagID: entity.tagID,
       tag_label: entity.tagLabel,
+      usage_count: entity.usageCount,
     };
   }
 
@@ -20,6 +21,7 @@ export class TagMapper {
     return {
       tagID: entity.tagID,
       tag_label: entity.tagLabel,
+      usage_count: entity.usageCount,
     };
   }
 
@@ -39,6 +41,7 @@ export class TagMapper {
       return tagSchema.parse({
         tagID: model.tagID,
         tagLabel: model.tag_label,
+        usageCount: model.usage_count,
       });
     } catch (error: any) {
       console.error("Error mapping TagModel to Entity:", error.issues);

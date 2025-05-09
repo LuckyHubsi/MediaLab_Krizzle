@@ -7,6 +7,7 @@ export type TagID = z.infer<typeof tagID>;
 export const tagSchema = z.object({
   tagID: tagID,
   tagLabel: common.string30,
+  usageCount: z.number(),
 });
 
 export type Tag = z.infer<typeof tagSchema>;
