@@ -15,7 +15,6 @@ export const itemTemplateSchema = z.object({
 export type ItemTemplate = z.infer<typeof itemTemplateSchema>;
 
 export const createNewItemTemplateSchema = z.object({
-  itemTemplateID: itemTemplateID,
   templateName: common.string30,
   attributes: z.array(createNewAttributeSchema).min(1).max(11),
 });
