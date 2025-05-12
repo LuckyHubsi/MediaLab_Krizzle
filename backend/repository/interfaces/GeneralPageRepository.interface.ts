@@ -26,4 +26,8 @@ export interface GeneralPageRepository extends BaseRepository {
     pageID: PageID,
     currentArchiveStatus: boolean,
   ): Promise<boolean>;
+  updateDateModified(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
 }

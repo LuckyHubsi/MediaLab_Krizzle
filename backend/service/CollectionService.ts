@@ -178,6 +178,60 @@ export class CollectionService {
       throw new ServiceError("Failed to retrieve collection item.");
     }
   }
+
+  async insertItemAndReturnID(itemDTO: ItemDTO): Promise<number> {
+    try {
+      const item = ItemMapper.toNewEntity(itemDTO);
+      const categoryId = collectionCategoryID.parse(itemDTO.pageID);
+      const itemId = this.baseRepo.executeTransaction<number>(async (txn) => {
+        const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
+          item.pageID,
+          categoryId,
+        );
+
+        item.attributeValues.forEach((attributeValue) => {
+          switch (attributeValue.type) {
+            case AttributeType.Text:
+              this.itemRepo.insertTextValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
+            case AttributeType.Date:
+              this.itemRepo.insertDateValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
+            case AttributeType.Rating:
+              this.itemRepo.insertRatingValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
+            case AttributeType.Multiselect:
+              this.itemRepo.insertMultiselectValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
+            default:
+              break;
+          }
+        });
+        await this.generalPageRepo.updateDateModified(item.pageID, txn);
+
+        return retrievedItemID;
+      });
+      return itemId;
+    } catch (error) {
+      throw new ServiceError("Failed to isnert collection item.");
+    }
+  }
 }
 
 export const collectionService = new CollectionService();

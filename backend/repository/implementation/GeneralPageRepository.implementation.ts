@@ -203,6 +203,22 @@ export class GeneralPageRepositoryImpl
       throw new RepositoryError("Failed to update pinned state");
     }
   }
+
+  async updateDateModified(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      const modfiedAt = new Date();
+      await this.executeQuery(
+        updateDateModifiedByPageIDQuery,
+        [modfiedAt.toISOString(), pageID],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update last modified date");
+    }
+  }
 }
 
 export const generalPageRepository = new GeneralPageRepositoryImpl();
