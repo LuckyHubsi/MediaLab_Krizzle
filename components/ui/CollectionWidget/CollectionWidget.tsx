@@ -75,7 +75,8 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
         )}
 
         {/* Date and Rating */}
-        {(date || rating) && (
+        {(date !== null && date !== undefined) ||
+        (rating !== null && rating !== undefined) ? (
           <View
             style={{
               flexDirection: "row",
@@ -103,7 +104,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             )}
 
             {/* Rating (right) */}
-            {rating ? (
+            {rating !== null && rating !== undefined ? (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialIcons
                   name={
@@ -122,7 +123,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
               <View />
             )}
           </View>
-        )}
+        ) : null}
 
         {/* Multi-Select */}
         {multiSelect &&
