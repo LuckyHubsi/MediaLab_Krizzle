@@ -98,6 +98,7 @@ export class NoteMapper {
           ? TagMapper.toEntity({
               tagID: model.tagID,
               tag_label: model.tag_label!,
+              usage_count: 0,
             })
           : null,
         createdAt: new Date(model.date_created),
