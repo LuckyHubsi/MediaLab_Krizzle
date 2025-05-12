@@ -19,7 +19,7 @@ export interface GeneralPageRepository extends BaseRepository {
   insertPage(
     page: NewGeneralPage,
     txn?: SQLite.SQLiteDatabase,
-  ): Promise<number>;
+  ): Promise<PageID>;
   deletePage(pageID: PageID): Promise<boolean>;
   updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean>;
   updateArchive(

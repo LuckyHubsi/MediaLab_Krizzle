@@ -138,3 +138,5 @@ export class BaseRepositoryImpl implements BaseRepository {
     }
   }
 }
+
+export const baseRepository = new BaseRepositoryImpl();

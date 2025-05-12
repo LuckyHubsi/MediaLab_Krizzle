@@ -1,6 +1,7 @@
 import {
   GeneralPage,
   NewGeneralPage,
+  pageID,
   PageID,
 } from "@/backend/domain/entity/GeneralPage";
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
@@ -113,10 +114,10 @@ export class GeneralPageRepositoryImpl
   async insertPage(
     page: NewGeneralPage,
     txn?: SQLite.SQLiteDatabase,
-  ): Promise<number> {
+  ): Promise<PageID> {
     try {
       const model = GeneralPageMapper.toInsertModel(page);
-      const pageID = await super.executeTransaction(async (txn) => {
+      const pageId = await super.executeTransaction(async (txn) => {
         await super.executeQuery(
           insertNewPageQuery,
           [
@@ -135,7 +136,7 @@ export class GeneralPageRepositoryImpl
         const lastInsertedID = await super.getLastInsertId(txn);
         return lastInsertedID;
       });
-      return pageID;
+      return pageID.parse(pageId);
     } catch (error) {
       throw new RepositoryError("Failed to insert page.");
     }

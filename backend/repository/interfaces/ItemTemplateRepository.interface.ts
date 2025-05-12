@@ -11,4 +11,9 @@ export interface ItemTemplateRepository extends BaseRepository {
     itemTemplateID: ItemTemplateID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<ItemTemplate>;
+
+  insertTemplateAndReturnID(
+    itemTemplate: NewItemTemplate,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<ItemTemplateID>;
 }

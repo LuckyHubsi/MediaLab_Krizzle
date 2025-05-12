@@ -22,9 +22,9 @@ const collectionSelectByPageIdQuery: string = `
     GROUP BY p.pageID, c.collectionID;
 `;
 
-const insertCollection: string = `
+const insertCollectionQuery: string = `
     INSERT INTO collection (pageID, item_templateID) 
     VALUES (?, ?)
 `;
 
-export { collectionSelectByPageIdQuery, insertCollection };
+export { collectionSelectByPageIdQuery, insertCollectionQuery };
