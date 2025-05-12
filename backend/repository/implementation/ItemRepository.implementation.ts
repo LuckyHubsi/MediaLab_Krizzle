@@ -9,6 +9,8 @@ import {
 } from "@/backend/domain/entity/Item";
 import { ItemModel } from "@/models/ItemModel";
 import {
+  deleteItemAttributeValuesQuery,
+  deleteItemQuery,
   insertDateValueQuery,
   insertItemQuery,
   insertMultiselectValueQuery,
@@ -17,7 +19,7 @@ import {
   itemSelectByIdQuery,
 } from "../query/ItemQuery";
 import { ItemMapper } from "@/backend/util/mapper/ItemMapper";
-import { PageID } from "@/backend/domain/entity/GeneralPage";
+import { pageID, PageID } from "@/backend/domain/entity/GeneralPage";
 import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
 import * as SQLite from "expo-sqlite";
 
@@ -140,6 +142,37 @@ export class ItemRepositoryImpl
         );
     } catch (error) {
       throw new RepositoryError("Failed to insert multi-select value.");
+    }
+  }
+
+  async deleteItem(
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<PageID> {
+    try {
+      const result = await super.fetchFirst<{ pageID: number }>(
+        deleteItemQuery,
+        [itemId],
+        txn,
+      );
+      return pageID.parse(result?.pageID);
+    } catch (error) {
+      throw new RepositoryError("Failed to delete item.");
+    }
+  }
+
+  async deleteItemValues(
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(
+        deleteItemAttributeValuesQuery,
+        [itemId, itemId, itemId, itemId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to delete item value.");
     }
   }
 }

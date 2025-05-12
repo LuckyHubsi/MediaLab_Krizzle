@@ -232,6 +232,23 @@ export class CollectionService {
       throw new ServiceError("Failed to isnert collection item.");
     }
   }
+
+  async deleteItemById(itemId: number): Promise<boolean> {
+    try {
+      const brandedItemID = itemID.parse(itemId);
+      const success = await this.baseRepo.executeTransaction<boolean>(
+        async (txn) => {
+          await this.itemRepo.deleteItemValues(brandedItemID, txn);
+          const pageId = await this.itemRepo.deleteItem(brandedItemID, txn);
+          await this.generalPageRepo.updateDateModified(pageId, txn);
+          return true;
+        },
+      );
+      return true;
+    } catch (error) {
+      throw new ServiceError("Failed to delete collection item.");
+    }
+  }
 }
 
 export const collectionService = new CollectionService();

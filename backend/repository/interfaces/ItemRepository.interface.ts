@@ -32,4 +32,6 @@ export interface ItemRepository extends BaseRepository {
     itemId: ItemID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+  deleteItem(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<PageID>;
+  deleteItemValues(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<void>;
 }
