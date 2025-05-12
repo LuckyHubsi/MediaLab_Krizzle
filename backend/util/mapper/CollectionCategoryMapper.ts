@@ -28,10 +28,9 @@ export class CollectionCategoryMapper {
 
   static toInsertModel(
     entity: NewCollectionCategory,
-  ): Omit<CollectionCategoryModel, "collection_categoryID"> {
+  ): Omit<CollectionCategoryModel, "collection_categoryID" | "collectionID"> {
     return {
       category_name: entity.categoryName,
-      collectionID: entity.collectionID,
     };
   }
 
@@ -39,7 +38,6 @@ export class CollectionCategoryMapper {
     try {
       const parsedDTO = createNewCategorySchema.parse({
         categoryName: dto.category_name,
-        collectionID: collectionID.parse(dto.collectionID),
       });
       return parsedDTO;
     } catch (error) {

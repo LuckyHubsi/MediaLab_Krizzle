@@ -15,7 +15,6 @@ export type CollectionCategory = z.infer<typeof categorySchema>;
 
 export const createNewCategorySchema = z.object({
   categoryName: common.string30,
-  collectionID: collectionID,
 });
 
 export type NewCollectionCategory = z.infer<typeof createNewCategorySchema>;
