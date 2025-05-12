@@ -21,6 +21,11 @@ import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { collectionID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
+import { itemID } from "../domain/entity/Item";
+import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
+import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
+import { ItemMapper } from "../util/mapper/ItemMapper";
+import { ItemDTO } from "@/dto/ItemDTO";
 
 export class CollectionService {
   constructor(
@@ -30,6 +35,7 @@ export class CollectionService {
     private templateRepo: ItemTemplateRepository = templateRepository,
     private attributeRepo: AttributeRepository = attributeRepository,
     private categoryRepo: CollectionCategoryRepository = categoryRepository,
+    private itemRepo: ItemRepository = itemRepository,
   ) {}
 
   async getCollectionByPageId(pageId: number): Promise<CollectionDTO> {
@@ -160,6 +166,16 @@ export class CollectionService {
       return true;
     } catch (error) {
       throw new ServiceError("Failed to retrieve collection categories.");
+    }
+  }
+
+  async getItemByID(itemId: number): Promise<ItemDTO> {
+    try {
+      const brandedItemID = itemID.parse(itemId);
+      const item = await this.itemRepo.getItemByID(brandedItemID);
+      return ItemMapper.toDTO(item);
+    } catch (error) {
+      throw new ServiceError("Failed to retrieve collection item.");
     }
   }
 }
