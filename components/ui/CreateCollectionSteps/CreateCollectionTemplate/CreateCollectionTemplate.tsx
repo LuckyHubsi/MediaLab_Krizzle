@@ -101,7 +101,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
 
   const handleAddCard = () => {
-    if (otherCards.length >= 10) return;
+    if (otherCards.length >= 9) return;
     setData((prev) => ({
       ...prev,
       templates: [
@@ -235,7 +235,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           <ItemCountContainer>
             <ItemCount colorScheme={colorScheme}>
               <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-                {otherCards.length}
+                {otherCards.length + 1}
               </ThemedText>
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
@@ -320,7 +320,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               handleAddCard();
               setHasClickedNext(false);
             }}
-            isDisabled={otherCards.length >= 10}
+            isDisabled={otherCards.length >= 9}
           />
         </ScrollView>
       </KeyboardAvoidingView>
