@@ -293,7 +293,11 @@ export default function EditWidgetScreen() {
           if (popupType === "color") {
             setSelectedColor(itemValue);
           } else {
-            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
+            setSelectedIcon((prev) =>
+              prev === itemValue
+                ? null
+                : (itemValue as keyof typeof MaterialIcons.glyphMap),
+            );
           }
         }}
         onClose={() => setPopupVisible(false)}

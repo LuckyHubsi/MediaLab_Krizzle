@@ -285,9 +285,10 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           } else {
             setData((prev: any) => ({
               ...prev,
-              selectedIcon: itemValue
-                ? (itemValue as keyof typeof MaterialIcons.glyphMap)
-                : undefined,
+              selectedIcon:
+                prev.selectedIcon === itemValue
+                  ? undefined
+                  : (itemValue as keyof typeof MaterialIcons.glyphMap),
             }));
           }
         }}

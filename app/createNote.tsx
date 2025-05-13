@@ -270,7 +270,11 @@ export default function CreateNoteScreen() {
           if (popupType === "color") {
             setSelectedColor(itemValue);
           } else {
-            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
+            setSelectedIcon((prevIcon) =>
+              prevIcon === itemValue
+                ? null
+                : (itemValue as keyof typeof MaterialIcons.glyphMap),
+            );
           }
         }}
         onClose={() => setPopupVisible(false)}
