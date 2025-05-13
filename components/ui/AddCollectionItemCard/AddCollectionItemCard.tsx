@@ -56,7 +56,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
 
-    if (value === "Select an option...") {
+    if (!value) {
       onListChange(null);
       return;
     }

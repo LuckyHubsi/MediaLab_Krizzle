@@ -35,7 +35,7 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
       <ThemedText>{title}</ThemedText>
       <AndroidPickerWrapper colorScheme={colorScheme}>
         <RNPickerSelect
-          placeholder={{ label: "Select an option...", value: null }}
+          placeholder={{}}
           items={dropdownItems}
           value={selectedList}
           onValueChange={onSelectionChange}
