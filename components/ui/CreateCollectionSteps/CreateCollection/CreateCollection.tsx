@@ -172,7 +172,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           </View>
         </Card>
       </View>
-      <ScrollContainer>
+      <ScrollContainer showsVerticalScrollIndicator={false}>
         <ContentWrapper>
           <Card>
             <TitleCard

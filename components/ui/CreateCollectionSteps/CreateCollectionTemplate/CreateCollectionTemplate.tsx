@@ -255,7 +255,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             </ItemCount>
           </ItemCountContainer>
         </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 10, gap: 10 }}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 10, gap: 10 }}
+          showsVerticalScrollIndicator={false}
+        >
           {titleCard && (
             <ItemTemplateCard
               isTitleCard

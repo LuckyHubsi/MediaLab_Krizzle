@@ -171,7 +171,10 @@ export default function CreateNoteScreen() {
           </View>
         </Card>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 10 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
           <View style={{ width: "100%", gap: 20 }}>
             <Card>
