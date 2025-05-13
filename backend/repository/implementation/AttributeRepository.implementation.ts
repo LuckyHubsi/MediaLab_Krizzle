@@ -1,8 +1,4 @@
-import {
-  attributeID,
-  AttributeID,
-  NewAttribute,
-} from "@/backend/domain/common/Attribute";
+import { NewAttribute } from "@/backend/domain/common/Attribute";
 import * as SQLite from "expo-sqlite";
 import { AttributeRepository } from "../interfaces/AttributeRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
@@ -11,14 +7,33 @@ import {
   insertMultiselectOptionsQuery,
   insertRatingSymbolQuery,
 } from "../query/AttributeQuery";
-import { ItemTemplateID } from "@/backend/domain/entity/ItemTemplate";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  attributeID,
+  AttributeID,
+  ItemTemplateID,
+} from "@/backend/domain/common/IDs";
 
+/**
+ * Implementation of the AttributeRepository interface using SQL queries.
+ *
+ * Handles the following operations:
+ * - Inserting a new attribute / multiselect options / rating symbol.
+ */
 export class AttributeRepositoryImpl
   extends BaseRepositoryImpl
   implements AttributeRepository
 {
+  /**
+   * Inserts a new attribute into the database.
+   *
+   * @param newAttribute - A `NewAttribute` object containing the attribute data.
+   * @param templateID - A `TemplateID` object representing the template ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to an `AttributeID` if insertion succeeded.
+   * @throws RepositoryError if the insertion fails.
+   */
   async insertAttribute(
     newAttribute: NewAttribute,
     templateID: ItemTemplateID,
@@ -26,24 +41,36 @@ export class AttributeRepositoryImpl
   ): Promise<AttributeID> {
     try {
       const attribute = AttributeMapper.toInsertModel(newAttribute);
-      await super.executeQuery(
-        insertAttributeQuery,
-        [
-          attribute.attribute_label,
-          attribute.type,
-          attribute.preview,
-          templateID,
-        ],
-        txn,
-      );
+      const attributeId = await this.executeTransaction(async (transaction) => {
+        await super.executeQuery(
+          insertAttributeQuery,
+          [
+            attribute.attribute_label,
+            attribute.type,
+            attribute.preview,
+            templateID,
+          ],
+          txn ?? transaction,
+        );
 
-      const lastInsertedID = await super.getLastInsertId(txn);
-      return attributeID.parse(lastInsertedID);
+        const lastInsertedID = await super.getLastInsertId(txn);
+        return lastInsertedID;
+      });
+      return attributeID.parse(attributeId);
     } catch (error) {
       throw new RepositoryError("Failed to insert attribute.");
     }
   }
 
+  /**
+   * Inserts attribute multiselect options into the database.
+   *
+   * @param optios - An array of strings representing all options.
+   * @param attributeID - An `AttributeID` object representing the attribute ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the insertion fails.
+   */
   async insertMultiselectOptions(
     options: string[],
     attributeID: AttributeID,
@@ -60,6 +87,15 @@ export class AttributeRepositoryImpl
     }
   }
 
+  /**
+   * Inserts attribute rating symbol into the database.
+   *
+   * @param symbol - A string representing the rating symbol.
+   * @param attributeID - An `AttributeID` object representing the attribute ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the insertion fails.
+   */
   async insertRatingSymbol(
     symbol: string,
     attributeID: AttributeID,
@@ -77,4 +113,5 @@ export class AttributeRepositoryImpl
   }
 }
 
+// Singleton instance of the AttributeRepository implementation.
 export const attributeRepository = new AttributeRepositoryImpl();

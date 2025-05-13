@@ -1,5 +1,4 @@
 import {
-  itemTemplateID,
   ItemTemplate,
   createNewItemTemplateSchema,
   NewItemTemplate,
@@ -8,10 +7,26 @@ import {
 import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
 import { ItemTemplateModel } from "@/backend/repository/model/ItemTemplateModel";
 import { AttributeMapper } from "./AttributeMapper";
-import { AttributeDTORestructure } from "@/dto/AttributeDTO";
 import { Attribute } from "@/backend/domain/common/Attribute";
+import { itemTemplateID } from "@/backend/domain/common/IDs";
+
+/**
+ * Mapper class for converting between Template domain entities, DTOs, and database models:
+ * - Domain Entity → DTO
+ * - Domain Entity ↔ Database Model
+ * - DTO → NewTemplate (for creation)
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
 
 export class ItemTemplateMapper {
+  /**
+   * Maps a ItemTemplate domain entity to a ItemTemplateDTO.
+   *
+   * @param entity - The `ItemTemplate` domain entity.
+   * @returns A corresponding `ItemTemplateDTO` object.
+   */
   static toDTO(entity: ItemTemplate): ItemTemplateDTORestructure {
     return {
       item_templateID: entity.itemTemplateID,
@@ -20,29 +35,44 @@ export class ItemTemplateMapper {
     };
   }
 
+  /**
+   * Maps an ItemTemplate domain entity to an ItemTemplateModel for persistence.
+   *
+   * @param entity - The `ItemTemplate` domain entity.
+   * @returns A corresponding `ItemTemplateModel` object.
+   */
   static toModel(
     entity: ItemTemplate,
   ): Omit<ItemTemplateModel, "attributes"> & { attributes: string } {
     return {
       item_templateID: entity.itemTemplateID,
       title: entity.templateName,
-      attributes: JSON.stringify(
-        entity.attributes.map(AttributeMapper.toModel),
-      ),
+      attributes: "", // default since attributes here are not used for db persistency
     };
   }
 
+  /**
+   * Maps an ItemTemplate domain entity to an ItemTemplateModel for persistence.
+   *
+   * @param entity - The `ItemTemplate` domain entity.
+   * @returns A corresponding `ItemTemplateModel` (omits `item_templateID`) object.
+   */
   static toInsertModel(
     entity: NewItemTemplate,
   ): Omit<ItemTemplateModel, "item_templateID"> & { attributes: string } {
     return {
       title: entity.templateName,
-      attributes: JSON.stringify(
-        entity.attributes.map((attr) => AttributeMapper.toInsertModel(attr)),
-      ),
+      attributes: "", // default since attributes here are not used for db persistency
     };
   }
 
+  /**
+   * Maps an ItemTemplateDTO to a NewItemTemplate entity, used when creating a new template.
+   *
+   * @param dto - The DTO containing all template fields.
+   * @returns A validated `NewItemTemplate` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: ItemTemplateDTORestructure): NewItemTemplate {
     try {
       const parsedDTO = createNewItemTemplateSchema.parse({
@@ -56,6 +86,13 @@ export class ItemTemplateMapper {
     }
   }
 
+  /**
+   * Maps a ItemTemplateModel from the db to a ItemTemplat domain entity.
+   *
+   * @param model - The raw ItemTemplatetModel from the DB.
+   * @returns A validated `ItemTemplate` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: ItemTemplateModel): ItemTemplate {
     try {
       const rawAttributes: any[] = JSON.parse(model.attributes);

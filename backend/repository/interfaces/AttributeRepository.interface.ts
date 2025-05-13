@@ -1,8 +1,13 @@
-import { AttributeID, NewAttribute } from "@/backend/domain/common/Attribute";
+import { NewAttribute } from "@/backend/domain/common/Attribute";
 import { BaseRepository } from "./BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
-import { ItemTemplateID } from "@/backend/domain/entity/ItemTemplate";
+import { AttributeID, ItemTemplateID } from "@/backend/domain/common/IDs";
 
+/**
+ * AttributeRepository defines CRUD operations for `Attribute` entities.
+ *
+ * Extends the base repository interface for common infrastructure.
+ */
 export interface AttributeRepository extends BaseRepository {
   insertAttribute(
     newAttribute: NewAttribute,

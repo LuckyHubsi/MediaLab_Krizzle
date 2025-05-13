@@ -13,3 +13,9 @@ export type PageID = z.infer<typeof pageID>;
 
 export const noteID = common.positiveInt.brand<"NoteId">();
 export type NoteID = z.infer<typeof noteID>;
+
+export const itemTemplateID = common.positiveInt.brand<"ItemTemplateId">();
+export type ItemTemplateID = z.infer<typeof itemTemplateID>;
+
+export const attributeID = common.positiveInt.brand<"AttributeId">();
+export type AttributeID = z.infer<typeof attributeID>;

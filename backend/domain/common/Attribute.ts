@@ -1,10 +1,18 @@
 import { z } from "zod";
 import * as common from "@/backend/domain/common/types";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import { attributeID } from "./IDs";
 
-export const attributeID = common.positiveInt.brand<"AttributeId">();
-export type AttributeID = z.infer<typeof attributeID>;
+/**
+ * Attribute schemas and types.
+ *
+ * Provides validation and type definitions for attribute-related operations,
+ * including reading existing attributes and creating new ones.
+ */
 
+/**
+ * Schema for a complete Attribute object.
+ */
 export const attributeSchema = z
   .object({
     attributeID: attributeID,
@@ -32,8 +40,16 @@ export const attributeSchema = z
     },
   );
 
+/**
+ * TypeScript type inferred from `attributeSchema`.
+ * Represents a fully defined Attribute entity.
+ */
 export type Attribute = z.infer<typeof attributeSchema>;
 
+/**
+ * Schema for creating a new Attribute.
+ * `attributeID` is omitted, as they are assigned by the system.
+ */
 export const createNewAttributeSchema = z
   .object({
     attributeLabel: common.string30,
@@ -60,4 +76,8 @@ export const createNewAttributeSchema = z
     },
   );
 
+/**
+ * TypeScript type inferred from `createNewAttributeSchema`.
+ * Represents the shape of data required to create a new attribute.
+ */
 export type NewAttribute = z.infer<typeof createNewAttributeSchema>;

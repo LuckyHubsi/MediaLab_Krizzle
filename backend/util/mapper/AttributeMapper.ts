@@ -1,6 +1,5 @@
 import {
   Attribute,
-  attributeID,
   attributeSchema,
   createNewAttributeSchema,
   NewAttribute,
@@ -8,8 +7,25 @@ import {
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
 import { AttributeDTORestructure } from "@/dto/AttributeDTO";
 import { AttributeType } from "../../../shared/enum/AttributeType";
+import { attributeID } from "@/backend/domain/common/IDs";
+
+/**
+ * Mapper class for converting between Attribute domain entities, DTOs, and database models:
+ * - Domain Entity → DTO
+ * - Database Model → Domain Entity
+ * - DTO → NewAttribute (for creation)
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
 
 export class AttributeMapper {
+  /**
+   * Maps an Attribute domain entity to an AttributeDTO.
+   *
+   * @param entity - The `Attribute` domain entity.
+   * @returns A corresponding `AttributeDTO` object.
+   */
   static toDTO(entity: Attribute): AttributeDTORestructure {
     return {
       attributeID: entity.attributeID,
@@ -21,17 +37,12 @@ export class AttributeMapper {
     };
   }
 
-  static toModel(entity: Attribute): AttributeModel {
-    return {
-      attributeID: entity.attributeID,
-      attribute_label: entity.attributeLabel,
-      type: entity.type,
-      preview: entity.preview ? 1 : 0,
-      options: entity.options ? JSON.stringify(entity.options) : null,
-      symbol: entity.symbol ?? null,
-    };
-  }
-
+  /**
+   * Maps an Attribute domain entity to an AttributeModel for persistence.
+   *
+   * @param entity - The `Attribute` domain entity.
+   * @returns A corresponding `AttributeModel` (omits `attributeID`) object.
+   */
   static toInsertModel(
     entity: NewAttribute,
   ): Omit<AttributeModel, "attributeID"> {
@@ -44,6 +55,13 @@ export class AttributeMapper {
     };
   }
 
+  /**
+   * Maps a AttributeDTO to a NewAttribute entity, used when creating a new attribute.
+   *
+   * @param dto - The DTO containing all attribute fields.
+   * @returns A validated `NewAttribute` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: AttributeDTORestructure): NewAttribute {
     try {
       const parsedDTO = createNewAttributeSchema.parse({
@@ -60,6 +78,13 @@ export class AttributeMapper {
     }
   }
 
+  /**
+   * Maps a AttributeModel from the db to a Attribute domain entity.
+   *
+   * @param model - The raw AttributeModel from the DB.
+   * @returns A validated `Attribute` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: AttributeModel): Attribute {
     try {
       return attributeSchema.parse({

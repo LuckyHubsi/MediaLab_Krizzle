@@ -158,4 +158,5 @@ export class GeneralPageService {
   }
 }
 
+// Singleton instance of the GeneralPageService.
 export const generalPageService = new GeneralPageService();

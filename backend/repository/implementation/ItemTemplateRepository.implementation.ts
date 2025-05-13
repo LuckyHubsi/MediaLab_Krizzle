@@ -1,7 +1,5 @@
 import {
   ItemTemplate,
-  itemTemplateID,
-  ItemTemplateID,
   NewItemTemplate,
 } from "@/backend/domain/entity/ItemTemplate";
 import { ItemTemplateRepository } from "../interfaces/ItemTemplateRepository.interface";
@@ -14,11 +12,27 @@ import {
 } from "../query/ItemTemplateQuery";
 import { ItemTemplateMapper } from "@/backend/util/mapper/ItemTemplateMapper";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { itemTemplateID, ItemTemplateID } from "@/backend/domain/common/IDs";
 
+/**
+ * Implementation of the ItemTemplateRepository interface using SQL queries.
+ *
+ * Handles the following operations:
+ * - Fetching a single template.
+ * - Inserting a template.
+ */
 export class ItemTemplateRepositoryImpl
   extends BaseRepositoryImpl
   implements ItemTemplateRepository
 {
+  /**
+   * Fetches a template by its ID.
+   *
+   * @param itemTemplateID - An `ItemTemplateID` representing the template ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to an `ItemTemplate` if query succeeded.
+   * @throws RepositoryError if the fetch fails.
+   */
   async getItemTemplateById(
     itemTemplateID: ItemTemplateID,
     txn?: SQLite.SQLiteDatabase,
@@ -39,20 +53,28 @@ export class ItemTemplateRepositoryImpl
     }
   }
 
+  /**
+   * Inserts a new template into the database.
+   *
+   * @param itemTemplate - A `NewItemTemplate` object containing the template data.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to an `ItemTemplateID` if insertion succeeded.
+   * @throws RepositoryError if the insertion fails.
+   */
   async insertTemplateAndReturnID(
     itemTemplate: NewItemTemplate,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<ItemTemplateID> {
     try {
-      const templateID: number = await super.executeTransaction<number>(
-        async () => {
-          await super.executeQuery(
+      const templateID: number = await this.executeTransaction<number>(
+        async (transaction) => {
+          await this.executeQuery(
             insertItemTemplateQuery,
             [itemTemplate.templateName],
-            txn,
+            txn ?? transaction,
           );
 
-          const lastInsertedID = await super.getLastInsertId(txn);
+          const lastInsertedID = await this.getLastInsertId(txn ?? transaction);
           return lastInsertedID;
         },
       );
@@ -62,4 +84,6 @@ export class ItemTemplateRepositoryImpl
     }
   }
 }
+
+// Singleton instance of the ItemTemplateRepository implementation.
 export const templateRepository = new ItemTemplateRepositoryImpl();
