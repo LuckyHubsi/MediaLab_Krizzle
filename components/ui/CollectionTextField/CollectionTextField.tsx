@@ -5,9 +5,8 @@ import {
   TextfieldContainter,
 } from "./CollectionTextField.style";
 import { FC, SetStateAction, useState } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CollectionTextfieldProps {
   title?: string;
@@ -25,7 +24,7 @@ const CollectionTextfield: FC<CollectionTextfieldProps> = ({
   //  value
 }) => {
   const [value, onChangeText] = useState(placeholderText);
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
 
   return (
     <TextfieldContainter>

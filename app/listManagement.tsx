@@ -30,13 +30,14 @@ import {
 } from "@/services/CollectionCategoriesService";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function ListManagementScreen() {
   const { collectionId } = useLocalSearchParams<{
     collectionId: string;
   }>();
 
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newList, setNewList] = useState("");
