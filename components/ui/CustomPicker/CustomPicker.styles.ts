@@ -11,16 +11,15 @@ export const AndroidPickerTouchable = styled.TouchableOpacity<{
   border-radius: 16px;
 `;
 
-export const ModalOverlay = styled.TouchableOpacity`
+export const ModalOverlay = styled.View`
   flex: 1;
-  justify-content: flex-end;
   background-color: rgba(0, 0, 0, 0.4);
+  justify-content: flex-end;
 `;
 
 export const ModalContent = styled.View<{
   colorScheme: "light" | "dark";
 }>`
-  max-height: 50%;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 20px;

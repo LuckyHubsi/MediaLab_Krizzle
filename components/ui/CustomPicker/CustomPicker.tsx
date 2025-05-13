@@ -1,5 +1,13 @@
-import React, { useState } from "react";
-import { Platform, FlatList } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Platform,
+  FlatList,
+  Modal,
+  Animated,
+  Dimensions,
+  Easing,
+  TouchableOpacity,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getPickerStyles } from "../CollectionListDropdown/CollectionListDropdown.styles";
@@ -7,9 +15,9 @@ import {
   AndroidPickerTouchable,
   ModalContent,
   OptionButton,
+  ModalOverlay,
 } from "./CustomPicker.styles";
 import { ThemedText } from "@/components/ThemedText";
-import Modal from "react-native-modal";
 
 interface CustomPickerProps {
   value: string | number | null;
@@ -26,8 +34,44 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
   placeholder,
   colorScheme,
 }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [shouldRenderSheet, setShouldRenderSheet] = useState(false);
+  const slideAnim = useRef(
+    new Animated.Value(Dimensions.get("window").height),
+  ).current;
+
   const selectedLabel = items.find((i) => i.value === value)?.label;
+
+  useEffect(() => {
+    if (isModalVisible) {
+      setShouldRenderSheet(true);
+      slideAnim.setValue(Dimensions.get("window").height);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: Dimensions.get("window").height,
+        duration: 400,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        setShouldRenderSheet(false);
+      });
+    }
+  }, [isModalVisible]);
+
+  const closeModal = () => {
+    Animated.timing(slideAnim, {
+      toValue: Dimensions.get("window").height,
+      duration: 400,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => setIsModalVisible(false));
+  };
 
   if (Platform.OS === "ios") {
     return (
@@ -45,7 +89,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
   return (
     <>
       <AndroidPickerTouchable
-        onPress={() => setModalVisible(true)}
+        onPress={() => setIsModalVisible(true)}
         colorScheme={colorScheme}
       >
         <ThemedText fontSize="regular" fontWeight="regular">
@@ -54,35 +98,45 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
       </AndroidPickerTouchable>
 
-      <Modal
-        isVisible={modalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        onSwipeComplete={() => setModalVisible(false)}
-        swipeDirection="down"
-        backdropTransitionOutTiming={0}
-        useNativeDriver={true}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        style={{ justifyContent: "flex-end", margin: 0 }}
-      >
-        <ModalContent colorScheme={colorScheme}>
-          <FlatList
-            data={items}
-            keyExtractor={(item) => item.value.toString()}
-            renderItem={({ item }) => (
-              <OptionButton
-                onPress={() => {
-                  onValueChange(item.value);
-                  setModalVisible(false);
-                }}
-              >
-                <ThemedText fontSize="regular" fontWeight="regular">
-                  {item.label}
-                </ThemedText>
-              </OptionButton>
-            )}
+      <Modal transparent visible={isModalVisible} animationType="fade">
+        <ModalOverlay>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={closeModal}
           />
-        </ModalContent>
+
+          {shouldRenderSheet && (
+            <Animated.View
+              style={{
+                transform: [{ translateY: slideAnim }],
+                backgroundColor: colorScheme === "dark" ? "#1c1c1e" : "#fff",
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                overflow: "hidden",
+              }}
+            >
+              <ModalContent colorScheme={colorScheme}>
+                <FlatList
+                  data={items}
+                  keyExtractor={(item) => item.value.toString()}
+                  renderItem={({ item }) => (
+                    <OptionButton
+                      onPress={() => {
+                        onValueChange(item.value);
+                        closeModal();
+                      }}
+                    >
+                      <ThemedText fontSize="regular" fontWeight="regular">
+                        {item.label}
+                      </ThemedText>
+                    </OptionButton>
+                  )}
+                />
+              </ModalContent>
+            </Animated.View>
+          )}
+        </ModalOverlay>
       </Modal>
     </>
   );
