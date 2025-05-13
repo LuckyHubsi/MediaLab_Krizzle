@@ -17,11 +17,17 @@ import {
   insertRatingValueQuery,
   insertTextValueQuery,
   itemSelectByIdQuery,
+  updateDateValueQuery,
+  updateItemQuery,
+  updateMultiselectValueQuery,
+  updateRatingValueQuery,
+  updateTextValueQuery,
 } from "../query/ItemQuery";
 import { ItemMapper } from "@/backend/util/mapper/ItemMapper";
 import { pageID, PageID } from "@/backend/domain/entity/GeneralPage";
 import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
 import * as SQLite from "expo-sqlite";
+import { AttributeID } from "@/backend/domain/common/Attribute";
 
 export class ItemRepositoryImpl
   extends BaseRepositoryImpl
@@ -173,6 +179,86 @@ export class ItemRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryError("Failed to delete item value.");
+    }
+  }
+
+  async updateItem(
+    itemId: ItemID,
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(updateItemQuery, [categoryId, itemId], txn);
+    } catch (error) {
+      throw new RepositoryError("Failed to update collection item.");
+    }
+  }
+
+  async updateTextValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(
+        updateTextValueQuery,
+        [value, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update text value.");
+    }
+  }
+
+  async updateDateValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(
+        updateDateValueQuery,
+        [value, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update text value.");
+    }
+  }
+
+  async updateRatingValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: number,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(
+        updateRatingValueQuery,
+        [value, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update text value.");
+    }
+  }
+
+  async updateMultiselectValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await super.executeQuery(
+        updateMultiselectValueQuery,
+        [value, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update text value.");
     }
   }
 }

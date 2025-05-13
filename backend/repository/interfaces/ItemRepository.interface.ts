@@ -5,6 +5,7 @@ import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
 import * as common from "../../domain/common/types";
 import { z } from "zod";
 import * as SQLite from "expo-sqlite";
+import { AttributeID } from "@/backend/domain/common/Attribute";
 
 export interface ItemRepository extends BaseRepository {
   getItemByID(itemId: ItemID): Promise<Item>;
@@ -34,4 +35,33 @@ export interface ItemRepository extends BaseRepository {
   ): Promise<void>;
   deleteItem(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<PageID>;
   deleteItemValues(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<void>;
+  updateItem(
+    itemId: ItemID,
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateTextValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateDateValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateRatingValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: number,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateMultiselectValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: string,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
 }

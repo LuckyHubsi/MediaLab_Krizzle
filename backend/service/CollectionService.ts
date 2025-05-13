@@ -182,7 +182,7 @@ export class CollectionService {
   async insertItemAndReturnID(itemDTO: ItemDTO): Promise<number> {
     try {
       const item = ItemMapper.toNewEntity(itemDTO);
-      const categoryId = collectionCategoryID.parse(itemDTO.pageID);
+      const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
       const itemId = this.baseRepo.executeTransaction<number>(async (txn) => {
         const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
           item.pageID,
@@ -247,6 +247,78 @@ export class CollectionService {
       return true;
     } catch (error) {
       throw new ServiceError("Failed to delete collection item.");
+    }
+  }
+
+  async editItemByID(itemDTO: ItemDTO): Promise<boolean> {
+    try {
+      const newItem = ItemMapper.toNewEntity(itemDTO);
+      const itemId = itemID.parse(itemDTO.itemID);
+      const pageId = pageID.parse(itemDTO.pageID);
+      const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
+
+      const success = await this.baseRepo.executeTransaction<boolean>(
+        async (txn) => {
+          this.itemRepo.updateItem(itemId, categoryId, txn);
+
+          for (const value of newItem.attributeValues) {
+            switch (value.type) {
+              case AttributeType.Text:
+                if ("valueString" in value && value.valueString) {
+                  this.itemRepo.updateTextValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Date:
+                if ("valueString" in value && value.valueString) {
+                  this.itemRepo.updateDateValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Rating:
+                if ("valueNumber" in value && value.valueNumber) {
+                  this.itemRepo.updateRatingValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueNumber,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Multiselect:
+                if ("valueMultiselect" in value && value.valueMultiselect) {
+                  const stringifiedValues = JSON.stringify(
+                    value.valueMultiselect,
+                  );
+                  this.itemRepo.updateMultiselectValue(
+                    itemId,
+                    value.attributeID,
+                    stringifiedValues,
+                    txn,
+                  );
+                }
+                break;
+              default:
+                break;
+            }
+          }
+
+          await this.generalPageRepo.updateDateModified(pageId, txn);
+          return true;
+        },
+      );
+
+      return success;
+    } catch (error) {
+      throw new ServiceError("Failed to update collection item.");
     }
   }
 }
