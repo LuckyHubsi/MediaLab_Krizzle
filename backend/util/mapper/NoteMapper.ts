@@ -2,15 +2,29 @@ import {
   createNewNote,
   NewNote,
   Note,
-  noteID,
   noteSchema,
 } from "@/backend/domain/entity/Note";
 import { NoteDTO } from "@/dto/NoteDTO";
 import { TagMapper } from "./TagMapper";
 import { NoteModel } from "@/backend/repository/model/NoteModel";
-import { pageID } from "@/backend/domain/entity/GeneralPage";
+import { pageID } from "@/backend/domain/common/IDs";
+
+/**
+ * Mapper class for converting between Note domain entities, DTOs, and database models:
+ * - Domain Entity ↔ DTO
+ * - Domain Entity ↔ Database Model
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
 
 export class NoteMapper {
+  /**
+   * Maps a Note domain entity to a NoteDTO.
+   *
+   * @param entity - The `Note` domain entity.
+   * @returns A corresponding `NoteDTO` object.
+   */
   static toDTO(entity: Note): NoteDTO {
     return {
       pageID: entity.pageID,
@@ -27,6 +41,12 @@ export class NoteMapper {
     };
   }
 
+  /**
+   * Maps a Note domain entity to a NoteModel for persistence.
+   *
+   * @param entity - The `Note` domain entity.
+   * @returns A corresponding `NoteModel` object.
+   */
   static toModel(entity: Note): NoteModel {
     return {
       pageID: entity.pageID,
@@ -46,9 +66,16 @@ export class NoteMapper {
     };
   }
 
-  static toInsertModel(entity: NewNote): NoteModel {
+  /**
+   * Maps a NewNote domain entity to a NoteModel for persistence.
+   *
+   * @param entity - The `NewNote` domain entity.
+   * @returns A corresponding `NoteModel` (ommited IDs and pin count) object.
+   */
+  static toInsertModel(
+    entity: NewNote,
+  ): Omit<NoteModel, "pageID" | "noteID" | "pin_count"> {
     return {
-      pageID: 0,
       page_type: entity.pageType,
       page_title: entity.pageTitle,
       page_icon: entity.pageIcon,
@@ -59,12 +86,17 @@ export class NoteMapper {
       pinned: entity.pinned ? 1 : 0,
       tagID: entity.tag?.tagID ?? null,
       tag_label: entity.tag?.tagLabel,
-      noteID: 0,
       note_content: entity.noteContent,
-      pin_count: 0,
     };
   }
 
+  /**
+   * Maps a NoteDTO to a NewNote entity, used when creating a new note.
+   *
+   * @param dto - The DTO containing all note fields.
+   * @returns A validated `NewNote` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: NoteDTO): NewNote {
     try {
       const parsedDTO = createNewNote.parse({
@@ -74,7 +106,7 @@ export class NoteMapper {
         pageColor: dto.page_color,
         archived: dto.archived,
         pinned: dto.pinned,
-        tag: dto.tag ? TagMapper.toNewEntity(dto.tag) : null,
+        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
         noteContent: dto.note_content,
       });
       return parsedDTO;
@@ -84,6 +116,13 @@ export class NoteMapper {
     }
   }
 
+  /**
+   * Maps a NoteModel from the db to a Note domain entity.
+   *
+   * @param model - The raw NoteModel from the DB.
+   * @returns A validated `Note` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: NoteModel): Note {
     try {
       return noteSchema.parse({

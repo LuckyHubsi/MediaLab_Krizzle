@@ -10,3 +10,6 @@ export type CollectionID = z.infer<typeof collectionID>;
 
 export const pageID = common.positiveInt.brand<"PageId">();
 export type PageID = z.infer<typeof pageID>;
+
+export const noteID = common.positiveInt.brand<"NoteId">();
+export type NoteID = z.infer<typeof noteID>;

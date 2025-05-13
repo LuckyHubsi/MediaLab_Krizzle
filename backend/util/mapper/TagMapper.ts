@@ -76,7 +76,7 @@ export class TagMapper {
       return tagSchema.parse({
         tagID: dto.tagID,
         tagLabel: dto.tag_label,
-        usageCount: dto.usage_count,
+        usageCount: 0, // default value - not used for db persistence
       });
     } catch (error: any) {
       console.error("Error mapping TagDTO to Updatde Entity:", error.issues);

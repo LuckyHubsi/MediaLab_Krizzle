@@ -4,40 +4,59 @@ import { NoteRepository } from "../repository/interfaces/NoteRepository.interfac
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { NoteMapper } from "../util/mapper/NoteMapper";
-import { pageID } from "../domain/entity/GeneralPage";
 import { ServiceError } from "../util/error/ServiceError";
 import * as common from "../domain/common/types";
+import { pageID } from "../domain/common/IDs";
 
+/**
+ * NoteService encapsulates all note-related application logic.
+ *
+ * Responsibilities:
+ * - Validates and maps incoming NoteDTOs.
+ * - Delegates persistence operations to NoteRepository.
+ * - Handles and wraps errors in service-specific error types.
+ */
 export class NoteService {
   constructor(
     private noteRepo: NoteRepository = noteRepository,
     private generalPageRepo: GeneralPageRepository = generalPageRepository,
   ) {}
 
-  async getNoteByPageId(pageId: number): Promise<NoteDTO> {
+  /**
+   * Fetch a note by page ID.
+   *
+   * @param pageId - Number representing page ID.
+   * @returns A Promise resolving to a `NoteDTO` object.
+   * @throws ServiceError if retrieval fails.
+   */
+  async getNoteDataByPageID(pageId: number): Promise<NoteDTO> {
     try {
-      const note = await this.noteRepo.getByPageId(pageID.parse(pageId));
-      if (!note) {
-        throw new ServiceError("Note not found.");
-      }
+      const brandedPageID = pageID.parse(pageId);
+      const note = await this.noteRepo.getByPageId(brandedPageID);
       return NoteMapper.toDTO(note);
     } catch (error) {
       throw new ServiceError("Failed to retrieve note.");
     }
   }
 
-  async insertNoteData(noteDTO: NoteDTO): Promise<number> {
+  /**
+   * Insert a note.
+   *
+   * @param noteDTO - Note data to be inserted.
+   * @returns A Promise resolving to a number (new pageID).
+   * @throws ServiceError if insert fails.
+   */
+  async insertNote(noteDTO: NoteDTO): Promise<number> {
     try {
       const note = NoteMapper.toNewEntity(noteDTO);
       const pageId = await this.noteRepo.executeTransaction<number>(
         async (txn) => {
-          const retrivedPageID = await this.generalPageRepo.insertPage(
+          const retrievedPageID = await this.generalPageRepo.insertPage(
             note,
             txn,
           );
-          const brandedPageID = pageID.parse(retrivedPageID);
-          await this.noteRepo.insertNote(note, brandedPageID, txn);
-          return retrivedPageID;
+          await this.noteRepo.insertNote(note, retrievedPageID, txn);
+          return retrievedPageID;
         },
       );
       return pageId;
@@ -46,13 +65,22 @@ export class NoteService {
     }
   }
 
+  /**
+   * Insert a note.
+   *
+   * @param pageId - Number representing the pageID.
+   * @param newContent - Textual content to be saved.
+   * @returns A Promise resolving to void.
+   * @throws ServiceError if uopdate fails.
+   */
   async updateNoteContent(pageId: number, newContent: string): Promise<void> {
     try {
       if (newContent === null) {
         throw new ServiceError("Content cannot be null.");
       }
-      const parsedContent = common.string20000.parse(newContent);
-      await this.noteRepo.updateContent(pageID.parse(pageId), parsedContent);
+      const parsedContent = common.string50000.parse(newContent);
+      const brandedPageID = pageID.parse(pageId);
+      await this.noteRepo.updateContent(brandedPageID, parsedContent);
     } catch (error) {
       throw new ServiceError("Failed to update note content.");
     }

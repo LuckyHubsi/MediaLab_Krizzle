@@ -1,22 +1,38 @@
 import { z } from "zod";
-import { generalPageSchema } from "./GeneralPage";
+import { createNewGeneralPage, generalPageSchema } from "./GeneralPage";
 import * as common from "../common/types";
+import { noteID } from "../common/IDs";
 
-export const noteID = common.positiveInt.brand<"NoteId">();
-export type NoteID = z.infer<typeof noteID>;
+/**
+ * Note schemas and types.
+ *
+ * Provides validation and type definitions for note-related operations,
+ * including reading existing notes and creating new ones.
+ */
 
+/**
+ * Schema for a complete Note object.
+ */
 export const noteSchema = generalPageSchema.extend({
   noteID: noteID,
-  noteContent: common.string20000,
+  noteContent: common.string50000,
   pinCount: z.number().min(0).max(4),
 });
 
+/**
+ * TypeScript type inferred from `noteSchema`.
+ * Represents a fully defined Note entity.
+ */
 export type Note = z.infer<typeof noteSchema>;
 
-export const createNewNote = generalPageSchema
-  .omit({ pageID: true, createdAt: true, updatedAt: true })
+/**
+ * Schema for creating a new Note.
+ * `pageID`/`noteID`/`pinCount` are omitted, and defaults are set.
+ */
+export const createNewNote = createNewGeneralPage
+  .innerType()
   .extend({
-    noteContent: common.string20000,
+    noteContent: common.string50000,
   })
   .transform((data) => {
     const now = new Date();
@@ -27,4 +43,8 @@ export const createNewNote = generalPageSchema
     } satisfies Omit<Note, "pageID" | "noteID" | "pinCount">;
   });
 
+/**
+ * TypeScript type inferred from `createNewNote`.
+ * Represents the shape of data required to create a Note.
+ */
 export type NewNote = z.infer<typeof createNewNote>;

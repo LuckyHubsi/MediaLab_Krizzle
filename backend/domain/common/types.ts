@@ -14,8 +14,8 @@ export const string750 = z
   .max(750, { message: "A maximum of 750 characters is permitted." });
 export type String750 = z.infer<typeof string750>;
 
-export const string20000 = z.string().max(20000).nullable();
-export type String20000 = z.infer<typeof string20000>;
+export const string50000 = z.string().max(50000).nullable();
+export type String50000 = z.infer<typeof string50000>;
 
 // optional
 export const optionalString = z.string().optional();

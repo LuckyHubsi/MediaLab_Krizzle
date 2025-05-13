@@ -10,22 +10,39 @@ import {
   selectNoteByPageIDQuery,
   updateNoteContentQuery,
 } from "../query/NoteQuery";
-import { PageID, pageID } from "@/backend/domain/entity/GeneralPage";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import * as common from "../../domain/common/types";
+import { PageID } from "@/backend/domain/common/IDs";
+import * as SQLite from "expo-sqlite";
+import { GeneralPageRepositoryImpl } from "./GeneralPageRepository.implementation";
 
+/**
+ * Implementation of the NoteRepository interface using SQL queries.
+ *
+ * Handles the following operations:
+ * - Fetching a note.
+ * - Inserting a new note.
+ * - Updating note content.
+ */
 export class NoteRepositoryImpl
-  extends BaseRepositoryImpl
+  extends GeneralPageRepositoryImpl
   implements NoteRepository
 {
-  async getByPageId(pageId: PageID): Promise<Note | null> {
+  /**
+   * Retrieves a note from the database.
+   *
+   * @param pageId - The pageID of the note.
+   * @returns A Promise resolving to a `Note` domain entity.
+   * @throws RepositoryError if the query fails.
+   */
+  async getByPageId(pageId: PageID): Promise<Note> {
     try {
       const noteData = await this.fetchFirst<NoteModel>(
         selectNoteByPageIDQuery,
         [pageId],
       );
       if (!noteData || noteData.page_type !== PageType.Note) {
-        return null;
+        throw new RepositoryError("Failed to fetch page.");
       }
       return NoteMapper.toEntity(noteData);
     } catch (error) {
@@ -33,26 +50,48 @@ export class NoteRepositoryImpl
     }
   }
 
-  async insertNote(note: NewNote, pageId: PageID): Promise<number | null> {
+  /**
+   * Inserts a note into the database.
+   *
+   * @param note - The note data to be inserted.
+   * @param pageId - The pageID of the note.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async insertNote(
+    note: NewNote,
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
     try {
-      await this.executeQuery(insertNoteQuery, [note.noteContent, pageId]);
-      return pageId;
+      await this.executeQuery(insertNoteQuery, [note.noteContent, pageId], txn);
     } catch (error) {
       console.error("Error inserting note:", error);
       throw new RepositoryError("Failed to isnert note.");
     }
   }
 
+  /**
+   * Updates note content of a note.
+   *
+   * @param pageId - The pageID of the note.
+   * @param newContent - The textual note content to be updated.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
   async updateContent(
     pageId: PageID,
-    newContent: common.String20000,
+    newContent: common.String50000,
   ): Promise<boolean> {
     try {
-      await this.executeQuery(updateNoteContentQuery, [newContent, pageId]);
-      await this.executeQuery(updateDateModifiedByPageIDQuery, [
-        new Date().toISOString(),
-        pageId,
-      ]);
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updateNoteContentQuery,
+          [newContent, pageId],
+          txn,
+        );
+        await this.updateDateModified(pageId, txn);
+      });
       return true;
     } catch (error) {
       console.error("Error updating note content:", error);
@@ -61,4 +100,5 @@ export class NoteRepositoryImpl
   }
 }
 
+// Singleton instance of the NoteRepository implementation.
 export const noteRepository = new NoteRepositoryImpl();
