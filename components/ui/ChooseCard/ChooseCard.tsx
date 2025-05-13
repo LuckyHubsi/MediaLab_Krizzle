@@ -34,7 +34,10 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
         </EditButton>
 
         {/* Center Circle with Color & Icon */}
-        <Circle style={{ backgroundColor: selectedColor ?? "transparent" }}>
+        <Circle
+          style={{ backgroundColor: selectedColor ?? "transparent" }}
+          colorScheme={colorScheme}
+        >
           {selectedIcon && (
             <MaterialIcons
               name={selectedIcon}
