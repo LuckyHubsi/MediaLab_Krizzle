@@ -53,8 +53,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     });
   };
 
-  const handleSelectionChange = (value: string) => {
-    setSelectedList(value);
+  const handleSelectionChange = (value: string | number) => {
+    setSelectedList(String(value));
 
     if (value === "Select an option...") {
       onListChange(null);

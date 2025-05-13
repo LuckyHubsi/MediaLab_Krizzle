@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   AndroidPickerWrapper,
   CollectionListContainer,
@@ -9,12 +9,13 @@ import RNPickerSelect from "react-native-picker-select";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import CustomPicker from "../CustomPicker/CustomPicker";
 
 interface CollectionListDropdownProps {
   title: string;
   collectionList: string[];
   selectedList: string;
-  onSelectionChange: (value: string) => void;
+  onSelectionChange: (value: string | number) => void;
 }
 
 const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
@@ -34,19 +35,12 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
     <CollectionListContainer>
       <ThemedText>{title}</ThemedText>
       <AndroidPickerWrapper colorScheme={colorScheme}>
-        <RNPickerSelect
-          placeholder={{ label: "Select an option...", value: null }}
-          items={dropdownItems}
+        <CustomPicker
           value={selectedList}
           onValueChange={onSelectionChange}
-          style={pickerStyles}
-          Icon={() => (
-            <MaterialIcons
-              name="arrow-drop-down"
-              size={24}
-              color={colorScheme === "light" ? Colors.grey100 : Colors.white}
-            />
-          )}
+          items={dropdownItems}
+          placeholder={{ label: "Select an option...", value: "" }}
+          colorScheme={colorScheme}
         />
       </AndroidPickerWrapper>
     </CollectionListContainer>
