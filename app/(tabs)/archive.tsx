@@ -1,4 +1,4 @@
-import { FlatList, Image } from "react-native";
+import { FlatList, Image, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -144,10 +144,18 @@ export default function ArchiveScreen() {
       <SafeAreaView>
         <ThemedView>
           <IconTopRight>
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/faq",
+                });
+              }}
+            >
+              <Image
+                source={require("@/assets/images/kriz.png")}
+                style={{ width: 30, height: 32 }}
+              />
+            </TouchableOpacity>
           </IconTopRight>
 
           <ThemedText fontSize="xl" fontWeight="bold">
