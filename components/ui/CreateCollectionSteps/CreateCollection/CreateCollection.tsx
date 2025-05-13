@@ -209,7 +209,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                     prev.selectedTag?.tagID === tag.tagID ? null : tag,
                 }));
               }}
-              onViewAllPress={() => router.push("/tagManagement")}
+              onViewAllPress={() => router.navigate("/tagManagement")}
             />
           </Card>
 

@@ -230,7 +230,7 @@ export default function EditWidgetScreen() {
                 onSelectTag={(tag) => {
                   setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
                 }}
-                onViewAllPress={() => router.push("/tagManagement")}
+                onViewAllPress={() => router.navigate("/tagManagement")}
               />
             </Card>
 

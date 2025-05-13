@@ -206,7 +206,7 @@ export default function CreateNoteScreen() {
                 onSelectTag={(tag) => {
                   setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
                 }}
-                onViewAllPress={() => router.push("/tagManagement")}
+                onViewAllPress={() => router.navigate("/tagManagement")}
               />
             </Card>
 
