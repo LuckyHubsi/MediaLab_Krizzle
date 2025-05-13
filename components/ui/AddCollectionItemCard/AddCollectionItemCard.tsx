@@ -114,6 +114,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];
+    let firstTextfieldAdded = false;
+
     if (attributes) {
       attributes.forEach((attribute) => {
         const currentValue = attributeValues[Number(attribute.attributeID)];
@@ -129,7 +131,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 onChangeText={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
                 }
-                hasNoInputError={hasNoInputError}
+                {...(!firstTextfieldAdded && { hasNoInputError })}
                 maxLength={750}
               />,
             );

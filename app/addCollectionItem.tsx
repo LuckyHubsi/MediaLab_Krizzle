@@ -101,8 +101,8 @@ export default function AddCollectionItem() {
 
   const handleSaveItem = async () => {
     setHasClickedNext(true);
-    const allFieldsValid = validateFields();
-    if (!allFieldsValid) {
+    const titleIsValid = validateFields();
+    if (!titleIsValid) {
       alert("Please fill in all required fields.");
       return;
     }
