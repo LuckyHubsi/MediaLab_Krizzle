@@ -18,6 +18,8 @@ import Textfield from "../../Textfield/Textfield";
 import { Colors } from "@/constants/Colors";
 import {
   AddButtonWrapper,
+  ItemCount,
+  ItemCountContainer,
   ListContent,
   RemoveButton,
   RemoveButtonContent,
@@ -121,6 +123,19 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
             </ThemedText>
           </CardText>
         </Card>
+        <ItemCountContainer>
+          <ItemCount colorScheme={colorScheme}>
+            <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
+              {cards.length}
+            </ThemedText>
+
+            <ThemedText
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
+              /10 Lists
+            </ThemedText>
+          </ItemCount>
+        </ItemCountContainer>
         <ScrollView
           keyboardShouldPersistTaps="always"
           contentContainerStyle={ListContent}
