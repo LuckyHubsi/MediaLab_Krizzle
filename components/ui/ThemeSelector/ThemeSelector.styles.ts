@@ -20,7 +20,6 @@ interface CardProps {
 
 export const Card = styled.TouchableOpacity<CardProps>`
   width: 140px;
-  height: 240px;
   border-radius: 20px;
   border: 2px solid
     ${({ isSelected }: CardProps) => (isSelected ? "#007AFF" : "#ccc")};
