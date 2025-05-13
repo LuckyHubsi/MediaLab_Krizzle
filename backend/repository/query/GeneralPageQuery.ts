@@ -6,6 +6,14 @@ const selectAllPagesByLastModifiedQuery: string = `
     ORDER BY p.date_modified DESC;
 `;
 
+const selectAllPagesByCreatedQuery: string = `
+    SELECT p.*, t.tag_label
+    FROM general_page_data p
+    LEFT JOIN tag t ON p.tagID = t.tagID
+    WHERE p.archived = 0 AND p.pinned = 0
+    ORDER BY p.date_created DESC;
+`;
+
 const selectAllPagesByAlphabetQuery: string = `
     SELECT p.*, t.tag_label
     FROM general_page_data p
@@ -64,6 +72,7 @@ const updateArchivedByPageIDQuery: string = `
 
 export {
   selectAllPagesByLastModifiedQuery,
+  selectAllPagesByCreatedQuery,
   selectAllPagesByAlphabetQuery,
   selectAllPinnedPagesQuery,
   selectAllArchivedPagesQuery,

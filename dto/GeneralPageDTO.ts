@@ -14,5 +14,5 @@ export type GeneralPageDTO = {
   archived: boolean; // indicates whether the page is archived
   pinned: boolean; // indicates whether the page is pinned
   tag: TagDTO | null; // tag associated with the page, or null if none
-  pin_count?: number;
+  pin_count?: number; // number of pages that are pinned
 };

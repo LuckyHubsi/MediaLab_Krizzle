@@ -3,19 +3,30 @@ import { generalPageRepository } from "../repository/implementation/GeneralPageR
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { GeneralPageMapper } from "../util/mapper/GeneralPageMapper";
-import {
-  GeneralPage,
-  NewGeneralPage,
-  PageID,
-  pageID,
-} from "../domain/entity/GeneralPage";
+import { GeneralPage, NewGeneralPage } from "../domain/entity/GeneralPage";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { PageID, pageID } from "../domain/common/IDs";
 
+/**
+ * GeneralPageService encapsulates all general-page-related application logic.
+ *
+ * Responsibilities:
+ * - Validates and maps incoming GeneralPageDTOs.
+ * - Delegates persistence operations to GeneralPageRepository.
+ * - Handles and wraps errors in service-specific error types.
+ */
 export class GeneralPageService {
   constructor(
     private generalPageRepo: GeneralPageRepository = generalPageRepository,
   ) {}
 
+  /**
+   * Fetch pages by state (sorted, pinned, or archived).
+   *
+   * @param pageState - Enum - the state of the pages to be retrieved (sorted, pinned, archived)
+   * @returns A Promise resolving to an array of `GeneralPageDTO` objects.
+   * @throws ServiceError if retrieval fails.
+   */
   async getAllGeneralPageData(
     pageState: GeneralPageState,
   ): Promise<GeneralPageDTO[]> {
@@ -24,6 +35,9 @@ export class GeneralPageService {
       switch (pageState) {
         case GeneralPageState.GeneralModfied:
           pages = await generalPageRepository.getAllPagesSortedByModified();
+          break;
+        case GeneralPageState.GeneralCreated:
+          pages = await generalPageRepository.getAllPagesSortedByCreated();
           break;
         case GeneralPageState.GeneralAlphabet:
           pages = await generalPageRepository.getAllPagesSortedByAlphabet();
@@ -43,6 +57,13 @@ export class GeneralPageService {
     }
   }
 
+  /**
+   * Fetch a single page by its ID.
+   *
+   * @param pageId - Number representing the pageID.
+   * @returns A Promise resolving to a `GeneralPageDTO`.
+   * @throws ServiceError if retrieval fails.
+   */
   async getGeneralPageByID(pageId: number): Promise<GeneralPageDTO> {
     try {
       const brandedPageID: PageID = pageID.parse(pageId);
@@ -53,13 +74,19 @@ export class GeneralPageService {
     }
   }
 
+  /**
+   * Updates a single page.
+   *
+   * @param pageDTO - `GeneralPageDTO` representing the updated page data.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if udpate fails.
+   */
   async updateGeneralPageData(pageDTO: GeneralPageDTO): Promise<boolean> {
     try {
-      const updatedPage: NewGeneralPage =
-        GeneralPageMapper.toNewEntity(pageDTO);
-      const brandedPageID = pageID.parse(pageDTO.pageID);
+      const updatedPage: GeneralPage =
+        GeneralPageMapper.toUpdatedEntity(pageDTO);
       await this.generalPageRepo.updateGeneralPageData(
-        brandedPageID,
+        updatedPage.pageID,
         updatedPage,
       );
       return true;
@@ -68,6 +95,14 @@ export class GeneralPageService {
     }
   }
 
+  /**
+   * Updates the pin status of a general page.
+   *
+   * @param pageId - Number representing the pageID.
+   * @param currentPinStatus - Boolean representing the page's current pin status.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if udpate fails.
+   */
   async togglePagePin(
     pageId: number,
     currentPinStatus: boolean,
@@ -81,6 +116,14 @@ export class GeneralPageService {
     }
   }
 
+  /**
+   * Updates the archive status of a general page.
+   *
+   * @param pageId - Number representing the pageID.
+   * @param currentArchiveStatus - Boolean representing the page's current archive status.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if udpate fails.
+   */
   async togglePageArchive(
     pageId: number,
     currentArchiveStatus: boolean,
@@ -93,11 +136,18 @@ export class GeneralPageService {
       );
       return true;
     } catch (error) {
-      throw new ServiceError("Error updating pin status.");
+      throw new ServiceError("Error updating archive status.");
     }
   }
 
-  async deletePage(pageId: number): Promise<boolean> {
+  /**
+   * Deletes a general page.
+   *
+   * @param pageId - Number representing the pageID.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if delete fails.
+   */
+  async deleteGeneralPage(pageId: number): Promise<boolean> {
     try {
       const brandedPageID = pageID.parse(pageId);
       await this.generalPageRepo.deletePage(brandedPageID);
