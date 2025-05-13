@@ -20,6 +20,7 @@ interface TextfieldProps {
   hasNoInputError?: boolean;
   maxLength?: number;
   multiline?: boolean;
+  hasDuplicateTitle?: boolean;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -32,6 +33,7 @@ const Textfield: FC<TextfieldProps> = ({
   value,
   hasNoInputError,
   maxLength,
+  hasDuplicateTitle,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -57,8 +59,14 @@ const Textfield: FC<TextfieldProps> = ({
         />
       </InputWrapper>
       {hasNoInputError && (
-        <ThemedText fontSize="s" colorVariant={"red"}>
+        <ThemedText fontSize="s" colorVariant="red">
           This field is required, please enter a text.
+        </ThemedText>
+      )}
+
+      {hasDuplicateTitle && (
+        <ThemedText fontSize="s" colorVariant="red">
+          Each list must have a unique title.
         </ThemedText>
       )}
     </TextfieldContainer>

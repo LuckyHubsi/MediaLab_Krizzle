@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import {
+  Alert,
   Keyboard,
   Platform,
   ScrollView,
@@ -50,7 +51,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const colorScheme = useActiveColorScheme();
   const cards = data.lists;
-
+  const titleMap: Record<string, number[]> = {};
   useEffect(() => {
     if (data.lists.length === 0) {
       const initialCard = { id: Date.now().toString(), title: "" };
@@ -96,6 +97,23 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       ),
     }));
   };
+
+  cards.forEach((card, index) => {
+    const key = card.title.trim().toLowerCase();
+    if (!titleMap[key]) {
+      titleMap[key] = [];
+    }
+    titleMap[key].push(index);
+  });
+
+  const duplicateTitleIds = new Set<string>();
+  Object.values(titleMap).forEach((indexes) => {
+    if (indexes.length > 1) {
+      indexes.forEach((i) => {
+        duplicateTitleIds.add(cards[i].id);
+      });
+    }
+  });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -158,6 +176,9 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
                 value={item.title}
                 onChangeText={(text) => handleTitleChange(item.id, text)}
                 hasNoInputError={hasClickedNext && !item.title}
+                hasDuplicateTitle={
+                  hasClickedNext && duplicateTitleIds.has(item.id)
+                }
                 maxLength={30}
               />
               {index > 0 && (
@@ -201,12 +222,33 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               onDiscard={onBack!}
               onNext={() => {
                 setHasClickedNext(true);
+
                 const allTitlesFilled = cards.every(
                   (card) => card.title && card.title.trim() !== "",
                 );
-                if (allTitlesFilled) {
-                  onNext?.();
+
+                if (!allTitlesFilled) {
+                  Alert.alert(
+                    "Missing Title",
+                    "Please fill in all list titles.",
+                  );
+                  return;
                 }
+
+                const normalizedTitles = cards.map((card) =>
+                  card.title.trim().toLowerCase(),
+                );
+                const uniqueTitles = new Set(normalizedTitles);
+
+                if (uniqueTitles.size !== normalizedTitles.length) {
+                  Alert.alert(
+                    "Duplicate Title",
+                    "Each list must have a unique title.",
+                  );
+                  return;
+                }
+
+                onNext?.();
               }}
               variant="back"
               hasProgressIndicator={true}
