@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -31,9 +33,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         placeholderTextColor={themeColors.searchBarPlaceholder}
         value={query}
-        onChangeText={setQuery} // ✅ for React Native
+        onChangeText={setQuery}
         returnKeyType="search"
       />
+      {query.length > 0 && (
+        <TouchableOpacity onPress={() => setQuery("")}>
+          <MaterialIcons name="close" size={20} color={themeColors.text} />
+        </TouchableOpacity>
+      )}
     </SearchContainer>
   );
 };
