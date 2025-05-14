@@ -3,7 +3,6 @@ import { collectionRepository } from "../repository/implementation/CollectionRep
 import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { CollectionRepository } from "../repository/interfaces/CollectionRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
-import { pageID } from "../domain/entity/GeneralPage";
 import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
 import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
@@ -18,15 +17,23 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { CollectionCategoryRepository } from "../repository/interfaces/CollectionCategoryRepository.interface";
 import { categoryRepository } from "../repository/implementation/CollectionCategoryRepository.implementation";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { collectionID } from "../domain/common/IDs";
+import { collectionID, pageID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
-import { collectionCategoryID } from "../domain/entity/CollectionCategory";
 import { itemID } from "../domain/entity/Item";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
 import { ItemMapper } from "../util/mapper/ItemMapper";
 import { ItemDTO } from "@/dto/ItemDTO";
+import { collectionCategoryID } from "../domain/entity/CollectionCategory";
 
+/**
+ * CollectionService encapsulates all collection-related application logic.
+ *
+ * Responsibilities:
+ * - Validates and maps incoming DTOs.
+ * - Delegates persistence operations to repositories.
+ * - Handles and wraps errors in service-specific error types.
+ */
 export class CollectionService {
   constructor(
     private baseRepo: BaseRepository = baseRepository,
@@ -38,39 +45,67 @@ export class CollectionService {
     private itemRepo: ItemRepository = itemRepository,
   ) {}
 
+  /**
+   * Fetch collection by its pageID.
+   *
+   * @param pageId - A number representing the collection's pageID.
+   * @returns A Promise resolving to a `CollectionDTO` object.
+   * @throws ServiceError if retrieval fails.
+   */
   async getCollectionByPageId(pageId: number): Promise<CollectionDTO> {
     try {
-      const collection = await this.collectionRepo.getCollection(
-        pageID.parse(pageId),
-      );
+      const brandedPageID = pageID.parse(pageId);
+      const collection = await this.collectionRepo.getCollection(brandedPageID);
       if (!collection) {
-        throw new ServiceError("Note not found.");
+        throw new ServiceError("Collection not found.");
       }
       return CollectionMapper.toDTO(collection);
     } catch (error) {
-      throw new ServiceError("Failed to retrieve note.");
+      throw new ServiceError("Failed to retrieve collection.");
     }
   }
 
+  /**
+   * Saves a new collection to the database within a transaction.
+   *
+   * This function performs a multi-step process to persist a `CollectionDTO` object:
+   * 1. Inserts a general page and obtains its ID.
+   * 2. Inserts the associated template and gets its ID.
+   * 3. Inserts all attributes related to the template, including multiselect options and rating symbol.
+   * 4. Inserts the actual collection using the page and template IDs.
+   * 5. Inserts all related categories, linking them to the collection.
+   *
+   * If any step fails, the entire transaction is rolled back to maintain database integrity.
+   *
+   * @param collectionDTO - The collectionDTO containing all data needed to create the collection.
+   * @param templateDTO - The templateDTO containing all data needed to create the template.
+   * @returns A promise that resolves to a pageID if the collection is saved successfully, or rejects with an error.
+   *
+   * @throws ServiceError if insert fails.
+   */
   async saveCollection(
     collectionDTO: CollectionDTO,
     templateDTO: ItemTemplateDTORestructure,
   ): Promise<number> {
     try {
+      // validate the user input
       const collection = CollectionMapper.toNewEntity(collectionDTO);
       const template = ItemTemplateMapper.toNewEntity(templateDTO);
 
       const pageId = this.baseRepo.executeTransaction<number>(async (txn) => {
+        // 1. Insert general page, retrieve ID
         const retrievedPageId = await this.generalPageRepo.insertPage(
           collection,
           txn,
         );
 
+        // 2. Insert template, retrieve ID
         const templateId = await this.templateRepo.insertTemplateAndReturnID(
           template,
           txn,
         );
 
+        // 3. Insert all Attributes
         for (const attr of template.attributes) {
           const attributeID = await this.attributeRepo.insertAttribute(
             attr,
@@ -93,12 +128,14 @@ export class CollectionService {
           }
         }
 
+        // 4. Inserts Collection, retrieves ID
         const collectionId = await this.collectionRepo.insertCollection(
           retrievedPageId,
           templateId,
           txn,
         );
 
+        // 5. Insert Categories
         for (const category of collection.categories) {
           await this.categoryRepo.insertCategory(category, collectionId, txn);
         }
@@ -112,6 +149,13 @@ export class CollectionService {
     }
   }
 
+  /**
+   * Fetch categories by collectionID.
+   *
+   * @param collectionId - A number representing the collection the categories belong to.
+   * @returns A Promise resolving to an array of `CollectionCategoryDTO` objects.
+   * @throws ServiceError if retrieval fails.
+   */
   async getCollectionCategories(
     collectionId: number,
   ): Promise<CollectionCategoryDTO[]> {
@@ -127,20 +171,33 @@ export class CollectionService {
     }
   }
 
+  /**
+   * Insert new category.
+   *
+   * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if retrieval fails.
+   */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
   ): Promise<boolean> {
     try {
-      console.log("inserting new cat");
       const brandedCollectionID = collectionID.parse(categoryDTO.collectionID);
       const category = CollectionCategoryMapper.toNewEntity(categoryDTO);
       await this.categoryRepo.insertCategory(category, brandedCollectionID);
       return true;
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      throw new ServiceError("Failed to insert collection category.");
     }
   }
 
+  /**
+   * Update an existing category.
+   *
+   * @param categoryDTO - A `CollectionCategoryDTO` to be updated.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if update fails.
+   */
   async updateCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
   ): Promise<boolean> {
@@ -155,10 +212,17 @@ export class CollectionService {
       );
       return true;
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      throw new ServiceError("Failed to update collection category.");
     }
   }
 
+  /**
+   * Deleting a category.
+   *
+   * @param categoryId - A number representing the categoryID.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if update fails.
+   */
   async deleteCollectionCategoryByID(categoryId: number): Promise<boolean> {
     try {
       const brandedCategoryID = collectionCategoryID.parse(categoryId);

@@ -8,11 +8,29 @@ import { CollectionDTO } from "@/dto/CollectionDTO";
 import { TagMapper } from "./TagMapper";
 import { CollectionCategoryMapper } from "./CollectionCategoryMapper";
 import { CollectionModel } from "@/backend/repository/model/CollectionModel";
-import { pageID } from "@/backend/domain/entity/GeneralPage";
-import { itemTemplateID } from "@/backend/domain/entity/ItemTemplate";
-import { collectionID } from "@/backend/domain/common/IDs";
+import {
+  collectionID,
+  itemTemplateID,
+  pageID,
+} from "@/backend/domain/common/IDs";
+
+/**
+ * Mapper class for converting between Collection domain entities, DTOs, and database models:
+ * - Domain Entity → DTO
+ * - Database Model ↔ Domain Entity
+ * - DTO → NewCollection (for creation)
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
 
 export class CollectionMapper {
+  /**
+   * Maps a Collection domain entity to a CollectionDTO.
+   *
+   * @param entity - The `Collection` domain entity.
+   * @returns A corresponding `CollectionDTO` object.
+   */
   static toDTO(entity: Collection): CollectionDTO {
     return {
       pageID: entity.pageID,
@@ -28,9 +46,16 @@ export class CollectionMapper {
       categories: entity.categories
         ? entity.categories.map(CollectionCategoryMapper.toDTO)
         : [],
+      pin_count: entity.pinCount,
     };
   }
 
+  /**
+   * Maps a Collection domain entity to a CollectionModel for persistence.
+   *
+   * @param entity - The `Collection` domain entity.
+   * @returns A corresponding `CollectionModel` object.
+   */
   static toModel(entity: Collection): CollectionModel {
     return {
       pageID: entity.pageID,
@@ -46,13 +71,23 @@ export class CollectionMapper {
       tag_label: entity.tag?.tagLabel,
       collectionID: entity.collectionID,
       templateID: entity.templateID,
-      categories: "",
+      categories: "", // placeholder since these categories are not used for persistence
+      pin_count: entity.pinCount,
     };
   }
 
+  /**
+   * Maps a Collection domain entity to a CollectionModel for persistence.
+   *
+   * @param entity - The `Collection` domain entity.
+   * @returns A corresponding `CollectionModel` (omits "collectionID",  "pageID",  "categories" and "pin_count") object for creation.
+   */
   static toInsertModel(
     entity: NewCollection,
-  ): Omit<CollectionModel, "collectionID" | "pageID"> {
+  ): Omit<
+    CollectionModel,
+    "collectionID" | "pageID" | "categories" | "pin_count"
+  > {
     return {
       page_type: entity.pageType,
       page_title: entity.pageTitle,
@@ -65,10 +100,16 @@ export class CollectionMapper {
       tagID: entity.tag?.tagID ?? null,
       tag_label: entity.tag?.tagLabel,
       templateID: 0,
-      categories: "",
     };
   }
 
+  /**
+   * Maps a CollectionDTO to a NewCollection entity, used when creating a new Collection.
+   *
+   * @param dto - The DTO containing all Collection fields.
+   * @returns A validated `NewCollection` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: CollectionDTO): NewCollection {
     try {
       const parsedDTO = createNewCollectionSchema.parse({
@@ -90,8 +131,16 @@ export class CollectionMapper {
     }
   }
 
+  /**
+   * Maps a CollectionModel from the db to a Collection domain entity.
+   *
+   * @param model - The raw CollectionModel from the DB.
+   * @returns A validated `Collection` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: CollectionModel): Collection {
     try {
+      console.log("model", JSON.stringify(model, null, 2));
       return collectionSchema.parse({
         pageID: pageID.parse(model.pageID),
         pageType: model.page_type,
@@ -100,13 +149,14 @@ export class CollectionMapper {
         pageColor: model.page_color,
         archived: model.archived === 1,
         pinned: model.pinned === 1,
-        tag: model.tagID
-          ? TagMapper.toEntity({
-              tagID: model.tagID,
-              tag_label: model.tag_label!,
-              usage_count: 0,
-            })
-          : null,
+        tag:
+          model.tagID && model.tag_label
+            ? TagMapper.toEntity({
+                tagID: model.tagID,
+                tag_label: model.tag_label ?? "123",
+                usage_count: 0, // placeholder since this value is not used for persistence
+              })
+            : null,
         createdAt: new Date(model.date_created),
         updatedAt: new Date(model.date_modified),
         collectionID: collectionID.parse(model.collectionID),
@@ -114,6 +164,7 @@ export class CollectionMapper {
         categories: model.categories
           ? JSON.parse(model.categories).map(CollectionCategoryMapper.toEntity)
           : [],
+        pinCount: model.pin_count,
       });
     } catch (error) {
       console.error("Error mapping CollectionModel to Entity:", error);

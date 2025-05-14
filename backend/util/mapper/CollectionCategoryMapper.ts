@@ -9,7 +9,23 @@ import {
 import { CollectionCategoryModel } from "@/backend/repository/model/CollectionCategoryModel";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 
+/**
+ * Mapper class for converting between CollectionCategory domain entities, DTOs, and database models:
+ * - Domain Entity → DTO
+ * - Database Model ↔ Domain Entity
+ * - DTO → NewCollectionCategory (for creation)
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
+
 export class CollectionCategoryMapper {
+  /**
+   * Maps a CollectionCategory domain entity to a CollectionCategoryDTO.
+   *
+   * @param entity - The `CollectionCategory` domain entity.
+   * @returns A corresponding `CollectionCategoryDTO` object.
+   */
   static toDTO(entity: CollectionCategory): CollectionCategoryDTO {
     return {
       collectionCategoryID: entity.categoryID,
@@ -18,6 +34,12 @@ export class CollectionCategoryMapper {
     };
   }
 
+  /**
+   * Maps a CollectionCategory domain entity to a CollectionCategoryModel for persistence.
+   *
+   * @param entity - The `CollectionCategory` domain entity.
+   * @returns A corresponding `CollectionCategoryModel` object.
+   */
   static toModel(entity: CollectionCategory): CollectionCategoryModel {
     return {
       collection_categoryID: entity.categoryID,
@@ -26,6 +48,12 @@ export class CollectionCategoryMapper {
     };
   }
 
+  /**
+   * Maps a CollectionCategory domain entity to a CollectionCategoryModel for persistence.
+   *
+   * @param entity - The `CollectionCategory` domain entity.
+   * @returns A corresponding `CollectionCategoryModel` (omits `collectionCategoryID` and `collectionID`) object.
+   */
   static toInsertModel(
     entity: NewCollectionCategory,
   ): Omit<CollectionCategoryModel, "collection_categoryID" | "collectionID"> {
@@ -34,6 +62,13 @@ export class CollectionCategoryMapper {
     };
   }
 
+  /**
+   * Maps a CollectionCategoryDTO to a NewCollectionCategory entity, used when creating a new CollectionCategory.
+   *
+   * @param dto - The DTO containing all CollectionCategory fields.
+   * @returns A validated `NewCollectionCategory` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: CollectionCategoryDTO): NewCollectionCategory {
     try {
       const parsedDTO = createNewCategorySchema.parse({
@@ -46,6 +81,13 @@ export class CollectionCategoryMapper {
     }
   }
 
+  /**
+   * Maps a CollectionCategoryModel from the db to a CollectionCategory domain entity.
+   *
+   * @param model - The raw CollectionCategoryModel from the DB.
+   * @returns A validated `CollectionCategory` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: CollectionCategoryModel): CollectionCategory {
     try {
       return categorySchema.parse({

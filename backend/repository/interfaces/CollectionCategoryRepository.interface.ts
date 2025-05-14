@@ -7,6 +7,11 @@ import {
 } from "@/backend/domain/entity/CollectionCategory";
 import { CollectionID } from "@/backend/domain/common/IDs";
 
+/**
+ * CollectionCategoryRepository defines CRUD operations for `CollectionCategory` entities.
+ *
+ * Extends the base repository interface for common infrastructure.
+ */
 export interface CollectionCategoryRepository extends BaseRepository {
   insertCategory(
     category: NewCollectionCategory,
@@ -15,7 +20,6 @@ export interface CollectionCategoryRepository extends BaseRepository {
   ): Promise<void>;
   getCategoriesByCollectionID(
     collectionId: CollectionID,
-    txn?: SQLite.SQLiteDatabase,
   ): Promise<CollectionCategory[]>;
   updateCategory(
     category: NewCollectionCategory,

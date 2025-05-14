@@ -17,17 +17,35 @@ import { CollectionID } from "@/backend/domain/common/IDs";
 import { CollectionCategoryMapper } from "@/backend/util/mapper/CollectionCategoryMapper";
 import { CollectionCategoryModel } from "../model/CollectionCategoryModel";
 
+/**
+ * Implementation of the CollectionCategoryRepository interface using SQL queries.
+ *
+ * Handles the following operations:
+ * - Inserting a new category.
+ * - Fetching all categories.
+ * - Updating an existing category.
+ * - Deleting a category by ID.
+ */
 export class CollectionCategoryRepositoryImpl
   extends BaseRepositoryImpl
   implements CollectionCategoryRepository
 {
+  /**
+   * Insert a collection category.
+   *
+   * @param category - A `NewCollectionCategory` with a label to save.
+   * @param collectionId - A `CollectionID` representing the collection it belongs to.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
   async insertCategory(
     category: NewCollectionCategory,
     collectionId: CollectionID,
     txn?: SQLiteDatabase,
   ): Promise<void> {
     try {
-      await super.executeQuery(
+      await this.executeQuery(
         insertCollectionCategoryQuery,
         [category.categoryName, collectionId],
         txn,
@@ -37,28 +55,42 @@ export class CollectionCategoryRepositoryImpl
     }
   }
 
+  /**
+   * Retrieves all categories of a collection from the database.
+   *
+   * @param collectionId - A `CollectionID` representing the collection it belongs to.
+   * @returns A Promise resolving to an array of `CollectionCategory`.
+   * @throws RepositoryError if the query fails.
+   */
   async getCategoriesByCollectionID(
     collectionId: CollectionID,
-    txn?: SQLiteDatabase,
   ): Promise<CollectionCategory[]> {
     try {
-      const categories = await super.fetchAll<CollectionCategoryModel>(
+      const categories = await this.fetchAll<CollectionCategoryModel>(
         selectCategoriesByCollectionIdQuery,
         [collectionId],
-        txn,
       );
+      console.log("INSIDE GET", JSON.stringify(categories, null, 2));
       return categories.map(CollectionCategoryMapper.toEntity);
     } catch (error) {
       throw new RepositoryError("Failed to retrieve categories.");
     }
   }
 
+  /**
+   * Update a collection category.
+   *
+   * @param category - A `NewCollectionCategory` with a label to save.
+   * @param categoryId - A `CollectionCategoryID` representing the category ID.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
   async updateCategory(
     category: NewCollectionCategory,
     categoryId: CategoryID,
   ): Promise<boolean> {
     try {
-      await super.executeQuery(updateCategoryQuery, [
+      await this.executeQuery(updateCategoryQuery, [
         category.categoryName,
         categoryId,
       ]);
@@ -68,9 +100,16 @@ export class CollectionCategoryRepositoryImpl
     }
   }
 
+  /**
+   * Delete a collection category.
+   *
+   * @param categoryId - A `CollectionCategoryID` representing the category ID.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
   async deleteCategory(categoryId: CategoryID): Promise<boolean> {
     try {
-      await super.executeQuery(deleteCategoryQuery, [categoryId]);
+      await this.executeQuery(deleteCategoryQuery, [categoryId]);
       return true;
     } catch (error) {
       throw new RepositoryError("Failed to delete category.");
@@ -78,4 +117,5 @@ export class CollectionCategoryRepositoryImpl
   }
 }
 
+// Singleton instance of the CollectionCategoryRepository implementation.
 export const categoryRepository = new CollectionCategoryRepositoryImpl();

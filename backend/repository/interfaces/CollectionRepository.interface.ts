@@ -1,14 +1,21 @@
 import { Collection, NewCollection } from "@/backend/domain/entity/Collection";
 import { BaseRepository } from "./BaseRepository.interface";
-import { PageID } from "@/backend/domain/entity/GeneralPage";
-import { ItemTemplateID } from "@/backend/domain/entity/ItemTemplate";
 import * as SQLite from "expo-sqlite";
-import { CollectionID } from "@/backend/domain/common/IDs";
+import {
+  CollectionID,
+  ItemTemplateID,
+  PageID,
+} from "@/backend/domain/common/IDs";
 
+/**
+ * CollectionRepository defines CRUD operations for `Collection` entities.
+ *
+ * Extends the base repository interface for common infrastructure.
+ */
 export interface CollectionRepository extends BaseRepository {
-  getCollection(pageID: PageID): Promise<Collection | null>;
+  getCollection(pageId: PageID): Promise<Collection>;
   insertCollection(
-    pageID: PageID,
+    pageId: PageID,
     templateID: ItemTemplateID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<CollectionID>;
