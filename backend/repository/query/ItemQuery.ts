@@ -43,7 +43,7 @@ const itemSelectByIdQuery: string = `
                     END
                 )
             )
-            FROM attribute a
+            FROM attribute_values a
             LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
             LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
             LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID

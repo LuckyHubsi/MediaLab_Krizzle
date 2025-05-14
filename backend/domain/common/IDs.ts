@@ -21,3 +21,6 @@ export const collectionID = common.positiveInt.brand<"CollectionID">();
 export type CollectionID = z.infer<typeof collectionID>;
 
 // collectionCategoryID is inside '@/backend/domain/entity/CollectionCategory.ts to avoid a circular dependency
+
+export const itemID = common.positiveInt.brand<"ItemID">();
+export type ItemID = z.infer<typeof itemID>;

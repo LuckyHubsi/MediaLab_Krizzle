@@ -2,22 +2,35 @@ import { z } from "zod";
 import * as common from "@/backend/domain/common/types";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { attributeSchema } from "../common/Attribute";
-import { pageID } from "./GeneralPage";
 import { collectionCategoryID } from "./CollectionCategory";
+import { itemID, pageID } from "../common/IDs";
 
-export const itemID = common.positiveInt.brand<"ItemID">();
-export type ItemID = z.infer<typeof itemID>;
+/**
+ * Item schemas and types.
+ *
+ * Provides validation and type definitions for item-related operations,
+ * including reading existing items and creating new ones.
+ */
 
+/**
+ * Schema for base attribute values. Each value has these props.
+ */
 const itemAttributeBase = attributeSchema.innerType().extend({
   itemID: itemID.optional(),
   valueID: common.positiveInt.optional(),
 });
 
+/**
+ * Schema for text attribute values.
+ */
 const stringValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Text),
   valueString: common.string750.optional().nullable(),
 });
 
+/**
+ * Schema for date attribute values.
+ */
 const dateValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Date),
   valueString: z
@@ -29,11 +42,17 @@ const dateValue = itemAttributeBase.extend({
     .nullable(),
 });
 
+/**
+ * Schema for rating attribute values.
+ */
 const ratingValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Rating),
-  valueNumber: z.number().int().min(1).max(5).optional().nullable(),
+  valueNumber: z.number().int().min(0).max(5).optional().nullable(),
 });
 
+/**
+ * Schema for multiselect attribute values.
+ */
 const multiselectValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Multiselect),
   valueMultiselect: z
@@ -44,6 +63,9 @@ const multiselectValue = itemAttributeBase.extend({
     .nullable(),
 });
 
+/**
+ * Schema for attribute values - can be of either type.
+ */
 export const itemAttributeValueSchema = z.discriminatedUnion("type", [
   stringValue,
   dateValue,
@@ -51,23 +73,42 @@ export const itemAttributeValueSchema = z.discriminatedUnion("type", [
   multiselectValue,
 ]);
 
+/**
+ * TypeScript type inferred from `itemAttributeValueSchema`.
+ * Represents a fully defined ItemAttributeValue entity.
+ */
 export type ItemAttributeValue = z.infer<typeof itemAttributeValueSchema>;
 
+/**
+ * Schema for a complete Item object.
+ */
 export const itemSchema = z.object({
   itemID: itemID,
   pageID: pageID,
   pageTitle: common.string30,
   categoryID: collectionCategoryID.optional().nullable(),
   categoryName: common.optionalNullableString,
-  attributeValues: z.array(itemAttributeValueSchema).min(1).max(11),
+  attributeValues: z.array(itemAttributeValueSchema).min(1).max(10),
 });
 
+/**
+ * TypeScript type inferred from `itemSchema`.
+ * Represents a fully defined Item entity.
+ */
 export type Item = z.infer<typeof itemSchema>;
 
+/**
+ * Schema for creating a new Item.
+ * `itemID`/`pageTitle`/`categoryName` are omitted, as they are assigned by the system.
+ */
 export const createNewItemSchema = z.object({
   pageID: pageID,
   categoryID: collectionCategoryID.optional().nullable(),
-  attributeValues: z.array(itemAttributeValueSchema),
+  attributeValues: z.array(itemAttributeValueSchema).min(1).max(10),
 });
 
+/**
+ * TypeScript type inferred from `createNewItemSchema`.
+ * Represents the shape of data required to create a new item.
+ */
 export type NewItem = z.infer<typeof createNewItemSchema>;

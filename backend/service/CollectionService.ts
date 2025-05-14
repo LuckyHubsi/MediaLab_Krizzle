@@ -17,9 +17,8 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { CollectionCategoryRepository } from "../repository/interfaces/CollectionCategoryRepository.interface";
 import { categoryRepository } from "../repository/implementation/CollectionCategoryRepository.implementation";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { collectionID, pageID } from "../domain/common/IDs";
+import { collectionID, itemID, pageID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
-import { itemID } from "../domain/entity/Item";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
 import { ItemMapper } from "../util/mapper/ItemMapper";
@@ -233,6 +232,13 @@ export class CollectionService {
     }
   }
 
+  /**
+   * Fetches an item and its values.
+   *
+   * @param itemId - A number representing the itemID.
+   * @returns A Promise resolving to `ItemDTO` on succes.
+   * @throws ServiceError if fetch fails.
+   */
   async getItemByID(itemId: number): Promise<ItemDTO> {
     try {
       const brandedItemID = itemID.parse(itemId);
@@ -243,6 +249,13 @@ export class CollectionService {
     }
   }
 
+  /**
+   * Inserts an item and its values.
+   *
+   * @param itemDTO - An `ItemDTO` representing the item and values to be inserted.
+   * @returns A Promise resolving to a number reresenting the itemID on success.
+   * @throws ServiceError if insert fails.
+   */
   async insertItemAndReturnID(itemDTO: ItemDTO): Promise<number> {
     try {
       const item = ItemMapper.toNewEntity(itemDTO);
@@ -253,6 +266,7 @@ export class CollectionService {
           categoryId,
         );
 
+        // dependent on the attribute type it calls the appropriate repo method
         item.attributeValues.forEach((attributeValue) => {
           switch (attributeValue.type) {
             case AttributeType.Text:
@@ -287,16 +301,25 @@ export class CollectionService {
               break;
           }
         });
+
+        // update the last modified date of the collection
         await this.generalPageRepo.updateDateModified(item.pageID, txn);
 
         return retrievedItemID;
       });
       return itemId;
     } catch (error) {
-      throw new ServiceError("Failed to isnert collection item.");
+      throw new ServiceError("Failed to insert collection item.");
     }
   }
 
+  /**
+   * Deletes an item and its values.
+   *
+   * @param itemId - An number representing the item id.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if insert fails.
+   */
   async deleteItemById(itemId: number): Promise<boolean> {
     try {
       const brandedItemID = itemID.parse(itemId);
@@ -314,6 +337,13 @@ export class CollectionService {
     }
   }
 
+  /**
+   * Updates an item and its values.
+   *
+   * @param itemDTO - An `ItemDTO` representing the item and values to be updated.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if insert fails.
+   */
   async editItemByID(itemDTO: ItemDTO): Promise<boolean> {
     try {
       const newItem = ItemMapper.toNewEntity(itemDTO);
@@ -325,6 +355,7 @@ export class CollectionService {
         async (txn) => {
           this.itemRepo.updateItem(itemId, categoryId, txn);
 
+          // dependent on the attribute type it calls the appropriate repo method for all attribute values
           for (const value of newItem.attributeValues) {
             switch (value.type) {
               case AttributeType.Text:
@@ -374,7 +405,7 @@ export class CollectionService {
                 break;
             }
           }
-
+          // update the last modified date of the collection
           await this.generalPageRepo.updateDateModified(pageId, txn);
           return true;
         },

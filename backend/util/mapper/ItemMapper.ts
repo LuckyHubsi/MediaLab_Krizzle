@@ -10,8 +10,24 @@ import {
 } from "@/backend/domain/entity/Item";
 import { z } from "zod";
 
+/**
+ * Mapper class for converting between Item domain entities, DTOs, and database models:
+ * - Domain Entity → DTO
+ * - Database Model → Domain Entity
+ * - DTO → NewItem (for creation)
+ *
+ * This utility handles transformations and validation using Zod schemas,
+ * ensuring consistent data structures across layers.
+ */
+
 export class ItemMapper {
   static toDTO(entity: Item): ItemDTO {
+    /**
+     * Maps an Item domain entity to an ItemDTO.
+     *
+     * @param entity - The `Item` domain entity.
+     * @returns A corresponding `ItemDTO` object.
+     */
     return {
       itemID: entity.itemID,
       pageID: entity.pageID,
@@ -22,27 +38,46 @@ export class ItemMapper {
     };
   }
 
+  /**
+   * Maps an Item domain entity to an ItemModel for persistence.
+   *
+   * @param entity - The `Item` domain entity.
+   * @returns A corresponding `ItemModel` object.
+   */
   static toModel(entity: Item): ItemModel {
     return {
       itemID: entity.itemID,
       pageID: entity.pageID,
-      page_title: entity.pageTitle,
+      page_title: entity.pageTitle ?? "",
       categoryID: entity.categoryID ?? null,
       category_name: entity.categoryName ?? null,
-      attributes: JSON.stringify(entity.attributeValues),
+      attribute_values: "", // placeholder as this is not used for persistence
     };
   }
 
+  /**
+   * Maps an Item domain entity to an ItemModel for persistence.
+   *
+   * @param entity - The `Item` domain entity.
+   * @returns A corresponding `ItemModel` (omits `itemID`) object.
+   */
   static toInsertModel(entity: NewItem): Omit<ItemModel, "itemID"> {
     return {
       pageID: entity.pageID,
-      page_title: "",
+      page_title: "", // placeholder as this is not used for persistence
       categoryID: entity.categoryID ?? null,
       category_name: null,
-      attributes: JSON.stringify(entity.attributeValues),
+      attribute_values: "", // placeholder as this is not used for persistence
     };
   }
 
+  /**
+   * Maps an ItemDTO to a NewItem entity, used when creating a new Item.
+   *
+   * @param dto - The DTO containing all Item fields.
+   * @returns A validated `NewItem` domain entity.
+   * @throws Error if validation fails.
+   */
   static toNewEntity(dto: ItemDTO): NewItem {
     try {
       return createNewItemSchema.parse({
@@ -56,9 +91,16 @@ export class ItemMapper {
     }
   }
 
+  /**
+   * Maps an ItemModel from the db to an Item domain entity.
+   *
+   * @param model - The raw ItemModel from the DB.
+   * @returns A validated `Item` domain entity.
+   * @throws Error if validation fails.
+   */
   static toEntity(model: ItemModel): Item {
     try {
-      const rawAttributes = JSON.parse(model.attributes);
+      const rawAttributes = JSON.parse(model.attribute_values);
       const normalizedAttributes = rawAttributes.map((attr: any) => {
         const base = {
           ...attr,

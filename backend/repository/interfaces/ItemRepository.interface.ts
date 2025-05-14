@@ -1,12 +1,14 @@
-import { Item, ItemAttributeValue, ItemID } from "@/backend/domain/entity/Item";
+import { Item, ItemAttributeValue } from "@/backend/domain/entity/Item";
 import { BaseRepository } from "./BaseRepository.interface";
-import { PageID } from "@/backend/domain/entity/GeneralPage";
 import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
-import * as common from "../../domain/common/types";
-import { z } from "zod";
 import * as SQLite from "expo-sqlite";
-import { AttributeID } from "@/backend/domain/common/Attribute";
+import { AttributeID, ItemID, PageID } from "@/backend/domain/common/IDs";
 
+/**
+ * ItemRepository defines CRUD operations for `Item` and `ItemAttributeValue` entities.
+ *
+ * Extends the base repository interface for common infrastructure.
+ */
 export interface ItemRepository extends BaseRepository {
   getItemByID(itemId: ItemID): Promise<Item>;
   insertItemAndReturnID(
