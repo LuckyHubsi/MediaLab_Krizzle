@@ -125,6 +125,7 @@ export class NoteMapper {
    */
   static toEntity(model: NoteModel): Note {
     try {
+      console.log("NOTE MODEL", JSON.stringify(model, null, 2));
       return noteSchema.parse({
         pageID: pageID.parse(model.pageID),
         pageType: model.page_type,
@@ -133,13 +134,14 @@ export class NoteMapper {
         pageColor: model.page_color,
         archived: model.archived === 1,
         pinned: model.pinned === 1,
-        tag: model.tagID
-          ? TagMapper.toEntity({
-              tagID: model.tagID,
-              tag_label: model.tag_label!,
-              usage_count: 0,
-            })
-          : null,
+        tag:
+          model.tagID && model.tag_label
+            ? TagMapper.toEntity({
+                tagID: model.tagID,
+                tag_label: model.tag_label,
+                usage_count: 0,
+              })
+            : null,
         createdAt: new Date(model.date_created),
         updatedAt: new Date(model.date_modified),
         noteID: model.noteID,
