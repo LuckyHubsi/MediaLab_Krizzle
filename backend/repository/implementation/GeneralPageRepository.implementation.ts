@@ -203,6 +203,7 @@ export class GeneralPageRepositoryImpl
             model.date_modified,
             model.archived ? 1 : 0,
             model.pinned ? 1 : 0,
+            model.tagID,
           ],
           txn ?? transaction,
         );

@@ -119,7 +119,10 @@ export class CollectionMapper {
         pageColor: dto.page_color,
         archived: dto.archived,
         pinned: dto.pinned,
-        tag: dto.tag ? TagMapper.toNewEntity(dto.tag) : null,
+        tag:
+          dto.tag && dto.tag.tagID && dto.tag.tag_label
+            ? TagMapper.toUpdatedEntity(dto.tag)
+            : null,
         categories: dto.categories
           ? dto.categories.map(CollectionCategoryMapper.toNewEntity)
           : [],
