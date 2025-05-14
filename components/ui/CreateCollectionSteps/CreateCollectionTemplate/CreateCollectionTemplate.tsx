@@ -206,6 +206,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
       >
         <View style={{ gap: 10, paddingBottom: 10 }}>
           <Card>
