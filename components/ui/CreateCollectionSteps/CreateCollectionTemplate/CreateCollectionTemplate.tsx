@@ -24,6 +24,7 @@ import { Card } from "../../Card/Card";
 import { Colors } from "@/constants/Colors";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -164,6 +165,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  const { showSnackbar } = useSnackbar();
+
   const handlePreviewToggle = (id: number) => {
     const currentCard = otherCards.find((c) => c.id === id);
     if (!currentCard) return;
@@ -180,12 +183,12 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         currentlyActivePreviews.length < maxPreviewCount;
 
       if (!underMaxPreviewCount) {
-        Alert.alert("Only 3 Item Previews are allowed");
+        showSnackbar("You can only select up to 3 preview items.", "error");
         return;
       }
 
       if (typeAlreadyUsed) {
-        Alert.alert("One Type can only be set as preview once");
+        showSnackbar("Only one preview is allowed per item type.", "error");
         return;
       }
     }
@@ -346,8 +349,9 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               });
 
               if (!isMainTitleFilled || !allOtherTitlesFilled) {
-                Alert.alert(
-                  "Please fill in all titles and select at least one option before continuing.",
+                showSnackbar(
+                  "Almost there! Just add all the titles and pick at least one option.",
+                  "error",
                 );
                 return;
               }
