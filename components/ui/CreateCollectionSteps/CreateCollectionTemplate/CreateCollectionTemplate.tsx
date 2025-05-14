@@ -357,7 +357,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
               onNext?.();
             }}
-            hasProgressIndicator
+            hasProgressIndicator={false}
             progressStep={3}
           />
         </View>

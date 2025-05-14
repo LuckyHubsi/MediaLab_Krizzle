@@ -252,7 +252,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               onNext?.();
             }}
             variant="back"
-            hasProgressIndicator={true}
+            hasProgressIndicator={false}
             progressStep={2}
           />
         </View>

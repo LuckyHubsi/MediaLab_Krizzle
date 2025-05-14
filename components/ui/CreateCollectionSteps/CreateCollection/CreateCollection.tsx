@@ -253,7 +253,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               }
               onNext?.();
             }}
-            hasProgressIndicator={true}
+            hasProgressIndicator={false}
             progressStep={1}
           />
         </ButtonContainer>
