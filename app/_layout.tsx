@@ -45,17 +45,17 @@ export default function RootLayout() {
   }
 
   return (
-    <SnackbarProvider>
-      <UserThemeProvider>
-        <SQLiteProvider
-          databaseName="krizzle_local.db"
-          assetSource={{
-            assetId: require("../assets/database/krizzle_local.db"),
-          }}
+    <UserThemeProvider>
+      <SQLiteProvider
+        databaseName="krizzle_local.db"
+        assetSource={{
+          assetId: require("../assets/database/krizzle_local.db"),
+        }}
+      >
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
+          <SnackbarProvider>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
@@ -111,9 +111,9 @@ export default function RootLayout() {
               />
             </Stack>
             <StatusBar style="auto" />
-          </ThemeProvider>
-        </SQLiteProvider>
-      </UserThemeProvider>
-    </SnackbarProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </SQLiteProvider>
+    </UserThemeProvider>
   );
 }
