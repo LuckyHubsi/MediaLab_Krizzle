@@ -30,11 +30,14 @@ import {
 } from "@/services/CollectionCategoriesService";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function ListManagementScreen() {
   const { collectionId } = useLocalSearchParams<{
     collectionId: string;
   }>();
+
+  const { showSnackbar } = useSnackbar();
 
   const colorScheme = useColorScheme() ?? "light";
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
@@ -55,12 +58,16 @@ export default function ListManagementScreen() {
     if (!trimmedList) return;
 
     if (!editMode && lists.length >= 10) {
-      alert("You can only have up to 10 lists.");
+      showSnackbar("You can only have up to 10 lists.", "top", "info");
       return;
     }
 
     if (trimmedList.length > 30) {
-      alert("List name must be 30 characters or less.");
+      showSnackbar(
+        "List name must be less than 30 characters.",
+        "top",
+        "error",
+      );
       return;
     }
 
@@ -173,7 +180,11 @@ export default function ListManagementScreen() {
                     setListToDelete(item);
                     setShowDeleteModal(true);
                   } else {
-                    alert("You must have at least one list.");
+                    showSnackbar(
+                      "You must have at least one list",
+                      "top",
+                      "error",
+                    );
                   }
                 }}
                 onEdit={() => editList(item)}

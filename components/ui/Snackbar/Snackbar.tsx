@@ -7,9 +7,14 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type SnackbarType = "success" | "error" | "info";
+type SnackbarPosition = "top" | "bottom";
 
 interface SnackbarContextType {
-  showSnackbar: (message: string, type?: SnackbarType) => void;
+  showSnackbar: (
+    message: string,
+    position?: SnackbarPosition,
+    type?: SnackbarType,
+  ) => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextType | undefined>(
@@ -28,11 +33,15 @@ interface Props {
 }
 
 export const SnackbarProvider: React.FC<Props> = ({ children }) => {
-  const showSnackbar = (message: string, type: SnackbarType = "info") => {
+  const showSnackbar = (
+    message: string,
+    position: SnackbarPosition = "bottom",
+    type: SnackbarType = "info",
+  ) => {
     Toast.show({
       type,
       text1: message,
-      position: "bottom",
+      position,
       visibilityTime: 3000,
     });
   };

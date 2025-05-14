@@ -15,6 +15,7 @@ import { ItemDTO } from "@/dto/ItemDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { insertItemAndReturnID } from "@/services/ItemService";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -103,7 +104,7 @@ export default function AddCollectionItem() {
     setHasClickedNext(true);
     const titleIsValid = validateFields();
     if (!titleIsValid) {
-      alert("Please fill in all required fields.");
+      showSnackbar("Please fill in all required fields.", "bottom", "error");
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
@@ -113,6 +114,8 @@ export default function AddCollectionItem() {
       params: { itemId: itemId },
     });
   };
+
+  const { showSnackbar } = useSnackbar();
 
   return (
     <GradientBackground

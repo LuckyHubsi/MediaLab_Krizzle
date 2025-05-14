@@ -183,12 +183,20 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         currentlyActivePreviews.length < maxPreviewCount;
 
       if (!underMaxPreviewCount) {
-        showSnackbar("You can only select up to 3 preview items.", "error");
+        showSnackbar(
+          "You can only select up to 3 preview items.",
+          "bottom",
+          "error",
+        );
         return;
       }
 
       if (typeAlreadyUsed) {
-        showSnackbar("Only one preview is allowed per item type.", "error");
+        showSnackbar(
+          "Only one preview is allowed per item type.",
+          "bottom",
+          "error",
+        );
         return;
       }
     }
@@ -351,6 +359,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               if (!isMainTitleFilled || !allOtherTitlesFilled) {
                 showSnackbar(
                   "Almost there! Just add all the titles and pick at least one option.",
+                  "bottom",
                   "error",
                 );
                 return;

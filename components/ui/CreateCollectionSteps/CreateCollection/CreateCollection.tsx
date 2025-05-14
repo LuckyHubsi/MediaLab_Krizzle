@@ -251,7 +251,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
-                showSnackbar("Please enter a title to continue.", "error");
+                showSnackbar("Please enter a title to continue.", "bottom", "error");
                 return;
               }
               onNext?.();
