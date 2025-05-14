@@ -43,14 +43,14 @@ const itemSelectByIdQuery: string = `
                     END
                 )
             )
-            FROM attribute_values a
+            FROM attribute a
             LEFT JOIN text_value t ON t.attributeID = a.attributeID AND t.itemID = i.itemID
             LEFT JOIN date_value d ON d.attributeID = a.attributeID AND d.itemID = i.itemID
             LEFT JOIN rating_value r ON r.attributeID = a.attributeID AND r.itemID = i.itemID
             LEFT JOIN multiselect_values ms ON ms.attributeID = a.attributeID AND ms.itemID = i.itemID
             WHERE a.item_templateID = it.item_templateID
             ORDER BY a.attributeID
-        ) AS attributes
+        ) AS attribute_values
     FROM item i
     JOIN general_page_data p ON i.pageID = p.pageID
     LEFT JOIN collection_category cc ON i.categoryID = cc.collection_categoryID
