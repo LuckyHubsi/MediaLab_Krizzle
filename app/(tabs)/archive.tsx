@@ -168,6 +168,7 @@ export default function ArchiveScreen() {
                   <FlatList
                     data={filteredWidgets}
                     keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
                     numColumns={columns}
                     columnWrapperStyle={{
                       justifyContent: "space-between",
