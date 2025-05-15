@@ -50,19 +50,19 @@ export const SnackbarProvider: React.FC<Props> = ({ children }) => {
     success: ({ text1 }: any) => (
       <ToastContainer background={Colors.primary}>
         <MaterialIcons name="check-circle" size={22} color={Colors.white} />
-        <ThemedText>{text1}</ThemedText>
+        <ThemedText colorVariant="white">{text1}</ThemedText>
       </ToastContainer>
     ),
     error: ({ text1 }: any) => (
       <ToastContainer background={Colors.negative}>
         <MaterialIcons name="error" size={22} color={Colors.white} />
-        <ThemedText>{text1}</ThemedText>
+        <ThemedText colorVariant="white">{text1}</ThemedText>
       </ToastContainer>
     ),
     info: ({ text1 }: any) => (
       <ToastContainer background={Colors.primary}>
         <MaterialIcons name="error" size={22} color={Colors.white} />
-        <ThemedText>{text1}</ThemedText>
+        <ThemedText colorVariant="white">{text1}</ThemedText>
       </ToastContainer>
     ),
   };
