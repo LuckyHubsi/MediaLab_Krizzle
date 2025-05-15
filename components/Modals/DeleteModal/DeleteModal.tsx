@@ -49,7 +49,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                 {titleHasApostrophes
                   ? `Do you want to delete "${title}"?`
                   : `Do you want to delete ${title}?`}
-              </ThemedText>{" "}
+              </ThemedText>
               {extraInformation && (
                 <ThemedText fontSize="s" fontWeight="regular" textIsCentered>
                   {extraInformation}
