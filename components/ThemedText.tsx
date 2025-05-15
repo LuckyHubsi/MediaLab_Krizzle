@@ -22,6 +22,7 @@ export type ThemedTextProps = TextProps & {
     | "primary"
     | "disabled"
     | "viewAll";
+  textIsCentered?: boolean;
 };
 
 const colorVariants = {
@@ -44,6 +45,7 @@ export function ThemedText({
   fontWeight = "regular",
   fontSize = "regular",
   colorVariant = "default",
+  textIsCentered = false,
   ...rest
 }: ThemedTextProps) {
   const color =
@@ -64,6 +66,7 @@ export function ThemedText({
         fontSize === "xl" ? fontSizeStyles.xl : undefined,
         fontSize === "l" ? fontSizeStyles.l : undefined,
         fontSize === "s" ? fontSizeStyles.s : undefined,
+        textIsCentered ? { textAlign: "center" } : undefined,
         style,
       ]}
       {...rest}

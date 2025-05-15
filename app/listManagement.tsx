@@ -267,6 +267,7 @@ export default function ListManagementScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={listToDelete?.category_name}
+        extraInformation="Deleting this list will result in removing all items from this list in the collection."
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (listToDelete) {
