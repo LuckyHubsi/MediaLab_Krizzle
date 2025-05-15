@@ -23,7 +23,7 @@ interface CustomPickerProps {
   value: string | number | null;
   onValueChange: (value: string | number) => void;
   items: { label: string; value: string | number }[];
-  placeholder?: { label: string; value: string | number };
+  placeholder?: any;
   colorScheme: "light" | "dark";
 }
 
@@ -80,7 +80,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         onValueChange={onValueChange}
         items={items}
         style={getPickerStyles({ colorScheme })}
-        placeholder={placeholder}
+        placeholder={{}}
         Icon={() => <MaterialIcons name="arrow-drop-down" size={24} />}
       />
     );
@@ -93,7 +93,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         colorScheme={colorScheme}
       >
         <ThemedText fontSize="regular" fontWeight="regular">
-          {selectedLabel || placeholder?.label || "Select"}
+          {items[0] ? items[0].label : "Select"}
         </ThemedText>
         <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
       </AndroidPickerTouchable>
