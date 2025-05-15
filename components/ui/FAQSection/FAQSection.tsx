@@ -4,7 +4,7 @@ import { CardsContainer, ImageContainer } from "./FAQSection.styles";
 
 const FAQSection = () => {
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{ paddingBottom: 25 }}>
         <ImageContainer>
           <Image

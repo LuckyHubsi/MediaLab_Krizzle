@@ -2,7 +2,6 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import FAQSection from "@/components/ui/FAQSection/FAQSection";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Platform, SafeAreaView, StatusBar, View } from "react-native";
-import { ScrollView } from "react-native";
 
 export default function FaqScreen() {
   return (

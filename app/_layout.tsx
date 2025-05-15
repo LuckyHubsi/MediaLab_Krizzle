@@ -20,6 +20,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SQLiteProvider } from "expo-sqlite";
 import { UserThemeProvider } from "@/context/ThemeContext";
+import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,52 +55,63 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="createNote" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="collectionPage"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="notePage" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="tagManagement"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="createCollection"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="editWidget" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="editCollectionLists"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="addCollectionItem"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="collectionItemPage"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="listManagement"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="appearance" options={{ headerShown: false }} />
-            <Stack.Screen name="faq" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="editCollectionItem"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen
-              name="resetDatabase"
-              options={{ headerShown: false }}
-            />
-          </Stack>
-          <StatusBar style="auto" />
+          <SnackbarProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="createNote"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="collectionPage"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="notePage" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="tagManagement"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="createCollection"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="editWidget"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="editCollectionLists"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="addCollectionItem"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="collectionItemPage"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="listManagement"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="appearance"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="faq" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="editCollectionItem"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="+not-found" />
+              <Stack.Screen
+                name="resetDatabase"
+                options={{ headerShown: false }}
+              />
+            </Stack>
+            <StatusBar style="auto" />
+          </SnackbarProvider>
         </ThemeProvider>
       </SQLiteProvider>
     </UserThemeProvider>

@@ -121,6 +121,9 @@ export default function CollectionScreen() {
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
           onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
+          leftIconName={
+            collection?.page_icon as keyof typeof MaterialIcons.glyphMap
+          }
         />
         <ThemedView topPadding={0}>
           <SearchBar

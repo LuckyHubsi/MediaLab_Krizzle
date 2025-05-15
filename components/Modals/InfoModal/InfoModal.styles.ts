@@ -22,6 +22,10 @@ export const PopupContainer = styled.View<ThemeProps>`
   overflow: hidden;
   align-items: center;
   padding: 20px 15px;
+  border: 1px solid
+    ${({ colorScheme }: ThemeProps) =>
+      colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
+  border-top-width: 0;
 `;
 
 export const PopupImage = styled.Image`
@@ -31,6 +35,11 @@ export const PopupImage = styled.Image`
   background-color: #f1f1f1;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
+  border: 1px solid
+    ${({ colorScheme }: ThemeProps) =>
+      colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
+  border-bottom-width: 0;
+  margin-bottom: -1px;
 `;
 
 export const PopupText = styled.Text`

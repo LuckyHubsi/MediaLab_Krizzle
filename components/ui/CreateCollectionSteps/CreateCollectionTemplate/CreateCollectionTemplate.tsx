@@ -24,6 +24,7 @@ import { Card } from "../../Card/Card";
 import { Colors } from "@/constants/Colors";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -101,7 +102,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
 
   const handleAddCard = () => {
-    if (otherCards.length >= 10) return;
+    if (otherCards.length >= 9) return;
     setData((prev) => ({
       ...prev,
       templates: [
@@ -164,6 +165,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  const { showSnackbar } = useSnackbar();
+
   const handlePreviewToggle = (id: number) => {
     const currentCard = otherCards.find((c) => c.id === id);
     if (!currentCard) return;
@@ -180,12 +183,20 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         currentlyActivePreviews.length < maxPreviewCount;
 
       if (!underMaxPreviewCount) {
-        Alert.alert("Only 3 Item Previews are allowed");
+        showSnackbar(
+          "You can only select up to 3 preview items.",
+          "bottom",
+          "error",
+        );
         return;
       }
 
       if (typeAlreadyUsed) {
-        Alert.alert("One Type can only be set as preview once");
+        showSnackbar(
+          "Only one preview is allowed per item type.",
+          "bottom",
+          "error",
+        );
         return;
       }
     }
@@ -206,6 +217,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
       >
         <View style={{ gap: 10, paddingBottom: 10 }}>
           <Card>
@@ -235,7 +247,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           <ItemCountContainer>
             <ItemCount colorScheme={colorScheme}>
               <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-                {otherCards.length}
+                {otherCards.length + 1}
               </ThemedText>
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
@@ -255,7 +267,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             </ItemCount>
           </ItemCountContainer>
         </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 10, gap: 10 }}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 10, gap: 10 }}
+          showsVerticalScrollIndicator={false}
+        >
           {titleCard && (
             <ItemTemplateCard
               isTitleCard
@@ -317,7 +332,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               handleAddCard();
               setHasClickedNext(false);
             }}
-            isDisabled={otherCards.length >= 10}
+            isDisabled={otherCards.length >= 9}
           />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -346,15 +361,17 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               });
 
               if (!isMainTitleFilled || !allOtherTitlesFilled) {
-                Alert.alert(
-                  "Please fill in all titles and select at least one option before continuing.",
+                showSnackbar(
+                  "Almost there! Just add all the titles and pick at least one option.",
+                  "bottom",
+                  "error",
                 );
                 return;
               }
 
               onNext?.();
             }}
-            hasProgressIndicator
+            hasProgressIndicator={false}
             progressStep={3}
           />
         </View>

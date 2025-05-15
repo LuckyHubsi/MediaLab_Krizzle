@@ -55,7 +55,11 @@ export const TagPicker: React.FC<TagPickerProps> = ({
                     style={{ marginRight: 10 }}
                   />
                 )}
-                <ThemedText fontSize="s" fontWeight="regular">
+                <ThemedText
+                  fontSize="s"
+                  fontWeight="regular"
+                  colorVariant={isSelected ? "white" : undefined}
+                >
                   {tag.tag_label}
                 </ThemedText>
               </TagPill>

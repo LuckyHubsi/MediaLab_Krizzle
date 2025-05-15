@@ -87,7 +87,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             }}
           >
             {/* Date (left) */}
-            {date ? (
+            {date && (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MaterialIcons
                   name="calendar-today"
@@ -99,8 +99,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   {new Date(date).toLocaleDateString()}
                 </CollectionRating>
               </View>
-            ) : (
-              <View />
             )}
 
             {/* Rating (right) */}
@@ -119,8 +117,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   {rating + "/5"}
                 </CollectionRating>
               </View>
-            ) : (
-              <View />
             )}
           </View>
         ) : null}

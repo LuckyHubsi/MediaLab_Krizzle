@@ -19,6 +19,8 @@ import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Platform } from "react-native";
+import CustomPicker from "@/components/ui/CustomPicker/CustomPicker";
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -103,7 +105,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                   ? Colors[colorScheme ?? "light"].text
                   : previewCount && previewCount > 2
                     ? Colors.grey50
-                    : "#000000"
+                    : Colors[colorScheme].text
               }
               size={20}
             />
@@ -111,12 +113,11 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         </CardPreview>
       </CardTitleRow>
       <AndroidPickerWrapper colorScheme={colorScheme}>
-        <RNPickerSelect
-          onValueChange={(value) => {
-            if (onTypeChange) onTypeChange(value);
-          }}
-          style={pickerStyles}
+        <CustomPicker
           value={itemType}
+          onValueChange={(value) => {
+            if (onTypeChange) onTypeChange(value as string);
+          }}
           items={
             isTitleCard
               ? [{ label: "Text", value: "text" }]
@@ -127,9 +128,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                     value: item,
                   }))
           }
-          {...(!isTitleCard && {
-            Icon: () => <MaterialIcons name="arrow-drop-down" size={24} />,
-          })}
+          placeholder={{ label: "Select item", value: "" }}
+          colorScheme={colorScheme}
         />
       </AndroidPickerWrapper>
 

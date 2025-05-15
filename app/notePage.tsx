@@ -19,6 +19,7 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function NotesScreen() {
   const { pageId, title } = useLocalSearchParams<{
@@ -101,6 +102,9 @@ export default function NotesScreen() {
           onIconPress={() => setShowModal(true)}
           otherBackBehavior={() =>
             debouncedSave.flush(latestNoteContentRef.current)
+          }
+          leftIconName={
+            noteData?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
         />
         <TextEditor

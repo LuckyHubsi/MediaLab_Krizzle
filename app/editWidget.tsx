@@ -195,7 +195,10 @@ export default function EditWidgetScreen() {
           </View>
         </Card>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 10 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
           <View style={{ width: "100%", gap: 20 }}>
             <Card>
@@ -227,7 +230,7 @@ export default function EditWidgetScreen() {
                 onSelectTag={(tag) => {
                   setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
                 }}
-                onViewAllPress={() => router.push("/tagManagement")}
+                onViewAllPress={() => router.navigate("/tagManagement")}
               />
             </Card>
 
@@ -290,7 +293,11 @@ export default function EditWidgetScreen() {
           if (popupType === "color") {
             setSelectedColor(itemValue);
           } else {
-            setSelectedIcon(itemValue as keyof typeof MaterialIcons.glyphMap);
+            setSelectedIcon((prev) =>
+              prev === itemValue
+                ? null
+                : (itemValue as keyof typeof MaterialIcons.glyphMap),
+            );
           }
         }}
         onClose={() => setPopupVisible(false)}

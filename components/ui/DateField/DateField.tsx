@@ -10,6 +10,7 @@ import {
 } from "./DateField.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 interface DateFieldProps {
   title?: string;
@@ -60,6 +61,15 @@ const DateField: FC<DateFieldProps> = ({
           <DateText placeholder={!value} colorScheme={colorScheme}>
             {value ? format(value, "dd.MM.yyyy") : "dd.mm.yyyy"}
           </DateText>
+          {value && editable && (
+            <MaterialIcons
+              name="close"
+              size={18}
+              color={Colors.negative}
+              onPress={() => onChange?.(null)}
+              style={{ marginLeft: 8 }}
+            />
+          )}
         </DateInputContainer>
       </StyledPressable>
 

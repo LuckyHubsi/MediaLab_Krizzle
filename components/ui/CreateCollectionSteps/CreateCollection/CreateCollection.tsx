@@ -35,6 +35,7 @@ import { TagDTO } from "@/dto/TagDTO";
 import { PageType } from "@/utils/enums/PageType";
 import { useFocusEffect } from "@react-navigation/native";
 import { getAllTags } from "@/services/TagService";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionProps {
   data: {
@@ -135,6 +136,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     }
   }, []);
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <View style={{ marginBottom: 8 }}>
@@ -172,7 +175,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           </View>
         </Card>
       </View>
-      <ScrollContainer>
+      <ScrollContainer showsVerticalScrollIndicator={false}>
         <ContentWrapper>
           <Card>
             <TitleCard
@@ -209,7 +212,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                     prev.selectedTag?.tagID === tag.tagID ? null : tag,
                 }));
               }}
-              onViewAllPress={() => router.push("/tagManagement")}
+              onViewAllPress={() => router.navigate("/tagManagement")}
             />
           </Card>
 
@@ -248,12 +251,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
-                Alert.alert("Please fill in the title before continuing.");
+                showSnackbar("Please enter a title to continue.", "bottom", "error");
                 return;
               }
               onNext?.();
             }}
-            hasProgressIndicator={true}
+            hasProgressIndicator={false}
             progressStep={1}
           />
         </ButtonContainer>
@@ -285,9 +288,10 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           } else {
             setData((prev: any) => ({
               ...prev,
-              selectedIcon: itemValue
-                ? (itemValue as keyof typeof MaterialIcons.glyphMap)
-                : undefined,
+              selectedIcon:
+                prev.selectedIcon === itemValue
+                  ? undefined
+                  : (itemValue as keyof typeof MaterialIcons.glyphMap),
             }));
           }
         }}
