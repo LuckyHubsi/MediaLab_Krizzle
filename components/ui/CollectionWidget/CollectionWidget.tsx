@@ -117,7 +117,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   {rating + "/5"}
                 </CollectionRating>
               </View>
-            )}
+            ) : null}
           </View>
         ) : null}
 
