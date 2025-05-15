@@ -26,7 +26,7 @@ const selectAllPinnedPageQuery: string = `
     SELECT p.*, t.tag_label
     FROM general_page_data p
     LEFT JOIN tag t ON p.tagID = t.tagID
-    WHERE p.pinned = 1
+    WHERE p.pinned = 1 AND p.archived = 0
     ORDER BY p.date_modified DESC;
 `;
 
