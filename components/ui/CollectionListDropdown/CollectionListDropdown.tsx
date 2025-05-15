@@ -36,10 +36,10 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
       <ThemedText>{title}</ThemedText>
       <AndroidPickerWrapper colorScheme={colorScheme}>
         <CustomPicker
+          placeholder={{}}
+          items={dropdownItems}
           value={selectedList}
           onValueChange={onSelectionChange}
-          items={dropdownItems}
-          placeholder={{ label: "Select an option...", value: "" }}
           colorScheme={colorScheme}
         />
       </AndroidPickerWrapper>

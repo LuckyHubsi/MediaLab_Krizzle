@@ -19,6 +19,7 @@ interface DeleteModalProps {
   onConfirm: () => void;
   onclose: () => void;
   titleHasApostrophes?: boolean;
+  extraInformation?: string;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -28,6 +29,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onConfirm,
   onclose,
   titleHasApostrophes = true,
+  extraInformation,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
@@ -48,16 +50,21 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                   ? `Do you want to delete "${title}"?`
                   : `Do you want to delete ${title}?`}
               </ThemedText>
+              {extraInformation && (
+                <ThemedText fontSize="s" fontWeight="regular" textIsCentered>
+                  {extraInformation}
+                </ThemedText>
+              )}
               <ThemedText fontSize="s" fontWeight="regular">
                 You cannot undo this action
               </ThemedText>
             </OverlayTextBox>
             <ButtonRow>
               <Action onPress={onConfirm} colorScheme={colorScheme}>
-                <ActionText color="red">Delete</ActionText>
+                <ThemedText colorVariant="red">Delete</ThemedText>
               </Action>
               <Action onPress={onCancel} colorScheme={colorScheme}>
-                <ActionText color="#4599E8">Cancel</ActionText>
+                <ThemedText colorVariant="primary">Cancel</ThemedText>
               </Action>
             </ButtonRow>
           </ModalBox>

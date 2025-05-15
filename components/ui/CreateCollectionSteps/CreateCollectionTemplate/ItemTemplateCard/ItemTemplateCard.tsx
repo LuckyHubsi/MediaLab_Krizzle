@@ -105,7 +105,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                   ? Colors[colorScheme ?? "light"].text
                   : previewCount && previewCount > 2
                     ? Colors.grey50
-                    : "#000000"
+                    : Colors[colorScheme].text
               }
               size={20}
             />

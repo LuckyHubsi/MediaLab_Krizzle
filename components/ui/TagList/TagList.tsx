@@ -78,17 +78,17 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           </TagButton>
         ))}
 
-        {tags.length === 0 && (
-          <TagButton themeMode={themeMode} onPress={onPress}>
-            <MaterialIcons
-              name="add"
-              size={16}
-              color={themeMode === "dark" ? "#FBFBFB" : "#000"}
-              style={{ marginRight: 5 }}
-            />
-            <TagText themeMode={themeMode}>Add a tag</TagText>
-          </TagButton>
-        )}
+        {/* {tags.length === 0 && ( */}
+        <TagButton themeMode={themeMode} onPress={onPress}>
+          <MaterialIcons
+            name="add"
+            size={16}
+            color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+            style={{ marginRight: 5 }}
+          />
+          <TagText themeMode={themeMode}>Add a tag</TagText>
+        </TagButton>
+        {/* )} */}
       </ScrollView>
     </View>
   );

@@ -34,6 +34,7 @@ const Textfield: FC<TextfieldProps> = ({
   hasNoInputError,
   maxLength,
   hasDuplicateTitle,
+  multiline = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -56,6 +57,7 @@ const Textfield: FC<TextfieldProps> = ({
           }
           placeholder={placeholderText}
           maxLength={maxLength}
+          multiline={multiline}
         />
       </InputWrapper>
       {hasNoInputError && (

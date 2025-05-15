@@ -4,7 +4,6 @@ import styled from "styled-components/native";
 export const StyledCardWrapper = styled.View`
   margin-top: 20px;
   width: 100%;
-  height: 550px;
   background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
     Colors[colorScheme].cardBackground};
   padding: 25px 20px;

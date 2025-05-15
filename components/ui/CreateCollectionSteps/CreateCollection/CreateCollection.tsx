@@ -35,6 +35,7 @@ import { TagDTO } from "@/dto/TagDTO";
 import { PageType } from "@/utils/enums/PageType";
 import { useFocusEffect } from "@react-navigation/native";
 import { getAllTags } from "@/services/TagService";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionProps {
   data: {
@@ -134,6 +135,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
       };
     }
   }, []);
+
+  const { showSnackbar } = useSnackbar();
 
   return (
     <>
@@ -248,7 +251,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
-                Alert.alert("Please fill in the title before continuing.");
+                showSnackbar("Please enter a title to continue.", "bottom", "error");
                 return;
               }
               onNext?.();
