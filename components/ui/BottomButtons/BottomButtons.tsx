@@ -4,7 +4,6 @@ import {
   DiscardButton,
   NextButton,
   StyledBottomButtons,
-  StyledContainer,
 } from "./BottomButtons.styles";
 import { ThemedText } from "@/components/ThemedText";
 import ProgressIndicator from "../CreateCollectionSteps/ProgressionIndicator/ProgressionIndicator";
@@ -43,16 +42,16 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   return (
     <LinearGradient
       colors={[
-        Colors[colorScheme].background + "00", // transparent
-        Colors[colorScheme].background + "B0", // semi-transparent
-        Colors[colorScheme].background,
+        Colors[colorScheme].background + "00",
+        Colors[colorScheme].background + "B0",
+        Colors[colorScheme].background + "FF",
       ]}
       style={{
         position: "absolute",
         bottom: 0,
         left: 0,
         right: 0,
-        paddingTop: 40,
+        paddingTop: 35,
       }}
     >
       <StyledBottomButtons colorScheme={colorScheme}>

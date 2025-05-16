@@ -5,13 +5,6 @@ type ThemeProps = {
   colorScheme: "light" | "dark";
 };
 
-export const StyledContainer = styled.View`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-`;
-
 export const StyledBottomButtons = styled.View`
   flex-direction: column;
   justify-content: flex-end;
