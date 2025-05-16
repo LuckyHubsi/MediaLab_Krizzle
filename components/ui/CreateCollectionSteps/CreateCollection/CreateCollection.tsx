@@ -244,9 +244,6 @@ const CreateCollection: FC<CreateCollectionProps> = ({
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <ButtonContainer>
           <BottomButtons
-            variant={"back"}
-            titleLeftButton={"Back"}
-            titleRightButton={"Add"}
             singleButtonText={"Next"}
             onNext={() => {
               setHasClickedNext(true);

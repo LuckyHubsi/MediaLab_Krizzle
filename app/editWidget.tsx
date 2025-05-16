@@ -272,9 +272,6 @@ export default function EditWidgetScreen() {
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ marginBottom: 10 }}>
           <BottomButtons
-            variant={"back"}
-            titleLeftButton={"Back"}
-            titleRightButton={"Add"}
             singleButtonText={"Create"}
             onNext={updateWidget}
             hasProgressIndicator={false}

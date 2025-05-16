@@ -249,9 +249,6 @@ export default function CreateNoteScreen() {
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ marginBottom: 10 }}>
           <BottomButtons
-            variant={"back"}
-            titleLeftButton={"Back"}
-            titleRightButton={"Add"}
             singleButtonText={"Create"}
             onNext={createNote}
             hasProgressIndicator={false}
