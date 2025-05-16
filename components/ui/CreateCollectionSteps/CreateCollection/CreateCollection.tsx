@@ -179,7 +179,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
         <ContentWrapper>
           <Card>
             <TitleCard
-              placeholder="Add a title to your Note"
+              placeholder="Add a title"
               value={title}
               onChangeText={(text) => {
                 setData((prev: any) => ({ ...prev, title: text }));
@@ -251,7 +251,11 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
-                showSnackbar("Please enter a title to continue.", "bottom", "error");
+                showSnackbar(
+                  "Please enter a title to continue.",
+                  "bottom",
+                  "error",
+                );
                 return;
               }
               onNext?.();

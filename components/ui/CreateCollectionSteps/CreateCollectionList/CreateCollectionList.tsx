@@ -155,7 +155,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       <ScrollView
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag"
-        contentContainerStyle={ListContent}
+        contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
         {cards.map((item, index) => (
@@ -170,7 +170,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
             <Textfield
               showTitle={false}
               textfieldIcon="text-fields"
-              placeholderText="Add a title to your note"
+              placeholderText="Add a title"
               title=""
               value={item.title}
               onChangeText={(text) => handleTitleChange(item.id, text)}

@@ -105,7 +105,7 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
       <FlatList
         data={cards}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={ListContent}
+        contentContainerStyle={{ ...ListContent, paddingBottom: 95 }}
         renderItem={({ item }) => {
           const index = cards.findIndex((card) => card.id === item.id);
           return (
@@ -120,7 +120,7 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
               <Textfield
                 showTitle={false}
                 textfieldIcon="text-fields"
-                placeholderText={`Add a title to your note`}
+                placeholderText={`Add a title`}
                 title={""}
                 value={item.title}
                 onChangeText={(text) => handleTitleChange(item.id, text)}

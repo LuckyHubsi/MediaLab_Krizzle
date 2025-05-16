@@ -268,7 +268,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           </ItemCountContainer>
         </View>
         <ScrollView
-          contentContainerStyle={{ paddingBottom: 10, gap: 10 }}
+          contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
           showsVerticalScrollIndicator={false}
         >
           {titleCard && (
@@ -326,14 +326,15 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               previewCount={previewCount}
             />
           ))}
-
-          <AddButton
-            onPress={() => {
-              handleAddCard();
-              setHasClickedNext(false);
-            }}
-            isDisabled={otherCards.length >= 9}
-          />
+          <View style={{ paddingTop: 10 }}>
+            <AddButton
+              onPress={() => {
+                handleAddCard();
+                setHasClickedNext(false);
+              }}
+              isDisabled={otherCards.length >= 9}
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 

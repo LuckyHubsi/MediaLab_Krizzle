@@ -5,12 +5,18 @@ type ThemeProps = {
   colorScheme: "light" | "dark";
 };
 
+export const StyledContainer = styled.View`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+`;
+
 export const StyledBottomButtons = styled.View`
   flex-direction: column;
   justify-content: flex-end;
   gap: 15px;
-  background-color: ${({ colorScheme }: ThemeProps) =>
-    Colors[colorScheme].background};
+  padding-bottom: 10px;
 `;
 
 export const BottomButtonContainer = styled.View`
