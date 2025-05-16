@@ -217,9 +217,25 @@ img.ProseMirror-separator {
 </script>
   </head>
   <style>
-    body {
+    html, body {
+      padding: 0;
       margin: 0;
       font-family: Lexend, --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      overflow-x: hidden;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      max-width: 100vw;
+      box-sizing: border-box;
+    }
+
+    li, .checklist-item {
+      display: block;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+      padding-top: 10px;
     }
     
     body[data-theme='dark'] {
@@ -258,6 +274,11 @@ img.ProseMirror-separator {
     .highlight-background {
       background-color: #e6e6ff;
     }
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}}
+
   </style>
   <body>
     <div id="root"></div>
