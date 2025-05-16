@@ -39,7 +39,7 @@ export const getIconForPageType = (type: string) => {
   }
 };
 
-export default function ArchiveScreen() {
+export default function FoldersScreen() {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
@@ -159,11 +159,11 @@ export default function ArchiveScreen() {
           </IconTopRight>
 
           <ThemedText fontSize="xl" fontWeight="bold">
-            Archive
+            Folders
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome text="Archive is empty" showButton={false} />
+            <EmptyHome text="No folders yet" showButton={false} />
           ) : (
             <>
               <SearchBar
