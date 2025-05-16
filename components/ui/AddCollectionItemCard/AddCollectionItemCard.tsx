@@ -88,7 +88,6 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       }
     }
   };
-
   useEffect(() => {
     if (!lists.length) return;
 
@@ -107,7 +106,17 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
     setListStrings(listArray);
 
-    if (matchedName && matchedName !== selectedList) {
+    if (selectedCategoryID == null && lists[0]) {
+      const defaultList = lists[0];
+      const defaultName = defaultList.category_name;
+      const defaultId =
+        defaultList.collection_categoryID ?? defaultList.collectionCategoryID;
+
+      if (defaultId != null) {
+        setSelectedList(defaultName);
+        onListChange(Number(defaultId));
+      }
+    } else if (matchedName && matchedName !== selectedList) {
       setSelectedList(matchedName);
     }
   }, [lists, selectedCategoryID]);
