@@ -229,15 +229,13 @@ img.ProseMirror-separator {
       box-sizing: border-box;
     }
 
-    li, .checklist-item {
+    .checklist-item {
       display: block;
       white-space: pre-wrap;
       word-break: break-word;
       overflow-wrap: break-word;
       max-width: 100%;
-      padding-top: 10px;
     }
-    
     body[data-theme='dark'] {
       background-color: #000000;
       color: #FBFBFB;
@@ -247,7 +245,6 @@ img.ProseMirror-separator {
       background-color: #FFFFFF;
       color: #11181C;
     }
-      
     #root > div:nth-of-type(1) {
       position: absolute;
       height: 100%;
@@ -259,7 +256,6 @@ img.ProseMirror-separator {
     #root > div.dynamic-height {
       height: unset;
     }
-
     #root div .ProseMirror {
       height: 100%;
       overflow: auto;
@@ -273,11 +269,19 @@ img.ProseMirror-separator {
     }
     .highlight-background {
       background-color: #e6e6ff;
+    }    
+    ol {
+      list-style-type: decimal;
     }
-input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-}}
+    li {
+      display: list-item; 
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
 
   </style>
   <body>
