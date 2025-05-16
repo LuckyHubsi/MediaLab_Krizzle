@@ -22,9 +22,10 @@ import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function NotesScreen() {
-  const { pageId, title } = useLocalSearchParams<{
+  const { pageId, title, routing } = useLocalSearchParams<{
     pageId?: string;
     title?: string;
+    routing?: string;
   }>();
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
@@ -98,7 +99,7 @@ export default function NotesScreen() {
         <CustomStyledHeader
           title={title || "Note"}
           iconName="more-horiz"
-          backBehavior="goHome"
+          backBehavior={routing}
           onIconPress={() => setShowModal(true)}
           otherBackBehavior={() =>
             debouncedSave.flush(latestNoteContentRef.current)

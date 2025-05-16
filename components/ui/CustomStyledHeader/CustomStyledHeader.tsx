@@ -19,12 +19,7 @@ interface HeaderProps {
   iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
   onIconMenuPress?: () => void;
-  backBehavior?:
-    | "default"
-    | "goHome"
-    | "goArchive"
-    | "goSettings"
-    | "goCollection";
+  backBehavior?: string;
   otherBackBehavior?: () => void;
   param?: string;
   leftIconName?: keyof typeof MaterialIcons.glyphMap;
@@ -36,7 +31,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   iconName2,
   onIconPress,
   onIconMenuPress,
-  backBehavior = "default",
+  backBehavior,
   otherBackBehavior,
   param,
   leftIconName,
@@ -50,19 +45,24 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       otherBackBehavior();
     }
 
-    if (backBehavior === "goHome") {
-      router.replace("/");
-    } else if (backBehavior === "goArchive") {
-      router.replace("/archive");
-    } else if (backBehavior === "goSettings") {
-      router.replace("/settings");
-    } else if (backBehavior === "goCollection") {
-      router.replace({
-        pathname: "/collectionPage",
-        params: { pageId: param },
-      });
-    } else {
-      navigation.goBack();
+    switch (backBehavior) {
+      case "goHome":
+        router.replace("/");
+        break;
+      case "goArchive":
+        router.replace("/archivePage");
+        break;
+      case "goSettings":
+        router.replace("/settings");
+        break;
+      case "goCollection":
+        router.replace({
+          pathname: "/collectionPage",
+          params: { pageId: param },
+        });
+        break;
+      default:
+        navigation.goBack();
     }
   };
 

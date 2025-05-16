@@ -139,7 +139,7 @@ export default function ArchiveScreen() {
       params: {
         pageId: widget.id,
         title: widget.title,
-        navigation: "goArchive",
+        routing: "goArchive",
       },
     });
   };
@@ -152,7 +152,7 @@ export default function ArchiveScreen() {
             paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
           }}
         >
-          <CustomStyledHeader title="Archive" />
+          <CustomStyledHeader title="Archive" backBehavior="goSettings" />
         </View>
         <ThemedView
           style={{
