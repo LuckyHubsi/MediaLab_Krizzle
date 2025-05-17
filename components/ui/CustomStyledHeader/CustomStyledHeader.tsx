@@ -11,6 +11,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useNavigation, usePathname, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 interface HeaderProps {
   title: string;
@@ -26,6 +27,7 @@ interface HeaderProps {
     | "goCollection";
   otherBackBehavior?: () => void;
   param?: string;
+  leftIconName?: keyof typeof MaterialIcons.glyphMap;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -37,6 +39,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   backBehavior = "default",
   otherBackBehavior,
   param,
+  leftIconName,
 }) => {
   const router = useRouter();
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -67,7 +70,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
     <StyledHeader colorScheme={colorScheme}>
       <TouchableOpacity
         onPress={handleBackPress}
-        style={{ flexDirection: "row", alignItems: "center" }}
+        style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
 
@@ -82,7 +85,22 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           </ThemedText>
         </TitleContainer>
       </TouchableOpacity>
-
+      {leftIconName && (
+        <MaterialIcons
+          name={leftIconName}
+          size={24}
+          color={Colors[colorScheme].text}
+          style={{
+            marginRight: 8,
+            backgroundColor:
+              colorScheme === "light"
+                ? Colors.light.searchBarBackground
+                : Colors.dark.searchBarBackground,
+            borderRadius: 8,
+            padding: 2,
+          }}
+        />
+      )}
       {/* Optional right icon */}
       <IconContainer>
         {iconName && onIconPress && (

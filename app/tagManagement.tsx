@@ -23,6 +23,7 @@ import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function TagManagementScreen() {
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -36,18 +37,20 @@ export default function TagManagementScreen() {
   const [tagtoDelete, setTagToDelete] = useState<TagDTO | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
+  const { showSnackbar } = useSnackbar();
+
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
 
     if (!trimmedTag) return;
 
     if (!editMode && tags.length >= 100) {
-      alert("You can only have up to 100 tags.");
+      showSnackbar("You can only have up to 100 tags.", "top", "error");
       return;
     }
 
     if (trimmedTag.length > 30) {
-      alert("Tag name must be 30 characters or less.");
+      showSnackbar("Tag name must be less than 30 characters.", "top", "error");
       return;
     }
 
@@ -58,7 +61,7 @@ export default function TagManagementScreen() {
     );
 
     if (isDuplicate) {
-      alert("A tag with this name already exists.");
+      showSnackbar("A tag with this name already exists.", "top", "error");
       return;
     }
 

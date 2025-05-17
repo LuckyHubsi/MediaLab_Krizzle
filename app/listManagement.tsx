@@ -25,13 +25,16 @@ import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { collectionCategoryService } from "@/services/CollectionCategoriesService";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function ListManagementScreen() {
   const { collectionId } = useLocalSearchParams<{
     collectionId: string;
   }>();
 
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
+  const { showSnackbar } = useSnackbar();
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newList, setNewList] = useState("");
@@ -50,12 +53,16 @@ export default function ListManagementScreen() {
     if (!trimmedList) return;
 
     if (!editMode && lists.length >= 10) {
-      alert("You can only have up to 10 lists.");
+      showSnackbar("You can only have up to 10 lists.", "top", "info");
       return;
     }
 
     if (trimmedList.length > 30) {
-      alert("List name must be 30 characters or less.");
+      showSnackbar(
+        "List name must be less than 30 characters.",
+        "top",
+        "error",
+      );
       return;
     }
 
@@ -178,7 +185,11 @@ export default function ListManagementScreen() {
                     setListToDelete(item);
                     setShowDeleteModal(true);
                   } else {
-                    alert("You must have at least one list.");
+                    showSnackbar(
+                      "You must have at least one list",
+                      "top",
+                      "error",
+                    );
                   }
                 }}
                 onEdit={() => editList(item)}
@@ -261,6 +272,7 @@ export default function ListManagementScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={listToDelete?.category_name}
+        extraInformation="Deleting this list will result in removing all items from this list in the collection."
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (listToDelete) {

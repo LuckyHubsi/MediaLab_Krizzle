@@ -28,7 +28,8 @@ export const Circle = styled.View`
   height: 38px;
   border-radius: 40px;
   border-width: 1px;
-  border-color: #585858;
+  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    colorScheme === "light" ? Colors.grey50 : Colors.grey100};
   align-items: center;
   justify-content: center;
 `;

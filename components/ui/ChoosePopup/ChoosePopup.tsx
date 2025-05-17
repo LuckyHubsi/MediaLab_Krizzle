@@ -72,7 +72,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                 <ThemedText fontSize="regular" fontWeight="semibold">
                   {type === "color" ? "Choose a Color" : "Choose an Icon"}
                 </ThemedText>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                   <ItemsGrid>
                     {items.map((item) => {
                       const isSelected =

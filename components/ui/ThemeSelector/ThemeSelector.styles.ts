@@ -20,7 +20,6 @@ interface CardProps {
 
 export const Card = styled.TouchableOpacity<CardProps>`
   width: 140px;
-  height: 240px;
   border-radius: 20px;
   border: 2px solid
     ${({ isSelected }: CardProps) => (isSelected ? "#007AFF" : "#ccc")};
@@ -59,6 +58,12 @@ export const RadioButtonInner = styled.View`
 `;
 
 export const ResetContainer = styled.View`
+  padding: 15px 10px 0 10px;
+  flex-direction: row;
   margin-top: 20px;
   align-items: center;
+  justify-content: space-between;
+  border-top-width: 1px;
+  border-top-color: ${Colors.grey50};
+  border-style: dash;
 `;

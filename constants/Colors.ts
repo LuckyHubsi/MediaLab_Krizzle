@@ -59,10 +59,6 @@ export const Colors = {
     disabled: "#585858",
   },
   widget: {
-    white: "#ffffff",
-    black: "#111111",
-    grey: "#585858",
-    lightGrey: "#ABABAB",
     blueGrey: "#82A9CC",
     lightBlue: "#7DB5EA",
     blue: "#4599E8",

@@ -16,6 +16,7 @@ import { AttributeType } from "@/utils/enums/AttributeType";
 import { Button } from "@/components/ui/Button/Button";
 import { itemService } from "@/services/ItemService";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -107,9 +108,9 @@ export default function AddCollectionItem() {
 
   const handleSaveItem = async () => {
     setHasClickedNext(true);
-    const allFieldsValid = validateFields();
-    if (!allFieldsValid) {
-      alert("Please fill in all required fields.");
+    const titleIsValid = validateFields();
+    if (!titleIsValid) {
+      showSnackbar("Please fill in all required fields.", "bottom", "error");
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
@@ -120,13 +121,15 @@ export default function AddCollectionItem() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
       topPadding={Platform.select({ ios: 20, android: 30 })}
     >
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View>
+        <View style={{ height: "85%" }}>
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}

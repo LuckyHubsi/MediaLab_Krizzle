@@ -1,22 +1,19 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 import Textfield from "../Textfield/Textfield";
 import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./CollectionLoadItems.stlyle";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
 import RatingPicker from "../RatingPicker/RatingPicker";
-import CollectionListDropdown from "../CollectionListDropdown/CollectionListDropdown";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
-import { Text } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ListCOntainer } from "./CollectionLoadItems.stlyle";
-import { CollectionListText } from "../CollectionList/CollectionList.style";
 import { ThemedText } from "@/components/ThemedText";
 import CollectionTextfield from "../CollectionTextField/CollectionTextField";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
 import { parseISO } from "date-fns";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];
@@ -28,7 +25,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
   listName,
 }) => {
   const router = useRouter();
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
 
   const handleSelectionChange = (value: string) => {

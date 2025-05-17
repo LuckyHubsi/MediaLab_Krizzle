@@ -53,10 +53,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     });
   };
 
-  const handleSelectionChange = (value: string) => {
-    setSelectedList(value);
+  const handleSelectionChange = (value: string | number) => {
+    setSelectedList(String(value));
 
-    if (value === "Select an option...") {
+    if (!value) {
       onListChange(null);
       return;
     }
@@ -99,6 +99,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];
+
     if (attributes) {
       attributes.forEach((attribute) => {
         const currentValue = attributeValues[Number(attribute.attributeID)];
@@ -114,8 +115,9 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 onChangeText={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
                 }
-                hasNoInputError={hasNoInputError}
+                {...(!elements[0] && { hasNoInputError })}
                 maxLength={750}
+                multiline={elements[0] ? true : false}
               />,
             );
             break;

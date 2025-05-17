@@ -173,7 +173,7 @@ img.ProseMirror-separator {
         height: 0;
         pointer-events: none;
     }
-  \`,onBridgeMessage:(t,e)=>{switch(e.type){case"set-placeholder":t.extensionManager.extensions.forEach(r=>{r.name==="placeholder"&&(r.options.placeholder=e.payload)}),t.setOptions();break}return!1},extendEditorInstance:t=>({setPlaceholder:n=>t({type:"set-placeholder",payload:n})})}),GT=/(?:^|\s)((?:~~)((?:[^~]+))(?:~~))\$/,YT=/(?:^|\s)((?:~~)((?:[^~]+))(?:~~))/g,XT=qe.create({name:"strike",addOptions(){return{HTMLAttributes:{}}},parseHTML(){return[{tag:"s"},{tag:"del"},{tag:"strike"},{style:"text-decoration",consuming:!1,getAttrs:t=>t.includes("line-through")?{}:!1}]},renderHTML({HTMLAttributes:t}){return["s",q(this.options.HTMLAttributes,t),0]},addCommands(){return{setStrike:()=>({commands:t})=>t.setMark(this.name),toggleStrike:()=>({commands:t})=>t.toggleMark(this.name),unsetStrike:()=>({commands:t})=>t.unsetMark(this.name)}},addKeyboardShortcuts(){const t={};return Kd()?t["Mod-Shift-s"]=()=>this.editor.commands.toggleStrike():t["Ctrl-Shift-s"]=()=>this.editor.commands.toggleStrike(),t},addInputRules(){return[yr({find:GT,type:this.type})]},addPasteRules(){return[Bn({find:YT,type:this.type})]}}),ZT=new re({tiptapExtension:XT,onBridgeMessage:(t,e)=>(e.type==="toggle-strike"&&t.chain().focus().toggleStrike().run(),!1),extendEditorInstance:t=>({toggleStrike:()=>t({type:"toggle-strike"})}),extendEditorState:t=>({canToggleStrike:t.can().toggleStrike(),isStrikeActive:t.isActive("strike")})}),eO=qe.create({name:"underline",addOptions(){return{HTMLAttributes:{}}},parseHTML(){return[{tag:"u"},{style:"text-decoration",consuming:!1,getAttrs:t=>t.includes("underline")?{}:!1}]},renderHTML({HTMLAttributes:t}){return["u",q(this.options.HTMLAttributes,t),0]},addCommands(){return{setUnderline:()=>({commands:t})=>t.setMark(this.name),toggleUnderline:()=>({commands:t})=>t.toggleMark(this.name),unsetUnderline:()=>({commands:t})=>t.unsetMark(this.name)}},addKeyboardShortcuts(){return{"Mod-u":()=>this.editor.commands.toggleUnderline(),"Mod-U":()=>this.editor.commands.toggleUnderline()}}}),tO=new re({tiptapExtension:eO,onBridgeMessage:(t,e)=>(e.type==="toggle-underline"&&t.chain().focus().toggleUnderline().run(),!1),extendEditorInstance:t=>({toggleUnderline:()=>t({type:"toggle-underline"})}),extendEditorState:t=>({canToggleUnderline:t.can().toggleUnderline(),isUnderlineActive:t.isActive("underline")})}),nO=Ee.create({name:"taskList",addOptions(){return{itemTypeName:"taskItem",HTMLAttributes:{}}},group:"block list",content(){return\`\${this.options.itemTypeName}+\`},parseHTML(){return[{tag:\`ul[data-type="\${this.name}"]\`,priority:51}]},renderHTML({HTMLAttributes:t}){return["ul",q(this.options.HTMLAttributes,t,{"data-type":this.name}),0]},addCommands(){return{toggleTaskList:()=>({commands:t})=>t.toggleList(this.name,this.options.itemTypeName)}},addKeyboardShortcuts(){return{"Mod-Shift-9":()=>this.editor.commands.toggleTaskList()}}}),rO=/^\s*(\[([( |x])?\])\s\$/,iO=Ee.create({name:"taskItem",addOptions(){return{nested:!1,HTMLAttributes:{},taskListTypeName:"taskList"}},content(){return this.options.nested?"paragraph block*":"paragraph+"},defining:!0,addAttributes(){return{checked:{default:!1,keepOnSplit:!1,parseHTML:t=>t.getAttribute("data-checked")==="true",renderHTML:t=>({"data-checked":t.checked})}}},parseHTML(){return[{tag:\`li[data-type="\${this.name}"]\`,priority:51}]},renderHTML({node:t,HTMLAttributes:e}){return["li",q(this.options.HTMLAttributes,e,{"data-type":this.name}),["label",["input",{type:"checkbox",checked:t.attrs.checked?"checked":null}],["span"]],["div",0]]},addKeyboardShortcuts(){const t={Enter:()=>this.editor.commands.splitListItem(this.name),"Shift-Tab":()=>this.editor.commands.liftListItem(this.name)};return this.options.nested?{...t,Tab:()=>this.editor.commands.sinkListItem(this.name)}:t},addNodeView(){return({node:t,HTMLAttributes:e,getPos:n,editor:r})=>{const i=document.createElement("li"),o=document.createElement("label"),s=document.createElement("span"),l=document.createElement("input"),a=document.createElement("div");return o.contentEditable="false",l.type="checkbox",l.addEventListener("change",u=>{if(!r.isEditable&&!this.options.onReadOnlyChecked){l.checked=!l.checked;return}const{checked:c}=u.target;r.isEditable&&typeof n=="function"&&r.chain().focus(void 0,{scrollIntoView:!1}).command(({tr:d})=>{const f=n(),h=d.doc.nodeAt(f);return d.setNodeMarkup(f,void 0,{...h==null?void 0:h.attrs,checked:c}),!0}).run(),!r.isEditable&&this.options.onReadOnlyChecked&&(this.options.onReadOnlyChecked(t,c)||(l.checked=!l.checked))}),Object.entries(this.options.HTMLAttributes).forEach(([u,c])=>{i.setAttribute(u,c)}),i.dataset.checked=t.attrs.checked,t.attrs.checked&&l.setAttribute("checked","checked"),o.append(l,s),i.append(o,a),Object.entries(e).forEach(([u,c])=>{i.setAttribute(u,c)}),{dom:i,contentDOM:a,update:u=>u.type!==this.type?!1:(i.dataset.checked=u.attrs.checked,u.attrs.checked?l.setAttribute("checked","checked"):l.removeAttribute("checked"),!0)}}},addInputRules(){return[ci({find:rO,type:this.type,getAttributes:t=>({checked:t[t.length-1]==="x"})})]}}),oO=new re({tiptapExtension:nO,tiptapExtensionDeps:[iO.configure({nested:!0})],onBridgeMessage:(t,e)=>(e.type==="toggle-task-list"&&t.chain().focus().toggleTaskList().run(),e.type==="lift-task-list-item"&&t.chain().focus().liftListItem(t.state.schema.nodes.taskItem.name).run(),e.type==="sink-task-list-item"&&t.chain().focus().sinkListItem(t.state.schema.nodes.taskItem.name).run(),!1),extendEditorInstance:t=>({toggleTaskList:()=>t({type:"toggle-task-list"}),liftTaskListItem:()=>t({type:"lift-task-list-item"}),sinkTaskListItem:()=>t({type:"sink-task-list-item"})}),extendEditorState:t=>({canToggleTaskList:t.can().toggleTaskList(),isTaskListActive:t.isActive("taskList"),canLiftTaskListItem:t.can().liftListItem(t.state.schema.nodes.taskItem.name),canSinkTaskListItem:t.can().sinkListItem(t.state.schema.nodes.taskItem.name)}),extendCSS:\`
+  \`,onBridgeMessage:(t,e)=>{switch(e.type){case"set-placeholder":t.extensionManager.extensions.forEach(r=>{r.name==="placeholder"&&(r.options.placeholder=e.payload)}),t.setOptions();break}return!1},extendEditorInstance:t=>({setPlaceholder:n=>t({type:"set-placeholder",payload:n})})}),GT=/(?:^|\s)((?:~~)((?:[^~]+))(?:~~))\$/,YT=/(?:^|\s)((?:~~)((?:[^~]+))(?:~~))/g,XT=qe.create({name:"strike",addOptions(){return{HTMLAttributes:{}}},parseHTML(){return[{tag:"s"},{tag:"del"},{tag:"strike"},{style:"text-decoration",consuming:!1,getAttrs:t=>t.includes("line-through")?{}:!1}]},renderHTML({HTMLAttributes:t}){return["s",q(this.options.HTMLAttributes,t),0]},addCommands(){return{setStrike:()=>({commands:t})=>t.setMark(this.name),toggleStrike:()=>({commands:t})=>t.toggleMark(this.name),unsetStrike:()=>({commands:t})=>t.unsetMark(this.name)}},addKeyboardShortcuts(){const t={};return Kd()?t["Mod-Shift-s"]=()=>this.editor.commands.toggleStrike():t["Ctrl-Shift-s"]=()=>this.editor.commands.toggleStrike(),t},addInputRules(){return[yr({find:GT,type:this.type})]},addPasteRules(){return[Bn({find:YT,type:this.type})]}}),ZT=new re({tiptapExtension:XT,onBridgeMessage:(t,e)=>(e.type==="toggle-strike"&&t.chain().focus().toggleStrike().run(),!1),extendEditorInstance:t=>({toggleStrike:()=>t({type:"toggle-strike"})}),extendEditorState:t=>({canToggleStrike:t.can().toggleStrike(),isStrikeActive:t.isActive("strike")})}),eO=qe.create({name:"underline",addOptions(){return{HTMLAttributes:{}}},parseHTML(){return[{tag:"u"},{style:"text-decoration",consuming:!1,getAttrs:t=>t.includes("underline")?{}:!1}]},renderHTML({HTMLAttributes:t}){return["u",q(this.options.HTMLAttributes,t),0]},addCommands(){return{setUnderline:()=>({commands:t})=>t.setMark(this.name),toggleUnderline:()=>({commands:t})=>t.toggleMark(this.name),unsetUnderline:()=>({commands:t})=>t.unsetMark(this.name)}},addKeyboardShortcuts(){return{"Mod-u":()=>this.editor.commands.toggleUnderline(),"Mod-U":()=>this.editor.commands.toggleUnderline()}}}),tO=new re({tiptapExtension:eO,onBridgeMessage:(t,e)=>(e.type==="toggle-underline"&&t.chain().focus().toggleUnderline().run(),!1),extendEditorInstance:t=>({toggleUnderline:()=>t({type:"toggle-underline"})}),extendEditorState:t=>({canToggleUnderline:t.can().toggleUnderline(),isUnderlineActive:t.isActive("underline")})}),nO=Ee.create({name:"taskList",addOptions(){return{itemTypeName:"taskItem",HTMLAttributes:{}}},group:"block list",content(){return\`\${this.options.itemTypeName}+\`},parseHTML(){return[{tag:\`ul[data-type="\${this.name}"]\`,priority:51}]},renderHTML({HTMLAttributes:t}){return["ul",q(this.options.HTMLAttributes,t,{"data-type":this.name}),0]},addCommands(){return{toggleTaskList:()=>({commands:t})=>t.toggleList(this.name,this.options.itemTypeName)}},addKeyboardShortcuts(){return{"Mod-Shift-9":()=>this.editor.commands.toggleTaskList()}}}),rO=/^\s*(\[([( |x])?\])\s\$/,iO=Ee.create({name:"taskItem",addOptions(){return{nested:!1,HTMLAttributes:{},taskListTypeName:"taskList"}},content(){return this.options.nested?"paragraph block*":"paragraph+"},defining:!0,addAttributes(){return{checked:{default:!1,keepOnSplit:!1,parseHTML:t=>t.getAttribute("data-checked")==="true",renderHTML:t=>({"data-checked":t.checked})}}},parseHTML(){return[{tag:\`li[data-type="\${this.name}"]\`,priority:51}]},renderHTML({node:t,HTMLAttributes:e}){return["li",q(this.options.HTMLAttributes,e,{"data-type":this.name}),["label",["input",{type:"checkbox",checked:t.attrs.checked?"checked":null}],["span"]],["div",0]]},addKeyboardShortcuts(){const t={Enter:()=>this.editor.commands.splitListItem(this.name),"Shift-Tab":()=>this.editor.commands.liftListItem(this.name)};return this.options.nested?{...t,Tab:()=>this.editor.commands.sinkListItem(this.name)}:t},addNodeView(){return({node:t,HTMLAttributes:e,getPos:n,editor:r})=>{const i=document.createElement("li"),o=document.createElement("label"),s=document.createElement("span"),l=document.createElement("input"),a=document.createElement("div");return o.contentEditable="false",l.type="checkbox",l.addEventListener("change",u=>{if(!r.isEditable&&!this.options.onReadOnlyChecked){l.checked=!l.checked;return}const{checked:c}=u.target;r.isEditable&&typeof n=="function"&&r.chain().command(void 0,{scrollIntoView:!1}).command(({tr:d})=>{const f=n(),h=d.doc.nodeAt(f);return d.setNodeMarkup(f,void 0,{...h==null?void 0:h.attrs,checked:c}),!0}).run(),!r.isEditable&&this.options.onReadOnlyChecked&&(this.options.onReadOnlyChecked(t,c)||(l.checked=!l.checked))}),Object.entries(this.options.HTMLAttributes).forEach(([u,c])=>{i.setAttribute(u,c)}),i.dataset.checked=t.attrs.checked,t.attrs.checked&&l.setAttribute("checked","checked"),o.append(l,s),i.append(o,a),Object.entries(e).forEach(([u,c])=>{i.setAttribute(u,c)}),{dom:i,contentDOM:a,update:u=>u.type!==this.type?!1:(i.dataset.checked=u.attrs.checked,u.attrs.checked?l.setAttribute("checked","checked"):l.removeAttribute("checked"),!0)}}},addInputRules(){return[ci({find:rO,type:this.type,getAttributes:t=>({checked:t[t.length-1]==="x"})})]}}),oO=new re({tiptapExtension:nO,tiptapExtensionDeps:[iO.configure({nested:!0})],onBridgeMessage:(t,e)=>(e.type==="toggle-task-list"&&t.chain().focus().toggleTaskList().run(),e.type==="lift-task-list-item"&&t.chain().focus().liftListItem(t.state.schema.nodes.taskItem.name).run(),e.type==="sink-task-list-item"&&t.chain().focus().sinkListItem(t.state.schema.nodes.taskItem.name).run(),!1),extendEditorInstance:t=>({toggleTaskList:()=>t({type:"toggle-task-list"}),liftTaskListItem:()=>t({type:"lift-task-list-item"}),sinkTaskListItem:()=>t({type:"sink-task-list-item"})}),extendEditorState:t=>({canToggleTaskList:t.can().toggleTaskList(),isTaskListActive:t.isActive("taskList"),canLiftTaskListItem:t.can().liftListItem(t.state.schema.nodes.taskItem.name),canSinkTaskListItem:t.can().sinkListItem(t.state.schema.nodes.taskItem.name)}),extendCSS:\`
   ul[data-type="taskList"] {
     list-style: none;
     padding: 0;
@@ -213,15 +213,28 @@ img.ProseMirror-separator {
   }  
   \`});function sO(t={}){return new He({view(e){return new lO(e,t)}})}class lO{constructor(e,n){var r;this.editorView=e,this.cursorPos=null,this.element=null,this.timeout=-1,this.width=(r=n.width)!==null&&r!==void 0?r:1,this.color=n.color===!1?void 0:n.color||"black",this.class=n.class,this.handlers=["dragover","dragend","drop","dragleave"].map(i=>{let o=s=>{this[i](s)};return e.dom.addEventListener(i,o),{name:i,handler:o}})}destroy(){this.handlers.forEach(({name:e,handler:n})=>this.editorView.dom.removeEventListener(e,n))}update(e,n){this.cursorPos!=null&&n.doc!=e.state.doc&&(this.cursorPos>e.state.doc.content.size?this.setCursor(null):this.updateOverlay())}setCursor(e){e!=this.cursorPos&&(this.cursorPos=e,e==null?(this.element.parentNode.removeChild(this.element),this.element=null):this.updateOverlay())}updateOverlay(){let e=this.editorView.state.doc.resolve(this.cursorPos),n=!e.parent.inlineContent,r;if(n){let l=e.nodeBefore,a=e.nodeAfter;if(l||a){let u=this.editorView.nodeDOM(this.cursorPos-(l?l.nodeSize:0));if(u){let c=u.getBoundingClientRect(),d=l?c.bottom:c.top;l&&a&&(d=(d+this.editorView.nodeDOM(this.cursorPos).getBoundingClientRect().top)/2),r={left:c.left,right:c.right,top:d-this.width/2,bottom:d+this.width/2}}}}if(!r){let l=this.editorView.coordsAtPos(this.cursorPos);r={left:l.left-this.width/2,right:l.left+this.width/2,top:l.top,bottom:l.bottom}}let i=this.editorView.dom.offsetParent;this.element||(this.element=i.appendChild(document.createElement("div")),this.class&&(this.element.className=this.class),this.element.style.cssText="position: absolute; z-index: 50; pointer-events: none;",this.color&&(this.element.style.backgroundColor=this.color)),this.element.classList.toggle("prosemirror-dropcursor-block",n),this.element.classList.toggle("prosemirror-dropcursor-inline",!n);let o,s;if(!i||i==document.body&&getComputedStyle(i).position=="static")o=-pageXOffset,s=-pageYOffset;else{let l=i.getBoundingClientRect();o=l.left-i.scrollLeft,s=l.top-i.scrollTop}this.element.style.left=r.left-o+"px",this.element.style.top=r.top-s+"px",this.element.style.width=r.right-r.left+"px",this.element.style.height=r.bottom-r.top+"px"}scheduleRemoval(e){clearTimeout(this.timeout),this.timeout=setTimeout(()=>this.setCursor(null),e)}dragover(e){if(!this.editorView.editable)return;let n=this.editorView.posAtCoords({left:e.clientX,top:e.clientY}),r=n&&n.inside>=0&&this.editorView.state.doc.nodeAt(n.inside),i=r&&r.type.spec.disableDropCursor,o=typeof i=="function"?i(this.editorView,n,e):i;if(n&&!o){let s=n.pos;if(this.editorView.dragging&&this.editorView.dragging.slice){let l=Ey(this.editorView.state.doc,s,this.editorView.dragging.slice);l!=null&&(s=l)}this.setCursor(s),this.scheduleRemoval(5e3)}}dragend(){this.scheduleRemoval(20)}drop(){this.scheduleRemoval(20)}dragleave(e){(e.target==this.editorView.dom||!this.editorView.dom.contains(e.relatedTarget))&&this.setCursor(null)}}const aO=Je.create({name:"dropCursor",addOptions(){return{color:"currentColor",width:1,class:void 0}},addProseMirrorPlugins(){return[sO(this.options)]}}),uO=new re({tiptapExtension:aO}),cO=Ee.create({name:"hardBreak",addOptions(){return{keepMarks:!0,HTMLAttributes:{}}},inline:!0,group:"inline",selectable:!1,parseHTML(){return[{tag:"br"}]},renderHTML({HTMLAttributes:t}){return["br",q(this.options.HTMLAttributes,t)]},renderText(){return\`
 \`},addCommands(){return{setHardBreak:()=>({commands:t,chain:e,state:n,editor:r})=>t.first([()=>t.exitCode(),()=>t.command(()=>{const{selection:i,storedMarks:o}=n;if(i.\$from.parent.type.spec.isolating)return!1;const{keepMarks:s}=this.options,{splittableMarks:l}=r.extensionManager,a=o||i.\$to.parentOffset&&i.\$from.marks();return e().insertContent({type:this.name}).command(({tr:u,dispatch:c})=>{if(c&&a&&s){const d=a.filter(f=>l.includes(f.type.name));u.ensureMarks(d)}return!0}).run()})])}},addKeyboardShortcuts(){return{"Mod-Enter":()=>this.editor.commands.setHardBreak(),"Shift-Enter":()=>this.editor.commands.setHardBreak()}}}),dO=new re({tiptapExtension:cO,onBridgeMessage:(t,e)=>(e.type==="set-hard-break"&&(console.log("setting hard break"),t.chain().focus().setHardBreak().run()),!1),extendEditorInstance:t=>({setHardBreak:()=>t({type:"set-hard-break"})}),extendEditorState:()=>({})}),fO=[FM,uT,WM,kT,ZT,tO,JT,QM,fT,jM,LM,oO,VT,JM,ZM,MM,QT,UT,uO,dO];let hO=fO.filter(t=>!window.whiteListBridgeExtensions||window.whiteListBridgeExtensions.includes(t.name));function pO(){const t=bM({bridges:hO});return Gp.jsx(dC,{editor:t,className:window.dynamicHeight?"dynamic-height":void 0})}const mO=()=>window.contentInjected;let Hp;Hp=setInterval(()=>{if(!mO())return;const t=document.getElementById("root");ey(t).render(Gp.jsx(pO,{})),clearInterval(Hp)},1);
-
 </script>
   </head>
   <style>
-    body {
+    html, body {
+      padding: 0;
       margin: 0;
       font-family: Lexend, --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      overflow-x: hidden;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      max-width: 100vw;
+      box-sizing: border-box;
     }
-    
+
+    .checklist-item {
+      display: block;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+    }
     body[data-theme='dark'] {
       background-color: #000000;
       color: #FBFBFB;
@@ -231,7 +244,6 @@ img.ProseMirror-separator {
       background-color: #FFFFFF;
       color: #11181C;
     }
-      
     #root > div:nth-of-type(1) {
       position: absolute;
       height: 100%;
@@ -243,7 +255,6 @@ img.ProseMirror-separator {
     #root > div.dynamic-height {
       height: unset;
     }
-
     #root div .ProseMirror {
       height: 100%;
       overflow: auto;
@@ -257,8 +268,44 @@ img.ProseMirror-separator {
     }
     .highlight-background {
       background-color: #e6e6ff;
+    }    
+    ol {
+      list-style-type: decimal;
     }
+    li {
+      display: list-item; 
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
+    input[type="checkbox"] {
+      pointer-events: auto;
+      width: 20px;
+      height: 20px;
+     -webkit-appearance: none;
+      border-radius: 4px;
+     position: relative;
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: #4599E8;
+      border: 1px solid #4599E8;
+    }
+
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: white;
+  position: absolute;
+  left: 4px;
+  top: -1px;
+  font-size: 14px;
+}
+
   </style>
+
   <body>
     <div id="root"></div>
   </body>

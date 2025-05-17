@@ -1,4 +1,4 @@
-import { Text, type TextProps, StyleSheet, useColorScheme } from "react-native";
+import { Text, type TextProps } from "react-native";
 import { Lexend_400Regular } from "@expo-google-fonts/lexend/400Regular";
 import { Lexend_300Light } from "@expo-google-fonts/lexend/300Light";
 import { Lexend_600SemiBold } from "@expo-google-fonts/lexend/600SemiBold";
@@ -7,6 +7,7 @@ import { Lexend_700Bold } from "@expo-google-fonts/lexend/700Bold";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -22,6 +23,7 @@ export type ThemedTextProps = TextProps & {
     | "primary"
     | "disabled"
     | "viewAll";
+  textIsCentered?: boolean;
 };
 
 const colorVariants = {
@@ -32,9 +34,10 @@ const colorVariants = {
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
   primary: () => Colors.primary,
-  viewAll: () => (useColorScheme() === "dark" ? Colors.grey50 : Colors.grey100),
+  viewAll: () =>
+    useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
   disabled: () =>
-    useColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
+    useActiveColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
 };
 
 export function ThemedText({
@@ -44,6 +47,7 @@ export function ThemedText({
   fontWeight = "regular",
   fontSize = "regular",
   colorVariant = "default",
+  textIsCentered = false,
   ...rest
 }: ThemedTextProps) {
   const color =
@@ -64,6 +68,7 @@ export function ThemedText({
         fontSize === "xl" ? fontSizeStyles.xl : undefined,
         fontSize === "l" ? fontSizeStyles.l : undefined,
         fontSize === "s" ? fontSizeStyles.s : undefined,
+        textIsCentered ? { textAlign: "center" } : undefined,
         style,
       ]}
       {...rest}

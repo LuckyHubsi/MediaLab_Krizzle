@@ -15,19 +15,18 @@ type ColorSchemeProps = {
   colorScheme: "light" | "dark";
 };
 
-export const AndroidPickerWrapper = styled.View`
-  ${Platform.OS === "android" &&
-  ((props: ColorSchemeProps) => `
-    border-width: 1px;
-    border-radius: 16px;
-    border-color: ${Colors.grey50};
-    background-color: ${
-      props.colorScheme === "dark" ? Colors.grey100 : Colors.grey25
-    };
-    font-family: "Lexend_400Regular";
-    padding: 0;
-  `)}
-`;
+export const AndroidPickerWrapper = styled.View<ColorSchemeProps>(
+  ({ colorScheme }: ColorSchemeProps) => ({
+    ...(Platform.OS === "android" && {
+      borderWidth: 1,
+      borderRadius: 16,
+      borderColor: Colors.grey50,
+      backgroundColor: colorScheme === "dark" ? Colors.grey100 : Colors.grey25,
+      padding: 0,
+      color: colorScheme === "dark" ? Colors.dark.text : Colors.black,
+    }),
+  }),
+);
 
 export const getPickerStyles = ({
   colorScheme,
