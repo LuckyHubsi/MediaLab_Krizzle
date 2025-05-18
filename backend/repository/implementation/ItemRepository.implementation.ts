@@ -320,7 +320,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param attributeId - The `AttributeID` of the attribute the value belongs to.
-   * @param value - The updated value.
+   * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
    * @throws RepositoryError if the query fails.
@@ -328,7 +328,7 @@ export class ItemRepositoryImpl
   async updateTextValue(
     itemId: ItemID,
     attributeId: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
@@ -347,7 +347,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param attributeId - The `AttributeID` of the attribute the value belongs to.
-   * @param value - The updated value.
+   * @param value - The updated value or null is removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
    * @throws RepositoryError if the query fails.
@@ -355,7 +355,7 @@ export class ItemRepositoryImpl
   async updateDateValue(
     itemId: ItemID,
     attributeId: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
@@ -374,7 +374,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param attributeId - The `AttributeID` of the attribute the value belongs to.
-   * @param value - The updated value.
+   * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
    * @throws RepositoryError if the query fails.
@@ -382,7 +382,7 @@ export class ItemRepositoryImpl
   async updateRatingValue(
     itemId: ItemID,
     attributeId: AttributeID,
-    value: number,
+    value: number | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
@@ -401,7 +401,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param attributeId - The `AttributeID` of the attribute the value belongs to.
-   * @param value - The updated value.
+   * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
    * @throws RepositoryError if the query fails.
@@ -409,7 +409,7 @@ export class ItemRepositoryImpl
   async updateMultiselectValue(
     itemId: ItemID,
     attributeId: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {

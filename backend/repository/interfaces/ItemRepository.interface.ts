@@ -55,25 +55,25 @@ export interface ItemRepository extends BaseRepository {
   updateTextValue(
     itemId: ItemID,
     attributeID: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   updateDateValue(
     itemId: ItemID,
     attributeID: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   updateRatingValue(
     itemId: ItemID,
     attributeID: AttributeID,
-    value: number,
+    value: number | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   updateMultiselectValue(
     itemId: ItemID,
     attributeID: AttributeID,
-    value: string,
+    value: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
 }

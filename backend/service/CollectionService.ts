@@ -360,40 +360,40 @@ export class CollectionService {
           for (const value of newItem.attributeValues) {
             switch (value.type) {
               case AttributeType.Text:
-                if ("valueString" in value && value.valueString) {
+                if ("valueString" in value) {
                   this.itemRepo.updateTextValue(
                     itemId,
                     value.attributeID,
-                    value.valueString,
+                    value.valueString ?? null,
                     txn,
                   );
                 }
                 break;
               case AttributeType.Date:
-                if ("valueString" in value && value.valueString) {
+                if ("valueString" in value) {
                   this.itemRepo.updateDateValue(
                     itemId,
                     value.attributeID,
-                    value.valueString,
+                    value.valueString ?? null,
                     txn,
                   );
                 }
                 break;
               case AttributeType.Rating:
-                if ("valueNumber" in value && value.valueNumber) {
+                if ("valueNumber" in value) {
                   this.itemRepo.updateRatingValue(
                     itemId,
                     value.attributeID,
-                    value.valueNumber,
+                    value.valueNumber ?? null,
                     txn,
                   );
                 }
                 break;
               case AttributeType.Multiselect:
                 if ("valueMultiselect" in value && value.valueMultiselect) {
-                  const stringifiedValues = JSON.stringify(
-                    value.valueMultiselect,
-                  );
+                  const stringifiedValues = value.valueMultiselect
+                    ? JSON.stringify(value.valueMultiselect)
+                    : null;
                   this.itemRepo.updateMultiselectValue(
                     itemId,
                     value.attributeID,
