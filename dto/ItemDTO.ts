@@ -13,10 +13,13 @@ export type ItemDTO = {
   attributeValues?: ItemAttributeValueDTO[]; // an array of ItemAttributeValueDTOs
 };
 
+/**
+ * Data Transfer Object for preview item data.
+ * Used for transferring data between the backend and frontend.
+ */
 export type PreviewItemDTO = {
-  item_title: string;
   itemID: number;
-  values: (string | number | null)[];
+  values: (string | number | null | string[])[];
   categoryID: number | null;
   categoryName?: string;
 };

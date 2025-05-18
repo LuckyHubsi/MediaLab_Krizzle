@@ -98,6 +98,33 @@ const itemSelectByPageIdQuery: string = `
     ORDER BY a.attributeID ASC, i.itemID ASC;
 `;
 
+const selectItemPreviewValuesQuery: string = `
+    SELECT
+    i.itemID,
+    i.categoryID,
+    cc.category_name AS categoryName,
+    a.attributeID,
+    a.type,
+    CASE
+        WHEN a.type = 'text' THEN tv.value
+        WHEN a.type = 'date' THEN dv.value
+        WHEN a.type = 'rating' THEN rv.value
+        WHEN a.type = 'multi-select' THEN msv.value
+        ELSE NULL
+    END AS value
+    FROM item i
+    JOIN collection c ON i.pageID = c.pageID
+    JOIN attribute a ON a.item_templateID = c.item_templateID
+    LEFT JOIN collection_category cc ON cc.collection_categoryID = i.categoryID
+    LEFT JOIN text_value tv ON tv.itemID = i.itemID AND tv.attributeID = a.attributeID
+    LEFT JOIN date_value dv ON dv.itemID = i.itemID AND dv.attributeID = a.attributeID
+    LEFT JOIN rating_value rv ON rv.itemID = i.itemID AND rv.attributeID = a.attributeID
+    LEFT JOIN multiselect_values msv ON msv.itemID = i.itemID AND msv.attributeID = a.attributeID
+    WHERE c.pageID = ?
+    AND a.preview = 1
+    ORDER BY i.itemID, a.attributeID;
+`;
+
 const insertItemQuery: string = `
     INSERT INTO item (pageID, categoryID) VALUES (?, ?)
 `;
@@ -154,6 +181,7 @@ const deleteItemAttributeValuesQuery: string = `
 export {
   itemSelectByIdQuery,
   itemSelectByPageIdQuery,
+  selectItemPreviewValuesQuery,
   insertItemQuery,
   insertTextValueQuery,
   insertDateValueQuery,

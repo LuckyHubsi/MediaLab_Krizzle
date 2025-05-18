@@ -1,7 +1,11 @@
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { ItemRepository } from "../interfaces/ItemRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
-import { Item, ItemAttributeValue } from "@/backend/domain/entity/Item";
+import {
+  Item,
+  ItemAttributeValue,
+  PreviewItem,
+} from "@/backend/domain/entity/Item";
 import {
   deleteItemAttributeValuesQuery,
   deleteItemQuery,
@@ -11,6 +15,7 @@ import {
   insertRatingValueQuery,
   insertTextValueQuery,
   itemSelectByIdQuery,
+  selectItemPreviewValuesQuery,
   updateDateValueQuery,
   updateItemQuery,
   updateMultiselectValueQuery,
@@ -27,7 +32,8 @@ import {
   pageID,
   AttributeID,
 } from "@/backend/domain/common/IDs";
-import { ItemModel } from "../model/ItemModel";
+import { ItemModel, ItemPreviewValueModel } from "../model/ItemModel";
+import { Attribute } from "@/backend/domain/common/Attribute";
 
 /**
  * Implementation of the ItemRepository interface using SQL queries.
@@ -61,6 +67,32 @@ export class ItemRepositoryImpl
       }
     } catch (error) {
       throw new RepositoryError("Failed to fetch item.");
+    }
+  }
+
+  /**
+   * Fetches an item and its values.
+   *
+   * @param pageId - The ID of the page for which the items should be fetched.
+   * @param attributes - An array of Attributes to help with mapping the items to domain entities.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to an array of `PreviewItem` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getItemsByID(
+    pageId: PageID,
+    attributes: Attribute[],
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<PreviewItem[]> {
+    try {
+      const items = await this.fetchAll<ItemPreviewValueModel>(
+        selectItemPreviewValuesQuery,
+        [pageId],
+        txn,
+      );
+      return ItemMapper.toPreviewEntities(items, attributes);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch items.");
     }
   }
 

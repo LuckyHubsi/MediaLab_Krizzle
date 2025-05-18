@@ -1,4 +1,4 @@
-import { NewAttribute } from "@/backend/domain/common/Attribute";
+import { Attribute, NewAttribute } from "@/backend/domain/common/Attribute";
 import * as SQLite from "expo-sqlite";
 import { AttributeRepository } from "../interfaces/AttributeRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
@@ -6,6 +6,7 @@ import {
   insertAttributeQuery,
   insertMultiselectOptionsQuery,
   insertRatingSymbolQuery,
+  selectPreviewAttributesQuery,
 } from "../query/AttributeQuery";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
@@ -13,6 +14,7 @@ import {
   attributeID,
   AttributeID,
   ItemTemplateID,
+  PageID,
 } from "@/backend/domain/common/IDs";
 
 /**
@@ -42,7 +44,7 @@ export class AttributeRepositoryImpl
     try {
       const attribute = AttributeMapper.toInsertModel(newAttribute);
       const attributeId = await this.executeTransaction(async (transaction) => {
-        await super.executeQuery(
+        await this.executeQuery(
           insertAttributeQuery,
           [
             attribute.attribute_label,
@@ -53,7 +55,7 @@ export class AttributeRepositoryImpl
           txn ?? transaction,
         );
 
-        const lastInsertedID = await super.getLastInsertId(txn);
+        const lastInsertedID = await this.getLastInsertId(txn);
         return lastInsertedID;
       });
       return attributeID.parse(attributeId);
@@ -77,7 +79,7 @@ export class AttributeRepositoryImpl
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
-      await super.executeQuery(
+      await this.executeQuery(
         insertMultiselectOptionsQuery,
         [JSON.stringify(options), attributeID],
         txn,
@@ -102,13 +104,38 @@ export class AttributeRepositoryImpl
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
-      await super.executeQuery(
+      await this.executeQuery(
         insertRatingSymbolQuery,
         [symbol, attributeID],
         txn,
       );
     } catch (error) {
       throw new RepositoryError("Failed to insert rating symbol.");
+    }
+  }
+
+  /**
+   * Retrieves the preview attributes based on a page ID.
+   *
+   * @param pageId - An `PageID` object representing the page ID the attribute belongs to.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to an array of `Attribute` entities.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getPreviewAttributes(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<Attribute[]> {
+    try {
+      const attributes = await this.fetchAll<any>(
+        selectPreviewAttributesQuery,
+        [pageId],
+        txn,
+      );
+
+      return attributes.map(AttributeMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch preview attributes.");
     }
   }
 }

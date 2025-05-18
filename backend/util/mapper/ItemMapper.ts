@@ -1,5 +1,8 @@
-import { ItemModel } from "@/backend/repository/model/ItemModel";
-import { ItemDTO } from "@/dto/ItemDTO";
+import {
+  ItemModel,
+  ItemPreviewValueModel,
+} from "@/backend/repository/model/ItemModel";
+import { ItemDTO, PreviewItemDTO } from "@/dto/ItemDTO";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import {
   createNewItemSchema,
@@ -7,8 +10,15 @@ import {
   itemAttributeValueSchema,
   itemSchema,
   NewItem,
+  PreviewItem,
 } from "@/backend/domain/entity/Item";
-import { z } from "zod";
+import { number, z } from "zod";
+import { Attribute } from "@/backend/domain/common/Attribute";
+import { ItemsDTO } from "@/dto/ItemsDTO";
+import { ItemID } from "@/backend/domain/common/IDs";
+import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
+import { AttributeMapper } from "./AttributeMapper";
+import { AttributeDTO } from "@/dto/AttributeDTO";
 
 /**
  * Mapper class for converting between Item domain entities, DTOs, and database models:
@@ -35,6 +45,72 @@ export class ItemMapper {
       categoryID: entity.categoryID ?? null,
       categoryName: entity.categoryName ?? undefined,
       attributeValues: entity.attributeValues as ItemAttributeValueDTO[],
+    };
+  }
+
+  /**
+   * Maps a PreviewItem domain entity to an PreviewItemDTO with the help of an array of Attribute entities.
+   *
+   * @param entity - The `PreviewItem` domain entity.
+   * @param attributes - The array `Attribute` domain entities.
+   * @returns A corresponding `PreviewItemDTO` object.
+   */
+  static toPreviewDTO(
+    entity: PreviewItem,
+    attributes: Attribute[],
+  ): PreviewItemDTO {
+    const dtoAttributes: (string | number | string[] | null)[] =
+      entity.values.map((value, index) => {
+        const attr = attributes[index];
+
+        // return null if value is null or attribute is missing
+        if (value === null || !attr) {
+          return null;
+        }
+
+        // conversion based on the attribute type
+        switch (attr.type) {
+          case "text":
+            // text values are expected to be strings
+            return typeof value === "string" ? value : null;
+          case "date":
+            // date values are expected to be an instance of Date and to be converted to strings
+            return value instanceof Date ? value.toISOString() : null;
+          case "rating":
+            // rating values are expected to be numbers
+            return typeof value === "number" ? value : null;
+          case "multi-select":
+            // multiselect values are expected to be arrays of strings
+            return Array.isArray(value) &&
+              value.every((v) => typeof v === "string")
+              ? value
+              : null;
+          default:
+            return null;
+        }
+      });
+
+    return {
+      itemID: entity.itemID,
+      categoryID: entity.categoryID ?? null,
+      categoryName: entity.categoryName ?? undefined,
+      values: dtoAttributes,
+    };
+  }
+
+  /**
+   * Maps an Attribute and a PreviewItems domain entity array to an ItemsDTO.
+   *
+   * @param items - The `PreviewItem[]` domain entities.
+   * @param attributes - The `Attribute[]` domain entities.
+   * @returns A corresponding `ItemsDTO` object.
+   */
+  static toItemsDTO(items: PreviewItem[], attributes: Attribute[]): ItemsDTO {
+    return {
+      collectionID: 1,
+      pageID: 1,
+      attributes: attributes.map(AttributeMapper.toDTO),
+      items: items.map((item) => this.toPreviewDTO(item, attributes)),
     };
   }
 
@@ -152,6 +228,79 @@ export class ItemMapper {
     } catch (error) {
       console.error("Error mapping ItemModel to Item:", error);
       throw new Error("Failed to map ItemModel to domain Item");
+    }
+  }
+
+  /**
+   * Maps an array of ItemPreviewValueModel from the db to an array of PreviewItem domain entities based on an array of Attributes.
+   *
+   * @param itemPreviewValues - The array of ItemPreviewValueModel from the DB.
+   * @param attributes - The array of Attributes to help the mapper.
+   * @returns A validated array of `PreviewItem` domain entities.
+   * @throws Error if validation fails.
+   */
+  static toPreviewEntities(
+    itemPreviewValues: ItemPreviewValueModel[],
+    attributes: Attribute[],
+  ): PreviewItem[] {
+    try {
+      // group all the individual ItemPreviewValueModel by their IDs
+      const groupedByItemID = new Map<number, ItemPreviewValueModel[]>();
+      for (const value of itemPreviewValues) {
+        if (!groupedByItemID.has(value.itemID)) {
+          groupedByItemID.set(value.itemID, []);
+        }
+        groupedByItemID.get(value.itemID)!.push(value);
+      }
+
+      const items: PreviewItem[] = [];
+
+      // loop through each group and build a PreviewItem object
+      for (const [itemID, previewValues] of groupedByItemID.entries()) {
+        const first = previewValues[0]; // define the first record to get other data like category
+
+        const values = attributes.map((attr) => {
+          // find the preview value matching the current attribute
+          const previewValue = previewValues.find(
+            (value) => value.attributeID === attr.attributeID,
+          );
+
+          // return null if there is no previewValue
+          if (!previewValue) return null;
+
+          const raw = previewValue.value;
+
+          // parse the raw value based on the attribute type
+          switch (attr.type) {
+            case "text":
+              return typeof raw === "string" ? raw : null;
+            case "date":
+              return typeof raw === "string" ? new Date(raw) : null;
+            case "rating":
+              return typeof raw === "number" ? raw : null;
+            case "multi-select":
+              if (typeof raw !== "string") return null;
+              const parsed = JSON.parse(raw);
+              return Array.isArray(parsed) ? parsed : null;
+
+            default:
+              return null;
+          }
+        });
+
+        // push the PreviewItem to the array
+        items.push({
+          itemID: itemID as ItemID,
+          categoryID: first.categoryID as CategoryID,
+          categoryName: first.category_name,
+          values,
+        });
+      }
+
+      return items;
+    } catch (error) {
+      console.error("Error mapping PreviewItems[]:", error);
+      throw new Error("Failed to map to PreviewItems[]");
     }
   }
 }

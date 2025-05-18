@@ -17,13 +17,14 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { CollectionCategoryRepository } from "../repository/interfaces/CollectionCategoryRepository.interface";
 import { categoryRepository } from "../repository/implementation/CollectionCategoryRepository.implementation";
 import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { collectionID, itemID, pageID } from "../domain/common/IDs";
+import { collectionID, itemID, PageID, pageID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
 import { ItemMapper } from "../util/mapper/ItemMapper";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
+import { ItemsDTO } from "@/dto/ItemsDTO";
 
 /**
  * CollectionService encapsulates all collection-related application logic.
@@ -414,6 +415,24 @@ export class CollectionService {
       return success;
     } catch (error) {
       throw new ServiceError("Failed to update collection item.");
+    }
+  }
+
+  async getItemsByPageId(pageId: number): Promise<ItemsDTO> {
+    try {
+      const brandedPageID: PageID = pageID.parse(pageId);
+
+      const attributes =
+        await this.attributeRepo.getPreviewAttributes(brandedPageID);
+
+      const previewItems = await this.itemRepo.getItemsByID(
+        brandedPageID,
+        attributes,
+      );
+
+      return ItemMapper.toItemsDTO(previewItems, attributes);
+    } catch (error) {
+      throw new ServiceError("Failed to fetch all items.");
     }
   }
 }

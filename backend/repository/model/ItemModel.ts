@@ -9,3 +9,14 @@ export type ItemModel = {
   category_name: string | null; // the name of the category the item was assigned to
   attribute_values: string; // JSON stringified attribute values of the item
 };
+
+/**
+ * Represents the model of a single item value fetched from the DB - used for preview.
+ */
+export type ItemPreviewValueModel = {
+  itemID: number;
+  attributeID: number;
+  value: string | number | null;
+  categoryID: number | null;
+  category_name: string | null;
+};

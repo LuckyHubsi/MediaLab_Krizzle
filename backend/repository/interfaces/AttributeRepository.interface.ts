@@ -1,7 +1,11 @@
-import { NewAttribute } from "@/backend/domain/common/Attribute";
+import { Attribute, NewAttribute } from "@/backend/domain/common/Attribute";
 import { BaseRepository } from "./BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
-import { AttributeID, ItemTemplateID } from "@/backend/domain/common/IDs";
+import {
+  AttributeID,
+  ItemTemplateID,
+  PageID,
+} from "@/backend/domain/common/IDs";
 
 /**
  * AttributeRepository defines CRUD operations for `Attribute` entities.
@@ -26,4 +30,9 @@ export interface AttributeRepository extends BaseRepository {
     attributeID: AttributeID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+
+  getPreviewAttributes(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<Attribute[]>;
 }

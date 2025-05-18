@@ -1,8 +1,13 @@
-import { Item, ItemAttributeValue } from "@/backend/domain/entity/Item";
+import {
+  Item,
+  ItemAttributeValue,
+  PreviewItem,
+} from "@/backend/domain/entity/Item";
 import { BaseRepository } from "./BaseRepository.interface";
 import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
 import * as SQLite from "expo-sqlite";
 import { AttributeID, ItemID, PageID } from "@/backend/domain/common/IDs";
+import { Attribute } from "@/backend/domain/common/Attribute";
 
 /**
  * ItemRepository defines CRUD operations for `Item` and `ItemAttributeValue` entities.
@@ -11,6 +16,11 @@ import { AttributeID, ItemID, PageID } from "@/backend/domain/common/IDs";
  */
 export interface ItemRepository extends BaseRepository {
   getItemByID(itemId: ItemID): Promise<Item>;
+  getItemsByID(
+    pageId: PageID,
+    attributes: Attribute[],
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<PreviewItem[]>;
   insertItemAndReturnID(
     pageId: PageID,
     categoryId: CategoryID,

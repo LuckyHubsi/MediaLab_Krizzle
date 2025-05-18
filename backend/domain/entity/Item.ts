@@ -112,3 +112,27 @@ export const createNewItemSchema = z.object({
  * Represents the shape of data required to create a new item.
  */
 export type NewItem = z.infer<typeof createNewItemSchema>;
+
+/**
+ * Schema for creating a PreviewItem.
+ */
+export const previewItemSchema = z.object({
+  itemID: itemID,
+  categoryID: collectionCategoryID.optional().nullable(),
+  categoryName: common.optionalNullableString,
+  values: z.array(
+    z.union([
+      common.string750,
+      z.number().int().min(0).max(5),
+      z.date(),
+      z.array(common.string30).min(0).max(20),
+      z.null(),
+    ]),
+  ),
+});
+
+/**
+ * TypeScript type inferred from `previewItemSchema`.
+ * Represents fully defined PreviewItem entity.
+ */
+export type PreviewItem = z.infer<typeof previewItemSchema>;
