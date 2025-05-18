@@ -3,7 +3,7 @@ import {
   NewGeneralPage,
   pageID,
 } from "@/backend/domain/entity/GeneralPage";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { GeneralPageModel } from "@/models/GeneralPageModel";
 import { PageType } from "@/utils/enums/PageType";
 import { TagMapper } from "../TagMapper";

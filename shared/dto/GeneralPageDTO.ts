@@ -1,4 +1,4 @@
-import { PageType } from "@/utils/enums/PageType";
+import { PageType } from "../enum/PageType";
 import { TagDTO } from "./TagDTO";
 
 /**

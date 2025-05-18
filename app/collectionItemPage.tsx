@@ -10,7 +10,7 @@ import {
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
-import { ItemDTO } from "@/dto/ItemDTO";
+import { ItemDTO } from "@/shared/dto/ItemDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { collectionService } from "@/backend/service/CollectionService";

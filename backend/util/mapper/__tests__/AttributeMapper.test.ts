@@ -6,7 +6,7 @@ import {
 import { AttributeType } from "../../../../shared/enum/AttributeType";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
 import { AttributeMapper } from "../AttributeMapper";
-import { AttributeDTORestructure } from "@/dto/AttributeDTO";
+import { AttributeDTORestructure } from "@/shared/dto/AttributeDTO";
 
 describe("AttributeMapper", () => {
   const brandedAttributeID = attributeID.parse(1);

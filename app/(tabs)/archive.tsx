@@ -13,7 +13,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { generalPageService } from "@/backend/service/GeneralPageService";

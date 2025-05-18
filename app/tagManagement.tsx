@@ -3,7 +3,7 @@ import { SafeAreaView, View, FlatList, Keyboard, Platform } from "react-native";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { Button } from "@/components/ui/Button/Button";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";

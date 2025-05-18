@@ -4,7 +4,7 @@ import {
   NewItemTemplate,
   itemTemplateSchema,
 } from "@/backend/domain/entity/ItemTemplate";
-import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
+import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateModel } from "@/backend/repository/model/ItemTemplateModel";
 import { AttributeMapper } from "./AttributeMapper";
 import { Attribute } from "@/backend/domain/common/Attribute";

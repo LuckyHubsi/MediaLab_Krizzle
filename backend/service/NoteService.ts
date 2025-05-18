@@ -1,4 +1,4 @@
-import { NoteDTO } from "@/dto/NoteDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { noteRepository } from "../repository/implementation/NoteRepository.implementation";
 import { NoteRepository } from "../repository/interfaces/NoteRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";

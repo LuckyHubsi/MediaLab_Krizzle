@@ -4,7 +4,7 @@ import {
   NewItemTemplate,
 } from "@/backend/domain/entity/ItemTemplate";
 import { ItemTemplateModel } from "@/backend/repository/model/ItemTemplateModel";
-import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
+import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateMapper } from "../ItemTemplateMapper";
 
 const mockAttributeEntity = {

@@ -21,10 +21,10 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { generalPageService } from "@/backend/service/GeneralPageService";

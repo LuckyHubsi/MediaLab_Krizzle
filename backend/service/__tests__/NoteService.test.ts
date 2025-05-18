@@ -1,4 +1,4 @@
-import { NoteDTO } from "@/dto/NoteDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { Note } from "@/backend/domain/entity/Note";
 import { pageID } from "@/backend/domain/entity/GeneralPage";
 import * as common from "../../domain/common/types";

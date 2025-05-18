@@ -1,11 +1,11 @@
-import { CollectionDTO } from "@/dto/CollectionDTO";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { collectionRepository } from "../repository/implementation/CollectionRepository.implementation";
 import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { CollectionRepository } from "../repository/interfaces/CollectionRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
-import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
+import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
 import { baseRepository } from "../repository/implementation/BaseRepository.implementation";
@@ -16,15 +16,15 @@ import { attributeRepository } from "../repository/implementation/AttributeRepos
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { CollectionCategoryRepository } from "../repository/interfaces/CollectionCategoryRepository.interface";
 import { categoryRepository } from "../repository/implementation/CollectionCategoryRepository.implementation";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { collectionID, itemID, PageID, pageID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
 import { ItemMapper } from "../util/mapper/ItemMapper";
-import { ItemDTO } from "@/dto/ItemDTO";
+import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
-import { ItemsDTO } from "@/dto/ItemsDTO";
+import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 
 /**
  * CollectionService encapsulates all collection-related application logic.

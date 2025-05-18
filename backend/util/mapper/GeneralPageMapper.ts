@@ -5,8 +5,8 @@ import {
   NewGeneralPage,
 } from "@/backend/domain/entity/GeneralPage";
 import { GeneralPageModel } from "@/backend/repository/model/GeneralPageModel";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
-import { TagDTO } from "@/dto/TagDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { number } from "zod";
 import { TagMapper } from "./TagMapper";
 import { pageID } from "@/backend/domain/common/IDs";

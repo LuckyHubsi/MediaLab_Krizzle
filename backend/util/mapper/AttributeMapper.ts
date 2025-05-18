@@ -5,7 +5,7 @@ import {
   NewAttribute,
 } from "@/backend/domain/common/Attribute";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
-import { AttributeDTORestructure } from "@/dto/AttributeDTO";
+import { AttributeDTORestructure } from "@/shared/dto/AttributeDTO";
 import { AttributeType } from "../../../shared/enum/AttributeType";
 import { attributeID } from "@/backend/domain/common/IDs";
 

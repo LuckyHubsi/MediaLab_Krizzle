@@ -2,8 +2,8 @@ import {
   ItemModel,
   ItemPreviewValueModel,
 } from "@/backend/repository/model/ItemModel";
-import { ItemDTO, PreviewItemDTO } from "@/dto/ItemDTO";
-import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
+import { ItemDTO, PreviewItemDTO } from "@/shared/dto/ItemDTO";
+import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import {
   createNewItemSchema,
   Item,
@@ -14,11 +14,11 @@ import {
 } from "@/backend/domain/entity/Item";
 import { number, z } from "zod";
 import { Attribute } from "@/backend/domain/common/Attribute";
-import { ItemsDTO } from "@/dto/ItemsDTO";
+import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import { ItemID } from "@/backend/domain/common/IDs";
 import { CategoryID } from "@/backend/domain/entity/CollectionCategory";
 import { AttributeMapper } from "./AttributeMapper";
-import { AttributeDTO } from "@/dto/AttributeDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 
 /**
  * Mapper class for converting between Item domain entities, DTOs, and database models:

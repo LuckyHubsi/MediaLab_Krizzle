@@ -1,4 +1,4 @@
-import { AttributeType } from "@/utils/enums/AttributeType";
+import { AttributeType } from "../enum/AttributeType";
 
 export type AttributeDTO = {
   attributeID?: number;

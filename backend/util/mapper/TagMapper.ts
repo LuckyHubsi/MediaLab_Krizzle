@@ -1,4 +1,4 @@
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import {
   createNewTagSchema,
   NewTag,

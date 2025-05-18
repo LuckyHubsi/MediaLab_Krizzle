@@ -1,4 +1,4 @@
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { TagRepository } from "../repository/interfaces/TagRepository.interface";
 import { tagRepository } from "../repository/implementation/TagRepository.implementation";
 import { TagMapper } from "../util/mapper/TagMapper";

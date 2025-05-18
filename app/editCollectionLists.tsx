@@ -9,7 +9,7 @@ import EditCollectionLists from "@/components/ui/EditCollectionLists/EditCollect
 import { ro } from "date-fns/locale";
 import { router, useLocalSearchParams } from "expo-router";
 import { CollectionData } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { collectionService } from "@/backend/service/CollectionService";
 
 export default function EditCollectionListsScreen() {

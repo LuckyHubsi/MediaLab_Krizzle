@@ -9,17 +9,17 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
-import { CollectionDTO } from "@/dto/CollectionDTO";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { template } from "@babel/core";
 import {
   CollectionSelectable,
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { ItemsDTO } from "@/dto/ItemsDTO";
+import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { PreviewItemDTO } from "@/dto/ItemDTO";
+import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { collectionService } from "@/backend/service/CollectionService";
 import { generalPageService } from "@/backend/service/GeneralPageService";

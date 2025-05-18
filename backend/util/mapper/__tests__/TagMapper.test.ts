@@ -1,6 +1,6 @@
 import { NewTag, Tag, tagID } from "@/backend/domain/entity/Tag";
 import { TagModel } from "@/backend/repository/model/TagModel";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { TagMapper } from "../TagMapper";
 
 describe("TagMapper", () => {

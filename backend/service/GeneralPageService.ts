@@ -1,4 +1,4 @@
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";

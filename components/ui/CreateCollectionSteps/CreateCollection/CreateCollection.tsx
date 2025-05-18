@@ -31,7 +31,7 @@ import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { tagService } from "@/backend/service/TagService";

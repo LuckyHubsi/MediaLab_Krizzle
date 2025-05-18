@@ -4,7 +4,7 @@ import {
   createNewCollectionSchema,
   NewCollection,
 } from "@/backend/domain/entity/Collection";
-import { CollectionDTO } from "@/dto/CollectionDTO";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { TagMapper } from "./TagMapper";
 import { CollectionCategoryMapper } from "./CollectionCategoryMapper";
 import { CollectionModel } from "@/backend/repository/model/CollectionModel";

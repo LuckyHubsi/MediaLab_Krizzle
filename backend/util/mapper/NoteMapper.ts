@@ -4,7 +4,7 @@ import {
   Note,
   noteSchema,
 } from "@/backend/domain/entity/Note";
-import { NoteDTO } from "@/dto/NoteDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { TagMapper } from "./TagMapper";
 import { NoteModel } from "@/backend/repository/model/NoteModel";
 import { pageID } from "@/backend/domain/common/IDs";

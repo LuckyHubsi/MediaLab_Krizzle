@@ -7,7 +7,7 @@ import {
   NewCollectionCategory,
 } from "@/backend/domain/entity/CollectionCategory";
 import { CollectionCategoryModel } from "@/backend/repository/model/CollectionCategoryModel";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 
 /**
  * Mapper class for converting between CollectionCategory domain entities, DTOs, and database models:

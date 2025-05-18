@@ -6,7 +6,7 @@ import { AppState, AppStateStatus, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
-import { NoteDTO } from "@/dto/NoteDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";

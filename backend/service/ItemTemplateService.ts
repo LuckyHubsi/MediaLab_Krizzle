@@ -1,4 +1,4 @@
-import { ItemTemplateDTORestructure } from "@/dto/ItemTemplateDTO";
+import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { templateRepository } from "../repository/implementation/ItemTemplateRepository.implementation";
 import { ItemTemplateRepository } from "../repository/interfaces/ItemTemplateRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";

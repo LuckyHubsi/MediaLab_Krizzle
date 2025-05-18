@@ -19,8 +19,8 @@ import {
   iconLabelMap,
 } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { TagDTO } from "@/dto/TagDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { useFocusEffect } from "@react-navigation/native";

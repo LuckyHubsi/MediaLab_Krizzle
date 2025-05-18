@@ -7,13 +7,13 @@ import CreateCollection, {
 import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
-import { CollectionDTO } from "@/dto/CollectionDTO";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import {
   ItemTemplateDTO,
   ItemTemplateDTORestructure,
-} from "@/dto/ItemTemplateDTO";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { AttributeDTO } from "@/dto/AttributeDTO";
+} from "@/shared/dto/ItemTemplateDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { Platform } from "react-native";
 import { collectionService } from "@/backend/service/CollectionService";

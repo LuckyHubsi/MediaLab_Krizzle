@@ -21,7 +21,7 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { Button } from "@/components/ui/Button/Button";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
