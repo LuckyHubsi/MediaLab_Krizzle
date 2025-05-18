@@ -1,12 +1,11 @@
 import { CollectionRepository } from "../interfaces/CollectionRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { CollectionModel } from "../model/CollectionModel";
-import { collectionSelectByPageIdQuery } from "@/queries/CollectionQuery";
 import { PageType } from "@/shared/enum/PageType";
 import { CollectionMapper } from "@/backend/util/mapper/CollectionMapper";
 import { Collection } from "@/backend/domain/entity/Collection";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
-import { insertCollectionQuery } from "../query/CollectionQuery";
+import { collectionSelectByPageIdQuery, insertCollectionQuery } from "../query/CollectionQuery";
 import * as SQLite from "expo-sqlite";
 import {
   collectionID,
