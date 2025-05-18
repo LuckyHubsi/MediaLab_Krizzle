@@ -5,9 +5,9 @@ import {
   NewAttribute,
 } from "@/backend/domain/common/Attribute";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
-import { AttributeDTORestructure } from "@/shared/dto/AttributeDTO";
 import { AttributeType } from "../../../shared/enum/AttributeType";
 import { attributeID } from "@/backend/domain/common/IDs";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 
 /**
  * Mapper class for converting between Attribute domain entities, DTOs, and database models:
@@ -26,7 +26,7 @@ export class AttributeMapper {
    * @param entity - The `Attribute` domain entity.
    * @returns A corresponding `AttributeDTO` object.
    */
-  static toDTO(entity: Attribute): AttributeDTORestructure {
+  static toDTO(entity: Attribute): AttributeDTO {
     return {
       attributeID: entity.attributeID,
       attributeLabel: entity.attributeLabel,
@@ -62,7 +62,7 @@ export class AttributeMapper {
    * @returns A validated `NewAttribute` domain entity.
    * @throws Error if validation fails.
    */
-  static toNewEntity(dto: AttributeDTORestructure): NewAttribute {
+  static toNewEntity(dto: AttributeDTO): NewAttribute {
     try {
       const parsedDTO = createNewAttributeSchema.parse({
         attributeLabel: dto.attributeLabel,

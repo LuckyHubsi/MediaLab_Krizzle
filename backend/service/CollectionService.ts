@@ -5,7 +5,6 @@ import { CollectionRepository } from "../repository/interfaces/CollectionReposit
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
-import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
 import { baseRepository } from "../repository/implementation/BaseRepository.implementation";
@@ -25,6 +24,7 @@ import { ItemMapper } from "../util/mapper/ItemMapper";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
 import { ItemsDTO } from "@/shared/dto/ItemsDTO";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 
 /**
  * CollectionService encapsulates all collection-related application logic.
@@ -85,7 +85,7 @@ export class CollectionService {
    */
   async saveCollection(
     collectionDTO: CollectionDTO,
-    templateDTO: ItemTemplateDTORestructure,
+    templateDTO: ItemTemplateDTO,
   ): Promise<number> {
     try {
       // validate the user input

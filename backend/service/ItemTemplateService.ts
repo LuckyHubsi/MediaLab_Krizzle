@@ -1,4 +1,4 @@
-import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { templateRepository } from "../repository/implementation/ItemTemplateRepository.implementation";
 import { ItemTemplateRepository } from "../repository/interfaces/ItemTemplateRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
@@ -20,10 +20,10 @@ export class ItemTemplateService {
    * Fetch template by its ID.
    *
    * @param templateId - A number representing the template ID
-   * @returns A Promise resolving to an `ItemTemplateDTORestructure` object.
+   * @returns A Promise resolving to an `ItemTemplateDTO` object.
    * @throws ServiceError if retrieval fails.
    */
-  async getTemplate(templateId: number): Promise<ItemTemplateDTORestructure> {
+  async getTemplate(templateId: number): Promise<ItemTemplateDTO> {
     try {
       const brandedTemplateID: ItemTemplateID =
         itemTemplateID.parse(templateId);

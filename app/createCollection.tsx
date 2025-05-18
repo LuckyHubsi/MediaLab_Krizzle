@@ -8,10 +8,7 @@ import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCo
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
-import {
-  ItemTemplateDTO,
-  ItemTemplateDTORestructure,
-} from "@/shared/dto/ItemTemplateDTO";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
@@ -77,7 +74,7 @@ export default function CollectionTemplateScreen() {
       prepareDTOs();
     const pageId = await collectionService.saveCollection(
       dtos.collection,
-      dtos.template as ItemTemplateDTORestructure,
+      dtos.template,
     );
     router.replace({
       pathname: "/collectionPage",

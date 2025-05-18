@@ -4,7 +4,7 @@ import {
   NewItemTemplate,
   itemTemplateSchema,
 } from "@/backend/domain/entity/ItemTemplate";
-import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateModel } from "@/backend/repository/model/ItemTemplateModel";
 import { AttributeMapper } from "./AttributeMapper";
 import { Attribute } from "@/backend/domain/common/Attribute";
@@ -27,7 +27,7 @@ export class ItemTemplateMapper {
    * @param entity - The `ItemTemplate` domain entity.
    * @returns A corresponding `ItemTemplateDTO` object.
    */
-  static toDTO(entity: ItemTemplate): ItemTemplateDTORestructure {
+  static toDTO(entity: ItemTemplate): ItemTemplateDTO {
     return {
       item_templateID: entity.itemTemplateID,
       template_name: entity.templateName,
@@ -73,7 +73,7 @@ export class ItemTemplateMapper {
    * @returns A validated `NewItemTemplate` domain entity.
    * @throws Error if validation fails.
    */
-  static toNewEntity(dto: ItemTemplateDTORestructure): NewItemTemplate {
+  static toNewEntity(dto: ItemTemplateDTO): NewItemTemplate {
     try {
       const parsedDTO = createNewItemTemplateSchema.parse({
         templateName: dto.template_name,
