@@ -9,30 +9,22 @@ interface CollectionListProps {
 export const CollectionListContainer = styled(
   TouchableOpacity,
 )<CollectionListProps>`
-  background-color: ${({ active, themeMode }: CollectionListProps) =>
-    active
-      ? Colors.widget.blue
-      : themeMode === "dark"
-        ? Colors.dark.pillBackground
-        : Colors.light.pillBackground};
+  background-color: ${({ active }: CollectionListProps) =>
+    active ? Colors.white : "transparent"};
   display: flex;
-  width: 124px;
-  height: 42px;
+
+  padding: 10px 20px;s
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 33px;
+  border-radius: 25px 25px 0px 0px;
   margin-right: 6px;
 `;
 
 export const CollectionListText = styled(Text)<CollectionListProps>`
-  color: ${({ active, themeMode }: CollectionListProps) =>
-    active
-      ? "#fff"
-      : themeMode === "dark"
-        ? Colors.dark.text
-        : Colors.light.text};
+  color: ${({ active }: CollectionListProps) =>
+    active ? Colors.widget.blue : "ffffff"};
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;

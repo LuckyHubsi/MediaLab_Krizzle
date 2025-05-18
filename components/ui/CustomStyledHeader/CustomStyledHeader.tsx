@@ -28,6 +28,7 @@ interface HeaderProps {
   otherBackBehavior?: () => void;
   param?: string;
   leftIconName?: keyof typeof MaterialIcons.glyphMap;
+  isTransparent?: boolean;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -40,6 +41,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   otherBackBehavior,
   param,
   leftIconName,
+  isTransparent,
 }) => {
   const router = useRouter();
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -67,7 +69,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   };
 
   return (
-    <StyledHeader colorScheme={colorScheme}>
+    <StyledHeader colorScheme={colorScheme} isTransparent={isTransparent}>
       <TouchableOpacity
         onPress={handleBackPress}
         style={{ flexDirection: "row", alignItems: "center", flex: 1 }}

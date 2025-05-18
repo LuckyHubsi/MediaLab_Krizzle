@@ -2,14 +2,27 @@ import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
-export const StyledHeader = styled.View<{ colorScheme: "light" | "dark" }>`
+export const StyledHeader = styled.View<{
+  colorScheme: "light" | "dark";
+  isTransparent?: boolean;
+}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 16px;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light" ? "#FBFBFB" : "#111111"};
+  background-color: ${({
+    colorScheme,
+    isTransparent,
+  }: {
+    colorScheme: "light" | "dark";
+    isTransparent?: boolean;
+  }) =>
+    isTransparent
+      ? "transparent"
+      : colorScheme === "light"
+        ? "#FBFBFB"
+        : "#111111"};
 `;
 
 export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
