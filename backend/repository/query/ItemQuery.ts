@@ -102,7 +102,7 @@ const selectItemPreviewValuesQuery: string = `
     SELECT
     i.itemID,
     i.categoryID,
-    cc.category_name AS categoryName,
+    cc.category_name,
     a.attributeID,
     a.type,
     CASE
