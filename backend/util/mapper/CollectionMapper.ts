@@ -143,7 +143,6 @@ export class CollectionMapper {
    */
   static toEntity(model: CollectionModel): Collection {
     try {
-      console.log("model", JSON.stringify(model, null, 2));
       return collectionSchema.parse({
         pageID: pageID.parse(model.pageID),
         pageType: model.page_type,

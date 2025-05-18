@@ -125,7 +125,6 @@ export class NoteMapper {
    */
   static toEntity(model: NoteModel): Note {
     try {
-      console.log("NOTE MODEL", JSON.stringify(model, null, 2));
       return noteSchema.parse({
         pageID: pageID.parse(model.pageID),
         pageType: model.page_type,

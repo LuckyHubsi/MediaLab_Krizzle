@@ -70,7 +70,6 @@ export class CollectionCategoryRepositoryImpl
         selectCategoriesByCollectionIdQuery,
         [collectionId],
       );
-      console.log("INSIDE GET", JSON.stringify(categories, null, 2));
       return categories.map(CollectionCategoryMapper.toEntity);
     } catch (error) {
       throw new RepositoryError("Failed to retrieve categories.");
