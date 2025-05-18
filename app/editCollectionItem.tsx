@@ -1,6 +1,5 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { Platform, View } from "react-native";
+import { Keyboard, Platform, ScrollView, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,11 +8,11 @@ import { itemService } from "@/services/ItemService";
 import { itemTemplateService } from "@/services/ItemTemplateService";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { AttributeType } from "@/utils/enums/AttributeType";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { collectionService } from "@/services/CollectionService";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { ItemDTO } from "@/dto/ItemDTO";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
+import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 
 export default function EditCollectionItem() {
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
@@ -27,7 +26,7 @@ export default function EditCollectionItem() {
   const [selectedCategoryID, setSelectedCategoryID] = useState<number | null>(
     null,
   );
-
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,6 +100,21 @@ export default function EditCollectionItem() {
     })();
   }, [itemId]);
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
+
   const handleInputChange = (attributeID: number, value: any) => {
     setAttributeValues((prev) => ({
       ...prev,
@@ -119,13 +133,19 @@ export default function EditCollectionItem() {
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
       topPadding={Platform.select({ ios: 20, android: 30 })}
     >
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View>
+      <View style={{ flex: 1 }}>
+        <View style={{ marginBottom: 10 }}>
           <Header
             title="Edit Collection Item"
             onIconPress={() => alert("Popup!")}
           />
-
+        </View>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 95 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <AddCollectionItemCard
             attributes={attributes}
             lists={lists}
@@ -134,93 +154,95 @@ export default function EditCollectionItem() {
             onListChange={handleListChange}
             selectedCategoryID={selectedCategoryID}
           />
-        </View>
+        </ScrollView>
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <BottomButtons
+            titleLeftButton={"Cancel"}
+            titleRightButton={"Save"}
+            variant="discard"
+            onDiscard={router.back}
+            onNext={async () => {
+              try {
+                const numericItemId = Number(itemId);
+                const currentItem =
+                  await itemService.getItemById(numericItemId);
 
-        <BottomButtons
-          titleLeftButton={"Cancel"}
-          titleRightButton={"Continue"}
-          variant="discard"
-          onDiscard={router.back}
-          onNext={async () => {
-            try {
-              const numericItemId = Number(itemId);
-              const currentItem = await itemService.getItemById(numericItemId);
-
-              if (!currentItem.attributeValues) {
-                throw new Error("Current item has no attribute values");
-              }
-
-              const currentAttributeValuesMap = new Map();
-              currentItem.attributeValues.forEach((value) => {
-                if (value.attributeID) {
-                  currentAttributeValuesMap.set(value.attributeID, value);
+                if (!currentItem.attributeValues) {
+                  throw new Error("Current item has no attribute values");
                 }
-              });
 
-              // maps attribute values
-              const updatedAttributeValues = attributes
-                .map((attr) => {
-                  const attrID = attr.attributeID;
-                  if (attrID == null) return null;
-
-                  const currentValue = currentAttributeValuesMap.get(
-                    attrID,
-                  ) || { ...attr, itemID: numericItemId };
-                  const newValue = attributeValues[attrID];
-
-                  const updatedValue = {
-                    ...currentValue,
-                    itemID: numericItemId,
-                  };
-
-                  switch (attr.type) {
-                    case AttributeType.Text:
-                      updatedValue.valueString = newValue || "";
-                      break;
-                    case AttributeType.Date:
-                      updatedValue.valueString = newValue
-                        ? newValue.toISOString()
-                        : null;
-                      break;
-                    case AttributeType.Rating:
-                      updatedValue.valueNumber =
-                        newValue !== undefined ? Number(newValue) : null;
-                      break;
-                    case AttributeType.Multiselect:
-                      updatedValue.valueMultiselect = Array.isArray(newValue)
-                        ? newValue
-                        : [];
-                      break;
+                const currentAttributeValuesMap = new Map();
+                currentItem.attributeValues.forEach((value) => {
+                  if (value.attributeID) {
+                    currentAttributeValuesMap.set(value.attributeID, value);
                   }
-
-                  return updatedValue;
-                })
-                .filter(Boolean) as ItemAttributeValueDTO[];
-
-              // directly creates item with explicit conversion
-              const updatedItem: ItemDTO = {
-                itemID: Number(itemId),
-                pageID: Number(currentItem.pageID),
-                categoryID: selectedCategoryID,
-                attributeValues: updatedAttributeValues || [],
-              };
-
-              const success = await itemService.editItemByID(updatedItem);
-
-              if (success) {
-                router.replace({
-                  pathname: "/collectionItemPage",
-                  params: { itemId: itemId },
                 });
-              } else {
-                console.log("Failed to save changes");
+
+                // maps attribute values
+                const updatedAttributeValues = attributes
+                  .map((attr) => {
+                    const attrID = attr.attributeID;
+                    if (attrID == null) return null;
+
+                    const currentValue = currentAttributeValuesMap.get(
+                      attrID,
+                    ) || { ...attr, itemID: numericItemId };
+                    const newValue = attributeValues[attrID];
+
+                    const updatedValue = {
+                      ...currentValue,
+                      itemID: numericItemId,
+                    };
+
+                    switch (attr.type) {
+                      case AttributeType.Text:
+                        updatedValue.valueString = newValue || "";
+                        break;
+                      case AttributeType.Date:
+                        updatedValue.valueString = newValue
+                          ? newValue.toISOString()
+                          : null;
+                        break;
+                      case AttributeType.Rating:
+                        updatedValue.valueNumber =
+                          newValue !== undefined ? Number(newValue) : null;
+                        break;
+                      case AttributeType.Multiselect:
+                        updatedValue.valueMultiselect = Array.isArray(newValue)
+                          ? newValue
+                          : [];
+                        break;
+                    }
+
+                    return updatedValue;
+                  })
+                  .filter(Boolean) as ItemAttributeValueDTO[];
+
+                // directly creates item with explicit conversion
+                const updatedItem: ItemDTO = {
+                  itemID: Number(itemId),
+                  pageID: Number(currentItem.pageID),
+                  categoryID: selectedCategoryID,
+                  attributeValues: updatedAttributeValues || [],
+                };
+
+                const success = await itemService.editItemByID(updatedItem);
+
+                if (success) {
+                  router.replace({
+                    pathname: "/collectionItemPage",
+                    params: { itemId: itemId },
+                  });
+                } else {
+                  console.log("Failed to save changes");
+                }
+              } catch (error) {
+                console.error("Error saving item:", error);
               }
-            } catch (error) {
-              console.error("Error saving item:", error);
-            }
-          }}
-          progressStep={10}
-        />
+            }}
+            progressStep={10}
+          />
+        )}
       </View>
     </GradientBackground>
   );

@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { Platform, View } from "react-native";
+import { Keyboard, Platform, ScrollView, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router } from "expo-router";
@@ -24,7 +24,7 @@ export default function AddCollectionItem() {
     collectionId?: string;
     pageId?: string;
   }>();
-
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
   const [attributeValues, setAttributeValues] = useState<Record<number, any>>(
@@ -58,6 +58,21 @@ export default function AddCollectionItem() {
       }
     })();
   }, [templateId]);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const showSub = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hideSub = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }
+  }, []);
 
   const handleInputChange = (attributeID: number, value: any) => {
     setAttributeValues((prevValues) => ({
@@ -128,13 +143,19 @@ export default function AddCollectionItem() {
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
       topPadding={Platform.select({ ios: 20, android: 30 })}
     >
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{ height: "85%" }}>
+      <View style={{ flex: 1 }}>
+        <View style={{ marginBottom: 10 }}>
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
           />
-
+        </View>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 95 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <AddCollectionItemCard
             attributes={attributes}
             lists={lists}
@@ -144,16 +165,20 @@ export default function AddCollectionItem() {
             selectedCategoryID={selectedCategoryID}
             hasNoInputError={hasClickedNext && !validateFields()}
           />
-        </View>
+        </ScrollView>
 
-        <BottomButtons
-          titleLeftButton="Discard"
-          titleRightButton="Add"
-          variant="discard"
-          onDiscard={router.back}
-          onNext={handleSaveItem}
-          progressStep={10}
-        />
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <View>
+            <BottomButtons
+              titleLeftButton="Discard"
+              titleRightButton="Add"
+              variant="discard"
+              onDiscard={router.back}
+              onNext={handleSaveItem}
+              progressStep={10}
+            />
+          </View>
+        )}
       </View>
     </GradientBackground>
   );
