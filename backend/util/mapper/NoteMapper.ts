@@ -12,7 +12,7 @@ import { pageID } from "@/backend/domain/common/IDs";
 /**
  * Mapper class for converting between Note domain entities, DTOs, and database models:
  * - Domain Entity ↔ DTO
- * - Domain Entity ↔ Database Model
+ * - Database Model → Domain Entity
  *
  * This utility handles transformations and validation using Zod schemas,
  * ensuring consistent data structures across layers.
@@ -38,55 +38,6 @@ export class NoteMapper {
       noteID: entity.noteID,
       note_content: entity.noteContent,
       pin_count: entity.pinCount,
-    };
-  }
-
-  /**
-   * Maps a Note domain entity to a NoteModel for persistence.
-   *
-   * @param entity - The `Note` domain entity.
-   * @returns A corresponding `NoteModel` object.
-   */
-  static toModel(entity: Note): NoteModel {
-    return {
-      pageID: entity.pageID,
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      tag_label: entity.tag?.tagLabel,
-      noteID: entity.noteID,
-      note_content: entity.noteContent,
-      pin_count: entity.pinCount,
-    };
-  }
-
-  /**
-   * Maps a NewNote domain entity to a NoteModel for persistence.
-   *
-   * @param entity - The `NewNote` domain entity.
-   * @returns A corresponding `NoteModel` (ommited IDs and pin count) object.
-   */
-  static toInsertModel(
-    entity: NewNote,
-  ): Omit<NoteModel, "pageID" | "noteID" | "pin_count"> {
-    return {
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      tag_label: entity.tag?.tagLabel,
-      note_content: entity.noteContent,
     };
   }
 

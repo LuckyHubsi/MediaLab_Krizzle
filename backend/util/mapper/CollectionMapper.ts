@@ -17,7 +17,7 @@ import {
 /**
  * Mapper class for converting between Collection domain entities, DTOs, and database models:
  * - Domain Entity → DTO
- * - Database Model ↔ Domain Entity
+ * - Database Model → Domain Entity
  * - DTO → NewCollection (for creation)
  *
  * This utility handles transformations and validation using Zod schemas,
@@ -47,59 +47,6 @@ export class CollectionMapper {
         ? entity.categories.map(CollectionCategoryMapper.toDTO)
         : [],
       pin_count: entity.pinCount,
-    };
-  }
-
-  /**
-   * Maps a Collection domain entity to a CollectionModel for persistence.
-   *
-   * @param entity - The `Collection` domain entity.
-   * @returns A corresponding `CollectionModel` object.
-   */
-  static toModel(entity: Collection): CollectionModel {
-    return {
-      pageID: entity.pageID,
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      tag_label: entity.tag?.tagLabel,
-      collectionID: entity.collectionID,
-      templateID: entity.templateID,
-      categories: "", // placeholder since these categories are not used for persistence
-      pin_count: entity.pinCount,
-    };
-  }
-
-  /**
-   * Maps a Collection domain entity to a CollectionModel for persistence.
-   *
-   * @param entity - The `Collection` domain entity.
-   * @returns A corresponding `CollectionModel` (omits "collectionID",  "pageID",  "categories" and "pin_count") object for creation.
-   */
-  static toInsertModel(
-    entity: NewCollection,
-  ): Omit<
-    CollectionModel,
-    "collectionID" | "pageID" | "categories" | "pin_count"
-  > {
-    return {
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      tag_label: entity.tag?.tagLabel,
-      templateID: 0,
     };
   }
 

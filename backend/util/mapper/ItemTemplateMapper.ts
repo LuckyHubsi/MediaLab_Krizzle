@@ -13,7 +13,7 @@ import { itemTemplateID } from "@/backend/domain/common/IDs";
 /**
  * Mapper class for converting between Template domain entities, DTOs, and database models:
  * - Domain Entity → DTO
- * - Domain Entity ↔ Database Model
+ * - Database Model → Domain Entity
  * - DTO → NewTemplate (for creation)
  *
  * This utility handles transformations and validation using Zod schemas,
@@ -32,37 +32,6 @@ export class ItemTemplateMapper {
       item_templateID: entity.itemTemplateID,
       template_name: entity.templateName,
       attributes: entity.attributes.map(AttributeMapper.toDTO),
-    };
-  }
-
-  /**
-   * Maps an ItemTemplate domain entity to an ItemTemplateModel for persistence.
-   *
-   * @param entity - The `ItemTemplate` domain entity.
-   * @returns A corresponding `ItemTemplateModel` object.
-   */
-  static toModel(
-    entity: ItemTemplate,
-  ): Omit<ItemTemplateModel, "attributes"> & { attributes: string } {
-    return {
-      item_templateID: entity.itemTemplateID,
-      title: entity.templateName,
-      attributes: "", // default since attributes here are not used for db persistency
-    };
-  }
-
-  /**
-   * Maps an ItemTemplate domain entity to an ItemTemplateModel for persistence.
-   *
-   * @param entity - The `ItemTemplate` domain entity.
-   * @returns A corresponding `ItemTemplateModel` (omits `item_templateID`) object.
-   */
-  static toInsertModel(
-    entity: NewItemTemplate,
-  ): Omit<ItemTemplateModel, "item_templateID"> & { attributes: string } {
-    return {
-      title: entity.templateName,
-      attributes: "", // default since attributes here are not used for db persistency
     };
   }
 

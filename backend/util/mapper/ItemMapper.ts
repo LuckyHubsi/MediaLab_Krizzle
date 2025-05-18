@@ -31,13 +31,13 @@ import { AttributeDTO } from "@/shared/dto/AttributeDTO";
  */
 
 export class ItemMapper {
+  /**
+   * Maps an Item domain entity to an ItemDTO.
+   *
+   * @param entity - The `Item` domain entity.
+   * @returns A corresponding `ItemDTO` object.
+   */
   static toDTO(entity: Item): ItemDTO {
-    /**
-     * Maps an Item domain entity to an ItemDTO.
-     *
-     * @param entity - The `Item` domain entity.
-     * @returns A corresponding `ItemDTO` object.
-     */
     return {
       itemID: entity.itemID,
       pageID: entity.pageID,
@@ -111,39 +111,6 @@ export class ItemMapper {
       pageID: 1,
       attributes: attributes.map(AttributeMapper.toDTO),
       items: items.map((item) => this.toPreviewDTO(item, attributes)),
-    };
-  }
-
-  /**
-   * Maps an Item domain entity to an ItemModel for persistence.
-   *
-   * @param entity - The `Item` domain entity.
-   * @returns A corresponding `ItemModel` object.
-   */
-  static toModel(entity: Item): ItemModel {
-    return {
-      itemID: entity.itemID,
-      pageID: entity.pageID,
-      page_title: entity.pageTitle ?? "",
-      categoryID: entity.categoryID ?? null,
-      category_name: entity.categoryName ?? null,
-      attribute_values: "", // placeholder as this is not used for persistence
-    };
-  }
-
-  /**
-   * Maps an Item domain entity to an ItemModel for persistence.
-   *
-   * @param entity - The `Item` domain entity.
-   * @returns A corresponding `ItemModel` (omits `itemID`) object.
-   */
-  static toInsertModel(entity: NewItem): Omit<ItemModel, "itemID"> {
-    return {
-      pageID: entity.pageID,
-      page_title: "", // placeholder as this is not used for persistence
-      categoryID: entity.categoryID ?? null,
-      category_name: null,
-      attribute_values: "", // placeholder as this is not used for persistence
     };
   }
 

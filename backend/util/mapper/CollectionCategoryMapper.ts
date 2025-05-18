@@ -12,7 +12,7 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 /**
  * Mapper class for converting between CollectionCategory domain entities, DTOs, and database models:
  * - Domain Entity → DTO
- * - Database Model ↔ Domain Entity
+ * - Database Model → Domain Entity
  * - DTO → NewCollectionCategory (for creation)
  *
  * This utility handles transformations and validation using Zod schemas,
@@ -31,34 +31,6 @@ export class CollectionCategoryMapper {
       collectionCategoryID: entity.categoryID,
       category_name: entity.categoryName,
       collectionID: entity.collectionID,
-    };
-  }
-
-  /**
-   * Maps a CollectionCategory domain entity to a CollectionCategoryModel for persistence.
-   *
-   * @param entity - The `CollectionCategory` domain entity.
-   * @returns A corresponding `CollectionCategoryModel` object.
-   */
-  static toModel(entity: CollectionCategory): CollectionCategoryModel {
-    return {
-      collection_categoryID: entity.categoryID,
-      category_name: entity.categoryName,
-      collectionID: entity.collectionID,
-    };
-  }
-
-  /**
-   * Maps a CollectionCategory domain entity to a CollectionCategoryModel for persistence.
-   *
-   * @param entity - The `CollectionCategory` domain entity.
-   * @returns A corresponding `CollectionCategoryModel` (omits `collectionCategoryID` and `collectionID`) object.
-   */
-  static toInsertModel(
-    entity: NewCollectionCategory,
-  ): Omit<CollectionCategoryModel, "collection_categoryID" | "collectionID"> {
-    return {
-      category_name: entity.categoryName,
     };
   }
 

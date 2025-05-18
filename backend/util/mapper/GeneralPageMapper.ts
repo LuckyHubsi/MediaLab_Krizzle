@@ -13,8 +13,8 @@ import { pageID } from "@/backend/domain/common/IDs";
 
 /**
  * Mapper class for converting between GeneralPage domain entities, DTOs, and database models:
- * - Domain Entity ↔ DTO
- * - Domain Entity ↔ Database Model
+ * - Domain Entity → DTO
+ * - Database Model ↔ Domain Entity
  * - DTO → NewGeneralPage (for creation)
  *
  * This utility handles transformations and validation using Zod schemas,
@@ -38,49 +38,6 @@ export class GeneralPageMapper {
       archived: entity.archived,
       pinned: entity.pinned,
       tag: entity.tag ? TagMapper.toDTO(entity.tag) : null,
-    };
-  }
-
-  /**
-   * Maps a GeneralPage domain entity to a GeneralPageModel for persistence.
-   *
-   * @param entity - The `GeneralPage` domain entity.
-   * @returns A corresponding `GeneralPageModel` object.
-   */
-  static toModel(entity: GeneralPage): GeneralPageModel {
-    return {
-      pageID: entity.pageID,
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-    };
-  }
-
-  /**
-   * Maps a NewGeneralPage domain entity to a GeneralPageModel for persistence.
-   *
-   * @param entity - The `NewGeneralPage` domain entity.
-   * @returns A corresponding `GeneralPageModel` (ommited pageID) object.
-   */
-  static toInsertModel(
-    entity: NewGeneralPage,
-  ): Omit<GeneralPageModel, "pageID"> {
-    return {
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
     };
   }
 
@@ -113,28 +70,25 @@ export class GeneralPageMapper {
   }
 
   /**
-   * Maps a GeneralPageDTO to a NewGeneralPage entity, used when creating a new page.
+   * Maps a NewGeneralPage domain entity to a GeneralPageModel for persistence.
    *
-   * @param dto - The DTO containing all general page fields.
-   * @returns A validated `NewGeneralPage` domain entity.
-   * @throws Error if validation fails.
+   * @param entity - The `NewGeneralPage` domain entity.
+   * @returns A corresponding `GeneralPageModel` (ommited pageID) object.
    */
-  static toNewEntity(dto: GeneralPageDTO): NewGeneralPage {
-    try {
-      const parsedDTO = createNewGeneralPage.parse({
-        pageType: dto.page_type,
-        pageTitle: dto.page_title,
-        pageIcon: dto.page_icon,
-        pageColor: dto.page_color,
-        archived: dto.archived,
-        pinned: dto.pinned,
-        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
-      });
-      return parsedDTO;
-    } catch (error) {
-      console.error("Error mapping GeneralPageDTO to New Entity:", error);
-      throw new Error("Failed to map GeneralPageDTO to New Entity");
-    }
+  static toInsertModel(
+    entity: NewGeneralPage,
+  ): Omit<GeneralPageModel, "pageID"> {
+    return {
+      page_type: entity.pageType,
+      page_title: entity.pageTitle,
+      page_icon: entity.pageIcon,
+      page_color: entity.pageColor,
+      date_created: entity.createdAt.toISOString(),
+      date_modified: entity.updatedAt.toISOString(),
+      archived: entity.archived ? 1 : 0,
+      pinned: entity.pinned ? 1 : 0,
+      tagID: entity.tag?.tagID ?? null,
+    };
   }
 
   /**
