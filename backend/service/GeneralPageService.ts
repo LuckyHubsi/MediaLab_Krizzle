@@ -1,11 +1,14 @@
-import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
-import { ServiceError } from "../util/error/ServiceError";
+// import { ServiceError } from "../util/error/ServiceError";
 import { GeneralPageMapper } from "../util/mapper/GeneralPageMapper";
 import { GeneralPage, NewGeneralPage } from "../domain/entity/GeneralPage";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { PageID, pageID } from "../domain/common/IDs";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { failure, Result, success } from "@/shared/result/Result";
+import { ServiceError } from "@/shared/error/Error";
+import { ZodError } from "zod";
 
 /**
  * GeneralPageService encapsulates all general-page-related application logic.
@@ -34,19 +37,19 @@ export class GeneralPageService {
       let pages: GeneralPage[] = [];
       switch (pageState) {
         case GeneralPageState.GeneralModfied:
-          pages = await generalPageRepository.getAllPagesSortedByModified();
+          pages = await this.generalPageRepo.getAllPagesSortedByModified();
           break;
         case GeneralPageState.GeneralCreated:
-          pages = await generalPageRepository.getAllPagesSortedByCreated();
+          pages = await this.generalPageRepo.getAllPagesSortedByCreated();
           break;
         case GeneralPageState.GeneralAlphabet:
-          pages = await generalPageRepository.getAllPagesSortedByAlphabet();
+          pages = await this.generalPageRepo.getAllPagesSortedByAlphabet();
           break;
         case GeneralPageState.Archived:
-          pages = await generalPageRepository.getAllArchivedPages();
+          pages = await this.generalPageRepo.getAllArchivedPages();
           break;
         case GeneralPageState.Pinned:
-          pages = await generalPageRepository.getAllPinnedPages();
+          pages = await this.generalPageRepo.getAllPinnedPages();
           break;
         default:
           break;
@@ -67,7 +70,7 @@ export class GeneralPageService {
   async getGeneralPageByID(pageId: number): Promise<GeneralPageDTO> {
     try {
       const brandedPageID: PageID = pageID.parse(pageId);
-      const page = await generalPageRepository.getByPageID(brandedPageID);
+      const page = await this.generalPageRepo.getByPageID(brandedPageID);
       return GeneralPageMapper.toDTO(page);
     } catch (error) {
       throw new ServiceError("Error retrieving page by id.");
