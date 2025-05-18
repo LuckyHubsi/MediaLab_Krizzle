@@ -9,7 +9,6 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
-import { collectionService } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
 import { template } from "@babel/core";
 import {
@@ -18,12 +17,12 @@ import {
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
-import { itemService } from "@/services/ItemService";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { generalPageService } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
+import { collectionService } from "@/backend/service/CollectionService";
+import { generalPageService } from "@/backend/service/GeneralPageService";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -63,7 +62,7 @@ export default function CollectionScreen() {
             }
           }
           const retrievedItems: ItemsDTO =
-            await itemService.getItemsByPageId(numericID);
+            await collectionService.getItemsByPageId(numericID);
           if (retrievedItems) setItems(retrievedItems);
         }
         setShouldReload(false);
@@ -308,7 +307,7 @@ export default function CollectionScreen() {
             try {
               const itemIdAsNumber = Number(selectedItem.itemID);
               const successfullyDeleted =
-                await itemService.deleteItemById(itemIdAsNumber);
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);

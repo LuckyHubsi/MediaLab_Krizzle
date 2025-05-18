@@ -10,10 +10,10 @@ import {
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { ScrollView } from "react-native"; // Use ScrollView from react-native
-import { itemService } from "@/services/ItemService";
 import { ItemDTO } from "@/dto/ItemDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { collectionService } from "@/backend/service/CollectionService";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -29,7 +29,7 @@ export default function CollectionItemScreen() {
     useCallback(() => {
       (async () => {
         const numericItemId = Number(itemId);
-        const item = await itemService.getItemById(numericItemId);
+        const item = await collectionService.getItemByID(numericItemId);
 
         setItem(item);
 
@@ -103,7 +103,7 @@ export default function CollectionItemScreen() {
             try {
               const itemIdAsNumber = Number(item.itemID);
               const successfullyDeleted =
-                await itemService.deleteItemById(itemIdAsNumber);
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowDeleteModal(false);
               router.replace({

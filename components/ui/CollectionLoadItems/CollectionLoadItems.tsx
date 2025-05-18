@@ -11,9 +11,9 @@ import { ListCOntainer } from "./CollectionLoadItems.stlyle";
 import { ThemedText } from "@/components/ThemedText";
 import CollectionTextfield from "../CollectionTextField/CollectionTextField";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
 import { parseISO } from "date-fns";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];

@@ -22,20 +22,19 @@ import {
 } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { noteService } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { tagService } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
-import { generalPageService } from "@/services/GeneralPageService";
 import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { generalPageService } from "@/backend/service/GeneralPageService";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
 
 export default function EditWidgetScreen() {
   const navigation = useNavigation();
@@ -104,13 +103,17 @@ export default function EditWidgetScreen() {
       }
     }
 
-    await generalPageService.updateGeneralPageData(
-      Number(widgetID),
-      title,
-      selectedIcon || "",
-      selectedColor,
-      tagDTO?.tagID || null,
-    );
+    const newPageDTO: GeneralPageDTO = {
+      pageID: Number(widgetID),
+      page_title: title,
+      page_icon: selectedIcon,
+      page_color: selectedColor,
+      tag: tagDTO,
+      page_type: pageData?.page_type ?? PageType.Note,
+      archived: pageData?.archived ?? false,
+      pinned: pageData?.pinned ?? false,
+    };
+    await generalPageService.updateGeneralPageData(newPageDTO);
 
     router.back();
   };
@@ -128,7 +131,9 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const generalPageData = await generalPageService.getGeneralPageByID(Number(widgetID));
+          const generalPageData = await generalPageService.getGeneralPageByID(
+            Number(widgetID),
+          );
           if (generalPageData) {
             setPageData(generalPageData);
             setTitle(generalPageData.page_title || "");

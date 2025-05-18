@@ -5,13 +5,13 @@ import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { TagDTO } from "@/dto/TagDTO";
 import { Button } from "@/components/ui/Button/Button";
-import { tagService } from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { tagService } from "@/backend/service/TagService";
 
 export default function TagManagementScreen() {
   const colorScheme = useActiveColorScheme() ?? "light";

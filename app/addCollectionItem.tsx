@@ -8,15 +8,14 @@ import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { itemTemplateService } from "@/services/ItemTemplateService";
-import { collectionCategoryService } from "@/services/CollectionCategoriesService";
 import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/dto/ItemDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
 import { Button } from "@/components/ui/Button/Button";
-import { itemService } from "@/services/ItemService";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { itemTemplateService } from "@/backend/service/ItemTemplateService";
+import { collectionService } from "@/backend/service/CollectionService";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -49,9 +48,7 @@ export default function AddCollectionItem() {
       }
       if (!isNaN(numericCollectionID)) {
         const lists =
-          await collectionCategoryService.getCollectionCategories(
-            numericCollectionID,
-          );
+          await collectionService.getCollectionCategories(numericCollectionID);
         if (lists) {
           setLists(lists);
         }
@@ -129,7 +126,7 @@ export default function AddCollectionItem() {
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
-    const itemId = await itemService.insertItemAndReturnID(itemDTO);
+    const itemId = await collectionService.insertItemAndReturnID(itemDTO);
     router.replace({
       pathname: "/collectionItemPage",
       params: { itemId: itemId },

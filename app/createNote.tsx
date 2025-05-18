@@ -20,17 +20,17 @@ import {
 } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { noteService } from "@/services/NoteService";
 import { TagDTO } from "@/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { tagService } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { noteService } from "@/backend/service/NoteService";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();

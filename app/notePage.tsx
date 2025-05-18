@@ -7,15 +7,15 @@ import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomSty
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { NoteDTO } from "@/dto/NoteDTO";
-import { noteService } from "@/services/NoteService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import { generalPageService } from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { noteService } from "@/backend/service/NoteService";
+import { generalPageService } from "@/backend/service/GeneralPageService";
 
 export default function NotesScreen() {
   const { pageId, title } = useLocalSearchParams<{

@@ -32,10 +32,10 @@ import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/dto/TagDTO";
-import { PageType } from "@/utils/enums/PageType";
 import { useFocusEffect } from "@react-navigation/native";
-import { tagService } from "@/services/TagService";
 import { useSnackbar } from "../../Snackbar/Snackbar";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
 
 interface CreateCollectionProps {
   data: {

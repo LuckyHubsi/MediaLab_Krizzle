@@ -19,18 +19,18 @@ import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
-import { generalPageService } from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
-import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { TagDTO } from "@/dto/TagDTO";
-import { tagService } from "@/services/TagService";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
-import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { generalPageService } from "@/backend/service/GeneralPageService";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
