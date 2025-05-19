@@ -23,6 +23,7 @@ import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -139,6 +140,8 @@ export default function ArchiveScreen() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <SafeAreaView>
@@ -228,6 +231,19 @@ export default function ArchiveScreen() {
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
