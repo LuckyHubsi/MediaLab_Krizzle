@@ -48,7 +48,7 @@ export const SnackbarProvider: React.FC<Props> = ({ children }) => {
 
   const toastConfig = {
     success: ({ text1 }: any) => (
-      <ToastContainer background={Colors.primary}>
+      <ToastContainer background={Colors.positive}>
         <MaterialIcons name="check-circle" size={22} color={Colors.white} />
         <ThemedText style={{ flex: 1 }} colorVariant="white">
           {text1}
