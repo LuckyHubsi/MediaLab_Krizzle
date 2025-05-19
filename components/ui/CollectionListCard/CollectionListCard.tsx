@@ -3,12 +3,14 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import CollectionList from "../CollectionList/CollectionList";
 import { BackgroundCard } from "./CollectionListCard.styles";
 import { SafeAreaView, ScrollView, View, ViewProps } from "react-native";
-import { StyledView } from "../GradientBackground/GradientBackground.styles";
+import {
+  GradientBackgroundWrapper,
+  StyledView,
+} from "../GradientBackground/GradientBackground.styles";
 import { ThemedView } from "../ThemedView/ThemedView";
 import { router } from "expo-router";
 import CollectionWidget from "../CollectionWidget/CollectionWidget";
 import { ThemedText } from "@/components/ThemedText";
-import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton";
 
 export type CollectionListCardPorps = ViewProps & {
   collectionLists: string[];
@@ -58,10 +60,11 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
           }
         }}
       />
+
       <BackgroundCard
         backgroundColor={backgroundColor}
         topOffset={backgroundCardTopOffset}
-        style={{ marginTop: 9 }} // <-- Add marginTop here
+        style={{ marginTop: 10 }}
       >
         <ThemedView topPadding={24} style={{ borderRadius: 33 }}>
           <ScrollView showsVerticalScrollIndicator={false}>

@@ -12,7 +12,10 @@ export const CollectionListContainer = styled(
   background-color: ${({ active }: CollectionListProps) =>
     active ? Colors.white : "transparent"};
   display: flex;
-  border-width: 1px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 0px;
   border-color: #fbfbfb;
   border-style: solid;
 
@@ -31,7 +34,7 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
   font-family: Lexend;
   font-size: 16px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: ${({ active }: CollectionListProps) => (active ? 900 : 400)};
   line-height: 24px; /* 150% */
   letter-spacing: -0.4px;
   text-align: center;

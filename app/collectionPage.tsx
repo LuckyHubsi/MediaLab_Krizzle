@@ -28,10 +28,8 @@ import {
   togglePagePin,
 } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
-import { ThemedText } from "@/components/ThemedText";
-import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+
 import { is } from "date-fns/locale";
-import { GradientBackgroundCollection } from "@/components/ui/GradientBackgroundCollections/GradientBackgroundCollection";
 import { CollectionListCard } from "@/components/ui/CollectionListCard/CollectionListCard";
 import {
   GradientBackgroundWrapper,
