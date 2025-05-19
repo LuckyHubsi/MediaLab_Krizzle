@@ -30,7 +30,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
       <Textfield
         showTitle={false}
         textfieldIcon="text-fields"
-        placeholderText={`Add a title to your note`}
+        placeholderText={`Add a title`}
         title={""}
         value={value}
         onChangeText={onChangeText}

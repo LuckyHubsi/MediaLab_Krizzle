@@ -29,6 +29,9 @@ import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
+import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -59,6 +62,8 @@ export default function CreateNoteScreen() {
       label,
     };
   });
+
+  const { showSnackbar } = useSnackbar();
 
   const getWidgetColorKey = (
     value: string,
@@ -111,6 +116,12 @@ export default function CreateNoteScreen() {
       pathname: "/notePage",
       params: { pageId: id, title: title },
     });
+
+    showSnackbar(
+      `Successfully created Note: "${title}". `,
+      "bottom",
+      "success",
+    );
   };
 
   useFocusEffect(
@@ -172,14 +183,14 @@ export default function CreateNoteScreen() {
         </Card>
       </View>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 10 }}
+        contentContainerStyle={{ paddingBottom: 75 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
           <View style={{ width: "100%", gap: 20 }}>
             <Card>
               <TitleCard
-                placeholder="Add a title to your Note"
+                placeholder="Add a title"
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
@@ -246,7 +257,12 @@ export default function CreateNoteScreen() {
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ marginBottom: 10 }}>
-          <Button onPress={createNote}>Create</Button>
+          <BottomButtons
+            singleButtonText={"Create"}
+            onNext={createNote}
+            hasProgressIndicator={false}
+            progressStep={1}
+          />
         </View>
       )}
 

@@ -9,8 +9,7 @@ export const StyledBottomButtons = styled.View`
   flex-direction: column;
   justify-content: flex-end;
   gap: 15px;
-  background-color: ${({ colorScheme }: ThemeProps) =>
-    Colors[colorScheme].background};
+  padding-bottom: 10px;
 `;
 
 export const BottomButtonContainer = styled.View`

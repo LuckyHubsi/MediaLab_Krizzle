@@ -13,7 +13,6 @@ type ThemeProps = {
 export const AddButtonWrapper = styled.View`
   width: 100%;
   align-items: center;
-  margin-bottom: 20px;
 `;
 
 export const ListContent = {
@@ -52,4 +51,11 @@ export const ItemCount = styled.View`
   border: 1px solid
     ${({ colorScheme }: ThemeProps) => Colors[colorScheme].placeholder};
   padding: 10px 15px;
+`;
+
+export const HorizontalTitleRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 `;
