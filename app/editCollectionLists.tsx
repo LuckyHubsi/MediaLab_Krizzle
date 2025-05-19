@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   Keyboard,
   Platform,
   ScrollView,
@@ -39,7 +38,6 @@ import Textfield from "@/components/ui/Textfield/Textfield";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { Button } from "@/components/ui/Button/Button";
 
 export default function EditCollectionListsScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
@@ -60,18 +58,6 @@ export default function EditCollectionListsScreen() {
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
-    (async () => {
-      const collectionLists = await getCollectionCategories(numericId);
-      const mapped = collectionLists.map((l) => ({
-        id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
-        title: l.category_name ?? "",
-      }));
-      setLists(mapped);
-      setInitialIds(new Set(mapped.map((l) => l.id)));
-    })();
-  }, [collectionId]);
-
-  useEffect(() => {
     if (Platform.OS === "android") {
       const show = Keyboard.addListener("keyboardDidShow", () =>
         setKeyboardVisible(true),
@@ -88,16 +74,23 @@ export default function EditCollectionListsScreen() {
 
   useEffect(() => {
     (async () => {
-      const collectionLists = await getCollectionCategories(numericId);
-      const mapped = collectionLists.map((l) => ({
-        id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
-        title: l.category_name ?? "",
-      }));
-      setLists(mapped);
-      setInitialIds(new Set(mapped.map((l) => l.id)));
-      setIsLoading(false);
+      try {
+        const collectionLists = await getCollectionCategories(numericId);
+        const mapped = collectionLists.map((l) => ({
+          id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
+          title: l.category_name ?? "",
+        }));
+        setLists(mapped);
+        setInitialIds(new Set(mapped.map((l) => l.id)));
+      } catch (err) {
+        console.error("Failed to load lists:", err);
+        showSnackbar("Failed to load lists.", "top", "error");
+      } finally {
+        setIsLoading(false);
+      }
     })();
   }, [collectionId]);
+
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString(), title: "" };
     setLists((prev) => [...prev, newCard]);
