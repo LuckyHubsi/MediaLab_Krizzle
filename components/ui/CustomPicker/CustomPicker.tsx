@@ -93,7 +93,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         colorScheme={colorScheme}
       >
         <ThemedText fontSize="regular" fontWeight="regular">
-          {items[0] ? items[0].label : "Select"}
+          {selectedLabel ?? "Select"}
         </ThemedText>
         <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
       </AndroidPickerTouchable>
