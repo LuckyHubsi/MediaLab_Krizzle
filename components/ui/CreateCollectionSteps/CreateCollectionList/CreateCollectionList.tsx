@@ -165,9 +165,11 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               <ThemedText fontSize="regular" fontWeight="regular">
                 List {index + 1}
               </ThemedText>
-              <ThemedText fontSize="s" colorVariant="red">
-                * required
-              </ThemedText>
+              {index === 0 && (
+                <ThemedText fontSize="s" colorVariant="red">
+                  * required
+                </ThemedText>
+              )}
             </HorizontalTitleRow>
             <Textfield
               showTitle={false}
