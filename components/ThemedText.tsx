@@ -22,6 +22,7 @@ export type ThemedTextProps = TextProps & {
     | "lightGrey"
     | "primary"
     | "disabled"
+    | "black"
     | "viewAll";
   textIsCentered?: boolean;
 };
@@ -34,6 +35,7 @@ const colorVariants = {
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
   primary: () => Colors.primary,
+  black: () => Colors.black,
   viewAll: () =>
     useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
   disabled: () =>
