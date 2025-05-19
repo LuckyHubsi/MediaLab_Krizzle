@@ -178,7 +178,9 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               onChangeText={(text) => handleTitleChange(item.id, text)}
               hasNoInputError={hasClickedNext && !item.title}
               hasDuplicateTitle={
-                hasClickedNext && duplicateTitleIds.has(item.id)
+                hasClickedNext &&
+                item.title.trim() !== "" &&
+                duplicateTitleIds.has(item.id)
               }
               maxLength={30}
             />
