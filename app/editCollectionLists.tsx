@@ -39,6 +39,7 @@ import Textfield from "@/components/ui/Textfield/Textfield";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { Button } from "@/components/ui/Button/Button";
 
 export default function EditCollectionListsScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
@@ -313,7 +314,7 @@ export default function EditCollectionListsScreen() {
           >
             <BottomButtons
               titleLeftButton="Back"
-              titleRightButton="Next"
+              titleRightButton="Save"
               onDiscard={() => router.back()}
               onNext={saveAllChanges}
               variant="back"
