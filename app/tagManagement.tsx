@@ -164,7 +164,7 @@ export default function TagManagementScreen() {
             </ThemedText>
           )}
           <FlatList
-            contentContainerStyle={{ paddingBottom: 60 }}
+            contentContainerStyle={{ paddingBottom: 80 }}
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
             showsVerticalScrollIndicator={false}
@@ -182,7 +182,7 @@ export default function TagManagementScreen() {
           />
         </View>
         {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View style={{ paddingBottom: 10 }}>
+          <View>
             <Button onPress={() => setModalVisible(true)}>
               <ThemedText colorVariant="white">Add</ThemedText>
             </Button>
