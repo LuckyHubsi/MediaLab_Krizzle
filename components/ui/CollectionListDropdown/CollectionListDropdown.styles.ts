@@ -1,6 +1,7 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Platform, StyleProp, TextStyle, ViewStyle } from "react-native";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const CollectionListContainer = styled.View`
   width: 100%;
@@ -10,10 +11,6 @@ export const CollectionListContainer = styled.View`
 export interface PickerStyleProps {
   colorScheme: "light" | "dark";
 }
-
-type ColorSchemeProps = {
-  colorScheme: "light" | "dark";
-};
 
 export const AndroidPickerWrapper = styled.View<ColorSchemeProps>(
   ({ colorScheme }: ColorSchemeProps) => ({
