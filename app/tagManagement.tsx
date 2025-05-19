@@ -145,9 +145,7 @@ export default function TagManagementScreen() {
   }, []);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -156,7 +154,13 @@ export default function TagManagementScreen() {
         <CustomStyledHeader title="Tags" />
       </View>
 
-      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 20,
+          backgroundColor: Colors[colorScheme].background,
+        }}
+      >
         <View style={{ flex: 1 }}>
           {tags.length === 0 && (
             <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
