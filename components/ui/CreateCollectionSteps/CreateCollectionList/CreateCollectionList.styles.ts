@@ -52,3 +52,10 @@ export const ItemCount = styled.View`
     ${({ colorScheme }: ThemeProps) => Colors[colorScheme].placeholder};
   padding: 10px 15px;
 `;
+
+export const HorizontalTitleRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+`;

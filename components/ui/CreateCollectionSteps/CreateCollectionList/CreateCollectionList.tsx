@@ -23,6 +23,7 @@ import {
   ListContent,
   RemoveButton,
   RemoveButtonContent,
+  HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
@@ -160,13 +161,14 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       >
         {cards.map((item, index) => (
           <Card key={item.id}>
-            <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
-            >
-              List {index + 1}
-            </ThemedText>
+            <HorizontalTitleRow>
+              <ThemedText fontSize="regular" fontWeight="regular">
+                List {index + 1}
+              </ThemedText>
+              <ThemedText fontSize="s" colorVariant="red">
+                * required
+              </ThemedText>
+            </HorizontalTitleRow>
             <Textfield
               showTitle={false}
               textfieldIcon="text-fields"
