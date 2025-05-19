@@ -74,10 +74,15 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         onPress={handleBackPress}
         style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
       >
-        <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
+        <BackIcon
+          name="chevron-back-outline"
+          colorScheme={colorScheme}
+          isTransparent={isTransparent}
+        />
 
         <TitleContainer>
           <ThemedText
+            isTransparent={isTransparent}
             fontSize="xl"
             fontWeight="semibold"
             numberOfLines={1}
@@ -119,7 +124,13 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
             <MaterialIcons
               name={iconName2}
               size={24}
-              color={colorScheme === "light" ? "black" : "white"}
+              color={
+                isTransparent
+                  ? "white"
+                  : colorScheme === "light"
+                    ? "black"
+                    : "white"
+              }
             />
           </Icon>
         )}

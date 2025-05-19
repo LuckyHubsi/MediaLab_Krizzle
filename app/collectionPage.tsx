@@ -118,10 +118,19 @@ export default function CollectionScreen() {
   return (
     <>
       <GradientBackgroundCollection
-        backgroundCardTopOffset={Platform.select({ ios: 100, android: 100 })}
-        topPadding={Platform.select({ ios: 0, android: 15 })}
+        collectionLists={listNames}
         listNames={listNames}
         setSelectedList={setSelectedList}
+        onSelect={(collectionList) => {
+          if (setSelectedList) {
+            setSelectedList(collectionList || "All"); // Safely call setSelectedList
+          }
+        }}
+        filteredItems={filteredItems}
+        items={items}
+        setSelectedItem={setSelectedItem}
+        setShowItemModal={setShowItemModal}
+        searchQuery={searchQuery}
       >
         <CustomStyledHeader
           title={title || "Collection"} //Here should be the title of the collection
@@ -140,212 +149,153 @@ export default function CollectionScreen() {
           onSearch={(text) => setSearchQuery(text)}
         />
 
-        <CollectionListCard
-          collectionLists={listNames}
-          onSelect={(collectionList) => {
-            setSelectedList(collectionList || "All");
-          }}
-          listNames={listNames}
-          setSelectedList={setSelectedList}
-          topPadding={0}
-        />
-        <CollectionList
-          collectionLists={listNames}
-          onSelect={(collectionList) => {
-            setSelectedList(collectionList || "All");
-          }}
-        />
-        <SafeAreaView style={{ flex: 1 }}>
-          {/* //Header with back button and title */}
-
-          <ThemedView topPadding={0}>
-            {/* //Hardcoded data for testing purposes */}
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {filteredItems.length > 0 ? (
-                <View style={{ flex: 1, gap: 12 }}>
-                  {filteredItems.map((item) => (
-                    <CollectionWidget
-                      key={item.itemID}
-                      attributes={items?.attributes || []}
-                      item={item}
-                      onPress={() => {
-                        router.push({
-                          pathname: "/collectionItemPage",
-                          params: { itemId: item.itemID.toString() },
-                        });
-                      }}
-                      onLongPress={() => {
-                        setSelectedItem(item);
-                        setShowItemModal(true);
-                      }}
-                    />
-                  ))}
-                </View>
-              ) : (
-                <View style={{ marginTop: 24 }}>
-                  <ThemedText
-                    fontSize="regular"
-                    fontWeight="regular"
-                    style={{ textAlign: "center" }}
-                  >
-                    {searchQuery
-                      ? `No results for "${searchQuery}"`
-                      : "No items in this collection yet."}
-                  </ThemedText>
-                </View>
-              )}
-            </ScrollView>
-
-            <View
-              style={{
-                position: "absolute",
-                right: 10,
-                bottom: 50,
-              }}
-            >
-              <FloatingAddButton
-                onPress={() => {
-                  router.push({
-                    pathname: "/addCollectionItem",
-                    params: {
-                      templateId: collection?.templateID?.toString(),
-                      collectionId: collection?.collectionID?.toString(),
-                      pageId: pageId,
-                    },
-                  });
-                }} // navigate to add collection item screen
-              />
-            </View>
-          </ThemedView>
-
-          <QuickActionModal
-            visible={showModal}
-            onClose={() => setShowModal(false)}
-            items={[
-              {
-                label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
-                icon: "push-pin",
-                disabled:
-                  !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
-                onPress: async () => {
-                  if (
-                    (collection &&
-                      !collection.pinned &&
-                      collection.pin_count != null &&
-                      collection.pin_count < 4) ||
-                    (collection && collection?.pinned)
-                  ) {
-                    const success = await togglePagePin(
-                      Number(collection.pageID),
-                      collection.pinned,
-                    );
-                    setShouldReload(success);
-                  }
-                },
-              },
-              {
-                label: "Edit Widget",
-                icon: "edit",
-                onPress: () => {
-                  goToEditPage();
-                },
-              },
-              {
-                label: "Edit Lists",
-                icon: "edit-note",
-                onPress: () => {
-                  goToEditListsPage();
-                },
-              },
-              {
-                label: collection?.archived ? "Restore" : "Archive",
-                icon: collection?.archived ? "restore" : "archive",
-                onPress: async () => {
-                  if (collection) {
-                    const success = await togglePageArchive(
-                      Number(pageId),
-                      collection.archived,
-                    );
-                    setShouldReload(success);
-                  }
-                },
-              },
-              {
-                label: "Delete",
-                icon: "delete",
-                onPress: () => {
-                  setShowDeleteModal(true);
-                },
-                danger: true,
-              },
-            ]}
-          />
-          <QuickActionModal
-            visible={showItemModal}
-            onClose={() => setShowItemModal(false)}
-            items={[
-              {
-                label: "Edit Item",
-                icon: "edit",
-                onPress: () => {
-                  router.push({
-                    pathname: "/editCollectionItem",
-                    params: { itemId: selectedItem?.itemID },
-                  });
-                },
-              },
-
-              {
-                label: "Delete",
-                icon: "delete",
-                onPress: () => {
-                  setShowItemDeleteModal(true);
-                },
-                danger: true,
-              },
-            ]}
-          />
-          <DeleteModal
-            visible={showDeleteModal}
-            title={title}
-            onCancel={() => setShowDeleteModal(false)}
-            onConfirm={async () => {
-              if (pageId) {
-                try {
-                  const widgetIdAsNumber = Number(pageId);
-                  const successfullyDeleted =
-                    await deleteGeneralPage(widgetIdAsNumber);
-                  setShowDeleteModal(false);
-                  router.replace("/");
-                } catch (error) {
-                  console.error("Error deleting collection:", error);
+        <QuickActionModal
+          visible={showModal}
+          onClose={() => setShowModal(false)}
+          items={[
+            {
+              label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
+              icon: "push-pin",
+              disabled:
+                !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
+              onPress: async () => {
+                if (
+                  (collection &&
+                    !collection.pinned &&
+                    collection.pin_count != null &&
+                    collection.pin_count < 4) ||
+                  (collection && collection?.pinned)
+                ) {
+                  const success = await togglePagePin(
+                    Number(collection.pageID),
+                    collection.pinned,
+                  );
+                  setShouldReload(success);
                 }
-              }
-            }}
-            onclose={() => setShowDeleteModal(false)}
-          />
-          <DeleteModal
-            visible={showItemDeleteModal}
-            title={selectedItem?.values[0]?.toString() || ""}
-            onCancel={() => setShowItemDeleteModal(false)}
-            onConfirm={async () => {
-              if (selectedItem) {
-                try {
-                  const itemIdAsNumber = Number(selectedItem.itemID);
-                  const successfullyDeleted =
-                    await deleteItemById(itemIdAsNumber);
-
-                  setShowItemDeleteModal(false);
-                  setShouldReload(successfullyDeleted);
-                } catch (error) {
-                  console.error("Error deleting item:", error);
+              },
+            },
+            {
+              label: "Edit Widget",
+              icon: "edit",
+              onPress: () => {
+                goToEditPage();
+              },
+            },
+            {
+              label: "Edit Lists",
+              icon: "edit-note",
+              onPress: () => {
+                goToEditListsPage();
+              },
+            },
+            {
+              label: collection?.archived ? "Restore" : "Archive",
+              icon: collection?.archived ? "restore" : "archive",
+              onPress: async () => {
+                if (collection) {
+                  const success = await togglePageArchive(
+                    Number(pageId),
+                    collection.archived,
+                  );
+                  setShouldReload(success);
                 }
+              },
+            },
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
+                setShowDeleteModal(true);
+              },
+              danger: true,
+            },
+          ]}
+        />
+        <QuickActionModal
+          visible={showItemModal}
+          onClose={() => setShowItemModal(false)}
+          items={[
+            {
+              label: "Edit Item",
+              icon: "edit",
+              onPress: () => {
+                router.push({
+                  pathname: "/editCollectionItem",
+                  params: { itemId: selectedItem?.itemID },
+                });
+              },
+            },
+
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
+                setShowItemDeleteModal(true);
+              },
+              danger: true,
+            },
+          ]}
+        />
+        <DeleteModal
+          visible={showDeleteModal}
+          title={title}
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={async () => {
+            if (pageId) {
+              try {
+                const widgetIdAsNumber = Number(pageId);
+                const successfullyDeleted =
+                  await deleteGeneralPage(widgetIdAsNumber);
+                setShowDeleteModal(false);
+                router.replace("/");
+              } catch (error) {
+                console.error("Error deleting collection:", error);
               }
-            }}
-            onclose={() => setShowItemDeleteModal(false)}
-          />
-        </SafeAreaView>
+            }
+          }}
+          onclose={() => setShowDeleteModal(false)}
+        />
+        <DeleteModal
+          visible={showItemDeleteModal}
+          title={selectedItem?.values[0]?.toString() || ""}
+          onCancel={() => setShowItemDeleteModal(false)}
+          onConfirm={async () => {
+            if (selectedItem) {
+              try {
+                const itemIdAsNumber = Number(selectedItem.itemID);
+                const successfullyDeleted =
+                  await deleteItemById(itemIdAsNumber);
+
+                setShowItemDeleteModal(false);
+                setShouldReload(successfullyDeleted);
+              } catch (error) {
+                console.error("Error deleting item:", error);
+              }
+            }
+          }}
+          onclose={() => setShowItemDeleteModal(false)}
+        />
       </GradientBackgroundCollection>
+      <View
+        style={{
+          position: "absolute",
+          right: 20,
+          bottom: 30,
+        }}
+      >
+        <FloatingAddButton
+          onPress={() => {
+            router.push({
+              pathname: "/addCollectionItem",
+              params: {
+                templateId: collection?.templateID?.toString(),
+                collectionId: collection?.collectionID?.toString(),
+                pageId: pageId,
+              },
+            });
+          }} // navigate to add collection item screen
+        />
+      </View>
     </>
   );
 }

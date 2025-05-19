@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CollectionList from "../CollectionList/CollectionList";
 import { BackgroundCard } from "./CollectionListCard.styles";
-import { SafeAreaView, View, ViewProps } from "react-native";
+import { SafeAreaView, ScrollView, View, ViewProps } from "react-native";
 import { StyledView } from "../GradientBackground/GradientBackground.styles";
+import { ThemedView } from "../ThemedView/ThemedView";
+import { router } from "expo-router";
+import CollectionWidget from "../CollectionWidget/CollectionWidget";
+import { ThemedText } from "@/components/ThemedText";
+import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton";
 
 export type CollectionListCardPorps = ViewProps & {
   collectionLists: string[];
@@ -14,6 +19,11 @@ export type CollectionListCardPorps = ViewProps & {
   darkColor?: string;
   topPadding?: number;
   backgroundCardTopOffset?: number;
+  filteredItems?: any[];
+  items?: any;
+  setSelectedItem?: (selectedItem: any) => void;
+  setShowItemModal?: (showItemModal: boolean) => void;
+  searchQuery?: string;
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
@@ -27,6 +37,11 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   style,
   children,
   backgroundCardTopOffset,
+  filteredItems = [],
+  items,
+  setSelectedItem,
+  setShowItemModal,
+  searchQuery,
   ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
@@ -39,21 +54,57 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         collectionLists={listNames}
         onSelect={(collectionList) => {
           if (setSelectedList) {
-            setSelectedList(collectionList || "All"); // Safely call setSelectedList
+            setSelectedList(collectionList || "All");
           }
         }}
       />
       <BackgroundCard
         backgroundColor={backgroundColor}
         topOffset={backgroundCardTopOffset}
-      />
-
-      {/* Foreground content */}
-      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-        <StyledView topPadding={topPadding} style={style} {...otherProps}>
-          {children}
-        </StyledView>
-      </SafeAreaView>
+        style={{ marginTop: 9 }} // <-- Add marginTop here
+      >
+        <ThemedView topPadding={24} style={{ borderRadius: 33 }}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {filteredItems.length > 0 ? (
+              <View style={{ flex: 1, gap: 12 }}>
+                {filteredItems.map((item) => (
+                  <CollectionWidget
+                    key={item.itemID}
+                    attributes={items?.attributes || []}
+                    item={item}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/collectionItemPage",
+                        params: { itemId: item.itemID.toString() },
+                      });
+                    }}
+                    onLongPress={() => {
+                      if (setSelectedItem) {
+                        setSelectedItem(item);
+                      }
+                      if (setShowItemModal) {
+                        setShowItemModal(true);
+                      }
+                    }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <View style={{ marginTop: 24 }}>
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="regular"
+                  style={{ textAlign: "center" }}
+                >
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "No items in this collection yet."}
+                </ThemedText>
+              </View>
+            )}
+          </ScrollView>
+        </ThemedView>
+      </BackgroundCard>
     </View>
   );
 };

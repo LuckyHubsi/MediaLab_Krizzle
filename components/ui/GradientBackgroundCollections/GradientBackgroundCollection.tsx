@@ -9,14 +9,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
 import { ThemedView } from "../ThemedView/ThemedView";
 import { CustomStyledHeader } from "../CustomStyledHeader/CustomStyledHeader";
+import { CollectionListCard } from "../CollectionListCard/CollectionListCard";
 
 export type GradientBackgroundProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
   topPadding?: number;
   backgroundCardTopOffset?: number;
+  collectionLists: string[];
+  onSelect?: (selected: string | null) => void;
   listNames?: string[];
   setSelectedList?: (selectedList: string) => void;
+  filteredItems?: any[];
+  items?: any;
+  setSelectedItem?: (selectedItem: any) => void;
+  setShowItemModal?: (showItemModal: boolean) => void;
+  searchQuery?: string;
 };
 
 export function GradientBackgroundCollection({
@@ -26,8 +34,16 @@ export function GradientBackgroundCollection({
   style,
   children,
   backgroundCardTopOffset,
+  collectionLists,
+  onSelect,
   listNames = [],
   setSelectedList,
+  filteredItems = [],
+  items,
+  setSelectedItem,
+  setShowItemModal,
+  searchQuery,
+
   ...otherProps
 }: GradientBackgroundProps) {
   const backgroundColor = useThemeColor(
@@ -50,11 +66,26 @@ export function GradientBackgroundCollection({
         }}
       ></GradientBackgroundWrapper>
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+      <SafeAreaView style={{ flex: 0.26, backgroundColor: "transparent" }}>
         <StyledView topPadding={topPadding} style={style} {...otherProps}>
           {children}
         </StyledView>
       </SafeAreaView>
+      <CollectionListCard
+        collectionLists={listNames}
+        listNames={listNames}
+        setSelectedList={setSelectedList}
+        onSelect={(collectionList) => {
+          if (setSelectedList) {
+            setSelectedList(collectionList || "All"); // Safely call setSelectedList
+          }
+        }}
+        filteredItems={filteredItems}
+        items={items}
+        setSelectedItem={setSelectedItem}
+        setShowItemModal={setShowItemModal}
+        searchQuery={searchQuery}
+      />
     </View>
   );
 }

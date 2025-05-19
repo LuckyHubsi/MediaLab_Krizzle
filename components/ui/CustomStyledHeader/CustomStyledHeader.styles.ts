@@ -25,10 +25,19 @@ export const StyledHeader = styled.View<{
         : "#111111"};
 `;
 
-export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
+export const BackIcon = styled(Ionicons)<{
+  colorScheme: "light" | "dark";
+  isTransparent?: boolean;
+}>`
   font-size: 24px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
-    colorScheme === "light" ? "black" : "white"};
+  color: ${({
+    colorScheme,
+    isTransparent,
+  }: {
+    colorScheme: "light" | "dark";
+    isTransparent?: boolean;
+  }) =>
+    isTransparent ? "white" : colorScheme === "light" ? "black" : "white"};
   margin-right: 15px;
   margin-top: 5px;
   margin-left: 5px;

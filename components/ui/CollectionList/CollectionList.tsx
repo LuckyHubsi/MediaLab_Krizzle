@@ -59,9 +59,9 @@ const CollectionList: React.FC<CollectionListProps> = ({
             >
               {collectionList === activeList && (
                 <MaterialIcons
-                  name="check-circle-outline"
+                  name="bookmark-added"
                   size={16}
-                  color="#FFFFFF"
+                  color="#4599E8"
                   style={{ marginRight: 6 }}
                 />
               )}

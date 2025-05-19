@@ -24,6 +24,7 @@ export type ThemedTextProps = TextProps & {
     | "disabled"
     | "viewAll";
   textIsCentered?: boolean;
+  isTransparent?: boolean;
 };
 
 const colorVariants = {
@@ -48,6 +49,7 @@ export function ThemedText({
   fontSize = "regular",
   colorVariant = "default",
   textIsCentered = false,
+  isTransparent,
   ...rest
 }: ThemedTextProps) {
   const color =
@@ -58,7 +60,7 @@ export function ThemedText({
   return (
     <Text
       style={[
-        { color },
+        { color: isTransparent ? Colors.white : color },
         fontWeight === "light" ? fontWeightStyles.light : undefined,
         fontWeight === "regular" ? fontWeightStyles.regular : undefined,
         fontWeight === "semibold" ? fontWeightStyles.semibold : undefined,
