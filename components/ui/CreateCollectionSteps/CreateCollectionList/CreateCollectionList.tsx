@@ -23,6 +23,7 @@ import {
   ListContent,
   RemoveButton,
   RemoveButtonContent,
+  HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
@@ -155,28 +156,33 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       <ScrollView
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag"
-        contentContainerStyle={ListContent}
+        contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
         {cards.map((item, index) => (
           <Card key={item.id}>
-            <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
-            >
-              List {index + 1}
-            </ThemedText>
+            <HorizontalTitleRow>
+              <ThemedText fontSize="regular" fontWeight="regular">
+                List {index + 1}
+              </ThemedText>
+              {index === 0 && (
+                <ThemedText fontSize="s" colorVariant="red">
+                  * required
+                </ThemedText>
+              )}
+            </HorizontalTitleRow>
             <Textfield
               showTitle={false}
               textfieldIcon="text-fields"
-              placeholderText="Add a title to your note"
+              placeholderText="Add a title"
               title=""
               value={item.title}
               onChangeText={(text) => handleTitleChange(item.id, text)}
               hasNoInputError={hasClickedNext && !item.title}
               hasDuplicateTitle={
-                hasClickedNext && duplicateTitleIds.has(item.id)
+                hasClickedNext &&
+                item.title.trim() !== "" &&
+                duplicateTitleIds.has(item.id)
               }
               maxLength={30}
             />

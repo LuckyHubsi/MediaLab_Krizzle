@@ -38,6 +38,7 @@ import {
 import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 
 export default function EditWidgetScreen() {
   const navigation = useNavigation();
@@ -196,14 +197,14 @@ export default function EditWidgetScreen() {
         </Card>
       </View>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 10 }}
+        contentContainerStyle={{ paddingBottom: 75 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
           <View style={{ width: "100%", gap: 20 }}>
             <Card>
               <TitleCard
-                placeholder="Add a title to your Note"
+                placeholder="Add a title"
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
@@ -270,7 +271,12 @@ export default function EditWidgetScreen() {
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ marginBottom: 10 }}>
-          <Button onPress={updateWidget}>Save</Button>
+          <BottomButtons
+            singleButtonText={"Create"}
+            onNext={updateWidget}
+            hasProgressIndicator={false}
+            progressStep={1}
+          />
         </View>
       )}
       <ChoosePopup
