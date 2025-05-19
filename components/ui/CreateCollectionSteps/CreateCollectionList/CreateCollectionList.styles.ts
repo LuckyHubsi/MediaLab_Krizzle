@@ -41,11 +41,12 @@ export const ItemCountContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 10px 0 10px 0;
+  padding: 15px 0 5px 0;
 `;
 
 export const ItemCount = styled.View`
-  width: 48%;
+  width: 100%;
+  justify-content: center;
   flex-direction: row;
   border-radius: 33px;
   border: 1px solid
