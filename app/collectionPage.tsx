@@ -28,6 +28,7 @@ import {
 } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -36,6 +37,8 @@ export default function CollectionScreen() {
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   }>();
+
+  const { showSnackbar } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
@@ -313,6 +316,7 @@ export default function CollectionScreen() {
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);
+              showSnackbar("Successfully deleted Item.", "bottom", "success");
             } catch (error) {
               console.error("Error deleting item:", error);
             }

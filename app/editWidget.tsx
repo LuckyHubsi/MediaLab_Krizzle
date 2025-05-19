@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,6 +39,7 @@ import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function EditWidgetScreen() {
   const navigation = useNavigation();
@@ -85,6 +86,15 @@ export default function EditWidgetScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
+  const { showSnackbar } = useSnackbar();
+
+  const initialValuesRef = useRef({
+    title: "",
+    selectedTag: null as TagDTO | null,
+    selectedColor: "",
+    selectedIcon: null as keyof typeof MaterialIcons.glyphMap | null,
+  });
+
   const updateWidget = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
@@ -115,6 +125,18 @@ export default function EditWidgetScreen() {
       tagDTO?.tagID || null,
     );
 
+    // only send snackbar if data has changed
+    const hasChanges =
+      title !== initialValuesRef.current.title ||
+      selectedColor !== initialValuesRef.current.selectedColor ||
+      selectedIcon !== initialValuesRef.current.selectedIcon ||
+      (selectedTag?.tagID || null) !==
+        (initialValuesRef.current.selectedTag?.tagID || null);
+
+    if (hasChanges) {
+      showSnackbar("Successfully updated Widget!", "top", "success");
+    }
+
     router.back();
   };
 
@@ -141,6 +163,16 @@ export default function EditWidgetScreen() {
                 | keyof typeof MaterialIcons.glyphMap
                 | null) || null,
             );
+            //save current data to compare if new data has been entered
+            initialValuesRef.current = {
+              title: generalPageData.page_title || "",
+              selectedColor: generalPageData.page_color || "",
+              selectedIcon:
+                (generalPageData.page_icon as keyof typeof MaterialIcons.glyphMap) ||
+                null,
+              selectedTag: generalPageData.tag || null,
+            };
+
             setSelectedTag(generalPageData.tag || null);
           }
         } catch (error) {
@@ -272,7 +304,7 @@ export default function EditWidgetScreen() {
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ marginBottom: 10 }}>
           <BottomButtons
-            singleButtonText={"Create"}
+            singleButtonText={"Save Changes"}
             onNext={updateWidget}
             hasProgressIndicator={false}
             progressStep={1}
