@@ -1,70 +1,345 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Header } from "@/components/ui/Header/Header";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { View } from "react-native";
-import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
-import EditCollectionLists from "@/components/ui/EditCollectionLists/EditCollectionLists";
-import { ro } from "date-fns/locale";
-import { router, useLocalSearchParams } from "expo-router";
-import { CollectionData } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
-import { getCollectionCategories } from "@/services/CollectionCategoriesService";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import {
+  Alert,
+  Keyboard,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
+import { ThemedText } from "@/components/ThemedText";
+import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { AddButton } from "@/components/ui/AddButton/AddButton";
+import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
+import { MaterialIcons } from "@expo/vector-icons";
+import {
+  AddButtonWrapper,
+  ItemCount,
+  ItemCountContainer,
+  ListContent,
+  RemoveButton,
+  RemoveButtonContent,
+  HorizontalTitleRow,
+} from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList.styles";
+import {
+  CardHeader,
+  CardText,
+} from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
+import {
+  getCollectionCategories,
+  insertCollectionCategory,
+  updateCollectionCategory,
+  deleteCollectionCategoryByID,
+} from "@/services/CollectionCategoriesService";
+import Card from "@/components/ui/Card/Card";
+import Textfield from "@/components/ui/Textfield/Textfield";
+import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function EditCollectionListsScreen() {
-  const { collectionId } = useLocalSearchParams<{
-    collectionId: string;
-  }>();
-  // const [data, setData] = useState<CollectionData>({
-  //   title: "",
-  //   selectedTag: null,
-  //   selectedColor: "#4599E8",
-  //   selectedIcon: undefined,
-  //   lists: [],
-  //   templates: [],
-  // });
-
-  const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);
+  const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
+  const numericId = Number(collectionId);
+  const colorScheme = useActiveColorScheme() ?? "light";
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [listToDelete, setListToDelete] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [lists, setLists] = useState<{ id: string; title: string }[]>([]);
+  const [initialIds, setInitialIds] = useState<Set<string>>(new Set());
+  const [showHelp, setShowHelp] = useState(false);
+  const [hasClickedNext, setHasClickedNext] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const isPersisted = (id: string) => !isNaN(Number(id)) && initialIds.has(id);
+  const [isLoading, setIsLoading] = useState(true);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     (async () => {
-      const numericId = Number(collectionId);
       const collectionLists = await getCollectionCategories(numericId);
-
-      // const collectionListsWithId = collectionLists.map((list) => ({
-      //   id: list.collectionCategoryID?.toString() || "",
-      //   title: list.category_name || "",
-      // }));
-
-      // const collectionData: CollectionData = {
-      //   title: "",
-      //   selectedTag: null,
-      //   selectedColor: "#FFB74D",
-      //   selectedIcon: "book",
-      //   lists: collectionListsWithId,
-      //   templates: [],
-      // };
-
-      // setData(collectionData);
-      setLists(collectionLists);
+      const mapped = collectionLists.map((l) => ({
+        id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
+        title: l.category_name ?? "",
+      }));
+      setLists(mapped);
+      setInitialIds(new Set(mapped.map((l) => l.id)));
     })();
   }, [collectionId]);
 
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const show = Keyboard.addListener("keyboardDidShow", () =>
+        setKeyboardVisible(true),
+      );
+      const hide = Keyboard.addListener("keyboardDidHide", () =>
+        setKeyboardVisible(false),
+      );
+      return () => {
+        show.remove();
+        hide.remove();
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const collectionLists = await getCollectionCategories(numericId);
+      const mapped = collectionLists.map((l) => ({
+        id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
+        title: l.category_name ?? "",
+      }));
+      setLists(mapped);
+      setInitialIds(new Set(mapped.map((l) => l.id)));
+      setIsLoading(false);
+    })();
+  }, [collectionId]);
+  const handleAddCard = () => {
+    const newCard = { id: Date.now().toString(), title: "" };
+    setLists((prev) => [...prev, newCard]);
+  };
+
+  const handleRemoveCard = (id: string) => {
+    const item = lists.find((l) => l.id === id);
+    if (item) {
+      setListToDelete(item);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const handleTitleChange = (id: string, text: string) => {
+    setLists((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, title: text } : l)),
+    );
+  };
+
+  const saveAllChanges = async () => {
+    setHasClickedNext(true);
+
+    const allTitlesFilled = lists.every((l) => l.title.trim() !== "");
+    const seen = new Set<string>();
+    const duplicateTitleIds = new Set<string>();
+
+    lists.forEach((l) => {
+      const key = l.title.trim().toLowerCase();
+      if (seen.has(key)) {
+        duplicateTitleIds.add(l.id);
+      } else {
+        seen.add(key);
+      }
+    });
+
+    if (!allTitlesFilled) {
+      showSnackbar("Please fill in all list titles.", "top", "error");
+      return;
+    }
+
+    if (duplicateTitleIds.size > 0) {
+      showSnackbar("Each list must have a unique title.", "top", "error");
+      return;
+    }
+
+    const saveOperations = lists.map(async (l) => {
+      const updateDto = {
+        collectionID: numericId,
+        category_name: l.title,
+        collectionCategoryID: Number(l.id),
+      };
+
+      if (!isPersisted(l.id)) {
+        await insertCollectionCategory({
+          category_name: l.title,
+          collectionID: numericId,
+        });
+
+        setInitialIds((prev) => new Set(prev).add(l.id));
+      } else {
+        await updateCollectionCategory(updateDto);
+      }
+    });
+
+    await Promise.all(saveOperations);
+    router.back();
+  };
+
+  const confirmDelete = async () => {
+    if (!listToDelete) return;
+
+    const id = listToDelete.id;
+
+    if (!isNaN(Number(id))) {
+      try {
+        await deleteCollectionCategoryByID(Number(id));
+
+        setLists((prev) => prev.filter((l) => l.id !== id));
+        setInitialIds((prev) => {
+          const updated = new Set(prev);
+          updated.delete(id);
+          return updated;
+        });
+      } catch (error) {
+        console.error("Error deleting list:", error);
+      }
+    }
+
+    setListToDelete(null);
+    setShowDeleteModal(false);
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* <ThemedView style={{ flex: 1 }}>
-        <EditCollectionLists
-          data={data}
-          setData={() => {}}
-          onBack={() => {
-            router.back();
-          }}
-          onNext={() => {
-            router.back();
-          }}
+    <GradientBackground
+      backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
+      topPadding={Platform.select({ ios: 0, android: 15 })}
+    >
+      <View style={{ flex: 1 }}>
+        <Card>
+          <CardText>
+            <CardHeader>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Edit Lists
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </CardHeader>
+            <ThemedText
+              fontSize="s"
+              fontWeight="light"
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
+              Add Lists to organize your Collections better.
+            </ThemedText>
+          </CardText>
+        </Card>
+
+        <ItemCountContainer>
+          <ItemCount colorScheme={colorScheme}>
+            <ThemedText colorVariant={lists.length < 10 ? "primary" : "red"}>
+              {lists.length}
+            </ThemedText>
+            <ThemedText
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
+              /10 Lists
+            </ThemedText>
+          </ItemCount>
+        </ItemCountContainer>
+        {!isLoading && (
+          <ScrollView
+            keyboardShouldPersistTaps="always"
+            keyboardDismissMode="on-drag"
+            contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {lists.map((item, index) => (
+              <Card key={item.id}>
+                <HorizontalTitleRow>
+                  <ThemedText fontSize="regular" fontWeight="regular">
+                    List {index + 1}
+                  </ThemedText>
+                  {index === 0 && (
+                    <ThemedText fontSize="s" colorVariant="red">
+                      * required
+                    </ThemedText>
+                  )}
+                </HorizontalTitleRow>
+                <Textfield
+                  showTitle={false}
+                  textfieldIcon="text-fields"
+                  placeholderText="Add a title"
+                  title=""
+                  value={item.title}
+                  onChangeText={(text) => handleTitleChange(item.id, text)}
+                  hasNoInputError={hasClickedNext && !item.title}
+                  hasDuplicateTitle={
+                    hasClickedNext &&
+                    item.title.trim() !== "" &&
+                    lists.filter(
+                      (l) =>
+                        l.title.trim().toLowerCase() ===
+                        item.title.trim().toLowerCase(),
+                    ).length > 1
+                  }
+                  maxLength={30}
+                />
+                {index > 0 && (
+                  <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+                    <RemoveButtonContent>
+                      <MaterialIcons
+                        name="delete"
+                        size={16}
+                        color="#ff4d4d"
+                        style={{ marginRight: 6, marginTop: 2 }}
+                      />
+                      <ThemedText
+                        fontSize="s"
+                        fontWeight="bold"
+                        style={{ color: "#ff4d4d" }}
+                      >
+                        remove
+                      </ThemedText>
+                    </RemoveButtonContent>
+                  </RemoveButton>
+                )}
+              </Card>
+            ))}
+
+            {lists.length < 10 && (
+              <AddButtonWrapper>
+                <AddButton
+                  onPress={() => {
+                    handleAddCard();
+                    setHasClickedNext(false);
+                  }}
+                />
+              </AddButtonWrapper>
+            )}
+          </ScrollView>
+        )}
+
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <View
+            style={{
+              paddingTop: 15,
+              paddingBottom: Platform.OS === "android" ? 8 : 24,
+            }}
+          >
+            <BottomButtons
+              titleLeftButton="Back"
+              titleRightButton="Next"
+              onDiscard={() => router.back()}
+              onNext={saveAllChanges}
+              variant="back"
+              hasProgressIndicator={false}
+              progressStep={2}
+            />
+          </View>
+        )}
+        <DeleteModal
+          visible={showDeleteModal}
+          title={listToDelete?.title}
+          extraInformation="Deleting this list will also remove all its items in the collection. This action cannot be undone."
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          onclose={() => setShowDeleteModal(false)}
         />
-      </ThemedView> */}
-    </SafeAreaView>
+        {showHelp && (
+          <InfoPopup
+            visible={showHelp}
+            onClose={() => setShowHelp(false)}
+            image={require("@/assets/images/list-guide.png")}
+            title="What is a Collection List?"
+            description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
+          />
+        )}
+      </View>
+    </GradientBackground>
   );
 }
