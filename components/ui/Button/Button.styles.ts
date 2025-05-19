@@ -10,6 +10,7 @@ export const StyledButton = styled.TouchableOpacity<ButtonProps>`
   text-align: center;
   width: 100%;
   padding-vertical: 18px;
+  margin-bottom: 10px;
   background-color: ${({ isRed }: ButtonProps) =>
     isRed ? Colors.negative : Colors.tintColor};
 `;
