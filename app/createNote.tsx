@@ -31,6 +31,7 @@ import { GradientBackground } from "@/components/ui/GradientBackground/GradientB
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -61,6 +62,8 @@ export default function CreateNoteScreen() {
       label,
     };
   });
+
+  const { showSnackbar } = useSnackbar();
 
   const getWidgetColorKey = (
     value: string,
@@ -113,6 +116,12 @@ export default function CreateNoteScreen() {
       pathname: "/notePage",
       params: { pageId: id, title: title },
     });
+
+    showSnackbar(
+      `Successfully created Note: "${title}". `,
+      "bottom",
+      "success",
+    );
   };
 
   useFocusEffect(

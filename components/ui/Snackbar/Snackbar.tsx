@@ -50,19 +50,25 @@ export const SnackbarProvider: React.FC<Props> = ({ children }) => {
     success: ({ text1 }: any) => (
       <ToastContainer background={Colors.primary}>
         <MaterialIcons name="check-circle" size={22} color={Colors.white} />
-        <ThemedText colorVariant="white">{text1}</ThemedText>
+        <ThemedText style={{ flex: 1 }} colorVariant="white">
+          {text1}
+        </ThemedText>
       </ToastContainer>
     ),
     error: ({ text1 }: any) => (
       <ToastContainer background={Colors.negative}>
         <MaterialIcons name="error" size={22} color={Colors.white} />
-        <ThemedText colorVariant="white">{text1}</ThemedText>
+        <ThemedText style={{ flex: 1 }} colorVariant="white">
+          {text1}
+        </ThemedText>
       </ToastContainer>
     ),
     info: ({ text1 }: any) => (
       <ToastContainer background={Colors.primary}>
         <MaterialIcons name="error" size={22} color={Colors.white} />
-        <ThemedText colorVariant="white">{text1}</ThemedText>
+        <ThemedText style={{ flex: 1 }} colorVariant="white">
+          {text1}
+        </ThemedText>
       </ToastContainer>
     ),
   };
