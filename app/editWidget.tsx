@@ -134,7 +134,7 @@ export default function EditWidgetScreen() {
         (initialValuesRef.current.selectedTag?.tagID || null);
 
     if (hasChanges) {
-      showSnackbar("Successfully updated Widget!", "top", "success");
+      showSnackbar("Successfully updated Widget!", "bottom", "success");
     }
 
     router.back();

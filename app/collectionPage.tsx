@@ -240,12 +240,30 @@ export default function CollectionScreen() {
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
+
             onPress: async () => {
               if (collection) {
                 const success = await togglePageArchive(
                   Number(pageId),
                   collection.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    collection.archived
+                      ? "Successfully restored Collection."
+                      : "Successfully archived Collection.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    collection.archived
+                      ? "Failed to restore Collection."
+                      : "Failed to archive Collection.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },

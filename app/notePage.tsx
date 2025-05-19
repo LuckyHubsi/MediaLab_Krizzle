@@ -20,6 +20,7 @@ import { useColorScheme } from "react-native";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function NotesScreen() {
   const { pageId, title } = useLocalSearchParams<{
@@ -92,6 +93,8 @@ export default function NotesScreen() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
@@ -158,6 +161,23 @@ export default function NotesScreen() {
                   Number(pageId),
                   noteData.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    noteData.archived
+                      ? "Successfully restored Note."
+                      : "Successfully archived Note.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    noteData.archived
+                      ? "Failed to restore Note."
+                      : "Failed to archive Note.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
