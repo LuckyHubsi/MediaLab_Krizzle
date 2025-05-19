@@ -167,6 +167,7 @@ export default function TagManagementScreen() {
             contentContainerStyle={{ paddingBottom: 60 }}
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <TagListItem
                 tag={item.tag_label}
