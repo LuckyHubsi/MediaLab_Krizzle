@@ -164,6 +164,7 @@ export default function TagManagementScreen() {
             </ThemedText>
           )}
           <FlatList
+            contentContainerStyle={{ paddingBottom: 60 }}
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
             renderItem={({ item }) => (
