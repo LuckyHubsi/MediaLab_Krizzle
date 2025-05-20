@@ -1,8 +1,10 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 
-export const FolderContainer = styled.View`
-  width: 40%;
+type CardProps = { cardWidth: number };
+
+export const FolderContainer = styled.View<CardProps>`
+  width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
   height: 110px;
   border-radius: 25px;
   background-color: ${Colors.primary};

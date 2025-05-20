@@ -5,20 +5,26 @@ import {
   FolderShape,
   FolderTab,
 } from "./FolderComponent.styles";
-import { TouchableNativeFeedback, TouchableOpacity } from "react-native";
+import {
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 
 interface FolderComponentProps {
   title: string;
   itemCount: number;
+  cardWidth?: number;
 }
 
 const FolderComponent: React.FC<FolderComponentProps> = ({
   title,
   itemCount,
+  cardWidth,
 }) => {
   return (
     <TouchableOpacity onPress={() => {}} activeOpacity={0.9}>
-      <FolderContainer>
+      <FolderContainer cardWidth={cardWidth}>
         <FolderShape />
         <FolderTab />
 

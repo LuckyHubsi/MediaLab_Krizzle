@@ -46,6 +46,7 @@ export default function FoldersScreen() {
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
+
   const router = useRouter();
 
   // interface ArchivedWidget {
@@ -155,6 +156,14 @@ export default function FoldersScreen() {
     { id: "5", title: "Folder 5", itemCount: 7 },
     { id: "6", title: "Folder 6", itemCount: 15 },
     { id: "7", title: "Folder 6", itemCount: 15 },
+    { id: "8", title: "Folder 6", itemCount: 15 },
+    { id: "9", title: "Folder 6", itemCount: 15 },
+    { id: "10", title: "Folder 6", itemCount: 15 },
+    { id: "11", title: "Folder 6", itemCount: 15 },
+    { id: "12", title: "Folder 6", itemCount: 15 },
+    { id: "13", title: "Folder 6", itemCount: 15 },
+    { id: "14", title: "Folder 6", itemCount: 15 },
+    { id: "15", title: "Folder 6", itemCount: 15 },
   ];
 
   const { showSnackbar } = useSnackbar();
@@ -195,10 +204,19 @@ export default function FoldersScreen() {
               {/* <> */}
               <FlatList
                 data={hardcodedFolders}
+                showsVerticalScrollIndicator={false}
+                numColumns={columns}
+                columnWrapperStyle={{
+                  justifyContent: "space-between",
+                  marginBottom: 16,
+                  marginTop: 16,
+                }}
                 renderItem={({ item }) => (
                   <FolderComponent
                     title={item.title}
                     itemCount={item.itemCount}
+                    key={item.id}
+                    cardWidth={(width - 22 * (columns + 1)) / columns}
                   />
                 )}
                 keyExtractor={(item) => item.id}
