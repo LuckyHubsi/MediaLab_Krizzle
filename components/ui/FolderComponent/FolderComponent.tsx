@@ -5,10 +5,11 @@ import {
   FolderShape,
   FolderTab,
 } from "./FolderComponent.styles";
+import { TouchableNativeFeedback, TouchableOpacity } from "react-native";
 
 interface FolderComponentProps {
-  title?: string;
-  itemCount?: number;
+  title: string;
+  itemCount: number;
 }
 
 const FolderComponent: React.FC<FolderComponentProps> = ({
@@ -16,23 +17,25 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   itemCount,
 }) => {
   return (
-    <FolderContainer>
-      <FolderShape />
-      <FolderTab />
+    <TouchableOpacity onPress={() => {}} activeOpacity={0.9}>
+      <FolderContainer>
+        <FolderShape />
+        <FolderTab />
 
-      <FolderContent>
-        <ThemedText
-          fontWeight="semibold"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {title}
-        </ThemedText>
-        <ThemedText fontWeight="light" fontSize="s">
-          {itemCount} items
-        </ThemedText>
-      </FolderContent>
-    </FolderContainer>
+        <FolderContent>
+          <ThemedText
+            fontWeight="semibold"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </ThemedText>
+          <ThemedText fontWeight="light" fontSize="s">
+            {itemCount} items
+          </ThemedText>
+        </FolderContent>
+      </FolderContainer>
+    </TouchableOpacity>
   );
 };
 
