@@ -31,6 +31,7 @@ import { generalPageService } from "@/backend/service/GeneralPageService";
 import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -176,6 +177,8 @@ export default function HomeScreen() {
   const goToEditPage = (widget: Widget) => {
     router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
+
+  const { showSnackbar } = useSnackbar();
 
   return (
     <>
@@ -395,6 +398,19 @@ export default function HomeScreen() {
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },

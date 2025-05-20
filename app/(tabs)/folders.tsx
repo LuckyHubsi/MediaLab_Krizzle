@@ -11,14 +11,19 @@ import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
+import {
+  deleteGeneralPage,
+  getAllGeneralPageData,
+  togglePageArchive,
+} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
+import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { generalPageService } from "@/backend/service/GeneralPageService";
-import { PageType } from "@/shared/enum/PageType";
-import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { GeneralPageState } from "@/utils/enums/GeneralPageState";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -35,7 +40,7 @@ export const getIconForPageType = (type: string) => {
   }
 };
 
-export default function ArchiveScreen() {
+export default function FoldersScreen() {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
@@ -101,9 +106,7 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await generalPageService.getAllGeneralPageData(
-            GeneralPageState.Archived,
-          );
+          const data = await getAllGeneralPageData(GeneralPageState.Archived);
 
           const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
 
@@ -137,6 +140,8 @@ export default function ArchiveScreen() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <SafeAreaView>
@@ -157,11 +162,11 @@ export default function ArchiveScreen() {
           </IconTopRight>
 
           <ThemedText fontSize="xl" fontWeight="bold">
-            Archive
+            Folders
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome text="Archive is empty" showButton={false} />
+            <EmptyHome text="No folders yet" showButton={false} />
           ) : (
             <>
               <SearchBar
@@ -222,10 +227,23 @@ export default function ArchiveScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
+                const success = await togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -249,7 +267,7 @@ export default function ArchiveScreen() {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
+                await deleteGeneralPage(widgetIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 

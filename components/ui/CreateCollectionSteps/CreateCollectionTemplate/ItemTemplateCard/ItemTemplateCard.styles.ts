@@ -1,13 +1,10 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
-type ThemeProps = {
-  colorScheme: "light" | "dark";
-};
-
-export const TemplateSelectCard = styled.View`
+export const TemplateSelectCard = styled.View<ColorSchemeProps>`
   width: 100%;
-  background-color: ${({ colorScheme }: ThemeProps) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light"
       ? Colors.light.background
       : Colors.dark.cardBackground};
@@ -16,7 +13,7 @@ export const TemplateSelectCard = styled.View`
   padding: 20px;
   gap: 15px;
   border-width: 1px;
-  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
 `;
 export const CardTitleRow = styled.View`

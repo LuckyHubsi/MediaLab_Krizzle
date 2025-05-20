@@ -31,6 +31,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { noteService } from "@/backend/service/NoteService";
 import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CreateNoteScreen() {
   const navigation = useNavigation();
@@ -61,6 +62,8 @@ export default function CreateNoteScreen() {
       label,
     };
   });
+
+  const { showSnackbar } = useSnackbar();
 
   const getWidgetColorKey = (
     value: string,
@@ -114,6 +117,12 @@ export default function CreateNoteScreen() {
       pathname: "/notePage",
       params: { pageId: id, title: title },
     });
+
+    showSnackbar(
+      `Successfully created Note: "${title}". `,
+      "bottom",
+      "success",
+    );
   };
 
   useFocusEffect(
@@ -175,7 +184,7 @@ export default function CreateNoteScreen() {
         </Card>
       </View>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 75 }}
+        contentContainerStyle={{ paddingBottom: 85 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
@@ -248,7 +257,7 @@ export default function CreateNoteScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View style={{ marginBottom: 10 }}>
+        <View>
           <BottomButtons
             singleButtonText={"Create"}
             onNext={createNote}

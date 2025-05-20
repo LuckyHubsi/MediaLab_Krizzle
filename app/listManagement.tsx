@@ -7,13 +7,10 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
-  Text,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
@@ -32,7 +29,6 @@ export default function ListManagementScreen() {
   const { collectionId } = useLocalSearchParams<{
     collectionId: string;
   }>();
-
   const colorScheme = useActiveColorScheme() ?? "light";
   const { showSnackbar } = useSnackbar();
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);

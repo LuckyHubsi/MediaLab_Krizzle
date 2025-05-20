@@ -1,10 +1,7 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import styled from "styled-components/native";
-
-type ColorSchemeProps = {
-  colorScheme: "light" | "dark";
-};
 
 export const GradientBorder = styled(LinearGradient).attrs({
   colors: ["#4599E8", "#583FE7"],

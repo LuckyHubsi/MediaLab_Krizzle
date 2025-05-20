@@ -23,6 +23,7 @@ import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { collectionService } from "@/backend/service/CollectionService";
 import { generalPageService } from "@/backend/service/GeneralPageService";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function CollectionScreen() {
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   }>();
+
+  const { showSnackbar } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
@@ -80,7 +83,7 @@ export default function CollectionScreen() {
   };
 
   const goToEditListsPage = () => {
-    const path = "/listManagement";
+    const path = "/editCollectionLists";
 
     router.push({
       pathname: path,
@@ -234,12 +237,30 @@ export default function CollectionScreen() {
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
+
             onPress: async () => {
               if (collection) {
                 const success = await generalPageService.togglePageArchive(
                   Number(pageId),
                   collection.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    collection.archived
+                      ? "Successfully restored Collection."
+                      : "Successfully archived Collection.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    collection.archived
+                      ? "Failed to restore Collection."
+                      : "Failed to archive Collection.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -311,6 +332,7 @@ export default function CollectionScreen() {
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);
+              showSnackbar("Successfully deleted Item.", "bottom", "success");
             } catch (error) {
               console.error("Error deleting item:", error);
             }

@@ -23,6 +23,7 @@ import {
   ListContent,
   RemoveButton,
   RemoveButtonContent,
+  HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
@@ -31,6 +32,7 @@ import {
   CardHeader,
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -57,6 +59,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
+
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -160,13 +164,16 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       >
         {cards.map((item, index) => (
           <Card key={item.id}>
-            <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
-            >
-              List {index + 1}
-            </ThemedText>
+            <HorizontalTitleRow>
+              <ThemedText fontSize="regular" fontWeight="regular">
+                List {index + 1}
+              </ThemedText>
+              {index === 0 && (
+                <ThemedText fontSize="s" colorVariant="red">
+                  * required
+                </ThemedText>
+              )}
+            </HorizontalTitleRow>
             <Textfield
               showTitle={false}
               textfieldIcon="text-fields"
@@ -176,7 +183,9 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               onChangeText={(text) => handleTitleChange(item.id, text)}
               hasNoInputError={hasClickedNext && !item.title}
               hasDuplicateTitle={
-                hasClickedNext && duplicateTitleIds.has(item.id)
+                hasClickedNext &&
+                item.title.trim() !== "" &&
+                duplicateTitleIds.has(item.id)
               }
               maxLength={30}
             />
@@ -232,7 +241,11 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               );
 
               if (!allTitlesFilled) {
-                Alert.alert("Missing Title", "Please fill in all list titles.");
+                showSnackbar(
+                  "Please fill in all list titles.",
+                  "bottom",
+                  "error",
+                );
                 return;
               }
 
@@ -242,10 +255,12 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               const uniqueTitles = new Set(normalizedTitles);
 
               if (uniqueTitles.size !== normalizedTitles.length) {
-                Alert.alert(
-                  "Duplicate Title",
+                showSnackbar(
                   "Each list must have a unique title.",
+                  "bottom",
+                  "error",
                 );
+
                 return;
               }
 

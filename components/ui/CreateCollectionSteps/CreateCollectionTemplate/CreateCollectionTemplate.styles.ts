@@ -1,10 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 import { Card } from "../../Card/Card";
-
-type ThemeProps = {
-  colorScheme: "light" | "dark";
-};
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const ItemCountContainer = styled.View`
   flex-direction: row;
@@ -15,12 +12,12 @@ export const ItemCountContainer = styled.View`
   padding: 10px 0 0 0;
 `;
 
-export const ItemCount = styled.View`
+export const ItemCount = styled.View<ColorSchemeProps>`
   width: 48%;
   flex-direction: row;
   border-radius: 33px;
   border: 1px solid
-    ${({ colorScheme }: ThemeProps) => Colors[colorScheme].placeholder};
+    ${({ colorScheme }: ColorSchemeProps) => Colors[colorScheme].placeholder};
   padding: 10px 15px;
 `;
 
