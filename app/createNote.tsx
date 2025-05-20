@@ -19,18 +19,18 @@ import {
   iconLabelMap,
 } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { insertNote } from "@/services/NoteService";
-import { TagDTO } from "@/dto/TagDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { noteService } from "@/backend/service/NoteService";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CreateNoteScreen() {
@@ -109,9 +109,10 @@ export default function CreateNoteScreen() {
       pinned: false,
       note_content: null,
       tag: tagDTO,
+      pin_count: 0,
     };
 
-    const id = await insertNote(noteDTO);
+    const id = await noteService.insertNote(noteDTO);
     router.replace({
       pathname: "/notePage",
       params: { pageId: id, title: title },
@@ -128,7 +129,7 @@ export default function CreateNoteScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);

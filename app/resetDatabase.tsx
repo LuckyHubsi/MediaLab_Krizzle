@@ -4,7 +4,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { Button } from "@/components/ui/Button/Button";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { resetDatabase } from "@/utils/DatabaseReset";
+import { resetDatabase } from "@/backend/service/DatabaseReset";
 import { useState } from "react";
 import {
   useColorScheme,

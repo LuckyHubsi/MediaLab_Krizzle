@@ -10,7 +10,7 @@ import {
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 
 interface TagPickerProps {
   tags: TagDTO[];

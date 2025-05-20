@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useColorScheme as useSystemColorScheme } from "react-native";
-import { themeStorage } from "@/utils/themeStorage";
+import { themeStorage } from "@/backend/service/themeStorage";
 
 export type ColorSchemeOption = "light" | "dark" | "system";
 export type ColorSchemeProps = { colorScheme: "light" | "dark" };
