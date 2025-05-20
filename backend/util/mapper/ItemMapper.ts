@@ -175,6 +175,22 @@ export class ItemMapper {
                   return null;
                 }
               })(),
+              options: (() => {
+                try {
+                  return Array.isArray(attr.options)
+                    ? attr.options
+                        .map((opt: unknown) => {
+                          if (typeof opt === "string" && opt.startsWith("[")) {
+                            return JSON.parse(opt);
+                          }
+                          return opt;
+                        })
+                        .flat()
+                    : null;
+                } catch {
+                  return null;
+                }
+              })(),
             };
           default:
             return base;
