@@ -132,6 +132,13 @@ const selectItemPreviewValuesQuery: string = `
     ORDER BY i.itemID, a.attributeID;
 `;
 
+const selectImageValuesByPageIdQuery: string = `
+  SELECT iv.value 
+  FROM image_value iv
+  JOIN item i ON iv.itemID = i.itemID
+  WHERE i.pageID = ? AND iv.value IS NOT NULL
+`;
+
 const insertItemQuery: string = `
     INSERT INTO item (pageID, categoryID) VALUES (?, ?)
 `;
@@ -198,6 +205,7 @@ export {
   itemSelectByIdQuery,
   itemSelectByPageIdQuery,
   selectItemPreviewValuesQuery,
+  selectImageValuesByPageIdQuery,
   insertItemQuery,
   insertTextValueQuery,
   insertDateValueQuery,

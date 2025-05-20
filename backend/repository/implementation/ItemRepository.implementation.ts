@@ -264,7 +264,6 @@ export class ItemRepositoryImpl
   ): Promise<void> {
     try {
       if ("valueString" in itemAttributeValue) {
-        console.log("Saving image value:", itemAttributeValue.valueString);
         await this.executeQuery(
           insertImageValueQuery,
           [

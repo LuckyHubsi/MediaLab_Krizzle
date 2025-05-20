@@ -23,6 +23,7 @@ import {
 import * as SQLite from "expo-sqlite";
 import { GeneralPageModel } from "../model/GeneralPageModel";
 import { PageID, pageID } from "@/backend/domain/common/IDs";
+import { collectionSelectByPageIdQuery } from "../query/CollectionQuery";
 
 /**
  * Implementation of the GeneralPageRepository interface using SQL queries.
@@ -226,10 +227,14 @@ export class GeneralPageRepositoryImpl
    */
   async deletePage(pageID: PageID): Promise<boolean> {
     try {
-      await this.executeQuery(deleteGeneralPageByIDQuery, [pageID]);
-      return true;
+      return await this.executeTransaction(async (txn) => {
+        await this.executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
+
+        return true;
+      });
     } catch (error) {
-      throw new RepositoryError("Failed to delete teh page");
+      console.error("Error in deletePage:", error);
+      throw new RepositoryError("Failed to delete the page");
     }
   }
 
