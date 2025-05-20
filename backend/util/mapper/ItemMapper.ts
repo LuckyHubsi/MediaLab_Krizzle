@@ -87,8 +87,11 @@ export class ItemMapper {
               : null;
 
           case "image":
-            // image values are expected to be an instance of Image and to be converted to strings
-            return value instanceof Image ? value.toString() : null;
+            // image values are expected to be strings
+            return typeof value === "string" ? value : null;
+          case "link":
+            // link values are expected to be strings
+            return typeof value === "string" ? value : null;
           default:
             return null;
         }
@@ -184,6 +187,12 @@ export class ItemMapper {
             return {
               ...base,
               valueString: attr.value ?? null,
+            };
+          case "link":
+            return {
+              ...base,
+              valueString: attr.value ?? null,
+              displayText: attr.display_text ?? null,
             };
           default:
             return base;
