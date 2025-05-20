@@ -17,25 +17,10 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   return (
-    <LinearGradient
-      colors={[
-        Colors[colorScheme].background + "00",
-        Colors[colorScheme].background + "B0",
-        Colors[colorScheme].background + "FF",
-      ]}
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        paddingTop: 35,
-      }}
-    >
-      <StyledButton onPress={onPress} isRed={isRed}>
-        <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
-          {children}
-        </ThemedText>
-      </StyledButton>
-    </LinearGradient>
+    <StyledButton onPress={onPress} isRed={isRed}>
+      <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
+        {children}
+      </ThemedText>
+    </StyledButton>
   );
 };

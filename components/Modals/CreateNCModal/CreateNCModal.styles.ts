@@ -33,6 +33,14 @@ export const OptionsRow = styled.View`
   gap: 16px;
 `;
 
+export const OptionsColumn = styled.View`
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
 export const OptionButton = styled.TouchableOpacity<ColorSchemeProps>`
   flex: 1;
   padding: 20px;

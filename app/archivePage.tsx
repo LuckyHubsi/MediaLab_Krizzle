@@ -1,4 +1,4 @@
-import { FlatList, Image, TouchableOpacity } from "react-native";
+import { Platform, StatusBar, View, FlatList } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -23,7 +23,7 @@ import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
-import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -136,35 +136,21 @@ export default function ArchiveScreen() {
 
     router.push({
       pathname: path,
-      params: { pageId: widget.id, title: widget.title },
+      params: {
+        pageId: widget.id,
+        title: widget.title,
+        routing: "goArchive",
+      },
     });
   };
-
-  const { showSnackbar } = useSnackbar();
 
   return (
     <>
       <SafeAreaView>
+        <View>
+          <CustomStyledHeader title="Archive" backBehavior="goSettings" />
+        </View>
         <ThemedView>
-          <IconTopRight>
-            <TouchableOpacity
-              onPress={() => {
-                router.push({
-                  pathname: "/faq",
-                });
-              }}
-            >
-              <Image
-                source={require("@/assets/images/kriz.png")}
-                style={{ width: 30, height: 32 }}
-              />
-            </TouchableOpacity>
-          </IconTopRight>
-
-          <ThemedText fontSize="xl" fontWeight="bold">
-            Archive
-          </ThemedText>
-
           {widgets.length === 0 ? (
             <EmptyHome text="Archive is empty" showButton={false} />
           ) : (
@@ -231,19 +217,6 @@ export default function ArchiveScreen() {
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
-                if (success) {
-                  showSnackbar(
-                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "error",
-                  );
-                }
                 setShouldReload(success);
               }
             },
