@@ -50,6 +50,11 @@ export interface ItemRepository extends BaseRepository {
     itemId: ItemID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+  insertLinkValue(
+    itemAttributeValue: ItemAttributeValue,
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
   deleteItem(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<PageID>;
   deleteItemValues(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<void>;
   updateItem(
@@ -85,6 +90,13 @@ export interface ItemRepository extends BaseRepository {
     itemId: ItemID,
     attributeID: AttributeID,
     value: string | null,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateLinkValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: string | null,
+    displayText: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
 }

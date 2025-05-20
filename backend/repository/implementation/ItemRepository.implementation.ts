@@ -12,6 +12,7 @@ import {
   insertDateValueQuery,
   insertImageValueQuery,
   insertItemQuery,
+  insertLinkValueQuery,
   insertMultiselectValueQuery,
   insertRatingValueQuery,
   insertTextValueQuery,
@@ -20,6 +21,7 @@ import {
   updateDateValueQuery,
   updateImageValueQuery,
   updateItemQuery,
+  updateLinkValueQuery,
   updateMultiselectValueQuery,
   updateRatingValueQuery,
   updateTextValueQuery,
@@ -286,6 +288,43 @@ export class ItemRepositoryImpl
   }
 
   /**
+   * Insert a new hyperlink value for an item.
+   *
+   * @param itemId - The `ItemID` of the item the value belongs to.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async insertLinkValue(
+    itemAttributeValue: ItemAttributeValue,
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      if ("valueString" in itemAttributeValue) {
+        const displayText =
+          "displayText" in itemAttributeValue
+            ? itemAttributeValue.displayText
+            : null;
+
+        await this.executeQuery(
+          insertLinkValueQuery,
+          [
+            itemId,
+            itemAttributeValue.attributeID,
+            itemAttributeValue.valueString,
+            displayText,
+          ],
+          txn,
+        );
+      }
+    } catch (error) {
+      console.error("Error inserting hyperlink value:", error);
+      throw new RepositoryError("Failed to insert hyperlink value.");
+    }
+  }
+
+  /**
    * Deletes an item.
    *
    * @param itemId - The `ItemID` of the item to be deleted.
@@ -324,7 +363,7 @@ export class ItemRepositoryImpl
     try {
       await this.executeQuery(
         deleteItemAttributeValuesQuery,
-        [itemId, itemId, itemId, itemId, itemId],
+        [itemId, itemId, itemId, itemId, itemId, itemId],
         txn,
       );
     } catch (error) {
@@ -464,6 +503,7 @@ export class ItemRepositoryImpl
   /**
    * Updates an image value for an item.
    *
+   * @param itemId - The `ItemID` of the item the value belongs to.
    * @param attributeId - The `AttributeID` of the attribute the value belongs to.
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
@@ -484,6 +524,35 @@ export class ItemRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryError("Failed to update image value.");
+    }
+  }
+
+  /**
+   * Updates a hyperlink value for an item.
+   *
+   * @param itemId - The `ItemID` of the item the value belongs to.
+   * @param attributeId - The `attributeID` of the attribute the value belongs to.
+   * @param value - The updated value or null if removed.
+   * @param displayText - The display text of the hyperlink.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateLinkValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: string | null,
+    displayText: string | null,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await this.executeQuery(
+        updateLinkValueQuery,
+        [value, displayText, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update hyperlink value.");
     }
   }
 }
