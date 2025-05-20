@@ -22,8 +22,8 @@ export const FolderShape = styled.View`
 
 export const FolderContent = styled.View`
   position: absolute;
-  bottom: 15;
-  left: 15;
+  bottom: 15px;
+  left: 15px;
   z-index: 1;
   max-width: 80%;
 `;

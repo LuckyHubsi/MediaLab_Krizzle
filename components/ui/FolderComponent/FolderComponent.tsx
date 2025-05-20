@@ -30,13 +30,14 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
 
         <FolderContent>
           <ThemedText
+            colorVariant="white"
             fontWeight="semibold"
             numberOfLines={2}
             ellipsizeMode="tail"
           >
             {title}
           </ThemedText>
-          <ThemedText fontWeight="light" fontSize="s">
+          <ThemedText fontWeight="light" fontSize="s" colorVariant="white">
             {itemCount} items
           </ThemedText>
         </FolderContent>

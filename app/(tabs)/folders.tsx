@@ -216,7 +216,7 @@ export default function FoldersScreen() {
                     title={item.title}
                     itemCount={item.itemCount}
                     key={item.id}
-                    cardWidth={(width - 22 * (columns + 1)) / columns}
+                    cardWidth={(width - 25 * (columns + 1)) / columns}
                   />
                 )}
                 keyExtractor={(item) => item.id}
