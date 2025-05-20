@@ -39,7 +39,7 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
       : themeMode === "light"
         ? Colors.white
         : Colors.black};
-  font-family: Lexend;
+  font-family: Lexend_400Regular;
   font-size: 16px;
   font-style: normal;
   font-weight: ${({ active }: CollectionListProps) => (active ? 900 : 400)};

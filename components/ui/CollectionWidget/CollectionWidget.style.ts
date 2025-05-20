@@ -16,22 +16,13 @@ export const CollectionCardContainer = styled.View<ColorSchemeProps>`
   gap: 10px;
 `;
 
-export const CollectionTitle = styled.Text<ColorSchemeProps>`
-  font-family: Lexend_400Bold;
-  color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "black" : "white"};
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 20px; /* 125% */
-`;
-
 export const CollectionText = styled.Text<ColorSchemeProps>`
   width: 100%;
   height: 48px; /* Set a fixed height */
   max-height: 48px; /* Limit the height to 48px */
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
-  font-family: Lexend;
+  font-family: Lexend_400Regular;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -47,7 +38,7 @@ export const CollectionDate = styled.Text<ColorSchemeProps>`
 export const CollectionRating = styled.Text<ColorSchemeProps>`
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
-  font-family: Lexend;
+  font-family: Lexend_400Regular;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
