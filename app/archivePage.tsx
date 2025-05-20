@@ -154,11 +154,7 @@ export default function ArchiveScreen() {
         >
           <CustomStyledHeader title="Archive" backBehavior="goSettings" />
         </View>
-        <ThemedView
-          style={{
-            backgroundColor: Colors[colorScheme || "light"].background,
-          }}
-        >
+        <ThemedView>
           {widgets.length === 0 ? (
             <EmptyHome text="Archive is empty" showButton={false} />
           ) : (
