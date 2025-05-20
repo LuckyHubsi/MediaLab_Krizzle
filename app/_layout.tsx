@@ -104,6 +104,10 @@ export default function RootLayout() {
                 name="editCollectionItem"
                 options={{ headerShown: false }}
               />
+              <Stack.Screen
+                name="archivePage"
+                options={{ headerShown: false }}
+              />
               <Stack.Screen name="+not-found" />
               <Stack.Screen
                 name="resetDatabase"

@@ -49,11 +49,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="archive"
+          name="folders"
           options={{
-            title: "Archive",
+            title: "Folders",
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="archive" size={24} color={color} />
+              <MaterialIcons name="folder" size={24} color={color} />
             ),
           }}
         />
