@@ -64,7 +64,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
       <BackgroundCard
         backgroundColor={backgroundColor}
         topOffset={backgroundCardTopOffset}
-        style={{ marginTop: 10 }}
+        style={{ marginTop: 9 }}
       >
         <ThemedView topPadding={24} style={{ borderRadius: 33 }}>
           <ScrollView showsVerticalScrollIndicator={false}>

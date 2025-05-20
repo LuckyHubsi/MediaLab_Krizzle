@@ -48,7 +48,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
           zIndex: 1, // Set zIndex lower than other elements
         }}
         pointerEvents="none"
-      />{" "}
+      />
       <GradientBackgroundWrapper
         colors={["transparent", "#583FE7"]}
         style={{
@@ -65,6 +65,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         style={{ maxHeight: 42, paddingLeft: 20, paddingRight: 20 }}
+        contentContainerStyle={{ paddingRight: 40 }}
       >
         <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
           {collectionLists.map((collectionList, index) => (
