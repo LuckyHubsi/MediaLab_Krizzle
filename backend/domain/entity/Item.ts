@@ -72,6 +72,15 @@ const imageValue = itemAttributeBase.extend({
 });
 
 /**
+ * Schema for link attribute values.
+ */
+const linkValue = itemAttributeBase.extend({
+  type: z.literal(AttributeType.Link),
+  valueString: common.string750.optional().nullable(),
+  displayText: common.string30.optional().nullable(),
+});
+
+/**
  * Schema for attribute values - can be of either type.
  */
 export const itemAttributeValueSchema = z.discriminatedUnion("type", [
@@ -80,6 +89,7 @@ export const itemAttributeValueSchema = z.discriminatedUnion("type", [
   ratingValue,
   multiselectValue,
   imageValue,
+  linkValue,
 ]);
 
 /**
