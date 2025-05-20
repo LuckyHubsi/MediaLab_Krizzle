@@ -5,6 +5,7 @@ import {
   AppStateStatus,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   useColorScheme,
   View,
 } from "react-native";
@@ -62,7 +63,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     autofocus: false,
     avoidIosKeyboard: true,
     initialContent: initialContent,
-    dynamicHeight: true,
+    dynamicHeight: false,
     customSource: customEditorHtml.replace(
       "/*REPLACE_THEME*/",
       `document.body.dataset.theme = '${colorScheme}';`,
@@ -158,7 +159,14 @@ const TextEditor: React.FC<TextEditorProps> = ({
             : Colors.dark.background,
       }}
     >
-      <RichText editor={editor} />
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <RichText editor={editor} />
+      </ScrollView>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={keyboardVerticalOffset}

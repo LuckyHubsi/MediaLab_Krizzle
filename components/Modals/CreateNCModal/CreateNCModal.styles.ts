@@ -1,9 +1,6 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
-
-type ColorSchemeProps = {
-  colorScheme: "light" | "dark";
-};
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const Overlay = styled.View`
   flex: 1;
@@ -34,6 +31,14 @@ export const OptionsRow = styled.View`
   justify-content: space-between;
   width: 100%;
   gap: 16px;
+`;
+
+export const OptionsColumn = styled.View`
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 10px;
 `;
 
 export const OptionButton = styled.TouchableOpacity<ColorSchemeProps>`

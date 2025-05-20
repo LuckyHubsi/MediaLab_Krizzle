@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Modal, TouchableOpacity } from "react-native";
+import { Animated, Modal, Platform, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   ModalBackground,
@@ -61,7 +61,7 @@ export default function QuickActionModal({
   return (
     <Modal
       transparent
-      animationType="none"
+      animationType={Platform.OS === "ios" ? "fade" : "none"}
       visible={true}
       onRequestClose={handleFadeOut}
     >
@@ -70,7 +70,12 @@ export default function QuickActionModal({
         activeOpacity={1}
         onPress={handleFadeOut}
       >
-        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        <Animated.View
+          style={{
+            flex: 1,
+            opacity: Platform.OS === "android" ? fadeAnim : 1,
+          }}
+        >
           <ModalBackground>
             <TouchableOpacity activeOpacity={1}>
               <ModalBox colorScheme={colorScheme}>

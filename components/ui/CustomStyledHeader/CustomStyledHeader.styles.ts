@@ -1,6 +1,7 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const StyledHeader = styled.View<{
   colorScheme: "light" | "dark";
@@ -43,9 +44,9 @@ export const BackIcon = styled(Ionicons)<{
   margin-left: 5px;
 `;
 
-export const Icon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
+export const Icon = styled(Ionicons)<ColorSchemeProps>`
   font-size: 24px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "black" : "white"};
   margin: 6px;
 `;

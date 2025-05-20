@@ -1,16 +1,17 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Platform } from "react-native";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
-export const StyledChooseCard = styled.View<{ colorScheme: "light" | "dark" }>`
+export const StyledChooseCard = styled.View<ColorSchemeProps>`
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 20px;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].cardBackground};
   border-width: 1px;
-  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
   border-radius: 33px;
   position: relative;
@@ -28,7 +29,7 @@ export const Circle = styled.View`
   height: 38px;
   border-radius: 40px;
   border-width: 1px;
-  border-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? Colors.grey50 : Colors.grey100};
   align-items: center;
   justify-content: center;

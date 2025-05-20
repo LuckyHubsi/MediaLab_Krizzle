@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -36,6 +37,7 @@ import { getAllTags } from "@/services/TagService";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -180,6 +182,8 @@ export default function HomeScreen() {
   const goToEditPage = (widget: Widget) => {
     router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
+
+  const { showSnackbar } = useSnackbar();
 
   return (
     <>
@@ -399,6 +403,19 @@ export default function HomeScreen() {
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -406,7 +423,17 @@ export default function HomeScreen() {
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => setShowDeleteModal(true),
+            onPress: () => {
+              setShowModal(false); // close the QuickActionModal
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300); // match iOS fade-out duration
+              } else {
+                setShowDeleteModal(true); // no delay on Android
+              }
+            },
             danger: true,
           },
         ]}

@@ -4,6 +4,7 @@ const tintColorDark = "#4599E8";
 export const Colors = {
   primary: "#4599E8",
   negative: "#FF4949",
+  positive: "#13CE7D",
   white: "#ffffff",
   grey25: "#EAEAEA",
   grey50: "#ABABAB",
@@ -59,6 +60,7 @@ export const Colors = {
     disabled: "#585858",
   },
   widget: {
+    grey: "#585858",
     blueGrey: "#82A9CC",
     lightBlue: "#7DB5EA",
     blue: "#4599E8",

@@ -35,6 +35,7 @@ import {
   GradientBackgroundWrapper,
   StyledView,
 } from "@/components/ui/GradientBackground/GradientBackground.styles";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -43,6 +44,8 @@ export default function CollectionScreen() {
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   }>();
+
+  const { showSnackbar } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
@@ -90,7 +93,7 @@ export default function CollectionScreen() {
   };
 
   const goToEditListsPage = () => {
-    const path = "/listManagement";
+    const path = "/editCollectionLists";
 
     router.push({
       pathname: path,
@@ -212,12 +215,30 @@ export default function CollectionScreen() {
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
+
             onPress: async () => {
               if (collection) {
                 const success = await togglePageArchive(
                   Number(pageId),
                   collection.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    collection.archived
+                      ? "Successfully restored Collection."
+                      : "Successfully archived Collection.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    collection.archived
+                      ? "Failed to restore Collection."
+                      : "Failed to archive Collection.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -226,7 +247,14 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -251,7 +279,15 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowItemDeleteModal(true);
+              setShowModal(false);
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowItemDeleteModal(true);
+                }, 300);
+              } else {
+                setShowItemDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -288,6 +324,7 @@ export default function CollectionScreen() {
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);
+              showSnackbar("Successfully deleted Item.", "bottom", "success");
             } catch (error) {
               console.error("Error deleting item:", error);
             }

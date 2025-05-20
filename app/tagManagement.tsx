@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  FlatList,
-  Keyboard,
-  Modal,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { SafeAreaView, View, FlatList, Keyboard, Platform } from "react-native";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { TagDTO } from "@/dto/TagDTO";
@@ -29,6 +16,8 @@ import { StatusBar } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagManagementScreen() {
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -157,9 +146,7 @@ export default function TagManagementScreen() {
   }, []);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -168,7 +155,13 @@ export default function TagManagementScreen() {
         <CustomStyledHeader title="Tags" />
       </View>
 
-      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 20,
+          backgroundColor: Colors[colorScheme].background,
+        }}
+      >
         <View style={{ flex: 1 }}>
           {tags.length === 0 && (
             <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
@@ -176,8 +169,10 @@ export default function TagManagementScreen() {
             </ThemedText>
           )}
           <FlatList
+            contentContainerStyle={{ paddingBottom: 80 }}
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <TagListItem
                 tag={item.tag_label}
@@ -192,78 +187,38 @@ export default function TagManagementScreen() {
           />
         </View>
         {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View style={{ paddingBottom: 10 }}>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
+          <View>
+            <LinearGradient
+              colors={[
+                Colors[colorScheme].background + "00",
+                Colors[colorScheme].background + "B0",
+                Colors[colorScheme].background + "FF",
+              ]}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingTop: 35,
+              }}
+            >
+              <Button onPress={() => setModalVisible(true)}>
+                <ThemedText colorVariant="white">Add</ThemedText>
+              </Button>
+            </LinearGradient>
           </View>
         )}
       </View>
-      <Modal
+      <TagInputModal
         visible={modalVisible}
-        animationType="fade"
-        transparent
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => {
-              Keyboard.dismiss();
-              setModalVisible(false);
-            }}
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              padding: 20,
-            }}
-          >
-            <TouchableWithoutFeedback>
-              <View
-                style={{
-                  width: "100%",
-                  maxWidth: 500,
-                  backgroundColor: Colors[colorScheme].cardBackground,
-                  borderRadius: 33,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
-                <TextInput
-                  placeholder="New tag name"
-                  placeholderTextColor="#999"
-                  style={{
-                    flex: 1,
-                    borderColor: "#ccc",
-                    color: Colors[colorScheme].text,
-                    paddingVertical: 8,
-                    fontSize: 16,
-                  }}
-                  value={newTag}
-                  onChangeText={setNewTag}
-                  onSubmitEditing={handleTagSubmit}
-                  autoFocus
-                />
-                <TouchableOpacity onPress={handleTagSubmit}>
-                  <MaterialIcons
-                    name="arrow-upward"
-                    size={28}
-                    color={Colors[colorScheme].text}
-                  />
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </Modal>
+        value={newTag}
+        onChangeText={setNewTag}
+        onSubmit={handleTagSubmit}
+        onClose={() => {
+          Keyboard.dismiss();
+          setModalVisible(false);
+        }}
+      />
       <DeleteModal
         visible={showDeleteModal}
         title={tagtoDelete?.tag_label}

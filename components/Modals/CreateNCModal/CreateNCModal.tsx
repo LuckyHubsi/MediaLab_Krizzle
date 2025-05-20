@@ -14,6 +14,7 @@ import {
   OptionButton,
   OptionIcon,
   OptionText,
+  OptionsColumn,
 } from "./CreateNCModal.styles";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
@@ -73,49 +74,73 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
             <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
               <BottomSheet colorScheme={colorScheme}>
                 <DragIndicator />
-                <OptionsRow>
-                  <OptionButton
-                    onPress={() => {
-                      onClose();
-                      router.push("/createNote");
-                    }}
-                    colorScheme={colorScheme}
-                  >
-                    <OptionIcon>
-                      <MaterialIcons
-                        name="sticky-note-2"
-                        size={24}
-                        color={Colors.primary}
-                      />
-                    </OptionIcon>
-                    <OptionText>
-                      <ThemedText fontSize="s" fontWeight="regular">
-                        Create a{"\n"}note
-                      </ThemedText>
-                    </OptionText>
-                  </OptionButton>
+                <OptionsColumn>
+                  <OptionsRow>
+                    <OptionButton
+                      onPress={() => {
+                        onClose();
+                        router.push("/createNote");
+                      }}
+                      colorScheme={colorScheme}
+                    >
+                      <OptionIcon>
+                        <MaterialIcons
+                          name="sticky-note-2"
+                          size={24}
+                          color={Colors.primary}
+                        />
+                      </OptionIcon>
+                      <OptionText>
+                        <ThemedText fontSize="s" fontWeight="regular">
+                          Create a{"\n"}note
+                        </ThemedText>
+                      </OptionText>
+                    </OptionButton>
 
-                  <OptionButton
-                    onPress={() => {
-                      onClose();
-                      router.push("/createCollection");
-                    }}
-                    colorScheme={colorScheme}
-                  >
-                    <OptionIcon>
-                      <MaterialIcons
-                        name="collections-bookmark"
-                        size={24}
-                        color={Colors.primary}
-                      />
-                    </OptionIcon>
-                    <OptionText>
-                      <ThemedText fontSize="s" fontWeight="regular">
-                        Create a{"\n"}collection
-                      </ThemedText>
-                    </OptionText>
-                  </OptionButton>
-                </OptionsRow>
+                    <OptionButton
+                      onPress={() => {
+                        onClose();
+                        router.push("/createCollection");
+                      }}
+                      colorScheme={colorScheme}
+                    >
+                      <OptionIcon>
+                        <MaterialIcons
+                          name="collections-bookmark"
+                          size={24}
+                          color={Colors.primary}
+                        />
+                      </OptionIcon>
+                      <OptionText>
+                        <ThemedText fontSize="s" fontWeight="regular">
+                          Create a{"\n"}collection
+                        </ThemedText>
+                      </OptionText>
+                    </OptionButton>
+                  </OptionsRow>
+                  <OptionsRow>
+                    <OptionButton
+                      onPress={() => {
+                        onClose();
+                        router.push("/createNote");
+                      }}
+                      colorScheme={colorScheme}
+                    >
+                      <OptionIcon>
+                        <MaterialIcons
+                          name="folder"
+                          size={24}
+                          color={Colors.primary}
+                        />
+                      </OptionIcon>
+                      <OptionText>
+                        <ThemedText fontSize="s" fontWeight="regular">
+                          Create a folder
+                        </ThemedText>
+                      </OptionText>
+                    </OptionButton>
+                  </OptionsRow>
+                </OptionsColumn>
               </BottomSheet>
             </Animated.View>
           )}

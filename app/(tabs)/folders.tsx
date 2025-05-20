@@ -1,4 +1,4 @@
-import { FlatList, Image, TouchableOpacity } from "react-native";
+import { FlatList, Image, Platform, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -23,6 +23,7 @@ import { useRouter } from "expo-router";
 import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -39,7 +40,7 @@ export const getIconForPageType = (type: string) => {
   }
 };
 
-export default function ArchiveScreen() {
+export default function FoldersScreen() {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
@@ -139,6 +140,8 @@ export default function ArchiveScreen() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <SafeAreaView>
@@ -159,11 +162,11 @@ export default function ArchiveScreen() {
           </IconTopRight>
 
           <ThemedText fontSize="xl" fontWeight="bold">
-            Archive
+            Folders
           </ThemedText>
 
           {widgets.length === 0 ? (
-            <EmptyHome text="Archive is empty" showButton={false} />
+            <EmptyHome text="No folders yet" showButton={false} />
           ) : (
             <>
               <SearchBar
@@ -228,6 +231,19 @@ export default function ArchiveScreen() {
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -236,7 +252,14 @@ export default function ArchiveScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },

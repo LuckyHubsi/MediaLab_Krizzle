@@ -1,6 +1,7 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const Container = styled.View`
   width: 100%;
@@ -13,20 +14,20 @@ export const HeaderRow = styled.View`
   margin-bottom: 8px;
 `;
 
-export const BackIcon = styled(Ionicons)<{ colorScheme: "light" | "dark" }>`
+export const BackIcon = styled(Ionicons)<ColorSchemeProps>`
   font-size: 12px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? Colors.grey100 : Colors.grey50};
 `;
 
-export const ViewAllText = styled.Text<{ colorScheme: "light" | "dark" }>`
+export const ViewAllText = styled.Text<ColorSchemeProps>`
   font-family: Lexend;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.35px;
-  color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
 `;
 
@@ -36,7 +37,7 @@ export const TagScrollView = styled.ScrollView`
 
 export const TagPill = styled.View<{
   isSelected: boolean;
-  colorScheme: "light" | "dark";
+  colorScheme: ColorSchemeProps;
 }>`
   flex-direction: row;
   margin-top: 3px;
