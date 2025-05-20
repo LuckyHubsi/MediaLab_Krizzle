@@ -298,6 +298,13 @@ export class CollectionService {
                 txn,
               );
               break;
+            case AttributeType.Image:
+              this.itemRepo.insertImageValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
             default:
               break;
           }
@@ -398,6 +405,16 @@ export class CollectionService {
                     itemId,
                     value.attributeID,
                     stringifiedValues,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Image:
+                if ("valueString" in value) {
+                  this.itemRepo.updateImageValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
                     txn,
                   );
                 }
