@@ -364,6 +364,15 @@ export class CollectionService {
                 txn,
               );
               break;
+            case AttributeType.Link:
+              if ("valueString" in attributeValue) {
+                this.itemRepo.insertLinkValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+              }
+              break;
             default:
               break;
           }
@@ -496,6 +505,19 @@ export class CollectionService {
                     itemId,
                     value.attributeID,
                     value.valueString ?? null,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Link:
+                if ("valueString" in value) {
+                  const displayText =
+                    "displayText" in value ? (value.displayText ?? null) : null;
+                  this.itemRepo.updateLinkValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
+                    displayText,
                     txn,
                   );
                 }
