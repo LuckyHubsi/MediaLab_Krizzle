@@ -85,6 +85,10 @@ export class ItemMapper {
               value.every((v) => typeof v === "string")
               ? value
               : null;
+
+          case "image":
+            // image values are expected to be an instance of Image and to be converted to strings
+            return value instanceof Image ? value.toString() : null;
           default:
             return null;
         }
@@ -176,6 +180,11 @@ export class ItemMapper {
                 }
               })(),
             };
+          case "image":
+            return {
+              ...base,
+              valueString: attr.value ?? null,
+            };
           default:
             return base;
         }
@@ -249,6 +258,8 @@ export class ItemMapper {
               if (typeof raw !== "string") return null;
               const parsed = JSON.parse(raw);
               return Array.isArray(parsed) ? parsed : null;
+            case "image":
+              return typeof raw === "string" ? raw : null;
 
             default:
               return null;
