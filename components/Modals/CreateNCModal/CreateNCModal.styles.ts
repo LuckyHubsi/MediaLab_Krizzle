@@ -1,9 +1,6 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
-
-type ColorSchemeProps = {
-  colorScheme: "light" | "dark";
-};
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const Overlay = styled.View`
   flex: 1;

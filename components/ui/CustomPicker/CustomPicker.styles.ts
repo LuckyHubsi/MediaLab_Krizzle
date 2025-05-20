@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
 export const AndroidPickerTouchable = styled.TouchableOpacity<{
@@ -17,13 +18,11 @@ export const ModalOverlay = styled.View`
   justify-content: flex-end;
 `;
 
-export const ModalContent = styled.View<{
-  colorScheme: "light" | "dark";
-}>`
+export const ModalContent = styled.View<ColorSchemeProps>`
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 20px;
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "dark" ? "#1c1c1e" : "#fff"};
 `;
 

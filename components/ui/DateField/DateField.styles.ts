@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
 interface DateTextProps {
@@ -15,13 +16,11 @@ export const StyledPressable = styled.Pressable`
   width: 100%;
 `;
 
-export const DateInputContainer = styled.View<{
-  colorScheme: "light" | "dark";
-}>`
+export const DateInputContainer = styled.View<ColorSchemeProps>`
   flex-direction: row;
   align-items: center;
   border: 1px solid
-    ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+    ${({ colorScheme }: ColorSchemeProps) =>
       colorScheme === "dark" ? Colors.grey50 : Colors.grey100};
   border-radius: 16px;
   padding: 0 20px;

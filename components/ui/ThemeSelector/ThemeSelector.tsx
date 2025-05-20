@@ -16,16 +16,17 @@ import {
   ModeContainer,
   ResetContainer,
 } from "./ThemeSelector.styles";
-import { useActiveColorScheme } from "@/context/ThemeContext";
+import {
+  ColorSchemeOption,
+  useActiveColorScheme,
+} from "@/context/ThemeContext";
 import { useUserTheme } from "@/context/ThemeContext";
 import { Button } from "../Button/Button";
 import { Colors } from "@/constants/Colors";
 
-type ThemeOption = "light" | "dark" | "system";
-
 type ThemeSelectorProps = {
-  selected: ThemeOption;
-  onSelect: (theme: ThemeOption) => void;
+  selected: ColorSchemeOption;
+  onSelect: (theme: ColorSchemeOption) => void;
 };
 
 export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
@@ -35,7 +36,7 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
   const [systemDefaultIsEnabled, setSystemDefaultIsEnabled] = useState(false);
   const isSystemSelected = selected === "system";
 
-  const handleThemeSelect = (option: ThemeOption) => {
+  const handleThemeSelect = (option: ColorSchemeOption) => {
     onSelect(option);
     setSystemDefaultIsEnabled(false);
   };
@@ -53,7 +54,7 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
   return (
     <>
       <Container>
-        {(["light", "dark"] as ThemeOption[]).map((option) => (
+        {(["light", "dark"] as ColorSchemeOption[]).map((option) => (
           <TouchableOpacity
             onPress={() => handleThemeSelect(option)}
             key={option}
