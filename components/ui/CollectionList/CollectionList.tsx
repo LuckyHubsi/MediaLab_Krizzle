@@ -10,6 +10,7 @@ import { View } from "react-native";
 import { ScrollView } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { GradientBackgroundWrapper } from "../GradientBackground/GradientBackground.styles";
+import { ThemedView } from "../ThemedView/ThemedView";
 
 type CollectionListProps = {
   collectionLists: string[];
@@ -36,36 +37,11 @@ const CollectionList: React.FC<CollectionListProps> = ({
     }
   };
   return (
-    <View>
-      <GradientBackgroundWrapper
-        colors={["#4599E8", "transparent"]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 400,
-          bottom: 0,
-          zIndex: 1, // Set zIndex lower than other elements
-        }}
-        pointerEvents="none"
-      />
-      <GradientBackgroundWrapper
-        colors={["transparent", "#583FE7"]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 400,
-          right: 0,
-          bottom: 0,
-          zIndex: 1, // Set zIndex lower than other elements
-        }}
-        pointerEvents="none"
-      />
+    <View style={{ marginLeft: 20, marginRight: 20 }}>
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        style={{ maxHeight: 42, paddingLeft: 20, paddingRight: 20 }}
-        contentContainerStyle={{ paddingRight: 40 }}
+        style={{ maxHeight: 42 }}
       >
         <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
           {collectionLists.map((collectionList, index) => (

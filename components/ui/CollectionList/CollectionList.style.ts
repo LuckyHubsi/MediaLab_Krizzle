@@ -23,7 +23,6 @@ export const CollectionListContainer = styled(
   border-color: ${({ themeMode }: CollectionListProps) =>
     themeMode === "light" ? Colors.white : Colors.black};
   border-style: solid;
-
   padding: 10px 20px;
   justify-content: center;
   align-items: center;
