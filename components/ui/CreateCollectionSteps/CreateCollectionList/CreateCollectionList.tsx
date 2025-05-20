@@ -32,6 +32,7 @@ import {
   CardHeader,
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -58,6 +59,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
+
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -238,7 +241,11 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               );
 
               if (!allTitlesFilled) {
-                Alert.alert("Missing Title", "Please fill in all list titles.");
+                showSnackbar(
+                  "Please fill in all list titles.",
+                  "bottom",
+                  "error",
+                );
                 return;
               }
 
@@ -248,10 +255,12 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
               const uniqueTitles = new Set(normalizedTitles);
 
               if (uniqueTitles.size !== normalizedTitles.length) {
-                Alert.alert(
-                  "Duplicate Title",
+                showSnackbar(
                   "Each list must have a unique title.",
+                  "bottom",
+                  "error",
                 );
+
                 return;
               }
 

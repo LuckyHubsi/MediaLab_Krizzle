@@ -1,3 +1,4 @@
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
 export const Backdrop = styled.View`
@@ -7,8 +8,8 @@ export const Backdrop = styled.View`
   align-items: center;
 `;
 
-export const Content = styled.View<{ colorScheme: "light" | "dark" }>`
-  background-color: ${({ colorScheme }: { colorScheme: "light" | "dark" }) =>
+export const Content = styled.View<ColorSchemeProps>`
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#fff" : "#1A1A1A"};
   width: 80%;
   height: auto;

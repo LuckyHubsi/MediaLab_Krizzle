@@ -17,6 +17,7 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagManagementScreen() {
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -145,9 +146,7 @@ export default function TagManagementScreen() {
   }, []);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <View
         style={{
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -156,7 +155,13 @@ export default function TagManagementScreen() {
         <CustomStyledHeader title="Tags" />
       </View>
 
-      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 20,
+          backgroundColor: Colors[colorScheme].background,
+        }}
+      >
         <View style={{ flex: 1 }}>
           {tags.length === 0 && (
             <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
@@ -164,8 +169,10 @@ export default function TagManagementScreen() {
             </ThemedText>
           )}
           <FlatList
+            contentContainerStyle={{ paddingBottom: 80 }}
             data={tags}
             keyExtractor={(item) => item.tagID?.toString() || ""}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <TagListItem
                 tag={item.tag_label}
@@ -180,10 +187,25 @@ export default function TagManagementScreen() {
           />
         </View>
         {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View style={{ paddingBottom: 10 }}>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
+          <View>
+            <LinearGradient
+              colors={[
+                Colors[colorScheme].background + "00",
+                Colors[colorScheme].background + "B0",
+                Colors[colorScheme].background + "FF",
+              ]}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingTop: 35,
+              }}
+            >
+              <Button onPress={() => setModalVisible(true)}>
+                <ThemedText colorVariant="white">Add</ThemedText>
+              </Button>
+            </LinearGradient>
           </View>
         )}
       </View>
