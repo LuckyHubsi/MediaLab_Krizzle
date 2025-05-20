@@ -11,4 +11,5 @@ export enum AttributeType {
   Rating = "rating",
   Date = "date",
   Multiselect = "multi-select",
+  Image = "image",
 }
