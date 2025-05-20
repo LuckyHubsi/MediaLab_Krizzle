@@ -43,7 +43,7 @@ export const ItemCountContainer = styled.View`
 
 export const ItemCount = styled.View<ColorSchemeProps>`
   width: 100%;
-  align-items: center;
+  justify-content: center;
   flex-direction: row;
   border-radius: 33px;
   border: 1px solid
