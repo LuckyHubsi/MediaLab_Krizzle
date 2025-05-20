@@ -10,20 +10,16 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  togglePageArchive,
-} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
-import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { PageType } from "@/shared/enum/PageType";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { generalPageService } from "@/backend/service/GeneralPageService";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -106,7 +102,9 @@ export default function FoldersScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await getAllGeneralPageData(GeneralPageState.Archived);
+          const data = await generalPageService.getAllGeneralPageData(
+            GeneralPageState.Archived,
+          );
 
           const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
 
@@ -227,7 +225,7 @@ export default function FoldersScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await togglePageArchive(
+                const success = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
@@ -267,7 +265,7 @@ export default function FoldersScreen() {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 

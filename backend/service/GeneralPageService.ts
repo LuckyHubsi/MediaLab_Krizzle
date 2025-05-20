@@ -6,9 +6,8 @@ import { GeneralPage, NewGeneralPage } from "../domain/entity/GeneralPage";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { PageID, pageID } from "../domain/common/IDs";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { failure, Result, success } from "@/shared/result/Result";
-import { ServiceError } from "@/shared/error/Error";
 import { ZodError } from "zod";
+import { ServiceError } from "../util/error/ServiceError";
 
 /**
  * GeneralPageService encapsulates all general-page-related application logic.
