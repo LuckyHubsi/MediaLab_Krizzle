@@ -1,4 +1,4 @@
-import { FlatList, Image, TouchableOpacity } from "react-native";
+import { FlatList, Image, Platform, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -252,7 +252,14 @@ export default function FoldersScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },

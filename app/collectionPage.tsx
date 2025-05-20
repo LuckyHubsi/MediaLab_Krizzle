@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -272,7 +272,14 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -297,7 +304,15 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowItemDeleteModal(true);
+              setShowModal(false);
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowItemDeleteModal(true);
+                }, 300);
+              } else {
+                setShowItemDeleteModal(true);
+              }
             },
             danger: true,
           },

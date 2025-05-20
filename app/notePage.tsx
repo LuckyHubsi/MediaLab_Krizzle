@@ -2,7 +2,7 @@ import TextEditor from "@/components/TextEditor/TextEditor";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppState, AppStateStatus, View } from "react-native";
+import { AppState, AppStateStatus, Platform, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -187,7 +187,14 @@ export default function NotesScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },

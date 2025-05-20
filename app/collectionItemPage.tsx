@@ -9,7 +9,7 @@ import {
   useRouter,
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
-import { ScrollView } from "react-native"; // Use ScrollView from react-native
+import { Platform, ScrollView } from "react-native"; // Use ScrollView from react-native
 import { deleteItemById, getItemById } from "@/services/ItemService";
 import { ItemDTO } from "@/dto/ItemDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
@@ -88,7 +88,14 @@ export default function CollectionItemScreen() {
             label: "Delete Item",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },

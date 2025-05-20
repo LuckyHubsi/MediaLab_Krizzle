@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -422,7 +423,17 @@ export default function HomeScreen() {
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => setShowDeleteModal(true),
+            onPress: () => {
+              setShowModal(false); // close the QuickActionModal
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300); // match iOS fade-out duration
+              } else {
+                setShowDeleteModal(true); // no delay on Android
+              }
+            },
             danger: true,
           },
         ]}
