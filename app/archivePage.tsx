@@ -147,11 +147,7 @@ export default function ArchiveScreen() {
   return (
     <>
       <SafeAreaView>
-        <View
-          style={{
-            paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-          }}
-        >
+        <View>
           <CustomStyledHeader title="Archive" backBehavior="goSettings" />
         </View>
         <ThemedView>
