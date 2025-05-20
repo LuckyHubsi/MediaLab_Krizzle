@@ -10,6 +10,7 @@ import {
   deleteItemAttributeValuesQuery,
   deleteItemQuery,
   insertDateValueQuery,
+  insertImageValueQuery,
   insertItemQuery,
   insertMultiselectValueQuery,
   insertRatingValueQuery,
@@ -17,6 +18,7 @@ import {
   itemSelectByIdQuery,
   selectItemPreviewValuesQuery,
   updateDateValueQuery,
+  updateImageValueQuery,
   updateItemQuery,
   updateMultiselectValueQuery,
   updateRatingValueQuery,
@@ -248,6 +250,43 @@ export class ItemRepositoryImpl
   }
 
   /**
+   * Insert a new image value for an item.
+   *
+   * @param itemId - The `ItemID` of the item the value belongs to.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async insertImageValue(
+    itemAttributeValue: ItemAttributeValue,
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      if ("valueString" in itemAttributeValue) {
+        console.log("Saving image value:", itemAttributeValue.valueString);
+        await this.executeQuery(
+          insertImageValueQuery,
+          [
+            itemId,
+            itemAttributeValue.attributeID,
+            itemAttributeValue.valueString,
+          ],
+          txn,
+        );
+      } else {
+        console.log(
+          "No valueString in itemAttributeValue:",
+          itemAttributeValue,
+        );
+      }
+    } catch (error) {
+      console.error("Error inserting image value:", error);
+      throw new RepositoryError("Failed to insert image value.");
+    }
+  }
+
+  /**
    * Deletes an item.
    *
    * @param itemId - The `ItemID` of the item to be deleted.
@@ -286,7 +325,7 @@ export class ItemRepositoryImpl
     try {
       await this.executeQuery(
         deleteItemAttributeValuesQuery,
-        [itemId, itemId, itemId, itemId],
+        [itemId, itemId, itemId, itemId, itemId],
         txn,
       );
     } catch (error) {
@@ -420,6 +459,32 @@ export class ItemRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryError("Failed to update text value.");
+    }
+  }
+
+  /**
+   * Updates an image value for an item.
+   *
+   * @param attributeId - The `AttributeID` of the attribute the value belongs to.
+   * @param value - The updated value or null if removed.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateImageValue(
+    itemId: ItemID,
+    attributeId: AttributeID,
+    value: string | null,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await this.executeQuery(
+        updateImageValueQuery,
+        [value, itemId, attributeId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update image value.");
     }
   }
 }

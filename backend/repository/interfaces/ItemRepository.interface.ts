@@ -45,6 +45,11 @@ export interface ItemRepository extends BaseRepository {
     itemId: ItemID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+  insertImageValue(
+    itemAttributeValue: ItemAttributeValue,
+    itemId: ItemID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
   deleteItem(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<PageID>;
   deleteItemValues(itemId: ItemID, txn?: SQLite.SQLiteDatabase): Promise<void>;
   updateItem(
@@ -71,6 +76,12 @@ export interface ItemRepository extends BaseRepository {
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   updateMultiselectValue(
+    itemId: ItemID,
+    attributeID: AttributeID,
+    value: string | null,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+  updateImageValue(
     itemId: ItemID,
     attributeID: AttributeID,
     value: string | null,
