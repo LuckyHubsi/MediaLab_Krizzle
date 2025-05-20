@@ -17,6 +17,7 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagManagementScreen() {
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -187,9 +188,24 @@ export default function TagManagementScreen() {
         </View>
         {(Platform.OS !== "android" || !keyboardVisible) && (
           <View>
-            <Button onPress={() => setModalVisible(true)}>
-              <ThemedText colorVariant="white">Add</ThemedText>
-            </Button>
+            <LinearGradient
+              colors={[
+                Colors[colorScheme].background + "00",
+                Colors[colorScheme].background + "B0",
+                Colors[colorScheme].background + "FF",
+              ]}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingTop: 35,
+              }}
+            >
+              <Button onPress={() => setModalVisible(true)}>
+                <ThemedText colorVariant="white">Add</ThemedText>
+              </Button>
+            </LinearGradient>
           </View>
         )}
       </View>

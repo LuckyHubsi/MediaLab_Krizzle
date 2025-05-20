@@ -183,7 +183,7 @@ export default function CreateNoteScreen() {
         </Card>
       </View>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 75 }}
+        contentContainerStyle={{ paddingBottom: 85 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
@@ -256,7 +256,7 @@ export default function CreateNoteScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View style={{ marginBottom: 10 }}>
+        <View>
           <BottomButtons
             singleButtonText={"Create"}
             onNext={createNote}
