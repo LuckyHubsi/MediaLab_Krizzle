@@ -154,13 +154,15 @@ export default function NotesScreen() {
                   },
                 }
               : null,
-            {
-              label: "Edit",
-              icon: "edit",
-              onPress: () => {
-                goToEditPage();
-              },
-            },
+            noteData && !noteData.archived
+              ? {
+                  label: "Edit",
+                  icon: "edit",
+                  onPress: () => {
+                    goToEditPage();
+                  },
+                }
+              : null,
             {
               label: noteData?.archived ? "Restore" : "Archive",
               icon: noteData?.archived ? "restore" : "archive",

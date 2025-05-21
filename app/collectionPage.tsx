@@ -232,20 +232,24 @@ export default function CollectionScreen() {
                   },
                 }
               : null,
-            {
-              label: "Edit Widget",
-              icon: "edit",
-              onPress: () => {
-                goToEditPage();
-              },
-            },
-            {
-              label: "Edit Lists",
-              icon: "edit-note",
-              onPress: () => {
-                goToEditListsPage();
-              },
-            },
+            collection && !collection.archived
+              ? {
+                  label: "Edit Widget",
+                  icon: "edit",
+                  onPress: () => {
+                    goToEditPage();
+                  },
+                }
+              : null,
+            collection && !collection.archived
+              ? {
+                  label: "Edit Lists",
+                  icon: "edit-note",
+                  onPress: () => {
+                    goToEditListsPage();
+                  },
+                }
+              : null,
             {
               label: collection?.archived ? "Restore" : "Archive",
               icon: collection?.archived ? "restore" : "archive",
