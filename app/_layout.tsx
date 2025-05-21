@@ -21,6 +21,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { SQLiteProvider } from "expo-sqlite";
 import { UserThemeProvider } from "@/context/ThemeContext";
 import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
+import * as ImagePicker from "expo-image-picker";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,9 +41,12 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  useEffect(() => {
+    (async () => {
+      await ImagePicker.requestCameraPermissionsAsync();
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    })();
+  }, []);
 
   return (
     <UserThemeProvider>
