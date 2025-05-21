@@ -23,6 +23,7 @@ export type ThemedTextProps = TextProps & {
     | "primary"
     | "disabled"
     | "black"
+    | "cancel"
     | "viewAll";
   textIsCentered?: boolean;
 };
@@ -40,6 +41,8 @@ const colorVariants = {
     useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
   disabled: () =>
     useActiveColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
+  cancel: () =>
+    useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
 };
 
 export function ThemedText({

@@ -37,6 +37,7 @@ import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal"
 import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -86,6 +87,9 @@ export default function HomeScreen() {
   const [sortingMode, setSortingMode] = useState<GeneralPageState>(
     GeneralPageState.GeneralModfied,
   );
+
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
 
   const getColorKeyFromValue = (
     value: string,
@@ -423,7 +427,7 @@ export default function HomeScreen() {
             //TODO: Add move to folder functionality and implement the logic
             label: "Move to Folder",
             icon: "folder",
-            onPress: async () => {},
+            onPress: () => setShowFolderSelectionModal(true),
           },
           {
             label: "Delete",
@@ -437,6 +441,12 @@ export default function HomeScreen() {
       <ModalSelection
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
+      />
+
+      <SelectFolderModal
+        widgetTitle={selectedWidget?.title}
+        onClose={() => setModalVisible(false)}
+        visible={showFolderSelectionModal}
       />
 
       <DeleteModal
