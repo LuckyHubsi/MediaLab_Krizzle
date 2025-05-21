@@ -217,6 +217,12 @@ export default function FoldersScreen() {
                     itemCount={item.itemCount}
                     key={item.id}
                     cardWidth={(width - 25 * (columns + 1)) / columns}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/folderPage",
+                        params: { folderId: item.id, title: item.title },
+                      });
+                    }}
                   />
                 )}
                 keyExtractor={(item) => item.id}

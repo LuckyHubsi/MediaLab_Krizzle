@@ -15,15 +15,17 @@ interface FolderComponentProps {
   title: string;
   itemCount: number;
   cardWidth?: number;
+  onPress: () => void;
 }
 
 const FolderComponent: React.FC<FolderComponentProps> = ({
   title,
   itemCount,
   cardWidth,
+  onPress,
 }) => {
   return (
-    <TouchableOpacity onPress={() => {}} activeOpacity={0.9}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
       <FolderContainer cardWidth={cardWidth}>
         <FolderShape />
         <FolderTab />

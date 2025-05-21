@@ -113,6 +113,10 @@ export default function RootLayout() {
                 name="resetDatabase"
                 options={{ headerShown: false }}
               />
+              <Stack.Screen
+                name="folderPage"
+                options={{ headerShown: false }}
+              />
             </Stack>
             <StatusBar style="auto" />
           </SnackbarProvider>
