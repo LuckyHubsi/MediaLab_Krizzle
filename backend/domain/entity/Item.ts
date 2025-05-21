@@ -144,6 +144,12 @@ export const previewItemSchema = z.object({
       common.string750,
       z.number().int().min(0).max(5),
       z.date(),
+      z
+        .object({
+          value: common.string750,
+          displayText: common.string30,
+        })
+        .nullable(),
       z.array(common.string30).min(0).max(20),
       z.null(),
     ]),

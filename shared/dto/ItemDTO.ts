@@ -19,7 +19,13 @@ export type ItemDTO = {
  */
 export type PreviewItemDTO = {
   itemID: number;
-  values: (string | number | null | string[])[];
+  values: (
+    | string
+    | number
+    | null
+    | string[]
+    | { value: string; displayText: string }
+  )[];
   categoryID: number | null;
   categoryName?: string;
 };

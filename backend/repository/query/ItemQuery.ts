@@ -18,6 +18,7 @@ const itemSelectByIdQuery: string = `
                         WHEN a.type = 'rating' THEN r.rating_valueID
                         WHEN a.type = 'multi-select' THEN ms.multiselect_valueID
                         WHEN a.type = 'image' THEN iv.image_valueID
+                        WHEN a.type = 'link' THEN l.link_valueID
                     END,
                     'value', CASE
                         WHEN a.type = 'text' THEN t.value
@@ -42,6 +43,10 @@ const itemSelectByIdQuery: string = `
                             FROM multiselect_options mo
                             WHERE mo.attributeID = a.attributeID
                         )
+                        ELSE NULL
+                    END,
+                    'display_text', CASE
+                        WHEN a.type = 'link' THEN l.display_text
                         ELSE NULL
                     END
                 )
@@ -122,7 +127,11 @@ const selectItemPreviewValuesQuery: string = `
         WHEN a.type = 'image' THEN iv.value
         WHEN a.type = 'link' THEN l.value
         ELSE NULL
-    END AS value
+    END AS value,
+    CASE
+        WHEN a.type = 'link' THEN l.display_text
+        ELSE NULL
+    END AS display_text
     FROM item i
     JOIN collection c ON i.pageID = c.pageID
     JOIN attribute a ON a.item_templateID = c.item_templateID
