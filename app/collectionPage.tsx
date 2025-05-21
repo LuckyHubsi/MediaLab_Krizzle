@@ -19,7 +19,9 @@ import {
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
 import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
-import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import QuickActionModal, {
+  QuickActionItem,
+} from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import {
   deleteGeneralPage,
@@ -202,81 +204,94 @@ export default function CollectionScreen() {
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        items={[
-          {
-            label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
-            icon: "push-pin",
-            disabled: !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
-            onPress: async () => {
-              if (
-                (collection &&
-                  !collection.pinned &&
-                  collection.pin_count != null &&
-                  collection.pin_count < 4) ||
-                (collection && collection?.pinned)
-              ) {
-                const success = await togglePagePin(
-                  Number(collection.pageID),
-                  collection.pinned,
-                );
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Edit Widget",
-            icon: "edit",
-            onPress: () => {
-              goToEditPage();
-            },
-          },
-          {
-            label: "Edit Lists",
-            icon: "edit-note",
-            onPress: () => {
-              goToEditListsPage();
-            },
-          },
-          {
-            label: collection?.archived ? "Restore" : "Archive",
-            icon: collection?.archived ? "restore" : "archive",
-
-            onPress: async () => {
-              if (collection) {
-                const success = await togglePageArchive(
-                  Number(pageId),
-                  collection.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    collection.archived
-                      ? "Successfully restored Collection."
-                      : "Successfully archived Collection.",
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    collection.archived
-                      ? "Failed to restore Collection."
-                      : "Failed to archive Collection.",
-                    "bottom",
-                    "error",
-                  );
+        items={
+          [
+            collection && !collection.archived
+              ? {
+                  label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
+                  icon: "push-pin",
+                  disabled:
+                    !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
+                  onPress: async () => {
+                    if (
+                      (collection &&
+                        !collection.pinned &&
+                        collection.pin_count != null &&
+                        collection.pin_count < 4) ||
+                      (collection && collection?.pinned)
+                    ) {
+                      const success = await togglePagePin(
+                        Number(collection.pageID),
+                        collection.pinned,
+                      );
+                      setShouldReload(success);
+                    }
+                  },
                 }
-                setShouldReload(success);
-              }
+              : null,
+            {
+              label: "Edit Widget",
+              icon: "edit",
+              onPress: () => {
+                goToEditPage();
+              },
             },
-          },
-          {
-            label: "Delete",
-            icon: "delete",
-            onPress: () => {
-              setShowDeleteModal(true);
+            {
+              label: "Edit Lists",
+              icon: "edit-note",
+              onPress: () => {
+                goToEditListsPage();
+              },
             },
-            danger: true,
-          },
-        ]}
+            {
+              label: collection?.archived ? "Restore" : "Archive",
+              icon: collection?.archived ? "restore" : "archive",
+
+              onPress: async () => {
+                if (collection) {
+                  const success = await togglePageArchive(
+                    Number(pageId),
+                    collection.archived,
+                  );
+                  if (success) {
+                    showSnackbar(
+                      collection.archived
+                        ? "Successfully restored Collection."
+                        : "Successfully archived Collection.",
+                      "bottom",
+                      "success",
+                    );
+                  } else {
+                    showSnackbar(
+                      collection.archived
+                        ? "Failed to restore Collection."
+                        : "Failed to archive Collection.",
+                      "bottom",
+                      "error",
+                    );
+                  }
+                  setShouldReload(success);
+                }
+              },
+            },
+            collection && !collection.archived
+              ? {
+                  //TODO: Add move to folder functionality and implement the logic
+                  label: "Move to Folder",
+                  icon: "folder",
+                  onPress: async () => {},
+                }
+              : null,
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
+                setShowDeleteModal(true);
+              },
+              danger: true,
+            },
+          ].filter(Boolean) as QuickActionItem[]
+        }
       />
       <QuickActionModal
         visible={showItemModal}

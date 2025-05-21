@@ -17,7 +17,9 @@ import {
 } from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
-import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import QuickActionModal, {
+  QuickActionItem,
+} from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
@@ -122,76 +124,88 @@ export default function NotesScreen() {
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        items={[
-          {
-            label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
-            icon: "push-pin",
-            disabled:
-              noteData?.pinned === false &&
-              noteData?.pin_count != null &&
-              noteData.pin_count >= 4,
-            onPress: async () => {
-              if (
-                (noteData &&
-                  !noteData.pinned &&
-                  noteData.pin_count != null &&
-                  noteData.pin_count < 4) ||
-                (noteData && noteData?.pinned)
-              ) {
-                const success = await togglePagePin(
-                  Number(pageId),
-                  noteData.pinned,
-                );
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Edit",
-            icon: "edit",
-            onPress: () => {
-              goToEditPage();
-            },
-          },
-          {
-            label: noteData?.archived ? "Restore" : "Archive",
-            icon: noteData?.archived ? "restore" : "archive",
-            onPress: async () => {
-              if (noteData) {
-                const success = await togglePageArchive(
-                  Number(pageId),
-                  noteData.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    noteData.archived
-                      ? "Successfully restored Note."
-                      : "Successfully archived Note.",
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    noteData.archived
-                      ? "Failed to restore Note."
-                      : "Failed to archive Note.",
-                    "bottom",
-                    "error",
-                  );
+        items={
+          [
+            noteData && !noteData.archived
+              ? {
+                  label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
+                  icon: "push-pin",
+                  disabled:
+                    noteData?.pinned === false &&
+                    noteData?.pin_count != null &&
+                    noteData.pin_count >= 4,
+                  onPress: async () => {
+                    if (
+                      (noteData &&
+                        !noteData.pinned &&
+                        noteData.pin_count != null &&
+                        noteData.pin_count < 4) ||
+                      (noteData && noteData?.pinned)
+                    ) {
+                      const success = await togglePagePin(
+                        Number(pageId),
+                        noteData.pinned,
+                      );
+                      setShouldReload(success);
+                    }
+                  },
                 }
-                setShouldReload(success);
-              }
+              : null,
+            {
+              label: "Edit",
+              icon: "edit",
+              onPress: () => {
+                goToEditPage();
+              },
             },
-          },
-          {
-            label: "Delete",
-            icon: "delete",
-            onPress: () => {
-              setShowDeleteModal(true);
+            {
+              label: noteData?.archived ? "Restore" : "Archive",
+              icon: noteData?.archived ? "restore" : "archive",
+              onPress: async () => {
+                if (noteData) {
+                  const success = await togglePageArchive(
+                    Number(pageId),
+                    noteData.archived,
+                  );
+                  if (success) {
+                    showSnackbar(
+                      noteData.archived
+                        ? "Successfully restored Note."
+                        : "Successfully archived Note.",
+                      "bottom",
+                      "success",
+                    );
+                  } else {
+                    showSnackbar(
+                      noteData.archived
+                        ? "Failed to restore Note."
+                        : "Failed to archive Note.",
+                      "bottom",
+                      "error",
+                    );
+                  }
+                  setShouldReload(success);
+                }
+              },
             },
-            danger: true,
-          },
-        ]}
+            noteData && !noteData.archived
+              ? {
+                  label: "Move to Folder",
+                  icon: "folder",
+                  // TODO: move to folder logic
+                  onPress: async () => {},
+                }
+              : null,
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
+                setShowDeleteModal(true);
+              },
+              danger: true,
+            },
+          ].filter(Boolean) as QuickActionItem[]
+        }
       />
       <DeleteModal
         visible={showDeleteModal}
