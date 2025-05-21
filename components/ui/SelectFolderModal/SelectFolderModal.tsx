@@ -25,16 +25,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const [internalVisible, setInternalVisible] = useState(visible);
 
   const [selectedFolder, setSelectedFolder] = useState(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       setInternalVisible(true);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true,
-      }).start();
     }
   }, [visible]);
 
@@ -66,7 +60,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               colorScheme={colorScheme}
             >
               <ThemedText colorVariant="cancel" fontWeight="bold">
-                Back
+                Cancel
               </ThemedText>
             </CancelButton>
 
