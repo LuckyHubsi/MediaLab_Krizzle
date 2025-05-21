@@ -4,6 +4,7 @@ import { FolderRepository } from "../repository/interfaces/FolderRepository.inte
 import { NewFolder } from "../domain/entity/Folder";
 import { FolderMapper } from "../util/mapper/FolderMapper";
 import { ServiceError } from "../util/error/ServiceError";
+import { folderID } from "../domain/common/IDs";
 
 /**
  * FolderService encapsulates all folder-related application logic.
@@ -45,6 +46,22 @@ export class FolderService {
       return folders.map(FolderMapper.toDTO);
     } catch (error) {
       throw new ServiceError("Error retrieving all folders.");
+    }
+  }
+
+  /**
+   * Retrieves a folder and maps it to a FolderDTO.
+   *
+   * @returns A Promise resolving to a `FolderDTO` object.
+   * @throws ServiceError if retrieval fails.
+   */
+  async getFolder(folderId: number): Promise<FolderDTO> {
+    try {
+      const brandedID = folderID.parse(folderId);
+      const folder = await this.folderRepo.getFolderByID(brandedID);
+      return FolderMapper.toDTO(folder);
+    } catch (error) {
+      throw new ServiceError("Error retrieving folder.");
     }
   }
 }

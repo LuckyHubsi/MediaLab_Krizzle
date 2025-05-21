@@ -52,6 +52,26 @@ export class FolderRepositoryImpl
       throw new RepositoryError("Failed to fetch all folders.");
     }
   }
+
+  /**
+   * Retrieves a folder from the database by its ID.
+   *
+   * @returns A Promise resolving to a `Folder` domain entity.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getFolderByID(folderId: FolderID): Promise<Folder> {
+    try {
+      const result = await this.fetchFirst<FolderModel>(selectAllFoldersQuery, [
+        folderId,
+      ]);
+      if (result !== null) {
+        return FolderMapper.toEntity(result);
+      }
+      throw new RepositoryError("Folder not found.");
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch the folder.");
+    }
+  }
 }
 
 // Singleton instance of the FolderRepository implementation.

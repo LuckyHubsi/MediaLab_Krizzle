@@ -19,7 +19,7 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
@@ -32,6 +32,8 @@ import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { tagService } from "@/backend/service/TagService";
+import { folderService } from "@/backend/service/FolderService";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -49,6 +51,10 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function FolderScreen() {
+  const { folderId, title } = useLocalSearchParams<{
+    folderId: string;
+    title: string;
+  }>();
   const colorScheme = useActiveColorScheme();
   const router = useRouter();
 
@@ -78,6 +84,7 @@ export default function FolderScreen() {
   const [sortingMode, setSortingMode] = useState<GeneralPageState>(
     GeneralPageState.GeneralModfied,
   );
+  const [folder, setFolder] = useState<FolderDTO | null>(null);
 
   const getColorKeyFromValue = (
     value: string,
@@ -111,16 +118,19 @@ export default function FolderScreen() {
     useCallback(() => {
       (async () => {
         try {
-          const pinnedData = await generalPageService.getAllGeneralPageData(
-            GeneralPageState.Pinned,
-          );
-          const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
-          setPinnedWidgets(pinnedEnrichedWidgets);
-
-          const data =
-            await generalPageService.getAllGeneralPageData(sortingMode);
-          const enrichedWidgets = mapToEnrichedWidgets(data);
-          setWidgets(enrichedWidgets);
+          const folderData = await folderService.getFolder(Number(folderId));
+          setFolder(folderData);
+          console.log(folderData);
+          // TODO use correct call for getting widgets by folderid
+          // const pinnedData = await generalPageService.getAllGeneralPageData(
+          //   GeneralPageState.Pinned,
+          // );
+          // const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
+          // setPinnedWidgets(pinnedEnrichedWidgets);
+          // const data =
+          //   await generalPageService.getAllGeneralPageData(sortingMode);
+          // const enrichedWidgets = mapToEnrichedWidgets(data);
+          // setWidgets(enrichedWidgets);
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
@@ -180,9 +190,9 @@ export default function FolderScreen() {
   return (
     <>
       <SafeAreaView>
-        {/* TODO: pass correct foldertitle and backBehavior */}
+        {/* TODO: pass correct backBehavior */}
         <CustomStyledHeader
-          title={"Folder Title"}
+          title={title}
           iconName="more-horiz"
           //   backBehavior={routing}
           onIconPress={() => setShowModal(true)}
