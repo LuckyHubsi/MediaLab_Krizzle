@@ -17,9 +17,9 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { generalPageService } from "@/backend/service/GeneralPageService";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
+import { useServices } from "@/context/ServiceContext";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -37,6 +37,7 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function FoldersScreen() {
+  const { generalPageService } = useServices();
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();

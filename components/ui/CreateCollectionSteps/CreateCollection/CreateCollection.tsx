@@ -34,8 +34,8 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSnackbar } from "../../Snackbar/Snackbar";
-import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
+import { useServices } from "@/context/ServiceContext";
 
 interface CreateCollectionProps {
   data: {
@@ -69,6 +69,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   setData,
   onNext,
 }) => {
+  const { tagService } = useServices();
+
   const colorScheme = useActiveColorScheme();
   const title = data.title;
   const selectedTag = data.selectedTag;

@@ -21,11 +21,12 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
-import { collectionService } from "@/backend/service/CollectionService";
-import { generalPageService } from "@/backend/service/GeneralPageService";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CollectionScreen() {
+  const { generalPageService, collectionService } = useServices();
+
   const router = useRouter();
   const { pageId, title, selectedIcon } = useLocalSearchParams<{
     pageId: string;

@@ -13,12 +13,13 @@ import { ScrollView } from "react-native"; // Use ScrollView from react-native
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { collectionService } from "@/backend/service/CollectionService";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
     itemId: string;
   }>();
+  const { collectionService } = useServices();
 
   const [item, setItem] = useState<ItemDTO>();
   const [showModal, setShowModal] = useState(false);

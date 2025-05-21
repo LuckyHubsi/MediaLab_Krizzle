@@ -48,6 +48,11 @@ export class ItemRepositoryImpl
   extends BaseRepositoryImpl
   implements ItemRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Fetches an item and its values.
    *
@@ -423,6 +428,3 @@ export class ItemRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the ItemRepository implementation.
-export const itemRepository = new ItemRepositoryImpl();

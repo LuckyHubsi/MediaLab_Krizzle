@@ -1,6 +1,5 @@
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { TagRepository } from "../repository/interfaces/TagRepository.interface";
-import { tagRepository } from "../repository/implementation/TagRepository.implementation";
 import { TagMapper } from "../util/mapper/TagMapper";
 import { ServiceError } from "../util/error/ServiceError";
 import { NewTag, Tag } from "../domain/entity/Tag";
@@ -15,7 +14,8 @@ import { tagID, TagID } from "../domain/common/IDs";
  * - Handles and wraps errors in service-specific error types.
  */
 export class TagService {
-  constructor(private tagRepo: TagRepository = tagRepository) {}
+  // constructor accepts repo instace
+  constructor(private tagRepo: TagRepository) {}
 
   /**
    * Retrieves all tags and maps them to DTOs.
@@ -86,6 +86,3 @@ export class TagService {
     }
   }
 }
-
-// Singleton instance of the TagService.
-export const tagService = new TagService();

@@ -28,12 +28,13 @@ import { GradientBackground } from "@/components/ui/GradientBackground/GradientB
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
-import { noteService } from "@/backend/service/NoteService";
-import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CreateNoteScreen() {
+  const { noteService, tagService } = useServices();
+
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
   const [title, setTitle] = useState("");

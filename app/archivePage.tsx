@@ -16,10 +16,10 @@ import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { generalPageService } from "@/backend/service/GeneralPageService";
 import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
+import { useServices } from "@/context/ServiceContext";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -37,6 +37,7 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function ArchiveScreen() {
+  const { generalPageService } = useServices();
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();

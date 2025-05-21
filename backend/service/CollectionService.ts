@@ -1,25 +1,18 @@
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
-import { collectionRepository } from "../repository/implementation/CollectionRepository.implementation";
-import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { CollectionRepository } from "../repository/interfaces/CollectionRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
-import { baseRepository } from "../repository/implementation/BaseRepository.implementation";
 import { ItemTemplateRepository } from "../repository/interfaces/ItemTemplateRepository.interface";
-import { templateRepository } from "../repository/implementation/ItemTemplateRepository.implementation";
 import { AttributeRepository } from "../repository/interfaces/AttributeRepository.interface";
-import { attributeRepository } from "../repository/implementation/AttributeRepository.implementation";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { CollectionCategoryRepository } from "../repository/interfaces/CollectionCategoryRepository.interface";
-import { categoryRepository } from "../repository/implementation/CollectionCategoryRepository.implementation";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { collectionID, itemID, PageID, pageID } from "../domain/common/IDs";
 import { CollectionCategoryMapper } from "../util/mapper/CollectionCategoryMapper";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
-import { itemRepository } from "../repository/implementation/ItemRepository.implementation";
 import { ItemMapper } from "../util/mapper/ItemMapper";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
@@ -35,14 +28,15 @@ import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
  * - Handles and wraps errors in service-specific error types.
  */
 export class CollectionService {
+  // constructor accepts repo instaces
   constructor(
-    private baseRepo: BaseRepository = baseRepository,
-    private collectionRepo: CollectionRepository = collectionRepository,
-    private generalPageRepo: GeneralPageRepository = generalPageRepository,
-    private templateRepo: ItemTemplateRepository = templateRepository,
-    private attributeRepo: AttributeRepository = attributeRepository,
-    private categoryRepo: CollectionCategoryRepository = categoryRepository,
-    private itemRepo: ItemRepository = itemRepository,
+    private baseRepo: BaseRepository,
+    private collectionRepo: CollectionRepository,
+    private generalPageRepo: GeneralPageRepository,
+    private templateRepo: ItemTemplateRepository,
+    private attributeRepo: AttributeRepository,
+    private categoryRepo: CollectionCategoryRepository,
+    private itemRepo: ItemRepository,
   ) {}
 
   /**
@@ -436,5 +430,3 @@ export class CollectionService {
     }
   }
 }
-
-export const collectionService = new CollectionService();

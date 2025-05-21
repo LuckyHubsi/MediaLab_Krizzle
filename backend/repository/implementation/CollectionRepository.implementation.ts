@@ -5,7 +5,10 @@ import { PageType } from "@/shared/enum/PageType";
 import { CollectionMapper } from "@/backend/util/mapper/CollectionMapper";
 import { Collection } from "@/backend/domain/entity/Collection";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
-import { collectionSelectByPageIdQuery, insertCollectionQuery } from "../query/CollectionQuery";
+import {
+  collectionSelectByPageIdQuery,
+  insertCollectionQuery,
+} from "../query/CollectionQuery";
 import * as SQLite from "expo-sqlite";
 import {
   collectionID,
@@ -25,6 +28,11 @@ export class CollectionRepositoryImpl
   extends BaseRepositoryImpl
   implements CollectionRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Fetch a collection.
    *
@@ -80,6 +88,3 @@ export class CollectionRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the CollectionRepository implementation.
-export const collectionRepository = new CollectionRepositoryImpl();

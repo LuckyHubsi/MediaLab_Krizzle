@@ -16,6 +16,7 @@ import {
 import { CollectionID } from "@/backend/domain/common/IDs";
 import { CollectionCategoryMapper } from "@/backend/util/mapper/CollectionCategoryMapper";
 import { CollectionCategoryModel } from "../model/CollectionCategoryModel";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Implementation of the CollectionCategoryRepository interface using SQL queries.
@@ -30,6 +31,11 @@ export class CollectionCategoryRepositoryImpl
   extends BaseRepositoryImpl
   implements CollectionCategoryRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Insert a collection category.
    *
@@ -115,6 +121,3 @@ export class CollectionCategoryRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the CollectionCategoryRepository implementation.
-export const categoryRepository = new CollectionCategoryRepositoryImpl();

@@ -11,6 +11,7 @@ import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagModel } from "../model/TagModel";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { TagID } from "@/backend/domain/common/IDs";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Implementation of the TagRepository interface using SQL queries.
@@ -25,6 +26,11 @@ export class TagRepositoryImpl
   extends BaseRepositoryImpl
   implements TagRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Retrieves all tags from the database.
    *
@@ -89,6 +95,3 @@ export class TagRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the TagRepository implementation.
-export const tagRepository = new TagRepositoryImpl();
