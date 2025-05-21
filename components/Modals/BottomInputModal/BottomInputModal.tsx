@@ -13,7 +13,7 @@ import {
   ModalOverlay,
   ModalContent,
   StyledTextInput,
-} from "./TagInputModal.styles";
+} from "./BottomInputModal.styles";
 
 type TagInputModalProps = {
   visible: boolean;
@@ -23,7 +23,7 @@ type TagInputModalProps = {
   onClose: () => void;
 };
 
-export const TagInputModal: React.FC<TagInputModalProps> = ({
+export const BottomInputModal: React.FC<TagInputModalProps> = ({
   visible,
   value,
   onChangeText,

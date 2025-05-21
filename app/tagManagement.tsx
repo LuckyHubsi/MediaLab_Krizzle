@@ -16,7 +16,7 @@ import { StatusBar } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagManagementScreen() {
@@ -209,7 +209,7 @@ export default function TagManagementScreen() {
           </View>
         )}
       </View>
-      <TagInputModal
+      <BottomInputModal
         visible={modalVisible}
         value={newTag}
         onChangeText={setNewTag}
