@@ -41,6 +41,10 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   );
   const [devLinkValue, setDevLinkValue] = useState("");
   const [devImageUri, setDevImageUri] = useState("");
+  const [devCustomText, setDevCustomText] = useState("");
+  const [customLinkText, setCustomLinkText] = useState<{
+    [id: number]: string;
+  }>({});
   const handleTagSelect = (attributeLabel: string, tag: string) => {
     setSelectedTags((prev) => {
       const currentTags = prev[attributeLabel] || [];
@@ -191,10 +195,16 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 onChange={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
                 }
+                linkText={customLinkText[Number(attribute.attributeID)] || ""}
+                onLinkTextChange={(text) =>
+                  setCustomLinkText((prev) => ({
+                    ...prev,
+                    [Number(attribute.attributeID)]: text,
+                  }))
+                }
               />,
             );
             break;
-
           case AttributeType.Image:
             elements.push(
               <ImagePickerField
@@ -219,6 +229,8 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         title="Test Link (Dev)"
         value={devLinkValue}
         onChange={(text) => setDevLinkValue(text)}
+        linkText={devCustomText}
+        onLinkTextChange={setDevCustomText}
       />,
     );
 

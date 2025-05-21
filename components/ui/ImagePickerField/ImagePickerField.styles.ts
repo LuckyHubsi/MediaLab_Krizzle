@@ -19,6 +19,7 @@ export const ImageUploadContainer = styled.View`
     colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
   height: 130px;
   margin-bottom: 5px;
+  margin-top: 10px;
 `;
 export const ImageButton = styled.TouchableOpacity`
   background-color: ${Colors.primary};
