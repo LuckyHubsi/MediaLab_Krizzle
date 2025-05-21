@@ -153,6 +153,15 @@ export class GeneralPageService {
   async deleteGeneralPage(pageId: number): Promise<boolean> {
     try {
       const brandedPageID = pageID.parse(pageId);
+
+      try {
+        await collectionService.getCollectionByPageId(pageId);
+
+        await collectionService.deleteCollectionImages(pageId);
+      } catch (error) {
+        console.log("Not a collection or error getting collection:", error);
+      }
+
       await this.generalPageRepo.deletePage(brandedPageID);
       return true;
     } catch (error) {
