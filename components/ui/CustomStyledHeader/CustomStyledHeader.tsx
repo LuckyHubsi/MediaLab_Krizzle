@@ -15,6 +15,7 @@ import { Colors } from "@/constants/Colors";
 
 interface HeaderProps {
   title: string;
+  subtitle?: string;
   iconName?: keyof typeof MaterialIcons.glyphMap;
   iconName2?: keyof typeof MaterialIcons.glyphMap;
   onIconPress?: () => void;
@@ -28,6 +29,7 @@ interface HeaderProps {
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
   title,
+  subtitle,
   iconName,
   iconName2,
   onIconPress,
@@ -90,6 +92,17 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           >
             {title}
           </ThemedText>
+          {subtitle ? (
+            <ThemedText
+              isTransparent={isTransparent}
+              fontSize="s"
+              fontWeight="light"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {subtitle}
+            </ThemedText>
+          ) : null}
         </TitleContainer>
       </TouchableOpacity>
       {leftIconName && (

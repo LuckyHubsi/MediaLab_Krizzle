@@ -123,37 +123,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
     return elements;
   };
 
-  return (
-    <StyledCardWrapper colorScheme={colorScheme}>
-      {/* //List */}
-      <ListCOntainer>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "nowrap",
-            alignContent: "center",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <MaterialIcons
-            name="format-list-bulleted"
-            size={16}
-            color="#FFFFFF"
-            style={{ marginRight: 10 }}
-          />
-          <ThemedText
-            fontSize="regular"
-            fontWeight="regular"
-            colorVariant="white"
-          >
-            {listName}
-          </ThemedText>
-        </View>
-      </ListCOntainer>
-      {renderRepresentation()}
-    </StyledCardWrapper>
-  );
+  return <>{renderRepresentation()}</>;
 };
 
 export default CollectionLoadItemProps;

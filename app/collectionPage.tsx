@@ -9,14 +9,9 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
-
 import { getCollectionByPageId } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
 import { template } from "@babel/core";
-import {
-  CollectionSelectable,
-  CollectionTitle,
-} from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
 import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
@@ -133,7 +128,7 @@ export default function CollectionScreen() {
             top: 0,
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: 400,
             zIndex: -1, // Set zIndex lower than other elements
           }}
         />
