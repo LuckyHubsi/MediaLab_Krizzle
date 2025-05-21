@@ -21,6 +21,7 @@ type TagInputModalProps = {
   onChangeText: (text: string) => void;
   onSubmit: () => void;
   onClose: () => void;
+  placeholderText: string;
 };
 
 export const BottomInputModal: React.FC<TagInputModalProps> = ({
@@ -29,6 +30,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
   onChangeText,
   onSubmit,
   onClose,
+  placeholderText,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
@@ -48,7 +50,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
             <ModalContent colorScheme={colorScheme}>
               <StyledTextInput
                 colorScheme={colorScheme}
-                placeholder="New tag name"
+                placeholder={placeholderText}
                 placeholderTextColor="#999"
                 value={value}
                 onChangeText={onChangeText}

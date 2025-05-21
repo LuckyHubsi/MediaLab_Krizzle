@@ -234,6 +234,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
           Keyboard.dismiss();
           setFolderModalVisible(false);
         }}
+        placeholderText="Enter a new folder name"
       />
     </>
   );

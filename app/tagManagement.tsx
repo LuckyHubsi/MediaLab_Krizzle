@@ -218,6 +218,7 @@ export default function TagManagementScreen() {
           Keyboard.dismiss();
           setModalVisible(false);
         }}
+        placeholderText="Enter a new tag"
       />
       <DeleteModal
         visible={showDeleteModal}
