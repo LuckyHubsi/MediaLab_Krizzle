@@ -61,6 +61,6 @@ export const DeleteButton = styled.TouchableOpacity`
 export const ImagePreview = styled.Image`
   width: 100%;
   height: 180px;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-top: 10px;
 `;
