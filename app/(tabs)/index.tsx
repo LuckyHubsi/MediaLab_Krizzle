@@ -424,7 +424,6 @@ export default function HomeScreen() {
             },
           },
           {
-            //TODO: Add move to folder functionality and implement the logic
             label: "Move to Folder",
             icon: "folder",
             onPress: () => setShowFolderSelectionModal(true),

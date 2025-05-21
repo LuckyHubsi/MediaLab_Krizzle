@@ -23,6 +23,7 @@ import QuickActionModal, {
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -38,6 +39,8 @@ export default function NotesScreen() {
   const [noteData, setNoteData] = useState<NoteDTO | null>();
   const [shouldReload, setShouldReload] = useState<boolean>();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
@@ -192,8 +195,9 @@ export default function NotesScreen() {
               ? {
                   label: "Move to Folder",
                   icon: "folder",
-                  // TODO: move to folder logic
-                  onPress: async () => {},
+                  onPress: async () => {
+                    setShowFolderSelectionModal(true);
+                  },
                 }
               : null,
             {
@@ -225,6 +229,12 @@ export default function NotesScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <SelectFolderModal
+        widgetTitle={title}
+        onClose={() => setShowFolderSelectionModal(false)}
+        visible={showFolderSelectionModal}
       />
     </>
   );

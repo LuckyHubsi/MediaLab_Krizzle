@@ -31,6 +31,7 @@ import {
 import { PreviewItemDTO } from "@/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function CollectionScreen() {
   const router = useRouter();
@@ -53,6 +54,8 @@ export default function CollectionScreen() {
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -276,10 +279,11 @@ export default function CollectionScreen() {
             },
             collection && !collection.archived
               ? {
-                  //TODO: Add move to folder functionality and implement the logic
                   label: "Move to Folder",
                   icon: "folder",
-                  onPress: async () => {},
+                  onPress: () => {
+                    setShowFolderSelectionModal(true);
+                  },
                 }
               : null,
             {
@@ -356,6 +360,12 @@ export default function CollectionScreen() {
           }
         }}
         onclose={() => setShowItemDeleteModal(false)}
+      />
+
+      <SelectFolderModal
+        widgetTitle={title}
+        onClose={() => setShowFolderSelectionModal(false)}
+        visible={showFolderSelectionModal}
       />
     </>
   );
