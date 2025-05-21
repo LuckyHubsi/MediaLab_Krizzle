@@ -1,0 +1,321 @@
+import {
+  GeneralPage,
+  NewGeneralPage,
+} from "@/backend/domain/entity/GeneralPage";
+import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
+import { BaseRepositoryImpl } from "./BaseRepository.implementation";
+import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  deleteGeneralPageByIDQuery,
+  insertNewPageQuery,
+  selectAllArchivedPagesQuery,
+  selectAllPagesByAlphabetQuery,
+  selectAllPagesByCreatedQuery,
+  selectAllPagesByLastModifiedQuery,
+  selectAllPinnedPagesQuery,
+  selectGeneralPageByIdQuery,
+  updateArchivedByPageIDQuery,
+  updateDateModifiedByPageIDQuery,
+  updatePageByIDQuery,
+  updatePinnedByPageIDQuery,
+} from "../query/GeneralPageQuery";
+import * as SQLite from "expo-sqlite";
+import { GeneralPageModel } from "../model/GeneralPageModel";
+import { PageID, pageID } from "@/backend/domain/common/IDs";
+
+/**
+ * Implementation of the GeneralPageRepository interface using SQL queries.
+ *
+ * Handles the following operations:
+ * - Fetching all general pages from the database (different params).
+ * - Fetching one general page from the database by ID.
+ * - Inserting a new general page.
+ * - Updating a general page (user input, pin status, archive status, date modfied).
+ * - Deleting a general page by ID.
+ */
+export class GeneralPageRepositoryImpl
+  extends BaseRepositoryImpl
+  implements GeneralPageRepository
+{
+  /**
+   * Fetches all general pages sorted by their last modified date (descending).
+   *
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllPagesSortedByModified(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByLastModifiedQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError(
+        "Failed to fetch all pages sorted by last modified.",
+      );
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by alphabet (ascending).
+   *
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllPagesSortedByAlphabet(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByAlphabetQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by their creation date (descending).
+   *
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllPagesSortedByCreated(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByCreatedQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all pinned general pages.
+   *
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllPinnedPages(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPinnedPagesQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all archived general pages.
+   *
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllArchivedPages(): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllArchivedPagesQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches a general page by its ID.
+   *
+   * @param pageID - A branded pageID.
+   * @returns A Promise resolving to a `GeneralPage` domain entity.
+   * @throws RepositoryError if the query fails.
+   */
+  async getByPageID(pageID: PageID): Promise<GeneralPage> {
+    try {
+      const result = await this.fetchFirst<GeneralPageModel>(
+        selectGeneralPageByIdQuery,
+        [pageID],
+      );
+      if (result) {
+        return GeneralPageMapper.toEntity(result);
+      } else {
+        throw new RepositoryError("Failed to fetch page by id.");
+      }
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch page by id.");
+    }
+  }
+
+  /**
+   * Updated a general page by its ID.
+   *
+   * @param pageID - A branded pageID.
+   * @param updatedPage - A NewGeneralPage entity.
+   * @returns A Promise resolving to a boolean.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateGeneralPageData(
+    pageID: PageID,
+    updatedPage: NewGeneralPage,
+  ): Promise<boolean> {
+    try {
+      const pageModel: Omit<GeneralPageModel, "pageID"> =
+        GeneralPageMapper.toInsertModel(updatedPage);
+      await this.executeQuery(updatePageByIDQuery, [
+        pageModel.page_title,
+        pageModel.page_icon,
+        pageModel.page_color,
+        pageModel.tagID,
+        pageModel.date_modified,
+        pageID,
+      ]);
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update page.");
+    }
+  }
+
+  /**
+   * Insert a new general page.
+   *
+   * @param page - A `NewGeneralPage` entity.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to a PageID.
+   * @throws RepositoryError if the query fails.
+   */
+  async insertPage(
+    page: NewGeneralPage,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<PageID> {
+    try {
+      const model = GeneralPageMapper.toInsertModel(page);
+      const pageId = await this.executeTransaction(async (transaction) => {
+        await this.executeQuery(
+          insertNewPageQuery,
+          [
+            model.page_type,
+            model.page_title,
+            model.page_icon,
+            model.page_color,
+            model.date_created,
+            model.date_modified,
+            model.archived ? 1 : 0,
+            model.pinned ? 1 : 0,
+            model.tagID,
+          ],
+          txn ?? transaction,
+        );
+
+        const lastInsertedID = await this.getLastInsertId(txn ?? transaction);
+        return lastInsertedID;
+      });
+      return pageID.parse(pageId);
+    } catch (error) {
+      throw new RepositoryError("Failed to insert page.");
+    }
+  }
+
+  /**
+   * Deletes a general page.
+   *
+   * @param pageID - A branded pageID.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
+  async deletePage(pageID: PageID): Promise<boolean> {
+    try {
+      await this.executeQuery(deleteGeneralPageByIDQuery, [pageID]);
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to delete teh page");
+    }
+  }
+
+  /**
+   * Updates the pin status of a general page.
+   *
+   * @param pageID - A branded pageID.
+   * @param currentPinStatus - A boolean representing the current pin status.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
+  async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
+    try {
+      const newPinStatus = currentPinStatus ? 0 : 1;
+
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updatePinnedByPageIDQuery,
+          [newPinStatus, pageID],
+          txn,
+        );
+
+        await this.updateDateModified(pageID, txn);
+      });
+
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update pinned state");
+    }
+  }
+
+  /**
+   * Updates the archive status of a general page.
+   *
+   * @param pageID - A branded pageID.
+   * @param currentArchiveStatus - A boolean representing the current archive status.
+   * @returns A Promise resolving to true on success.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateArchive(
+    pageID: PageID,
+    currentArchiveStatus: boolean,
+  ): Promise<boolean> {
+    try {
+      const newArchiveStatus = currentArchiveStatus ? 0 : 1;
+
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updateArchivedByPageIDQuery,
+          [newArchiveStatus, 0, pageID], // set pin status to false
+          txn,
+        );
+
+        await this.updateDateModified(pageID, txn);
+      });
+
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update pinned state");
+    }
+  }
+
+  /**
+   * Updates the archive status of a general page.
+   *
+   * @param pageId - A branded pageID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateDateModified(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      const modfiedAt = new Date();
+      await this.executeQuery(
+        updateDateModifiedByPageIDQuery,
+        [modfiedAt.toISOString(), pageId],
+        txn,
+      );
+    } catch (error) {
+      throw new RepositoryError("Failed to update last modified date");
+    }
+  }
+}
+
+// Singleton instance of the GeneralPageRepository implementation.
+export const generalPageRepository = new GeneralPageRepositoryImpl();

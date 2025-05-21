@@ -132,7 +132,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               : typeArray
                   .filter((item) => item !== "item")
                   .map((item) => ({
-                    label: item,
+                    label: item.charAt(0).toUpperCase() + item.slice(1),
                     value: item,
                   }))
           }

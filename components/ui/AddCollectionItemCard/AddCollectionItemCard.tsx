@@ -6,11 +6,11 @@ import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
 import RatingPicker from "../RatingPicker/RatingPicker";
 import CollectionListDropdown from "../CollectionListDropdown/CollectionListDropdown";
 import { ScrollView } from "react-native";
-import { AttributeDTO } from "@/dto/AttributeDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
@@ -64,22 +64,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     const selectedCategory = lists.find((list) => list.category_name === value);
 
     if (selectedCategory) {
-      const categoryIdProperty =
-        "collection_categoryID" in selectedCategory
-          ? "collection_categoryID"
-          : "collectionCategoryID" in selectedCategory
-            ? "collectionCategoryID"
-            : null;
-
-      if (!categoryIdProperty) {
-        console.error(
-          "ERROR: Category object doesn't have a valid ID property!",
-          selectedCategory,
-        );
-        return;
-      }
-
-      const categoryId = selectedCategory[categoryIdProperty];
+      const categoryId = selectedCategory.collectionCategoryID;
 
       if (categoryId != null) {
         onListChange(Number(categoryId));
@@ -98,7 +83,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       listArray.push(list.category_name);
       if (
         selectedCategoryID != null &&
-        Number(list.collection_categoryID) === Number(selectedCategoryID)
+        Number(list.collectionCategoryID) === Number(selectedCategoryID)
       ) {
         matchedName = list.category_name;
       }
@@ -110,7 +95,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       const defaultList = lists[0];
       const defaultName = defaultList.category_name;
       const defaultId =
-        defaultList.collection_categoryID ?? defaultList.collectionCategoryID;
+        defaultList.collectionCategoryID ?? defaultList.collectionCategoryID;
 
       if (defaultId != null) {
         setSelectedList(defaultName);

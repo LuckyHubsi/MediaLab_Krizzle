@@ -4,6 +4,7 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -19,23 +20,18 @@ import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
-import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { TagDTO } from "@/dto/TagDTO";
-import { getAllTags } from "@/services/TagService";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
-import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { generalPageService } from "@/backend/service/GeneralPageService";
+import { tagService } from "@/backend/service/TagService";
+import { PageType } from "@/shared/enum/PageType";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
@@ -119,13 +115,14 @@ export default function HomeScreen() {
     useCallback(() => {
       (async () => {
         try {
-          const pinnedData = await getAllGeneralPageData(
+          const pinnedData = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
           const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
           setPinnedWidgets(pinnedEnrichedWidgets);
 
-          const data = await getAllGeneralPageData(sortingMode);
+          const data =
+            await generalPageService.getAllGeneralPageData(sortingMode);
           const enrichedWidgets = mapToEnrichedWidgets(data);
           setWidgets(enrichedWidgets);
         } catch (error) {
@@ -135,7 +132,7 @@ export default function HomeScreen() {
 
       (async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -380,7 +377,7 @@ export default function HomeScreen() {
                   pinnedWidgets.length < 4) ||
                 (selectedWidget && selectedWidget?.pinned)
               ) {
-                const success = await togglePagePin(
+                const success = await generalPageService.togglePagePin(
                   Number(selectedWidget.id),
                   selectedWidget.pinned,
                 );
@@ -398,7 +395,7 @@ export default function HomeScreen() {
             icon: "archive",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await togglePageArchive(
+                const success = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
@@ -422,7 +419,17 @@ export default function HomeScreen() {
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => setShowDeleteModal(true),
+            onPress: () => {
+              setShowModal(false); // close the QuickActionModal
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300); // match iOS fade-out duration
+              } else {
+                setShowDeleteModal(true); // no delay on Android
+              }
+            },
             danger: true,
           },
         ]}
@@ -440,9 +447,10 @@ export default function HomeScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted = await deleteGeneralPage(
-                Number(selectedWidget.id),
-              );
+              const successfullyDeleted =
+                await generalPageService.deleteGeneralPage(
+                  Number(selectedWidget.id),
+                );
               setShouldReload(successfullyDeleted);
               setSelectedWidget(null);
               setShowDeleteModal(false);

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -9,33 +9,29 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
 import CollectionList from "@/components/ui/CollectionList/CollectionList";
-import { getCollectionByPageId } from "@/services/CollectionService";
-import { CollectionDTO } from "@/dto/CollectionDTO";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { template } from "@babel/core";
 import {
   CollectionSelectable,
   CollectionTitle,
 } from "@/components/ui/CollectionWidget/CollectionWidget.style";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { ItemsDTO } from "@/dto/ItemsDTO";
-import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
+import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import {
-  deleteGeneralPage,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
-import { PreviewItemDTO } from "@/dto/ItemDTO";
+import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
+import { collectionService } from "@/backend/service/CollectionService";
+import { generalPageService } from "@/backend/service/GeneralPageService";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
-  const { pageId, title, selectedIcon } = useLocalSearchParams<{
+  const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+    routing?: string;
   }>();
 
   const { showSnackbar } = useSnackbar();
@@ -51,15 +47,19 @@ export default function CollectionScreen() {
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [collectionTitle, setCollectionTitle] = useState<string>(title || "");
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
-          const collectionData = await getCollectionByPageId(numericID);
+          const collectionData =
+            await collectionService.getCollectionByPageId(numericID);
           if (collectionData) {
             setCollection(collectionData);
+            setCollectionTitle(title || collectionData.page_title);
+
             if (collectionData.categories) {
               const listNames = [];
               for (const list of collectionData.categories) {
@@ -68,7 +68,8 @@ export default function CollectionScreen() {
               setListNames(listNames);
             }
           }
-          const retrievedItems: ItemsDTO = await getItemsByPageId(numericID);
+          const retrievedItems: ItemsDTO =
+            await collectionService.getItemsByPageId(numericID);
           if (retrievedItems) setItems(retrievedItems);
         }
         setShouldReload(false);
@@ -118,8 +119,8 @@ export default function CollectionScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         {/* //Header with back button and title */}
         <CustomStyledHeader
-          title={title || "Collection"} //Here should be the title of the collection
-          backBehavior="goHome" // Go back to home when back button is pressed
+          title={collectionTitle || "Collection"} //Here should be the title of the collection
+          backBehavior={routing || "goHome"} // Go back to home when back button is pressed
           iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
@@ -151,7 +152,9 @@ export default function CollectionScreen() {
                     onPress={() => {
                       router.push({
                         pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
+                        params: {
+                          itemId: item.itemID.toString(),
+                        },
                       });
                     }}
                     onLongPress={() => {
@@ -215,7 +218,7 @@ export default function CollectionScreen() {
                   collection.pin_count < 4) ||
                 (collection && collection?.pinned)
               ) {
-                const success = await togglePagePin(
+                const success = await generalPageService.togglePagePin(
                   Number(collection.pageID),
                   collection.pinned,
                 );
@@ -243,7 +246,7 @@ export default function CollectionScreen() {
 
             onPress: async () => {
               if (collection) {
-                const success = await togglePageArchive(
+                const success = await generalPageService.togglePageArchive(
                   Number(pageId),
                   collection.archived,
                 );
@@ -272,7 +275,14 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -297,7 +307,15 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowItemDeleteModal(true);
+              setShowModal(false);
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowItemDeleteModal(true);
+                }, 300);
+              } else {
+                setShowItemDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -312,7 +330,7 @@ export default function CollectionScreen() {
             try {
               const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {
@@ -330,7 +348,8 @@ export default function CollectionScreen() {
           if (selectedItem) {
             try {
               const itemIdAsNumber = Number(selectedItem.itemID);
-              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+              const successfullyDeleted =
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);

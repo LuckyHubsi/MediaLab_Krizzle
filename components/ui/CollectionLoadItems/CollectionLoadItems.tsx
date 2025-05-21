@@ -10,10 +10,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ListCOntainer } from "./CollectionLoadItems.stlyle";
 import { ThemedText } from "@/components/ThemedText";
 import CollectionTextfield from "../CollectionTextField/CollectionTextField";
-import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
+import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { parseISO } from "date-fns";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];

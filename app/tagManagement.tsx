@@ -3,20 +3,15 @@ import { SafeAreaView, View, FlatList, Keyboard, Platform } from "react-native";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { Button } from "@/components/ui/Button/Button";
-import {
-  deleteTagByID,
-  getAllTags,
-  insertTag,
-  updateTag,
-} from "@/services/TagService";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { StatusBar } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
+import { tagService } from "@/backend/service/TagService";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function TagManagementScreen() {
@@ -63,13 +58,13 @@ export default function TagManagementScreen() {
       let success = false;
 
       if (editMode && editingTag) {
-        success = await updateTag({
+        success = await tagService.updateTag({
           ...editingTag,
           tag_label: trimmedTag,
         });
       } else {
         const newTagObject: TagDTO = { tag_label: trimmedTag };
-        success = await insertTag(newTagObject);
+        success = await tagService.insertTag(newTagObject);
       }
 
       if (success) setShouldRefetch(true);
@@ -86,7 +81,7 @@ export default function TagManagementScreen() {
 
   const deleteTag = async (tagID: number) => {
     try {
-      const success = await deleteTagByID(tagID);
+      const success = await tagService.deleteTagByID(tagID);
       if (success) setShouldRefetch(true);
     } catch (error) {
       console.error("Failed to delete tag:", error);
@@ -103,7 +98,7 @@ export default function TagManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const tagData = await getAllTags();
+        const tagData = await tagService.getAllTags();
         if (tagData) setTags(tagData);
       } catch (error) {
         console.error("Failed to load tags:", error);
@@ -118,7 +113,7 @@ export default function TagManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const tagData = await getAllTags();
+        const tagData = await tagService.getAllTags();
         if (tagData) setTags(tagData);
       } catch (error) {
         console.error("Failed to refresh tags:", error);

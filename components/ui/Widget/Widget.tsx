@@ -10,8 +10,8 @@ import {
   CardGradient,
   PreviewWrapper,
 } from "./Widget.style";
-import { PageType } from "@/utils/enums/PageType";
 import { ThemedText } from "@/components/ThemedText";
+import { PageType } from "@/shared/enum/PageType";
 
 type ColorKey = keyof typeof Colors.widget;
 
