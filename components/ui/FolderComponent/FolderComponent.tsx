@@ -16,6 +16,7 @@ interface FolderComponentProps {
   itemCount: number;
   cardWidth?: number;
   onPress: () => void;
+  onLongPress?: () => void;
 }
 
 const FolderComponent: React.FC<FolderComponentProps> = ({
@@ -23,9 +24,22 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   itemCount,
   cardWidth,
   onPress,
+  onLongPress,
 }) => {
+  const handleLongPress = () => {
+    if (onLongPress) {
+      onLongPress();
+    } else {
+      console.log("Long press detected on widget:", title);
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.9}
+      onLongPress={handleLongPress}
+    >
       <FolderContainer cardWidth={cardWidth}>
         <FolderShape />
         <FolderTab />

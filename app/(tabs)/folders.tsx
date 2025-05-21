@@ -168,6 +168,8 @@ export default function FoldersScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+
   return (
     <>
       <SafeAreaView>
@@ -223,6 +225,10 @@ export default function FoldersScreen() {
                         params: { folderId: item.id, title: item.title },
                       });
                     }}
+                    onLongPress={() => {
+                      setSelectedFolder(item);
+                      setShowModal(true);
+                    }}
                   />
                 )}
                 keyExtractor={(item) => item.id}
@@ -243,60 +249,38 @@ export default function FoldersScreen() {
           )}
         </ThemedView>
       </SafeAreaView>
-      {/* <QuickActionModal
+      <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: "Restore",
-            icon: "restore",
-            onPress: async () => {
-              if (selectedWidget) {
-                const success = await togglePageArchive(
-                  Number(selectedWidget.id),
-                  selectedWidget.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "error",
-                  );
-                }
-                setShouldReload(success);
-              }
-            },
+            label: "Edit Folder",
+            icon: "edit",
+            //TODO: Add onPress Logic for editing Folder
+            onPress: async () => {},
           },
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => {
-              setShowDeleteModal(true);
-            },
+            onPress: () => setShowDeleteModal(true),
             danger: true,
           },
         ]}
       />
       <DeleteModal
         visible={showDeleteModal}
-        title={selectedWidget?.title}
+        title={selectedFolder?.title}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (selectedWidget) {
+          if (selectedFolder) {
             try {
-              const widgetIdAsNumber = Number(selectedWidget.id);
+              const widgetIdAsNumber = Number(selectedFolder.id);
               const successfullyDeleted =
                 await deleteGeneralPage(widgetIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 
-              setSelectedWidget(null);
+              setSelectedFolder(null);
               setShowDeleteModal(false);
             } catch (error) {
               console.error("Error deleting page:", error);
@@ -304,7 +288,7 @@ export default function FoldersScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
-      /> */}
+      />
     </>
   );
 }
