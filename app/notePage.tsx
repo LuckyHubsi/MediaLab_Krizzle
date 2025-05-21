@@ -2,19 +2,13 @@ import TextEditor from "@/components/TextEditor/TextEditor";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppState, AppStateStatus, View } from "react-native";
+import { AppState, AppStateStatus, Platform, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import {
-  deleteGeneralPage,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
 import QuickActionModal, {
@@ -22,6 +16,8 @@ import QuickActionModal, {
 } from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { noteService } from "@/backend/service/NoteService";
+import { generalPageService } from "@/backend/service/GeneralPageService";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
@@ -51,8 +47,8 @@ export default function NotesScreen() {
       if (!isNaN(numericID)) {
         (async () => {
           const noteDataByID: NoteDTO | null =
-            await getNoteDataByPageID(numericID);
-          let noteContent = noteDataByID?.note_content;
+            await noteService.getNoteDataByPageID(numericID);
+          let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
@@ -68,7 +64,7 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const success = await updateNoteContent(Number(pageId), html);
+    const success = await noteService.updateNoteContent(Number(pageId), html);
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
@@ -145,7 +141,7 @@ export default function NotesScreen() {
                         noteData.pin_count < 4) ||
                       (noteData && noteData?.pinned)
                     ) {
-                      const success = await togglePagePin(
+                      const success = await generalPageService.togglePagePin(
                         Number(pageId),
                         noteData.pinned,
                       );
@@ -168,7 +164,7 @@ export default function NotesScreen() {
               icon: noteData?.archived ? "restore" : "archive",
               onPress: async () => {
                 if (noteData) {
-                  const success = await togglePageArchive(
+                  const success = await generalPageService.togglePageArchive(
                     Number(pageId),
                     noteData.archived,
                   );
@@ -222,7 +218,7 @@ export default function NotesScreen() {
             try {
               const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {

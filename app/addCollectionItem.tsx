@@ -4,18 +4,18 @@ import { Keyboard, Platform, ScrollView, View } from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
 import { router } from "expo-router";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { AttributeDTO } from "@/dto/AttributeDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { getTemplate } from "@/services/ItemTemplateService";
-import { getCollectionCategories } from "@/services/CollectionCategoriesService";
-import { ItemAttributeValueDTO } from "@/dto/ItemAttributeValueDTO";
-import { ItemDTO } from "@/dto/ItemDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
-import { insertItemAndReturnID } from "@/services/ItemService";
+import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
+import { ItemDTO } from "@/shared/dto/ItemDTO";
+import { Button } from "@/components/ui/Button/Button";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { itemTemplateService } from "@/backend/service/ItemTemplateService";
+import { collectionService } from "@/backend/service/CollectionService";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -39,13 +39,16 @@ export default function AddCollectionItem() {
       const numericTemplateID = Number(templateId);
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
-        const template = await getTemplate(numericTemplateID);
+        const template =
+          await itemTemplateService.getTemplate(numericTemplateID);
+
         if (template && template.attributes) {
           setAttributes(template.attributes);
         }
       }
       if (!isNaN(numericCollectionID)) {
-        const lists = await getCollectionCategories(numericCollectionID);
+        const lists =
+          await collectionService.getCollectionCategories(numericCollectionID);
         if (lists) {
           setLists(lists);
         }
@@ -123,7 +126,7 @@ export default function AddCollectionItem() {
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
-    const itemId = await insertItemAndReturnID(itemDTO);
+    const itemId = await collectionService.insertItemAndReturnID(itemDTO);
     router.replace({
       pathname: "/collectionItemPage",
       params: { itemId: itemId },

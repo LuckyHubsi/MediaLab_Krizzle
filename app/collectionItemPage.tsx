@@ -9,11 +9,11 @@ import {
   useRouter,
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
-import { ScrollView } from "react-native"; // Use ScrollView from react-native
-import { deleteItemById, getItemById } from "@/services/ItemService";
-import { ItemDTO } from "@/dto/ItemDTO";
+import { Platform, ScrollView } from "react-native"; // Use ScrollView from react-native
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { collectionService } from "@/backend/service/CollectionService";
+import { ItemDTO } from "@/shared/dto/ItemDTO";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -29,7 +29,7 @@ export default function CollectionItemScreen() {
     useCallback(() => {
       (async () => {
         const numericItemId = Number(itemId);
-        const item = await getItemById(numericItemId);
+        const item = await collectionService.getItemByID(numericItemId);
 
         setItem(item);
 
@@ -49,7 +49,7 @@ export default function CollectionItemScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <CustomStyledHeader
           title={item?.page_title || "Collection Item"} //Here should be the title of the collection
-          backBehavior="default" // Go back to home when back button is pressed
+          backBehavior="goCollection" // Go back to home when back button is pressed
           iconName={undefined} // No icon for the header
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
@@ -88,7 +88,14 @@ export default function CollectionItemScreen() {
             label: "Delete Item",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -102,7 +109,8 @@ export default function CollectionItemScreen() {
           if (item) {
             try {
               const itemIdAsNumber = Number(item.itemID);
-              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+              const successfullyDeleted =
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowDeleteModal(false);
               router.replace({

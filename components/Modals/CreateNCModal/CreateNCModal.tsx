@@ -24,9 +24,9 @@ import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { BottomInputModal } from "../BottomInputModal/BottomInputModal";
 import { set } from "date-fns";
-import { TagDTO } from "@/dto/TagDTO";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { insertTag, updateTag } from "@/services/TagService";
+import { TagDTO } from "@/shared/dto/TagDTO";
+import { tagService } from "@/backend/service/TagService";
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -90,7 +90,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
 
       if (editMode && editingFolder) {
         //TODO: use updateFolder instead of updateTag
-        success = await updateTag({
+        success = await tagService.updateTag({
           ...editingFolder,
           //use folder_label instead of tag_label
           tag_label: trimmedFolder,
@@ -99,7 +99,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
         //use insertFolder instead of insertTag, use folderDTO instead of tagDTO
         //use folder_label instead of tag_label
         const newFolderObject: TagDTO = { tag_label: trimmedFolder };
-        success = await insertTag(newFolderObject);
+        success = await tagService.insertTag(newFolderObject);
       }
 
       if (success) setShouldRefetch(true);

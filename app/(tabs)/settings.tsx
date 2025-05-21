@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "react-native";
 import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
-import { resetDatabase } from "@/utils/DatabaseReset";
+import { resetDatabase } from "@/backend/service/DatabaseReset";
 import { Button } from "@/components/ui/Button/Button";
 
 export default function TabThreeScreen() {

@@ -92,10 +92,6 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="listManagement"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
                 name="appearance"
                 options={{ headerShown: false }}
               />

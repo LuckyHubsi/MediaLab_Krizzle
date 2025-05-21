@@ -3,7 +3,7 @@ import { ScrollView, View } from "react-native";
 import { TagButton, TagText } from "./TagList.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 
 type TagListProps = {
   tags: TagDTO[];
