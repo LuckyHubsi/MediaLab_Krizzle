@@ -27,6 +27,8 @@ import { set } from "date-fns";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { tagService } from "@/backend/service/TagService";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { folderService } from "@/backend/service/FolderService";
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -96,15 +98,13 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
           tag_label: trimmedFolder,
         });
       } else {
-        //use insertFolder instead of insertTag, use folderDTO instead of tagDTO
-        //use folder_label instead of tag_label
-        const newFolderObject: TagDTO = { tag_label: trimmedFolder };
-        success = await tagService.insertTag(newFolderObject);
+        const newFolderObject: FolderDTO = { folderName: trimmedFolder };
+        success = await folderService.insertFolder(newFolderObject);
       }
 
       if (success) setShouldRefetch(true);
     } catch (error) {
-      console.error("Error saving tag:", error);
+      console.error("Error saving folder:", error);
     } finally {
       setNewFolderName("");
       setEditingFolder(null);
