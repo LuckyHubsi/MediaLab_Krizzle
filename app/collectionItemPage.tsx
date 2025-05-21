@@ -49,7 +49,7 @@ export default function CollectionItemScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <CustomStyledHeader
           title={item?.page_title || "Collection Item"} //Here should be the title of the collection
-          backBehavior="default" // Go back to home when back button is pressed
+          backBehavior="goCollection" // Go back to home when back button is pressed
           iconName={undefined} // No icon for the header
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu

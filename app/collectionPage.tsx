@@ -27,10 +27,11 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
-  const { pageId, title, selectedIcon } = useLocalSearchParams<{
+  const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+    routing?: string;
   }>();
 
   const { showSnackbar } = useSnackbar();
@@ -46,6 +47,7 @@ export default function CollectionScreen() {
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [collectionTitle, setCollectionTitle] = useState<string>(title || "");
 
   useFocusEffect(
     useCallback(() => {
@@ -56,6 +58,8 @@ export default function CollectionScreen() {
             await collectionService.getCollectionByPageId(numericID);
           if (collectionData) {
             setCollection(collectionData);
+            setCollectionTitle(title || collectionData.page_title);
+
             if (collectionData.categories) {
               const listNames = [];
               for (const list of collectionData.categories) {
@@ -115,8 +119,8 @@ export default function CollectionScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         {/* //Header with back button and title */}
         <CustomStyledHeader
-          title={title || "Collection"} //Here should be the title of the collection
-          backBehavior="goHome" // Go back to home when back button is pressed
+          title={collectionTitle || "Collection"} //Here should be the title of the collection
+          backBehavior={routing || "goHome"} // Go back to home when back button is pressed
           iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
@@ -148,7 +152,9 @@ export default function CollectionScreen() {
                     onPress={() => {
                       router.push({
                         pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
+                        params: {
+                          itemId: item.itemID.toString(),
+                        },
                       });
                     }}
                     onLongPress={() => {
