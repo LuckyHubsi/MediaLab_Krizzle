@@ -105,6 +105,10 @@ export default function AddCollectionItem() {
             return { ...attribute, valueNumber: value };
           case AttributeType.Multiselect:
             return { ...attribute, valueMultiselect: value };
+          case AttributeType.Link:
+            return { ...attribute, valueString: value };
+          case AttributeType.Image:
+            return { ...attribute, valueImage: value }; // or valueString if it's a URL
           default:
             return { ...attribute };
         }

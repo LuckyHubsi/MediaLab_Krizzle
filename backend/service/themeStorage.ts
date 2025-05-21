@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ThemeOption } from "@/context/ThemeContext";
+import { ColorSchemeOption } from "@/context/ThemeContext";
 
 const THEME_STORAGE_KEY = "user-theme-preference";
 
 export const themeStorage = {
-  saveTheme: async (theme: ThemeOption): Promise<boolean> => {
+  saveTheme: async (theme: ColorSchemeOption): Promise<boolean> => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, theme);
       return true;
@@ -14,10 +14,10 @@ export const themeStorage = {
     }
   },
 
-  loadTheme: async (): Promise<ThemeOption | null> => {
+  loadTheme: async (): Promise<ColorSchemeOption | null> => {
     try {
       const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-      return savedTheme as ThemeOption | null;
+      return savedTheme as ColorSchemeOption | null;
     } catch (error) {
       console.error("Failed to load theme preference:", error);
       return null;

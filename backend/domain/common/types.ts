@@ -10,7 +10,6 @@ export type String30 = z.infer<typeof string30>;
 
 export const string750 = z
   .string()
-  .min(1, { message: "A minimum of 1 character is needed." })
   .max(750, { message: "A maximum of 750 characters is permitted." });
 export type String750 = z.infer<typeof string750>;
 

@@ -2,7 +2,7 @@ import TextEditor from "@/components/TextEditor/TextEditor";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppState, AppStateStatus, View } from "react-native";
+import { AppState, AppStateStatus, Platform, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -16,11 +16,13 @@ import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { noteService } from "@/backend/service/NoteService";
 import { generalPageService } from "@/backend/service/GeneralPageService";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function NotesScreen() {
-  const { pageId, title } = useLocalSearchParams<{
+  const { pageId, title, routing } = useLocalSearchParams<{
     pageId?: string;
     title?: string;
+    routing?: string;
   }>();
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
@@ -88,13 +90,15 @@ export default function NotesScreen() {
     });
   };
 
+  const { showSnackbar } = useSnackbar();
+
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
         <CustomStyledHeader
           title={title || "Note"}
           iconName="more-horiz"
-          backBehavior="goHome"
+          backBehavior={routing}
           onIconPress={() => setShowModal(true)}
           otherBackBehavior={() =>
             debouncedSave.flush(latestNoteContentRef.current)
@@ -154,6 +158,23 @@ export default function NotesScreen() {
                   Number(pageId),
                   noteData.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    noteData.archived
+                      ? "Successfully restored Note."
+                      : "Successfully archived Note.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    noteData.archived
+                      ? "Failed to restore Note."
+                      : "Failed to archive Note.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -162,7 +183,14 @@ export default function NotesScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },

@@ -11,6 +11,8 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import LinkPicker from "../LinkPicker/LinkPicker";
+import ImagePickerField from "../ImagePickerField/ImagePickerField";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
@@ -37,7 +39,12 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {},
   );
-
+  const [devLinkValue, setDevLinkValue] = useState("");
+  const [devImageUri, setDevImageUri] = useState("");
+  const [devCustomText, setDevCustomText] = useState("");
+  const [customLinkText, setCustomLinkText] = useState<{
+    [id: number]: string;
+  }>({});
   const handleTagSelect = (attributeLabel: string, tag: string) => {
     setSelectedTags((prev) => {
       const currentTags = prev[attributeLabel] || [];
@@ -179,11 +186,62 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
               );
             }
             break;
+          case AttributeType.Link:
+            elements.push(
+              <LinkPicker
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue || ""}
+                onChange={(text) =>
+                  onInputChange(Number(attribute.attributeID), text)
+                }
+                linkText={customLinkText[Number(attribute.attributeID)] || ""}
+                onLinkTextChange={(text) =>
+                  setCustomLinkText((prev) => ({
+                    ...prev,
+                    [Number(attribute.attributeID)]: text,
+                  }))
+                }
+              />,
+            );
+            break;
+          case AttributeType.Image:
+            elements.push(
+              <ImagePickerField
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue || ""}
+                onChange={(uri) =>
+                  onInputChange(Number(attribute.attributeID), uri)
+                }
+              />,
+            );
+            break;
           default:
             break;
         }
       });
     }
+    // DEV-ONLY: Add fake Link input
+    elements.push(
+      <LinkPicker
+        key="dev-link-test"
+        title="Test Link (Dev)"
+        value={devLinkValue}
+        onChange={(text) => setDevLinkValue(text)}
+        linkText={devCustomText}
+        onLinkTextChange={setDevCustomText}
+      />,
+    );
+
+    elements.push(
+      <ImagePickerField
+        key="dev-image-test"
+        title="Test Image (Dev)"
+        value={devImageUri}
+        onChange={(uri) => setDevImageUri(uri)}
+      />,
+    );
     return elements;
   };
 

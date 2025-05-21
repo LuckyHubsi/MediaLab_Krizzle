@@ -94,6 +94,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         return "layers";
       case "rating":
         return "star-rate";
+      case "image":
+        return "image";
+      case "link":
+        return "attach-file";
       default:
         return "short-text";
     }
@@ -371,6 +375,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               }
 
               onNext?.();
+              showSnackbar(
+                `Successfully created Collection: "${data.title}". `,
+                "bottom",
+                "success",
+              );
             }}
             hasProgressIndicator={false}
             progressStep={3}

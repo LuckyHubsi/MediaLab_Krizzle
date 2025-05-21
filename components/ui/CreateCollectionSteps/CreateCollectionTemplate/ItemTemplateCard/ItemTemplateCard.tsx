@@ -61,7 +61,15 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
 }) => {
   const colorScheme = useActiveColorScheme();
 
-  const typeArray = ["item", "text", "date", "multi-select", "rating"];
+  const typeArray = [
+    "item",
+    "text",
+    "date",
+    "multi-select",
+    "rating",
+    "image",
+    "link",
+  ];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
 
   return (
@@ -124,7 +132,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               : typeArray
                   .filter((item) => item !== "item")
                   .map((item) => ({
-                    label: item,
+                    label: item.charAt(0).toUpperCase() + item.slice(1),
                     value: item,
                   }))
           }
@@ -135,7 +143,15 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
 
       <Textfield
         showTitle={false}
-        textfieldIcon={textfieldIcon}
+        textfieldIcon={
+          itemType === "text"
+            ? textfieldIcon
+            : itemType === "image"
+              ? "image"
+              : itemType === "link"
+                ? "link"
+                : textfieldIcon
+        }
         placeholderText={`Add a title to your ${itemType}`}
         title={""}
         value={title || ""}

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -23,14 +23,18 @@ import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { collectionService } from "@/backend/service/CollectionService";
 import { generalPageService } from "@/backend/service/GeneralPageService";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
   const router = useRouter();
-  const { pageId, title, selectedIcon } = useLocalSearchParams<{
+  const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+    routing?: string;
   }>();
+
+  const { showSnackbar } = useSnackbar();
 
   const [collection, setCollection] = useState<CollectionDTO>();
   const [listNames, setListNames] = useState<string[]>([]);
@@ -43,6 +47,7 @@ export default function CollectionScreen() {
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [collectionTitle, setCollectionTitle] = useState<string>(title || "");
 
   useFocusEffect(
     useCallback(() => {
@@ -53,6 +58,8 @@ export default function CollectionScreen() {
             await collectionService.getCollectionByPageId(numericID);
           if (collectionData) {
             setCollection(collectionData);
+            setCollectionTitle(title || collectionData.page_title);
+
             if (collectionData.categories) {
               const listNames = [];
               for (const list of collectionData.categories) {
@@ -80,7 +87,7 @@ export default function CollectionScreen() {
   };
 
   const goToEditListsPage = () => {
-    const path = "/listManagement";
+    const path = "/editCollectionLists";
 
     router.push({
       pathname: path,
@@ -112,8 +119,8 @@ export default function CollectionScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         {/* //Header with back button and title */}
         <CustomStyledHeader
-          title={title || "Collection"} //Here should be the title of the collection
-          backBehavior="goHome" // Go back to home when back button is pressed
+          title={collectionTitle || "Collection"} //Here should be the title of the collection
+          backBehavior={routing || "goHome"} // Go back to home when back button is pressed
           iconName={selectedIcon || undefined}
           onIconPress={() => {}} // No action when pressed
           iconName2="more-horiz" // icon for the pop up menu
@@ -145,7 +152,9 @@ export default function CollectionScreen() {
                     onPress={() => {
                       router.push({
                         pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
+                        params: {
+                          itemId: item.itemID.toString(),
+                        },
                       });
                     }}
                     onLongPress={() => {
@@ -234,12 +243,30 @@ export default function CollectionScreen() {
           {
             label: collection?.archived ? "Restore" : "Archive",
             icon: collection?.archived ? "restore" : "archive",
+
             onPress: async () => {
               if (collection) {
                 const success = await generalPageService.togglePageArchive(
                   Number(pageId),
                   collection.archived,
                 );
+                if (success) {
+                  showSnackbar(
+                    collection.archived
+                      ? "Successfully restored Collection."
+                      : "Successfully archived Collection.",
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    collection.archived
+                      ? "Failed to restore Collection."
+                      : "Failed to archive Collection.",
+                    "bottom",
+                    "error",
+                  );
+                }
                 setShouldReload(success);
               }
             },
@@ -248,7 +275,14 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -273,7 +307,15 @@ export default function CollectionScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowItemDeleteModal(true);
+              setShowModal(false);
+
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowItemDeleteModal(true);
+                }, 300);
+              } else {
+                setShowItemDeleteModal(true);
+              }
             },
             danger: true,
           },
@@ -311,6 +353,7 @@ export default function CollectionScreen() {
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);
+              showSnackbar("Successfully deleted Item.", "bottom", "success");
             } catch (error) {
               console.error("Error deleting item:", error);
             }

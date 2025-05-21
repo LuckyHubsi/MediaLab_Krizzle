@@ -1,5 +1,6 @@
 import styled from "styled-components/native";
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const PopupBackdrop = styled.View`
   flex: 1;
@@ -8,12 +9,8 @@ export const PopupBackdrop = styled.View`
   align-items: center;
 `;
 
-type ThemeProps = {
-  colorScheme: "light" | "dark";
-};
-
-export const PopupContainer = styled.View<ThemeProps>`
-  background-color: ${({ colorScheme }: ThemeProps) =>
+export const PopupContainer = styled.View<ColorSchemeProps>`
+  background-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].background};
   width: 85%;
   max-width: 350px;
@@ -23,7 +20,7 @@ export const PopupContainer = styled.View<ThemeProps>`
   align-items: center;
   padding: 20px 15px;
   border: 1px solid
-    ${({ colorScheme }: ThemeProps) =>
+    ${({ colorScheme }: ColorSchemeProps) =>
       colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
   border-top-width: 0;
 `;
@@ -36,7 +33,7 @@ export const PopupImage = styled.Image`
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
   border: 1px solid
-    ${({ colorScheme }: ThemeProps) =>
+    ${({ colorScheme }: ColorSchemeProps) =>
       colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
   border-bottom-width: 0;
   margin-bottom: -1px;

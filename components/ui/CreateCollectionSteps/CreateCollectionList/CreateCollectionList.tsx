@@ -5,6 +5,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -23,6 +24,7 @@ import {
   ListContent,
   RemoveButton,
   RemoveButtonContent,
+  HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
 
 import type { CollectionData } from "../CreateCollection/CreateCollection";
@@ -31,6 +33,7 @@ import {
   CardHeader,
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { useSnackbar } from "../../Snackbar/Snackbar";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -57,6 +60,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
+
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -115,158 +120,171 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   });
 
   return (
-    <View style={{ flex: 1 }}>
-      <Card>
-        <CardText>
-          <CardHeader>
-            <ThemedText fontSize="l" fontWeight="bold">
-              Adding Lists
-            </ThemedText>
-            <TouchableOpacity onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={Colors.primary}
-              />
-            </TouchableOpacity>
-          </CardHeader>
-          <ThemedText
-            fontSize="s"
-            fontWeight="light"
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            Add Lists to organize your Collections
-          </ThemedText>
-        </CardText>
-      </Card>
-      <ItemCountContainer>
-        <ItemCount colorScheme={colorScheme}>
-          <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-            {cards.length}
-          </ThemedText>
-
-          <ThemedText
-            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-          >
-            /10 Lists
-          </ThemedText>
-        </ItemCount>
-      </ItemCountContainer>
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {cards.map((item, index) => (
-          <Card key={item.id}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={{ flex: 1 }}>
+        <Card>
+          <CardText>
+            <CardHeader>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Adding Lists
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </CardHeader>
             <ThemedText
-              fontSize="regular"
-              fontWeight="regular"
-              style={{ marginBottom: 15 }}
+              fontSize="s"
+              fontWeight="light"
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
             >
-              List {index + 1}
+              Add Lists to organize your Collections
             </ThemedText>
-            <Textfield
-              showTitle={false}
-              textfieldIcon="text-fields"
-              placeholderText="Add a title"
-              title=""
-              value={item.title}
-              onChangeText={(text) => handleTitleChange(item.id, text)}
-              hasNoInputError={hasClickedNext && !item.title}
-              hasDuplicateTitle={
-                hasClickedNext && duplicateTitleIds.has(item.id)
-              }
-              maxLength={30}
-            />
-            {index > 0 && (
-              <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                <RemoveButtonContent>
-                  <MaterialIcons
-                    name="delete"
-                    size={16}
-                    color="#ff4d4d"
-                    style={{ marginRight: 6, marginTop: 2 }}
-                  />
-                  <ThemedText
-                    fontSize="s"
-                    fontWeight="bold"
-                    style={{ color: "#ff4d4d" }}
-                  >
-                    remove
-                  </ThemedText>
-                </RemoveButtonContent>
-              </RemoveButton>
-            )}
-          </Card>
-        ))}
+          </CardText>
+        </Card>
+        <ItemCountContainer>
+          <ItemCount colorScheme={colorScheme}>
+            <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
+              {cards.length}
+            </ThemedText>
 
-        {cards.length < 10 && (
-          <AddButtonWrapper>
-            <AddButton
-              onPress={() => {
-                handleAddCard();
-                setHasClickedNext(false);
-              }}
-            />
-          </AddButtonWrapper>
-        )}
-      </ScrollView>
-      {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View
-          style={{
-            paddingTop: 15,
-            paddingBottom: Platform.OS === "android" ? 8 : 24,
-          }}
+            <ThemedText
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
+              /10 Lists
+            </ThemedText>
+          </ItemCount>
+        </ItemCountContainer>
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="on-drag"
+          contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
         >
-          <BottomButtons
-            titleLeftButton="Back"
-            titleRightButton="Next"
-            onDiscard={onBack!}
-            onNext={() => {
-              setHasClickedNext(true);
+          {cards.map((item, index) => (
+            <Card key={item.id}>
+              <HorizontalTitleRow>
+                <ThemedText fontSize="regular" fontWeight="regular">
+                  List {index + 1}
+                </ThemedText>
+                {index === 0 && (
+                  <ThemedText fontSize="s" colorVariant="red">
+                    * required
+                  </ThemedText>
+                )}
+              </HorizontalTitleRow>
+              <Textfield
+                showTitle={false}
+                textfieldIcon="text-fields"
+                placeholderText="Add a title"
+                title=""
+                value={item.title}
+                onChangeText={(text) => handleTitleChange(item.id, text)}
+                hasNoInputError={hasClickedNext && !item.title}
+                hasDuplicateTitle={
+                  hasClickedNext &&
+                  item.title.trim() !== "" &&
+                  duplicateTitleIds.has(item.id)
+                }
+                maxLength={30}
+              />
+              {index > 0 && (
+                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
+                  <RemoveButtonContent>
+                    <MaterialIcons
+                      name="delete"
+                      size={16}
+                      color="#ff4d4d"
+                      style={{ marginRight: 6, marginTop: 2 }}
+                    />
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="bold"
+                      style={{ color: "#ff4d4d" }}
+                    >
+                      remove
+                    </ThemedText>
+                  </RemoveButtonContent>
+                </RemoveButton>
+              )}
+            </Card>
+          ))}
 
-              const allTitlesFilled = cards.every(
-                (card) => card.title && card.title.trim() !== "",
-              );
-
-              if (!allTitlesFilled) {
-                Alert.alert("Missing Title", "Please fill in all list titles.");
-                return;
-              }
-
-              const normalizedTitles = cards.map((card) =>
-                card.title.trim().toLowerCase(),
-              );
-              const uniqueTitles = new Set(normalizedTitles);
-
-              if (uniqueTitles.size !== normalizedTitles.length) {
-                Alert.alert(
-                  "Duplicate Title",
-                  "Each list must have a unique title.",
-                );
-                return;
-              }
-
-              onNext?.();
+          {cards.length < 10 && (
+            <AddButtonWrapper>
+              <AddButton
+                onPress={() => {
+                  handleAddCard();
+                  setHasClickedNext(false);
+                }}
+              />
+            </AddButtonWrapper>
+          )}
+        </ScrollView>
+        {(Platform.OS !== "android" || !keyboardVisible) && (
+          <View
+            style={{
+              paddingTop: 15,
+              paddingBottom: Platform.OS === "android" ? 8 : 24,
             }}
-            variant="back"
-            hasProgressIndicator={false}
-            progressStep={2}
+          >
+            <BottomButtons
+              titleLeftButton="Back"
+              titleRightButton="Next"
+              onDiscard={onBack!}
+              onNext={() => {
+                setHasClickedNext(true);
+
+                const allTitlesFilled = cards.every(
+                  (card) => card.title && card.title.trim() !== "",
+                );
+
+                if (!allTitlesFilled) {
+                  showSnackbar(
+                    "Please fill in all list titles.",
+                    "bottom",
+                    "error",
+                  );
+                  return;
+                }
+
+                const normalizedTitles = cards.map((card) =>
+                  card.title.trim().toLowerCase(),
+                );
+                const uniqueTitles = new Set(normalizedTitles);
+
+                if (uniqueTitles.size !== normalizedTitles.length) {
+                  showSnackbar(
+                    "Each list must have a unique title.",
+                    "bottom",
+                    "error",
+                  );
+
+                  return;
+                }
+
+                onNext?.();
+              }}
+              variant="back"
+              hasProgressIndicator={false}
+              progressStep={2}
+            />
+          </View>
+        )}
+        {showHelp && (
+          <InfoPopup
+            visible={showHelp}
+            onClose={() => setShowHelp(false)}
+            image={require("@/assets/images/list-guide.png")}
+            title="What is a Collection List?"
+            description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
           />
-        </View>
-      )}
-      {showHelp && (
-        <InfoPopup
-          visible={showHelp}
-          onClose={() => setShowHelp(false)}
-          image={require("@/assets/images/list-guide.png")}
-          title="What is a Collection List?"
-          description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
-        />
-      )}
-    </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

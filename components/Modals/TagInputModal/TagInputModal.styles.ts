@@ -1,9 +1,7 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
-type ColorSchemeProps = {
-  colorScheme: "light" | "dark";
-};
 export const ModalOverlay = styled.TouchableOpacity`
   flex: 1;
   background-color: rgba(0, 0, 0, 0.5);

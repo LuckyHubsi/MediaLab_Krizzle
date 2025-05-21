@@ -62,13 +62,13 @@ const Textfield: FC<TextfieldProps> = ({
       </InputWrapper>
       {hasNoInputError && (
         <ThemedText fontSize="s" colorVariant="red">
-          This field is required, please enter a text.
+          Oops, this field is required. Please enter a text.
         </ThemedText>
       )}
 
       {hasDuplicateTitle && (
         <ThemedText fontSize="s" colorVariant="red">
-          Each list must have a unique title.
+          Oops, here you have a duplicate Title.
         </ThemedText>
       )}
     </TextfieldContainer>

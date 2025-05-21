@@ -26,6 +26,7 @@ export default function TabThreeScreen() {
           href="/tagManagement"
           iconName="local-offer"
         />
+        <SettingsLink label="Archive" href="/archivePage" iconName="archive" />
         <SettingsLink
           label="Frequently Asked Questions"
           href="/faq"

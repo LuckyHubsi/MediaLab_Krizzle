@@ -1,4 +1,4 @@
-import { FlatList, Image, TouchableOpacity } from "react-native";
+import { Platform, StatusBar, View, FlatList } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -19,6 +19,7 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -133,33 +134,21 @@ export default function ArchiveScreen() {
 
     router.push({
       pathname: path,
-      params: { pageId: widget.id, title: widget.title },
+      params: {
+        pageId: widget.id,
+        title: widget.title,
+        routing: "goArchive",
+      },
     });
   };
 
   return (
     <>
       <SafeAreaView>
+        <View>
+          <CustomStyledHeader title="Archive" backBehavior="goSettings" />
+        </View>
         <ThemedView>
-          <IconTopRight>
-            <TouchableOpacity
-              onPress={() => {
-                router.push({
-                  pathname: "/faq",
-                });
-              }}
-            >
-              <Image
-                source={require("@/assets/images/kriz.png")}
-                style={{ width: 30, height: 32 }}
-              />
-            </TouchableOpacity>
-          </IconTopRight>
-
-          <ThemedText fontSize="xl" fontWeight="bold">
-            Archive
-          </ThemedText>
-
           {widgets.length === 0 ? (
             <EmptyHome text="Archive is empty" showButton={false} />
           ) : (
@@ -234,7 +223,14 @@ export default function ArchiveScreen() {
             label: "Delete",
             icon: "delete",
             onPress: () => {
-              setShowDeleteModal(true);
+              setShowModal(false);
+              if (Platform.OS === "ios") {
+                setTimeout(() => {
+                  setShowDeleteModal(true);
+                }, 300);
+              } else {
+                setShowDeleteModal(true);
+              }
             },
             danger: true,
           },
