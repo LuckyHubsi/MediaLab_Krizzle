@@ -1,4 +1,4 @@
-import { NewFolder } from "@/backend/domain/entity/Folder";
+import { Folder, NewFolder } from "@/backend/domain/entity/Folder";
 import { BaseRepository } from "./BaseRepository.interface";
 import { FolderID } from "@/backend/domain/common/IDs";
 
@@ -9,4 +9,5 @@ import { FolderID } from "@/backend/domain/common/IDs";
  */
 export interface FolderRepository extends BaseRepository {
   insertFolder(folder: NewFolder): Promise<boolean>;
+  getAllFolders(): Promise<Folder[]>;
 }

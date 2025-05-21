@@ -1,9 +1,11 @@
-import { NewFolder } from "@/backend/domain/entity/Folder";
+import { Folder, NewFolder } from "@/backend/domain/entity/Folder";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
-import { insertFolderQuery } from "../query/FolderQuery";
+import { insertFolderQuery, selectAllFoldersQuery } from "../query/FolderQuery";
+import { FolderModel } from "../model/FolderModel";
+import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 
 /**
  * Implementation of the FolderRepository interface using SQL queries.
@@ -33,6 +35,21 @@ export class FolderRepositoryImpl
       return true;
     } catch (error) {
       throw new RepositoryError("Failed to insert tag.");
+    }
+  }
+
+  /**
+   * Retrieves all folders from the database.
+   *
+   * @returns A Promise resolving to an array of `Folder` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolders(): Promise<Folder[]> {
+    try {
+      const result = await this.fetchAll<FolderModel>(selectAllFoldersQuery);
+      return result.map(FolderMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all folders.");
     }
   }
 }

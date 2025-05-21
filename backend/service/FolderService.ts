@@ -32,6 +32,21 @@ export class FolderService {
       throw new ServiceError("Error inserting folder.");
     }
   }
+
+  /**
+   * Retrieves all folders and maps them to DTOs.
+   *
+   * @returns A Promise resolving to an array of `FolderDTO` objects.
+   * @throws ServiceError if retrieval fails.
+   */
+  async getAllFolders(): Promise<FolderDTO[]> {
+    try {
+      const folders = await this.folderRepo.getAllFolders();
+      return folders.map(FolderMapper.toDTO);
+    } catch (error) {
+      throw new ServiceError("Error retrieving all folders.");
+    }
+  }
 }
 
 // Singleton instance of the FolderService.

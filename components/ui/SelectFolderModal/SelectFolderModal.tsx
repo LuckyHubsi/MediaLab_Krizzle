@@ -11,6 +11,8 @@ import {
 import { Animated, Modal, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectFolderComponent from "./SelectFolderComponent/SelectFolderComponent";
+import { folderService } from "@/backend/service/FolderService";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
 
 interface SelectFolderModalProps {
   visible: boolean;
@@ -32,12 +34,37 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     itemCount: number;
   }
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
   useEffect(() => {
     if (visible) {
       setInternalVisible(true);
+      const fetchFolders = async () => {
+        try {
+          const data = await folderService.getAllFolders();
+
+          const shapedFolders = mapToFolderShape(data);
+          setFolders(shapedFolders);
+        } catch (error) {
+          console.error("Error loading folders:", error);
+        }
+      };
+
+      fetchFolders();
     }
   }, [visible]);
+
+  const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
+    if (data == null) {
+      return [];
+    } else {
+      return (data || []).map((folder) => ({
+        id: String(folder.folderID),
+        title: folder.folderName,
+        itemCount: folder.itemCount ?? 0,
+      }));
+    }
+  };
 
   if (!internalVisible) return null;
 
@@ -46,24 +73,6 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     title: string;
     itemCount: number;
   }
-
-  const hardcodedFolders: Folder[] = [
-    { id: "1", title: "Folder 1", itemCount: 5 },
-    { id: "2", title: "Folder 2", itemCount: 10 },
-    { id: "3", title: "Folder 3", itemCount: 8 },
-    { id: "4", title: "Folder 4", itemCount: 12 },
-    { id: "5", title: "Folder 5", itemCount: 7 },
-    { id: "6", title: "Folder 6", itemCount: 15 },
-    { id: "7", title: "Folder 6", itemCount: 15 },
-    { id: "8", title: "Folder 6", itemCount: 15 },
-    { id: "9", title: "Folder jshdfkjsdjkfsdfhs6", itemCount: 15 },
-    { id: "10", title: "Folder 6", itemCount: 15 },
-    { id: "11", title: "Folder 6", itemCount: 15 },
-    { id: "12", title: "Folder 6", itemCount: 15 },
-    { id: "13", title: "Folder 6", itemCount: 15 },
-    { id: "14", title: "Folder 6", itemCount: 15 },
-    { id: "15", title: "Folder 6", itemCount: 15 },
-  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
@@ -88,7 +97,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
 
           <ScrollView>
             <FolderList>
-              {hardcodedFolders.map((folder) => (
+              {folders.map((folder) => (
                 <SelectFolderComponent
                   key={folder.id}
                   title={folder.title}

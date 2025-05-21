@@ -21,6 +21,8 @@ import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { folderService } from "@/backend/service/FolderService";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -45,22 +47,18 @@ export default function FoldersScreen() {
 
   const router = useRouter();
 
-  // interface ArchivedWidget {
-  //   id: string;
-  //   title: string;
-  //   tag: string;
-  //   page_icon?: string;
-  //   page_type: PageType;
-  //   color?: string;
-  //   archived: boolean;
-  //   [key: string]: any;
-  // }
+  interface Folder {
+    id: string;
+    title: string;
+    itemCount: number;
+  }
 
   const [shouldReload, setShouldReload] = useState<boolean>(false);
   // const [widgets, setWidgets] = useState<ArchivedWidget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [folders, setFolders] = useState<Folder[]>([]);
   // const [selectedWidget, setSelectedWidget] = useState<ArchivedWidget | null>(
   //   null,
   // );
@@ -144,23 +142,34 @@ export default function FoldersScreen() {
     itemCount: number;
   }
 
-  const hardcodedFolders: Folder[] = [
-    { id: "1", title: "Folder 1", itemCount: 5 },
-    { id: "2", title: "Folder 2", itemCount: 10 },
-    { id: "3", title: "Folder 3", itemCount: 8 },
-    { id: "4", title: "Folder 4", itemCount: 12 },
-    { id: "5", title: "Folder 5", itemCount: 7 },
-    { id: "6", title: "Folder 6", itemCount: 15 },
-    { id: "7", title: "Folder 6", itemCount: 15 },
-    { id: "8", title: "Folder 6", itemCount: 15 },
-    { id: "9", title: "Folder 6", itemCount: 15 },
-    { id: "10", title: "Folder 6", itemCount: 15 },
-    { id: "11", title: "Folder 6", itemCount: 15 },
-    { id: "12", title: "Folder 6", itemCount: 15 },
-    { id: "13", title: "Folder 6", itemCount: 15 },
-    { id: "14", title: "Folder 6", itemCount: 15 },
-    { id: "15", title: "Folder 6", itemCount: 15 },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFolders = async () => {
+        try {
+          const data = await folderService.getAllFolders();
+
+          const shapedFolders = mapToFolderShape(data);
+          setFolders(shapedFolders);
+        } catch (error) {
+          console.error("Error loading folders:", error);
+        }
+      };
+
+      setShouldReload(false);
+      fetchFolders();
+    }, [shouldReload]),
+  );
+  const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
+    if (data == null) {
+      return [];
+    } else {
+      return (data || []).map((folder) => ({
+        id: String(folder.folderID),
+        title: folder.folderName,
+        itemCount: folder.itemCount ?? 0,
+      }));
+    }
+  };
 
   const { showSnackbar } = useSnackbar();
 
@@ -189,7 +198,7 @@ export default function FoldersScreen() {
             Folders
           </ThemedText>
 
-          {hardcodedFolders.length === 0 ? (
+          {folders.length === 0 ? (
             <EmptyHome text="No folders yet" showButton={false} />
           ) : (
             <>
@@ -201,7 +210,7 @@ export default function FoldersScreen() {
               {/* {filteredWidgets.length > 0 ? ( */}
               {/* <> */}
               <FlatList
-                data={hardcodedFolders}
+                data={folders}
                 showsVerticalScrollIndicator={false}
                 numColumns={columns}
                 columnWrapperStyle={{
