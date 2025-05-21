@@ -35,3 +35,10 @@ export const CancelButton = styled(BottomButtonBaseStyling)<ColorSchemeProps>`
 export const NextButton = styled(BottomButtonBaseStyling)`
   background-color: ${Colors.primary};
 `;
+
+export const FolderList = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px;
+`;
