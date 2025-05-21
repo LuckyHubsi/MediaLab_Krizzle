@@ -18,7 +18,11 @@ interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
   attributeValues: Record<number, any>;
-  onInputChange: (attributeID: number, value: any) => void;
+  onInputChange: (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => void;
   hasNoInputError?: boolean;
   onListChange: (categoryID: number | null) => void;
   selectedCategoryID?: number | null;
@@ -39,9 +43,6 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {},
   );
-  const [devLinkValue, setDevLinkValue] = useState("");
-  const [devImageUri, setDevImageUri] = useState("");
-  const [devCustomText, setDevCustomText] = useState("");
   const [customLinkText, setCustomLinkText] = useState<{
     [id: number]: string;
   }>({});
@@ -191,17 +192,28 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
               <LinkPicker
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
-                value={currentValue || ""}
+                value={currentValue?.value || ""}
                 onChange={(text) =>
-                  onInputChange(Number(attribute.attributeID), text)
+                  onInputChange(
+                    Number(attribute.attributeID),
+                    text,
+                    customLinkText[Number(attribute.attributeID)] ?? text,
+                  )
                 }
                 linkText={customLinkText[Number(attribute.attributeID)] || ""}
-                onLinkTextChange={(text) =>
+                onLinkTextChange={(text) => {
                   setCustomLinkText((prev) => ({
                     ...prev,
                     [Number(attribute.attributeID)]: text,
-                  }))
-                }
+                  }));
+
+                  const currentVal = currentValue?.value ?? "";
+                  onInputChange(
+                    Number(attribute.attributeID),
+                    currentVal,
+                    text,
+                  );
+                }}
               />,
             );
             break;
@@ -222,26 +234,6 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         }
       });
     }
-    // DEV-ONLY: Add fake Link input
-    elements.push(
-      <LinkPicker
-        key="dev-link-test"
-        title="Test Link (Dev)"
-        value={devLinkValue}
-        onChange={(text) => setDevLinkValue(text)}
-        linkText={devCustomText}
-        onLinkTextChange={setDevCustomText}
-      />,
-    );
-
-    elements.push(
-      <ImagePickerField
-        key="dev-image-test"
-        title="Test Image (Dev)"
-        value={devImageUri}
-        onChange={(uri) => setDevImageUri(uri)}
-      />,
-    );
     return elements;
   };
 
