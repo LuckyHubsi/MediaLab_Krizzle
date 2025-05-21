@@ -1,15 +1,27 @@
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
 
+interface FolderProps {
+  selected: boolean;
+}
+
 export const FolderContainer = styled.View`
+  position: relative;
+  width: 100%;
+  align-items: center;
+`;
+
+export const Folder = styled.View<FolderProps>`
+  background-color: ${({ selected }: FolderProps) =>
+    selected ? Colors.primary : Colors.grey50};
   height: 60px;
   width: 90%;
   border-radius: 16px;
-  background-color: ${Colors.primary};
 `;
 
-export const FolderShape = styled.View`
-  background-color: ${Colors.secondary};
+export const FolderShape = styled.View<FolderProps>`
+  background-color: ${({ selected }: FolderProps) =>
+    selected ? Colors.secondary : Colors.grey100};
   height: 75%;
   width: 100%;
   border-radius: 0px 8px 16px 16px;
@@ -18,8 +30,9 @@ export const FolderShape = styled.View`
   left: 0;
 `;
 
-export const FolderTab = styled.View`
-  background-color: ${Colors.secondary};
+export const FolderTab = styled.View<FolderProps>`
+  background-color: ${({ selected }: FolderProps) =>
+    selected ? Colors.secondary : Colors.grey100};
   height: 10%;
   width: 40%;
   position: absolute;

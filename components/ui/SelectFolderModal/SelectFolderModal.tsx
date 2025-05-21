@@ -78,10 +78,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       >
         <StyledModalContent colorScheme={colorScheme}>
           <ThemedText>
-            Move *{widgetTitle}* to
+            Move <ThemedText fontWeight="semibold">{widgetTitle}</ThemedText> to
             {selectedFolder && (
-              <ThemedText colorVariant="primary" fontWeight="bold">
-                {` *${selectedFolder.title}*`}
+              <ThemedText colorVariant="primary" fontWeight="semibold">
+                {` ${selectedFolder.title}`}
               </ThemedText>
             )}
           </ThemedText>
@@ -95,6 +95,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                   onPress={() => {
                     setSelectedFolder(folder);
                   }}
+                  selected={selectedFolder?.id === folder.id}
                 />
               ))}
             </FolderList>
@@ -104,6 +105,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
             <CancelButton
               onPress={() => {
                 setInternalVisible(false);
+                setSelectedFolder(null);
                 onClose();
               }}
               colorScheme={colorScheme}
@@ -113,7 +115,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               </ThemedText>
             </CancelButton>
 
-            <NextButton onPress={() => {}} colorScheme={colorScheme}>
+            {/* TODO add move functionality */}
+            <NextButton
+              onPress={() => {}}
+              colorScheme={colorScheme}
+              selectedFolder={selectedFolder}
+            >
               <ThemedText colorVariant="white" fontWeight="bold">
                 Move
               </ThemedText>

@@ -32,8 +32,13 @@ export const CancelButton = styled(BottomButtonBaseStyling)<ColorSchemeProps>`
   border: 1px solid ${Colors.grey50};
 `;
 
-export const NextButton = styled(BottomButtonBaseStyling)`
-  background-color: ${Colors.primary};
+interface NextButtonProps {
+  selectedFolder: boolean;
+}
+
+export const NextButton = styled(BottomButtonBaseStyling)<NextButtonProps>`
+  background-color: ${({ selectedFolder }: NextButtonProps) =>
+    selectedFolder ? Colors.primary : Colors.grey100};
 `;
 
 export const FolderList = styled.View`
