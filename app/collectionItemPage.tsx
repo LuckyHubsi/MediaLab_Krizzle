@@ -16,6 +16,7 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import Card from "@/components/ui/Card/Card";
+import CollectionItemContainer from "@/components/ui/CollectionItemContainer/CollectionItemContainer";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -80,9 +81,66 @@ export default function CollectionItemScreen() {
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
           <ThemedView topPadding={0}>
-            <CollectionLoadItem
+            {/* <CollectionLoadItem
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}
+            /> */}
+            <CollectionItemContainer
+              title={item?.page_title}
+              subtitle="harry potter"
+            ></CollectionItemContainer>
+            <View
+              style={{
+                flexDirection: "row",
+                rowGap: 16,
+                columnGap: 32,
+                flexWrap: "wrap",
+              }}
+            >
+              <CollectionItemContainer
+                type="12.12.2025"
+                subtitle="Recently Read"
+                icon="calendar-month"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+              <CollectionItemContainer
+                type="4/5"
+                subtitle="Rating"
+                icon="star"
+              />
+            </View>
+            <CollectionItemContainer
+              type="Textsfdojisfdjoifsojifdoijfdsoijs"
+              subtitle="Description"
             />
           </ThemedView>
         </ScrollView>
