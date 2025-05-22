@@ -17,4 +17,18 @@ const selectFolderByIDQuery = `
   GROUP BY folder.folderID;
 `;
 
-export { insertFolderQuery, selectAllFoldersQuery, selectFolderByIDQuery };
+const deleteFolderByIDQuery = `
+  DELETE FROM folder WHERE folderID = ?;
+`;
+
+const updateFolderByIDQuery = `
+  UPDATE folder SET folder_name = ? WHERE folderID = ?;
+`;
+
+export {
+  insertFolderQuery,
+  selectAllFoldersQuery,
+  selectFolderByIDQuery,
+  deleteFolderByIDQuery,
+  updateFolderByIDQuery,
+};

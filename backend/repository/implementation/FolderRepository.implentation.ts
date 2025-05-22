@@ -4,9 +4,11 @@ import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
+  deleteFolderByIDQuery,
   insertFolderQuery,
   selectAllFoldersQuery,
   selectFolderByIDQuery,
+  updateFolderByIDQuery,
 } from "../query/FolderQuery";
 import { FolderModel } from "../model/FolderModel";
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
@@ -44,7 +46,7 @@ export class FolderRepositoryImpl
       });
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to insert tag.");
+      throw new RepositoryError("Failed to insert folder.");
     }
   }
 
@@ -80,6 +82,42 @@ export class FolderRepositoryImpl
       throw new RepositoryError("Folder not found.");
     } catch (error) {
       throw new RepositoryError("Failed to fetch the folder.");
+    }
+  }
+
+  /**
+   * Updates a folder's name by its ID.
+   *
+   * @param folderId - The ID of the folder to update.
+   * @param folderName - The new name for the folder.
+   * @returns A Promise resolving to `true` if update succeeded.
+   * @throws RepositoryError if the update fails.
+   */
+  async updateFolderByID(
+    folderId: FolderID,
+    folderName: string,
+  ): Promise<boolean> {
+    try {
+      await this.executeQuery(updateFolderByIDQuery, [folderName, folderId]);
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update folder.");
+    }
+  }
+
+  /**
+   * Deletes a folder by its ID.
+   *
+   * @param folderId - The ID of the folder to delete.
+   * @returns A Promise resolving to `true` if deletion is successful.
+   * @throws RepositoryError if the deletion fails.
+   */
+  async deleteFolderByID(folderId: FolderID): Promise<boolean> {
+    try {
+      await this.executeQuery(deleteFolderByIDQuery, [folderId]);
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to delete folder.");
     }
   }
 }

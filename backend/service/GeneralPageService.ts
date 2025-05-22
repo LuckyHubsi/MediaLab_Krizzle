@@ -202,7 +202,7 @@ export class GeneralPageService {
   }
 
   /**
-   * Updates the archive status of a general page.
+   * Updates which folder a general page belongs to.
    *
    * @param folderId - Number representing the folderID of the folder the page should be moved to.
    * @param pageId - Number representing the pageID.

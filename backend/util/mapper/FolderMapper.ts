@@ -51,6 +51,26 @@ export class FolderMapper {
   }
 
   /**
+   * Maps a FolderDTO to a Folder entity when updating an existing Folder.
+   *
+   * @param dto - The incoming DTO with updated data.
+   * @returns A validated `Folder` domain entity.
+   * @throws Error if validation fails.
+   */
+  static toUpdatedEntity(dto: FolderDTO): Folder {
+    try {
+      return folderSchema.parse({
+        folderID: dto.folderID,
+        folderName: dto.folderName,
+        itemCount: dto.itemCount || 0,
+      });
+    } catch (error: any) {
+      console.error("Error mapping FolderDTO to Updated Entity:", error.issues);
+      throw new Error("Failed to map FolderDTO to Updated Entity");
+    }
+  }
+
+  /**
    * Maps a FolderModel from the db to a Folder domain entity.
    *
    * @param model - The raw FolderModel from the DB.
