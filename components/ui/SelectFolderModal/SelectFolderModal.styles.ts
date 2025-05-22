@@ -2,7 +2,11 @@ import { Colors } from "@/constants/Colors";
 import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
-export const StyledModalContent = styled.View<ColorSchemeProps>`
+interface StyledModalContentProps extends ColorSchemeProps {
+  modalPadding: number;
+}
+
+export const StyledModalContent = styled.View<StyledModalContentProps>`
   position: absolute;
   bottom: 0;
   background-color: ${({ colorScheme }: ColorSchemeProps) =>
@@ -12,7 +16,8 @@ export const StyledModalContent = styled.View<ColorSchemeProps>`
   width: 100%;
   max-height: 70%;
   border-radius: 33px 33px 0 0;
-  padding: 30px;
+  padding: ${({ modalPadding }: StyledModalContentProps) =>
+    `${modalPadding}px`};
 `;
 
 export const ButtonContainer = styled.View`
@@ -45,5 +50,6 @@ export const FolderList = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 5px;
 `;

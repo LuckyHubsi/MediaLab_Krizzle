@@ -57,8 +57,8 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   const [editMode, setEditMode] = useState(false);
 
   //TODO: use FolderDTO instead of TagDTO
-  const [editingFolder, setEditingFolder] = useState<TagDTO | null>(null);
-  const [folders, setFolders] = useState<TagDTO[]>([]);
+  const [editingFolder, setEditingFolder] = useState<FolderDTO | null>(null);
+  const [folders, setFolders] = useState<FolderDTO[]>([]);
 
   //TODO: Handle folder submit logic
   const handleFolderSubmit = async () => {
@@ -78,8 +78,8 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
     //TODO: use folderId instead of tagID
     const isDuplicate = folders.some(
       (folder) =>
-        folder.tag_label === trimmedFolder &&
-        (!editMode || folder.tagID !== editingFolder?.tagID),
+        folder.folderName === trimmedFolder &&
+        (!editMode || folder.folderID !== editingFolder?.folderID),
     );
 
     if (isDuplicate) {

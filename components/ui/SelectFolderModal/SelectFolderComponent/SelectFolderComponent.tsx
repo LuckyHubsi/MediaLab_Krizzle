@@ -14,18 +14,24 @@ interface SelectFolderComponentProps {
   key: string;
   onPress: () => void;
   selected: boolean;
+  itemSize: number;
 }
 
 const SelectFolderComponent: React.FC<SelectFolderComponentProps> = ({
   title,
   onPress,
   selected,
+  itemSize,
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.9}
-      style={{ width: "30%", marginBottom: 15, alignItems: "center", gap: 3 }}
+      style={{
+        width: itemSize,
+        marginBottom: 15,
+        alignItems: "center",
+      }}
     >
       <FolderContainer>
         <Folder selected={selected}>
