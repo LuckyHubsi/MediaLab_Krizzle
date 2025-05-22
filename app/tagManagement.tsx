@@ -11,10 +11,12 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagInputModal } from "@/components/Modals/TagInputModal/TagInputModal";
-import { tagService } from "@/backend/service/TagService";
 import { LinearGradient } from "expo-linear-gradient";
+import { useServices } from "@/context/ServiceContext";
 
 export default function TagManagementScreen() {
+  const { tagService } = useServices();
+
   const colorScheme = useActiveColorScheme() ?? "light";
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);

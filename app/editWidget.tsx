@@ -32,12 +32,13 @@ import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
-import { generalPageService } from "@/backend/service/GeneralPageService";
-import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function EditWidgetScreen() {
+  const { generalPageService, tagService } = useServices();
+
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
   const { widgetID } = useLocalSearchParams<{ widgetID: string }>();

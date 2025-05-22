@@ -28,6 +28,11 @@ export class NoteRepositoryImpl
   extends GeneralPageRepositoryImpl
   implements NoteRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Retrieves a note from the database.
    *
@@ -99,6 +104,3 @@ export class NoteRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the NoteRepository implementation.
-export const noteRepository = new NoteRepositoryImpl();

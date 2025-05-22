@@ -28,11 +28,10 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { generalPageService } from "@/backend/service/GeneralPageService";
-import { tagService } from "@/backend/service/TagService";
 import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -50,6 +49,8 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function HomeScreen() {
+  const { generalPageService, tagService } = useServices();
+
   const colorScheme = useActiveColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();

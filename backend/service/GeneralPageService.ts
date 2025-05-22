@@ -1,4 +1,3 @@
-import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 // import { ServiceError } from "../util/error/ServiceError";
 import { GeneralPageMapper } from "../util/mapper/GeneralPageMapper";
@@ -18,9 +17,8 @@ import { ServiceError } from "../util/error/ServiceError";
  * - Handles and wraps errors in service-specific error types.
  */
 export class GeneralPageService {
-  constructor(
-    private generalPageRepo: GeneralPageRepository = generalPageRepository,
-  ) {}
+  // constructor accepts repo instace
+  constructor(private generalPageRepo: GeneralPageRepository) {}
 
   /**
    * Fetch pages by state (sorted, pinned, or archived).
@@ -159,6 +157,3 @@ export class GeneralPageService {
     }
   }
 }
-
-// Singleton instance of the GeneralPageService.
-export const generalPageService = new GeneralPageService();

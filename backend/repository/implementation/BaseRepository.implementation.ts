@@ -2,20 +2,8 @@ import { BaseRepository } from "../interfaces/BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
 
 export class BaseRepositoryImpl implements BaseRepository {
-  private db: SQLite.SQLiteDatabase | null = null;
-
-  /**
-   * Initializes and retrieves the SQLite database connection.
-   *
-   * @returns {Promise<SQLite.SQLiteDatabase>} A promise that resolves to the SQLite database instance.
-   */
-  private async getDb(): Promise<SQLite.SQLiteDatabase> {
-    if (!this.db) {
-      this.db = await SQLite.openDatabaseAsync("krizzle_local.db");
-      await this.executeQuery("PRAGMA foreign_keys = ON;");
-    }
-    return this.db;
-  }
+  // constructor accepts database instace
+  constructor(protected db: SQLite.SQLiteDatabase) {}
 
   /**
    * Executes an SQL query with optional parameters.
@@ -29,7 +17,7 @@ export class BaseRepositoryImpl implements BaseRepository {
     params: any[] = [],
     txn?: SQLite.SQLiteDatabase,
   ) {
-    const db = txn ?? (await this.getDb()); // Use txn if available, otherwise normal db
+    const db = txn ?? (await this.db); // Use txn if available, otherwise normal db
     try {
       return db.runAsync(query, params);
     } catch (error) {
@@ -50,7 +38,7 @@ export class BaseRepositoryImpl implements BaseRepository {
     params: any[] = [],
     txn?: SQLite.SQLiteDatabase,
   ): Promise<T | null> {
-    const db = txn ?? (await this.getDb());
+    const db = txn ?? (await this.db);
     try {
       const result = await db.getFirstAsync<T>(query, params);
       return result;
@@ -73,7 +61,7 @@ export class BaseRepositoryImpl implements BaseRepository {
     params: any[] = [],
     txn?: SQLite.SQLiteDatabase,
   ): Promise<T[]> {
-    const db = txn ?? (await this.getDb());
+    const db = txn ?? (await this.db);
     try {
       const result = await db.getAllAsync<T>(query, params);
       return result;
@@ -96,7 +84,7 @@ export class BaseRepositoryImpl implements BaseRepository {
   async executeTransaction<T>(
     fn: (txn: SQLite.SQLiteDatabase) => Promise<T>,
   ): Promise<T> {
-    const db = await this.getDb();
+    const db = await this.db;
     const inTransaction: boolean = await db.isInTransactionAsync();
 
     if (inTransaction) {
@@ -138,5 +126,3 @@ export class BaseRepositoryImpl implements BaseRepository {
     }
   }
 }
-
-export const baseRepository = new BaseRepositoryImpl();

@@ -32,10 +32,12 @@ import Textfield from "@/components/ui/Textfield/Textfield";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { collectionService } from "@/backend/service/CollectionService";
+import { useServices } from "@/context/ServiceContext";
 
 export default function EditCollectionListsScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
+  const { collectionService } = useServices();
+
   const numericId = Number(collectionId);
   const colorScheme = useActiveColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);

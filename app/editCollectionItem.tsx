@@ -9,12 +9,13 @@ import { GradientBackground } from "@/components/ui/GradientBackground/GradientB
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
-import { collectionService } from "@/backend/service/CollectionService";
-import { itemTemplateService } from "@/backend/service/ItemTemplateService";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import { useServices } from "@/context/ServiceContext";
 
 export default function EditCollectionItem() {
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
+
+  const { collectionService, itemTemplateService } = useServices();
 
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [attributeValues, setAttributeValues] = useState<Record<number, any>>(

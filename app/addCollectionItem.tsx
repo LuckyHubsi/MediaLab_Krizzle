@@ -13,9 +13,8 @@ import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { Button } from "@/components/ui/Button/Button";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { itemTemplateService } from "@/backend/service/ItemTemplateService";
-import { collectionService } from "@/backend/service/CollectionService";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import { useServices } from "@/context/ServiceContext";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId } = useLocalSearchParams<{
@@ -23,6 +22,8 @@ export default function AddCollectionItem() {
     collectionId?: string;
     pageId?: string;
   }>();
+  const { collectionService, itemTemplateService } = useServices();
+
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [lists, setLists] = useState<CollectionCategoryDTO[]>([]);

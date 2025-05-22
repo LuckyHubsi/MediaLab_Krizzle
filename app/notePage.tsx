@@ -14,9 +14,8 @@ import { useColorScheme } from "react-native";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { noteService } from "@/backend/service/NoteService";
-import { generalPageService } from "@/backend/service/GeneralPageService";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -24,6 +23,8 @@ export default function NotesScreen() {
     title?: string;
     routing?: string;
   }>();
+  const { generalPageService, noteService } = useServices();
+
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");

@@ -1,8 +1,6 @@
 import { NoteDTO } from "@/shared/dto/NoteDTO";
-import { noteRepository } from "../repository/implementation/NoteRepository.implementation";
 import { NoteRepository } from "../repository/interfaces/NoteRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
-import { generalPageRepository } from "../repository/implementation/GeneralPageRepository.implementation";
 import { NoteMapper } from "../util/mapper/NoteMapper";
 import { ServiceError } from "../util/error/ServiceError";
 import * as common from "../domain/common/types";
@@ -17,9 +15,10 @@ import { pageID } from "../domain/common/IDs";
  * - Handles and wraps errors in service-specific error types.
  */
 export class NoteService {
+  // constructor accepts repo instaces
   constructor(
-    private noteRepo: NoteRepository = noteRepository,
-    private generalPageRepo: GeneralPageRepository = generalPageRepository,
+    private noteRepo: NoteRepository,
+    private generalPageRepo: GeneralPageRepository,
   ) {}
 
   /**
@@ -86,5 +85,3 @@ export class NoteService {
     }
   }
 }
-
-export const noteService = new NoteService();

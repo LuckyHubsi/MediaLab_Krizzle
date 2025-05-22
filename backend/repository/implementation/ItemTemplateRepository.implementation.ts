@@ -25,6 +25,11 @@ export class ItemTemplateRepositoryImpl
   extends BaseRepositoryImpl
   implements ItemTemplateRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Fetches a template by its ID.
    *
@@ -84,6 +89,3 @@ export class ItemTemplateRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the ItemTemplateRepository implementation.
-export const templateRepository = new ItemTemplateRepositoryImpl();

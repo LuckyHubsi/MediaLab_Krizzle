@@ -38,6 +38,11 @@ export class GeneralPageRepositoryImpl
   extends BaseRepositoryImpl
   implements GeneralPageRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Fetches all general pages sorted by their last modified date (descending).
    *
@@ -316,6 +321,3 @@ export class GeneralPageRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the GeneralPageRepository implementation.
-export const generalPageRepository = new GeneralPageRepositoryImpl();

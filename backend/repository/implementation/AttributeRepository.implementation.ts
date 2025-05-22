@@ -27,6 +27,11 @@ export class AttributeRepositoryImpl
   extends BaseRepositoryImpl
   implements AttributeRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Inserts a new attribute into the database.
    *
@@ -139,6 +144,3 @@ export class AttributeRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the AttributeRepository implementation.
-export const attributeRepository = new AttributeRepositoryImpl();

@@ -1,5 +1,4 @@
 import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
-import { templateRepository } from "../repository/implementation/ItemTemplateRepository.implementation";
 import { ItemTemplateRepository } from "../repository/interfaces/ItemTemplateRepository.interface";
 import { ServiceError } from "../util/error/ServiceError";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
@@ -12,9 +11,8 @@ import { ItemTemplateID, itemTemplateID } from "../domain/common/IDs";
  * - Handles and wraps errors in service-specific error types.
  */
 export class ItemTemplateService {
-  constructor(
-    private templateRepo: ItemTemplateRepository = templateRepository,
-  ) {}
+  // constructor accepts repo instace
+  constructor(private templateRepo: ItemTemplateRepository) {}
 
   /**
    * Fetch template by its ID.
@@ -35,6 +33,3 @@ export class ItemTemplateService {
     }
   }
 }
-
-// Singleton instance of the ItemTemplateService.
-export const itemTemplateService = new ItemTemplateService();

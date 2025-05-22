@@ -13,11 +13,13 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { Platform } from "react-native";
-import { collectionService } from "@/backend/service/CollectionService";
 import { PageType } from "@/shared/enum/PageType";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CollectionTemplateScreen() {
+  const { collectionService } = useServices();
+
   const [step, setStep] = useState<"create" | "list" | "template">("create");
 
   const [collectionData, setCollectionData] = useState<CollectionData>({
