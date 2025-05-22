@@ -11,4 +11,5 @@ export interface FolderRepository extends BaseRepository {
   insertFolder(folder: NewFolder): Promise<boolean>;
   getAllFolders(): Promise<Folder[]>;
   getFolderByID(folderId: FolderID): Promise<Folder>;
+  deleteFolderByID(folderId: FolderID): Promise<boolean>;
 }

@@ -4,6 +4,7 @@ import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
+  deleteFolderByIDQuery,
   insertFolderQuery,
   selectAllFoldersQuery,
   selectFolderByIDQuery,
@@ -38,7 +39,7 @@ export class FolderRepositoryImpl
       });
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to insert tag.");
+      throw new RepositoryError("Failed to insert folder.");
     }
   }
 
@@ -74,6 +75,25 @@ export class FolderRepositoryImpl
       throw new RepositoryError("Folder not found.");
     } catch (error) {
       throw new RepositoryError("Failed to fetch the folder.");
+    }
+  }
+
+  /**
+   * Deletes a folder by its ID.
+   *
+   * @param folderId - The ID of the folder to delete.
+   * @returns A Promise resolving to `true` if deletion is successful.
+   * @throws RepositoryError if the deletion fails.
+   */
+  async deleteFolderByID(folderId: FolderID): Promise<boolean> {
+    try {
+      const result = await this.executeTransaction(async (txn) => {
+        await this.executeQuery(deleteFolderByIDQuery, [folderId], txn);
+        return true;
+      });
+      return result;
+    } catch (error) {
+      throw new RepositoryError("Folder not found.");
     }
   }
 }
