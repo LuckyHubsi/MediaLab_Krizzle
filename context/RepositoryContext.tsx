@@ -45,6 +45,8 @@ const RepositoryContext = createContext<RepositoryContextType | null>(null);
 export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
   const db = useSQLiteContext();
 
+  db.runAsync("PRAGMA foreign_keys = ON;");
+
   const baseRepository = new BaseRepositoryImpl(db);
   const tagRepository = new TagRepositoryImpl(db);
   const generalPageRepository = new GeneralPageRepositoryImpl(db);
