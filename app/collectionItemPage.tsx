@@ -10,13 +10,14 @@ import {
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { Platform, ScrollView, View } from "react-native"; // Use ScrollView from react-native
-import { deleteItemById, getItemById } from "@/services/ItemService";
-import { ItemDTO } from "@/dto/ItemDTO";
+
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import Card from "@/components/ui/Card/Card";
 import CollectionItemContainer from "@/components/ui/CollectionItemContainer/CollectionItemContainer";
+import { ItemDTO } from "@/shared/dto/ItemDTO";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
@@ -96,9 +97,14 @@ export default function CollectionItemScreen() {
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}
             /> */}
+            <CollectionItemContainer imageUri="aaa" subtitle="Image" />
             <CollectionItemContainer
               title={item?.page_title}
               subtitle="harry potter"
+            />
+            <CollectionItemContainer
+              subtitle="Genre"
+              multiselectArray={multiselectArrray}
             />
             <View
               style={{
@@ -122,10 +128,11 @@ export default function CollectionItemScreen() {
             <CollectionItemContainer
               type="Textsfdojisfdjoifsojifdoijfdsoijs"
               subtitle="Description"
-            />
+            />{" "}
             <CollectionItemContainer
-              subtitle="Genre"
-              multiselectArray={multiselectArrray}
+              link="https://www.google.com"
+              linkPreview="Google"
+              subtitle="link"
             />
           </ThemedView>
         </ScrollView>

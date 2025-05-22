@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const ItemContainer = styled.View`
-  gap: 6px;
+  gap: 0px;
 `;
 export const SelectableContainer = styled.View`
   background-color: transparent;
@@ -22,6 +22,17 @@ export const SubtitleText = styled.Text`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
+  line-height: 24px; /* 171.429% */
+  letter-spacing: -0.35px;
+`;
+
+export const ContentText = styled.Text`
+  color: #585858;
+
+  font-family: Lexend;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
   line-height: 24px; /* 171.429% */
   letter-spacing: -0.35px;
 `;

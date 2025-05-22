@@ -1,13 +1,14 @@
 import { ThemedText } from "@/components/ThemedText";
 import { FC, useState } from "react";
 import {
+  ContentText,
   ItemContainer,
   SelectableContainer,
   SelectableText,
   SubtitleText,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { View } from "react-native";
+import { View, Linking, TouchableOpacity } from "react-native";
 
 interface CollectionItemContainerProps {
   type?: string;
@@ -16,6 +17,9 @@ interface CollectionItemContainerProps {
   title?: string;
   subtitle?: string;
   icon?: keyof typeof MaterialIcons.glyphMap;
+  link?: string;
+  linkPreview?: string;
+  imageUri?: string;
 }
 const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   type,
@@ -23,12 +27,26 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   title,
   subtitle,
   icon,
+  link,
+  linkPreview,
+  imageUri,
 }) => {
   return (
     <ItemContainer>
       <SubtitleText>{subtitle}</SubtitleText>
+      {imageUri && (
+        <View
+          style={{
+            height: 320,
+            width: "100%",
+            borderRadius: 16,
+            backgroundColor: "#EAEAEA",
+            marginTop: 8,
+          }}
+        />
+      )}
       {title && (
-        <View style={{ marginTop: -10 }}>
+        <View style={{ marginTop: -4 }}>
           <ThemedText fontWeight="semibold" fontSize="l">
             {title}
           </ThemedText>
@@ -45,11 +63,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
         {icon && <MaterialIcons name={icon} size={24} color="#585858" />}
-        {type && (
-          <ThemedText fontWeight="regular" fontSize="s">
-            {type}
-          </ThemedText>
-        )}
+        {type && <ContentText>{type}</ContentText>}
       </View>
 
       {multiselectArray && (
@@ -60,6 +74,16 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             </SelectableContainer>
           ))}
         </View>
+      )}
+
+      {link && (
+        <TouchableOpacity onPress={() => Linking.openURL(link)}>
+          <ContentText
+            style={{ color: "#2980ff", textDecorationLine: "underline" }}
+          >
+            {linkPreview || link}
+          </ContentText>
+        </TouchableOpacity>
       )}
     </ItemContainer>
   );
