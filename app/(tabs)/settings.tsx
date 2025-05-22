@@ -2,20 +2,29 @@ import { ThemedText } from "@/components/ThemedText";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
 import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
 import { resetDatabase } from "@/backend/service/DatabaseReset";
 import { Button } from "@/components/ui/Button/Button";
+import { router } from "expo-router";
 
 export default function TabThreeScreen() {
   return (
     <SafeAreaView>
       <ThemedView>
         <IconTopRight>
-          <Image
-            source={require("@/assets/images/kriz.png")}
-            style={{ width: 30, height: 32 }}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/faq",
+              });
+            }}
+          >
+            <Image
+              source={require("@/assets/images/kriz.png")}
+              style={{ width: 30, height: 32 }}
+            />
+          </TouchableOpacity>
         </IconTopRight>
         <ThemedText fontSize="xl" fontWeight="bold">
           Settings
