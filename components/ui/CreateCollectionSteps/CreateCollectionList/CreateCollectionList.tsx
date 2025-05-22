@@ -60,6 +60,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
+  const Wrapper =
+    Platform.OS === "ios" ? TouchableWithoutFeedback : React.Fragment;
 
   const { showSnackbar } = useSnackbar();
 
@@ -120,7 +122,11 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <Wrapper
+      {...(Platform.OS === "ios"
+        ? { onPress: Keyboard.dismiss, accessible: false }
+        : {})}
+    >
       <View style={{ flex: 1 }}>
         <Card>
           <CardText>
@@ -284,7 +290,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           />
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </Wrapper>
   );
 };
 
