@@ -3,7 +3,11 @@ import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
-import { insertFolderQuery, selectAllFoldersQuery } from "../query/FolderQuery";
+import {
+  insertFolderQuery,
+  selectAllFoldersQuery,
+  selectFolderByIDQuery,
+} from "../query/FolderQuery";
 import { FolderModel } from "../model/FolderModel";
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 
@@ -61,7 +65,7 @@ export class FolderRepositoryImpl
    */
   async getFolderByID(folderId: FolderID): Promise<Folder> {
     try {
-      const result = await this.fetchFirst<FolderModel>(selectAllFoldersQuery, [
+      const result = await this.fetchFirst<FolderModel>(selectFolderByIDQuery, [
         folderId,
       ]);
       if (result !== null) {
