@@ -64,6 +64,23 @@ export class FolderService {
       throw new ServiceError("Error retrieving folder.");
     }
   }
+
+  /**
+   * Deletes a folder.
+   *
+   * @param folderId - Number representing the folderID.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if delete fails.
+   */
+  async deleteFolder(folderId: number): Promise<boolean> {
+    try {
+      const brandedFolderID = folderID.parse(folderId);
+      await this.folderRepo.deleteFolderByID(brandedFolderID);
+      return true;
+    } catch (error) {
+      throw new ServiceError("Error deleting folder.");
+    }
+  }
 }
 
 // Singleton instance of the FolderService.
