@@ -24,3 +24,6 @@ export type CollectionID = z.infer<typeof collectionID>;
 
 export const itemID = common.positiveInt.brand<"ItemID">();
 export type ItemID = z.infer<typeof itemID>;
+
+export const folderID = common.positiveInt.brand<"FolderID">();
+export type FolderID = z.infer<typeof folderID>;
