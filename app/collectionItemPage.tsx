@@ -27,6 +27,15 @@ export default function CollectionItemScreen() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemName, setItemName] = useState<string>("");
+  const multiselectArrray = [
+    "Action",
+    "sci-fi",
+    "fantasy",
+    "romance",
+    "horror",
+    "thriller",
+    "mystery",
+  ];
 
   useFocusEffect(
     useCallback(() => {
@@ -74,6 +83,7 @@ export default function CollectionItemScreen() {
             setShowModal(true);
           }} // action when icon menu is pressed
           param={item?.pageID.toString()}
+          borderRadiusTop={33}
         />
 
         <ScrollView
@@ -88,7 +98,7 @@ export default function CollectionItemScreen() {
             <CollectionItemContainer
               title={item?.page_title}
               subtitle="harry potter"
-            ></CollectionItemContainer>
+            />
             <View
               style={{
                 flexDirection: "row",
@@ -107,40 +117,14 @@ export default function CollectionItemScreen() {
                 subtitle="Rating"
                 icon="star"
               />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
             </View>
             <CollectionItemContainer
               type="Textsfdojisfdjoifsojifdoijfdsoijs"
               subtitle="Description"
+            />
+            <CollectionItemContainer
+              subtitle="Genre"
+              multiselectArray={multiselectArrray}
             />
           </ThemedView>
         </ScrollView>
