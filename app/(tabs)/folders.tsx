@@ -169,7 +169,7 @@ export default function FoldersScreen() {
           ) : (
             <>
               <SearchBar
-                placeholder="Search"
+                placeholder="Search for title"
                 onSearch={(query) => setSearchQuery(query)}
               />
 

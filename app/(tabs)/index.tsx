@@ -214,7 +214,10 @@ export default function HomeScreen() {
             />
           ) : (
             <>
-              <SearchBar placeholder="Search" onSearch={setSearchQuery} />
+              <SearchBar
+                placeholder="Search for title"
+                onSearch={setSearchQuery}
+              />
               <TagList
                 tags={tags}
                 onSelect={(tag) => setSelectedTag(tag)}

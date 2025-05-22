@@ -132,7 +132,7 @@ export default function CollectionScreen() {
         />
         <ThemedView topPadding={0}>
           <SearchBar
-            placeholder="Search" // Placeholder text for the search bar
+            placeholder="Search for title" // Placeholder text for the search bar
             onSearch={(text) => setSearchQuery(text)}
           />
           <CollectionList
