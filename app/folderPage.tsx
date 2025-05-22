@@ -14,7 +14,7 @@ import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,7 +28,7 @@ import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/Floa
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { PageType } from "@/shared/enum/PageType";
-import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { FolderState } from "@/shared/enum/FolderState";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { generalPageService } from "@/backend/service/GeneralPageService";
 import { tagService } from "@/backend/service/TagService";
@@ -81,8 +81,8 @@ export default function FolderScreen() {
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
-  const [sortingMode, setSortingMode] = useState<GeneralPageState>(
-    GeneralPageState.GeneralModfied,
+  const [sortingMode, setSortingMode] = useState<FolderState>(
+    FolderState.GeneralModfied,
   );
   const [folder, setFolder] = useState<FolderDTO | null>(null);
 
@@ -116,37 +116,33 @@ export default function FolderScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
+      const loadData = async () => {
+        if (!folderId) return;
+
         try {
           const folderData = await folderService.getFolder(Number(folderId));
           setFolder(folderData);
-          console.log(folderData);
-          // TODO use correct call for getting widgets by folderid
-          // const pinnedData = await generalPageService.getAllGeneralPageData(
-          //   GeneralPageState.Pinned,
-          // );
-          // const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
-          // setPinnedWidgets(pinnedEnrichedWidgets);
-          // const data =
-          //   await generalPageService.getAllGeneralPageData(sortingMode);
-          // const enrichedWidgets = mapToEnrichedWidgets(data);
-          // setWidgets(enrichedWidgets);
+          const fetchedWidgets =
+            await generalPageService.getAllFolderGeneralPageData(
+              sortingMode,
+              Number(folderId),
+            );
+          const enrichedWidgets = mapToEnrichedWidgets(fetchedWidgets);
+          setWidgets(enrichedWidgets);
         } catch (error) {
-          console.error("Error loading widgets:", error);
+          console.error("Error loading folder:", error);
         }
-      })();
 
-      (async () => {
         try {
           const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
-      })();
+      };
 
-      setShouldReload(false);
-    }, [shouldReload, sortingMode]),
+      loadData();
+    }, [folderId, sortingMode]),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -339,18 +335,18 @@ export default function FolderScreen() {
           {
             label: "Last modified descending",
             icon: "swap-vert", // or "arrow-upward"/"arrow-downward"
-            disabled: sortingMode === GeneralPageState.GeneralModfied,
+            disabled: sortingMode === FolderState.GeneralModfied,
             onPress: () => {
-              setSortingMode(GeneralPageState.GeneralModfied);
+              setSortingMode(FolderState.GeneralModfied);
               setShowSortModal(false);
             },
           },
           {
             label: "Alphabet ascending",
             icon: "sort-by-alpha",
-            disabled: sortingMode === GeneralPageState.GeneralAlphabet,
+            disabled: sortingMode === FolderState.GeneralAlphabet,
             onPress: () => {
-              setSortingMode(GeneralPageState.GeneralAlphabet);
+              setSortingMode(FolderState.GeneralAlphabet);
               setShowSortModal(false);
             },
           },

@@ -10,8 +10,11 @@ import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
   selectAllArchivedPagesQuery,
+  selectAllPagesByAlphabetAndParentIDQuery,
   selectAllPagesByAlphabetQuery,
+  selectAllPagesByCreatedAndParentIDQuery,
   selectAllPagesByCreatedQuery,
+  selectAllPagesByLastModifiedAndParentIDQuery,
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
   selectGeneralPageByIdQuery,
@@ -85,6 +88,71 @@ export class GeneralPageRepositoryImpl
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByCreatedQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by their last modified date (descending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByModified(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByLastModifiedAndParentIDQuery,
+        [folderId],
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError(
+        "Failed to fetch all pages sorted by last modified.",
+      );
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by alphabet (ascending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByAlphabet(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByAlphabetAndParentIDQuery,
+        [folderId],
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by their creation date (descending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByCreated(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByCreatedAndParentIDQuery,
+        [folderId],
       );
       return result.map(GeneralPageMapper.toEntity);
     } catch (error) {
