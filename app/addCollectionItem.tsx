@@ -85,12 +85,10 @@ export default function AddCollectionItem() {
       return {
         ...prevValues,
         [attributeID]: isLink
-          ? value?.trim()
-            ? {
-                value: value.trim(),
-                displayText: (displayText || value).trim(),
-              }
-            : null
+          ? {
+              value: value?.trim() || null,
+              displayText: displayText?.trim() || null,
+            }
           : value,
       };
     });

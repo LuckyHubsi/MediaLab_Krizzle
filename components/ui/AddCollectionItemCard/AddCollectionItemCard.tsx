@@ -193,13 +193,11 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
                 value={currentValue?.value || ""}
-                onChange={(text) =>
-                  onInputChange(
-                    Number(attribute.attributeID),
-                    text,
-                    customLinkText[Number(attribute.attributeID)] ?? text,
-                  )
-                }
+                onChange={(text) => {
+                  const attributeId = Number(attribute.attributeID);
+                  const customText = customLinkText[attributeId] || "";
+                  onInputChange(attributeId, text, customText);
+                }}
                 linkText={customLinkText[Number(attribute.attributeID)] || ""}
                 onLinkTextChange={(text) => {
                   setCustomLinkText((prev) => ({
