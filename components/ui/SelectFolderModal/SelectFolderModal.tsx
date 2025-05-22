@@ -6,6 +6,7 @@ import {
   CancelButton,
   FolderList,
   NextButton,
+  StyledAddFolderButton,
   StyledModalContent,
 } from "./SelectFolderModal.styles";
 import {
@@ -15,6 +16,7 @@ import {
   Modal,
   Platform,
   ScrollView,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,6 +30,9 @@ import { useSnackbar } from "../Snackbar/Snackbar";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { tagService } from "@/backend/service/TagService";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 interface SelectFolderModalProps {
   visible: boolean;
@@ -179,6 +184,15 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     }
   }, [visible, shouldRefetch]);
 
+  const folderItems = [
+    ...mapToFolderShape(folders),
+    {
+      id: "add-folder-button",
+      title: "Add Folder",
+      isAddButton: true,
+    },
+  ];
+
   const modalPadding = 30;
   const numColumns = 3;
   const screenWidth = Dimensions.get("window").width - modalPadding;
@@ -218,27 +232,60 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
             )}
 
             {folders.length !== 0 && (
-              <FlatList
-                data={mapToFolderShape(folders)}
-                numColumns={numColumns}
-                keyExtractor={(item: Folder) => item.id}
-                columnWrapperStyle={{
-                  justifyContent: "flex-start",
-                  marginBottom: itemMargin,
-                }}
-                contentContainerStyle={{ paddingHorizontal: itemMargin }}
-                renderItem={({ item }) => (
-                  <SelectFolderComponent
-                    itemSize={itemSize}
-                    key={item.id}
-                    title={item.title}
-                    onPress={() => {
-                      setSelectedFolder(item);
-                    }}
-                    selected={selectedFolder?.id === item.id}
-                  />
-                )}
-              />
+              <>
+                <FlatList
+                  data={folderItems}
+                  numColumns={numColumns}
+                  keyExtractor={(item) => item.id}
+                  columnWrapperStyle={{
+                    justifyContent: "flex-start",
+                    marginBottom: itemMargin,
+                  }}
+                  contentContainerStyle={{ paddingHorizontal: itemMargin }}
+                  renderItem={({ item }) => {
+                    if ("isAddButton" in item && item.isAddButton) {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => setFolderModalVisible(true)}
+                          style={{
+                            width: itemSize,
+                            alignItems: "center",
+                            marginBottom: itemMargin,
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: Colors.primary,
+                              borderRadius: itemSize / 2,
+                              width: 50,
+                              height: 50,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <MaterialIcons name="add" size={30} color="white" />
+                          </View>
+                          <ThemedText>Add Folder</ThemedText>
+                        </TouchableOpacity>
+                      );
+                    }
+
+                    return (
+                      <SelectFolderComponent
+                        itemSize={itemSize}
+                        key={item.id}
+                        title={item.title}
+                        onPress={() => {
+                          if ("itemCount" in item) {
+                            setSelectedFolder(item);
+                          }
+                        }}
+                        selected={selectedFolder?.id === item.id}
+                      />
+                    );
+                  }}
+                />
+              </>
             )}
 
             <ButtonContainer>

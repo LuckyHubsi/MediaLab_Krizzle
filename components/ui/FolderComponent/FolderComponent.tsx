@@ -54,7 +54,7 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
             {title}
           </ThemedText>
           <ThemedText fontWeight="light" fontSize="s" colorVariant="white">
-            {itemCount} items
+            {itemCount} {itemCount === 1 ? "item" : "items"}
           </ThemedText>
         </FolderContent>
       </FolderContainer>
