@@ -21,9 +21,14 @@ const deleteFolderByIDQuery = `
   DELETE FROM folder WHERE folderID = ?;
 `;
 
+const updateFolderByIDQuery = `
+  UPDATE folder SET folder_name = ? WHERE folderID = ?;
+`;
+
 export {
   insertFolderQuery,
   selectAllFoldersQuery,
   selectFolderByIDQuery,
   deleteFolderByIDQuery,
+  updateFolderByIDQuery,
 };
