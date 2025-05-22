@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import React, { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   CollectionListContainer,
@@ -9,33 +7,34 @@ import {
 import { View } from "react-native";
 import { ScrollView } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { GradientBackgroundWrapper } from "../GradientBackground/GradientBackground.styles";
-import { ThemedView } from "../ThemedView/ThemedView";
 
 type CollectionListProps = {
   collectionLists: string[];
-  onSelect?: (selected: string | null) => void;
+  onSelect?: (selected: string) => void;
 };
 
 const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onSelect,
 }) => {
-  const [activeList, setActiveList] = useState<string | null>(
-    collectionLists[0],
-  );
+  const [activeList, setActiveList] = useState<string | null>(null);
   const themeMode = useActiveColorScheme() ?? "light";
+
+  useEffect(() => {
+    if (collectionLists.length > 0) {
+      setActiveList(collectionLists[0]);
+      onSelect?.(collectionLists[0]);
+    }
+  }, [collectionLists]);
+
   const handlePress = (collectionList: string) => {
     if (collectionList === activeList) {
-      // If the active list is clicked again, unselect it
-      setActiveList(null);
-      onSelect?.(null); // Pass null to indicate no selection
-    } else {
-      // Otherwise, set it as the active list
-      setActiveList(collectionList);
-      onSelect?.(collectionList);
+      return;
     }
+    setActiveList(collectionList);
+    onSelect?.(collectionList);
   };
+
   return (
     <View style={{ marginLeft: 20, marginRight: 20 }}>
       <ScrollView
@@ -44,39 +43,37 @@ const CollectionList: React.FC<CollectionListProps> = ({
         style={{ maxHeight: 42 }}
       >
         <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
-          {collectionLists.map((collectionList, index) => (
-            <CollectionListContainer
-              key={`${collectionList}-${index}`}
-              active={collectionList === activeList}
-              themeMode={themeMode}
-              onPress={() => handlePress(collectionList)}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "nowrap",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  alignItems: "center",
+          {collectionLists.map((collectionList, index) => {
+            const isActive = collectionList === activeList;
+
+            return (
+              <CollectionListContainer
+                key={`${collectionList}-${index}`}
+                active={isActive}
+                themeMode={themeMode}
+                onPress={() => {
+                  if (!isActive) {
+                    handlePress(collectionList);
+                  }
                 }}
+                activeOpacity={isActive ? 1 : 0.7}
               >
-                {collectionList === activeList && (
-                  <MaterialIcons
-                    name="bookmark-added"
-                    size={16}
-                    color="#4599E8"
-                    style={{ marginRight: 10 }}
-                  />
-                )}
-                <CollectionListText
-                  active={collectionList === activeList}
-                  themeMode={themeMode}
-                >
-                  {collectionList}
-                </CollectionListText>
-              </View>
-            </CollectionListContainer>
-          ))}
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {isActive && (
+                    <MaterialIcons
+                      name="bookmark-added"
+                      size={16}
+                      color="#4599E8"
+                      style={{ marginRight: 10 }}
+                    />
+                  )}
+                  <CollectionListText active={isActive} themeMode={themeMode}>
+                    {collectionList}
+                  </CollectionListText>
+                </View>
+              </CollectionListContainer>
+            );
+          })}
         </View>
       </ScrollView>
     </View>

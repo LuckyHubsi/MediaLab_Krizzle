@@ -1,23 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
+import React, { useCallback, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView, Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
-import CollectionList from "@/components/ui/CollectionList/CollectionList";
-
 import { getCollectionByPageId } from "@/services/CollectionService";
 import { CollectionDTO } from "@/dto/CollectionDTO";
-import { template } from "@babel/core";
-import {
-  CollectionSelectable,
-  CollectionTitle,
-} from "@/components/ui/CollectionWidget/CollectionWidget.style";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { ItemsDTO } from "@/dto/ItemsDTO";
 import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
@@ -28,13 +19,8 @@ import {
   togglePagePin,
 } from "@/services/GeneralPageService";
 import { PreviewItemDTO } from "@/dto/ItemDTO";
-
-import { is } from "date-fns/locale";
 import { CollectionListCard } from "@/components/ui/CollectionListCard/CollectionListCard";
-import {
-  GradientBackgroundWrapper,
-  StyledView,
-} from "@/components/ui/GradientBackground/GradientBackground.styles";
+import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionScreen() {
@@ -68,17 +54,17 @@ export default function CollectionScreen() {
           if (collectionData) {
             setCollection(collectionData);
             if (collectionData.categories) {
-              const listNames = [];
-              for (const list of collectionData.categories) {
-                listNames.push(list.category_name);
-              }
-              setListNames(listNames);
+              const names = collectionData.categories.map(
+                (c) => c.category_name,
+              );
+              setListNames(names);
+              setSelectedList(names[0]); // ✅ set selected list directly here
             }
+            const retrievedItems: ItemsDTO = await getItemsByPageId(numericID);
+            if (retrievedItems) setItems(retrievedItems);
           }
-          const retrievedItems: ItemsDTO = await getItemsByPageId(numericID);
-          if (retrievedItems) setItems(retrievedItems);
+          setShouldReload(false);
         }
-        setShouldReload(false);
       })();
     }, [pageId, shouldReload]),
   );
@@ -109,7 +95,7 @@ export default function CollectionScreen() {
     return items.items.filter((item) => {
       const category = item.categoryName;
 
-      const matchesList = selectedList === "All" || category === selectedList;
+      const matchesList = category === selectedList;
 
       const matchesTitle = item.values
         .join(" ")
@@ -125,7 +111,6 @@ export default function CollectionScreen() {
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "transparent", gap: 12 }}
       >
-        {/* Background layers */}
         <GradientBackgroundWrapper
           colors={["#4599E8", "#583FE7"]}
           style={{
@@ -134,25 +119,25 @@ export default function CollectionScreen() {
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: -1, // Set zIndex lower than other elements
+            zIndex: -1,
           }}
         />
         <CustomStyledHeader
-          title={title || "Collection"} //Here should be the title of the collection
-          backBehavior="goHome" // Go back to home when back button is pressed
+          title={title || "Collection"}
+          backBehavior="goHome"
           iconName={selectedIcon || undefined}
-          onIconPress={() => {}} // No action when pressed
-          iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
+          onIconPress={() => {}}
+          iconName2="more-horiz"
+          onIconMenuPress={() => setShowModal(true)}
           leftIconName={
             collection?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
-          isTransparent={true} // Make the header transparent
+          isTransparent={true}
         />
 
         <View style={{ paddingHorizontal: 20 }}>
           <SearchBar
-            placeholder="Search" // Placeholder text for the search bar
+            placeholder="Search"
             onSearch={(text) => setSearchQuery(text)}
           />
         </View>
@@ -162,8 +147,10 @@ export default function CollectionScreen() {
           listNames={listNames}
           setSelectedList={setSelectedList}
           onSelect={(collectionList) => {
-            if (setSelectedList) {
-              setSelectedList(collectionList || "All"); // Safely call setSelectedList
+            if (setSelectedList && collectionList) {
+              if (collectionList !== selectedList) {
+                setSelectedList(collectionList);
+              }
             }
           }}
           filteredItems={filteredItems}
@@ -350,7 +337,7 @@ export default function CollectionScreen() {
                 pageId: pageId,
               },
             });
-          }} // navigate to add collection item screen
+          }}
         />
       </View>
     </>
