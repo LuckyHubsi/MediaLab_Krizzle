@@ -324,7 +324,7 @@ export default function CollectionScreen() {
         style={{
           position: "absolute",
           right: 20,
-          bottom: 30,
+          bottom: 5,
         }}
       >
         <FloatingAddButton

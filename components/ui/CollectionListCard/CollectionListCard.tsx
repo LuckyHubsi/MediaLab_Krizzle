@@ -69,7 +69,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         <ThemedView topPadding={24} style={{ borderRadius: 33 }}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {filteredItems.length > 0 ? (
-              <View style={{ flex: 1, gap: 12 }}>
+              <View style={{ flex: 1, gap: 12, paddingBottom: 110 }}>
                 {filteredItems.map((item) => (
                   <CollectionWidget
                     key={item.itemID}
