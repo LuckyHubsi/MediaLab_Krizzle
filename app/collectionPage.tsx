@@ -1,26 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
+import React, { useCallback, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView, Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
-import CollectionList from "@/components/ui/CollectionList/CollectionList";
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
-import { template } from "@babel/core";
-import {
-  CollectionSelectable,
-  CollectionTitle,
-} from "@/components/ui/CollectionWidget/CollectionWidget.style";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
 import { ThemedText } from "@/components/ThemedText";
+import { useFocusEffect } from "@react-navigation/native";
+import { CollectionListCard } from "@/components/ui/CollectionListCard/CollectionListCard";
+import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 
@@ -62,18 +56,21 @@ export default function CollectionScreen() {
             setCollectionTitle(title || collectionData.page_title);
 
             if (collectionData.categories) {
-              const listNames = [];
-              for (const list of collectionData.categories) {
-                listNames.push(list.category_name);
-              }
-              setListNames(listNames);
+              const names = collectionData.categories.map(
+                (c) => c.category_name,
+              );
+              setListNames(names);
+              setSelectedList(names[0]); // ✅ set selected list directly here
             }
+            const retrievedItems: ItemsDTO =
+              await collectionService.getItemsByPageId(numericID);
+            if (retrievedItems) setItems(retrievedItems);
           }
           const retrievedItems: ItemsDTO =
             await collectionService.getItemsByPageId(numericID);
           if (retrievedItems) setItems(retrievedItems);
+          setShouldReload(false);
         }
-        setShouldReload(false);
       })();
     }, [pageId, shouldReload]),
   );
@@ -104,7 +101,7 @@ export default function CollectionScreen() {
     return items.items.filter((item) => {
       const category = item.categoryName;
 
-      const matchesList = selectedList === "All" || category === selectedList;
+      const matchesList = category === selectedList;
 
       const matchesTitle = item.values
         .join(" ")
@@ -117,90 +114,57 @@ export default function CollectionScreen() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        {/* //Header with back button and title */}
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: "transparent", gap: 12 }}
+      >
+        <GradientBackgroundWrapper
+          colors={["#4599E8", "#583FE7"]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: -1,
+          }}
+        />
         <CustomStyledHeader
-          title={collectionTitle || "Collection"} //Here should be the title of the collection
-          backBehavior={routing || "goHome"} // Go back to home when back button is pressed
+          title={collectionTitle || "Collection"}
+          backBehavior="goHome"
           iconName={selectedIcon || undefined}
-          onIconPress={() => {}} // No action when pressed
-          iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
+          onIconPress={() => {}}
+          iconName2="more-horiz"
+          onIconMenuPress={() => setShowModal(true)}
           leftIconName={
             collection?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
+          isTransparent={true}
         />
-        <ThemedView topPadding={0}>
+
+        <View style={{ paddingHorizontal: 20 }}>
           <SearchBar
-            placeholder="Search for title" // Placeholder text for the search bar
+            placeholder="Search"
             onSearch={(text) => setSearchQuery(text)}
           />
-          <CollectionList
-            collectionLists={listNames}
-            onSelect={(collectionList) => {
-              setSelectedList(collectionList || "All");
-            }}
-          />
-          {/* //Hardcoded data for testing purposes */}
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {filteredItems.length > 0 ? (
-              <View style={{ flex: 1, gap: 12 }}>
-                {filteredItems.map((item) => (
-                  <CollectionWidget
-                    key={item.itemID}
-                    attributes={items?.attributes || []}
-                    item={item}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/collectionItemPage",
-                        params: {
-                          itemId: item.itemID.toString(),
-                        },
-                      });
-                    }}
-                    onLongPress={() => {
-                      setSelectedItem(item);
-                      setShowItemModal(true);
-                    }}
-                  />
-                ))}
-              </View>
-            ) : (
-              <View style={{ marginTop: 24 }}>
-                <ThemedText
-                  fontSize="regular"
-                  fontWeight="regular"
-                  style={{ textAlign: "center" }}
-                >
-                  {searchQuery
-                    ? `No results for "${searchQuery}"`
-                    : "No items in this collection yet."}
-                </ThemedText>
-              </View>
-            )}
-          </ScrollView>
+        </View>
 
-          <View
-            style={{
-              position: "absolute",
-              right: 10,
-              bottom: 50,
-            }}
-          >
-            <FloatingAddButton
-              onPress={() => {
-                router.push({
-                  pathname: "/addCollectionItem",
-                  params: {
-                    templateId: collection?.templateID?.toString(),
-                    collectionId: collection?.collectionID?.toString(),
-                    pageId: pageId,
-                  },
-                });
-              }} // navigate to add collection item screen
-            />
-          </View>
-        </ThemedView>
+        <CollectionListCard
+          collectionLists={listNames}
+          listNames={listNames}
+          setSelectedList={setSelectedList}
+          onSelect={(collectionList) => {
+            if (setSelectedList && collectionList) {
+              if (collectionList !== selectedList) {
+                setSelectedList(collectionList);
+              }
+            }
+          }}
+          filteredItems={filteredItems}
+          items={items}
+          setSelectedItem={setSelectedItem}
+          setShowItemModal={setShowItemModal}
+          searchQuery={searchQuery}
+        />
       </SafeAreaView>
 
       <QuickActionModal
@@ -362,6 +326,27 @@ export default function CollectionScreen() {
         }}
         onclose={() => setShowItemDeleteModal(false)}
       />
+
+      <View
+        style={{
+          position: "absolute",
+          right: 20,
+          bottom: 30,
+        }}
+      >
+        <FloatingAddButton
+          onPress={() => {
+            router.push({
+              pathname: "/addCollectionItem",
+              params: {
+                templateId: collection?.templateID?.toString(),
+                collectionId: collection?.collectionID?.toString(),
+                pageId: pageId,
+              },
+            });
+          }}
+        />
+      </View>
     </>
   );
 }
