@@ -46,11 +46,15 @@ const selectGeneralPageByIdQuery: string = `
 `;
 
 const insertNewPageQuery: string = `
-    INSERT INTO general_page_data (page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned, tagID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO general_page_data (page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned, tagID, parent_folderID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 const updateDateModifiedByPageIDQuery: string = `
     UPDATE general_page_data SET date_modified = ? WHERE pageID = ?
+`;
+
+const updateParentFolderQuery: string = `
+    UPDATE general_page_data SET parent_folderID = ?, archived = 0, pinned = 0 WHERE pageID = ?
 `;
 
 const updatePageByIDQuery: string = `
@@ -83,4 +87,5 @@ export {
   selectGeneralPageByIdQuery,
   updatePinnedByPageIDQuery,
   updateArchivedByPageIDQuery,
+  updateParentFolderQuery,
 };

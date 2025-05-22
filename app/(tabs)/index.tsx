@@ -451,6 +451,7 @@ export default function HomeScreen() {
 
       <SelectFolderModal
         widgetTitle={selectedWidget?.title}
+        widgetId={selectedWidget?.id}
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
       />

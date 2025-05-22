@@ -2,7 +2,7 @@ import { z } from "zod";
 import * as common from "../common/types";
 import { tagSchema } from "./Tag";
 import { PageType } from "@/shared/enum/PageType";
-import { pageID } from "../common/IDs";
+import { folderID, pageID } from "../common/IDs";
 
 /**
  * General Page schemas and types.
@@ -25,6 +25,7 @@ export const generalPageSchema = z.object({
   tag: tagSchema.optional().nullable(), // either a Tag entity or null
   createdAt: common.date,
   updatedAt: common.date,
+  parentID: folderID.nullable().default(null),
 });
 
 /**
@@ -46,6 +47,7 @@ export const createNewGeneralPage = z
     archived: common.boolean.default(false),
     pinned: common.boolean.default(false),
     tag: tagSchema.optional().nullable(), // either a Tag entity or null
+    parentID: folderID.nullable().default(null),
   })
   .transform((data) => {
     const now = new Date();

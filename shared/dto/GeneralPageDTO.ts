@@ -14,4 +14,5 @@ export type GeneralPageDTO = {
   archived: boolean; // indicates whether the page is archived
   pinned: boolean; // indicates whether the page is pinned
   tag: TagDTO | null; // tag associated with the page, or null if none
+  parentID: number | null; // id of the parent folder page belongs to
 };

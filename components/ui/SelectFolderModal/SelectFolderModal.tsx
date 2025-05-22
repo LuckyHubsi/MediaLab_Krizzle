@@ -13,16 +13,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SelectFolderComponent from "./SelectFolderComponent/SelectFolderComponent";
 import { folderService } from "@/backend/service/FolderService";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { generalPageService } from "@/backend/service/GeneralPageService";
 
 interface SelectFolderModalProps {
   visible: boolean;
   widgetTitle?: string;
+  widgetId?: string;
   onClose: () => void;
 }
 
 const SelectFolderModal: FC<SelectFolderModalProps> = ({
   visible,
   widgetTitle,
+  widgetId,
   onClose,
 }) => {
   const colorScheme = useActiveColorScheme();
@@ -124,9 +127,17 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               </ThemedText>
             </CancelButton>
 
-            {/* TODO add move functionality */}
             <NextButton
-              onPress={() => {}}
+              onPress={async () => {
+                const success = await generalPageService.updateFolderID(
+                  Number(widgetId),
+                  Number(selectedFolder?.id),
+                );
+
+                setInternalVisible(false);
+                setSelectedFolder(null);
+                onClose();
+              }}
               colorScheme={colorScheme}
               selectedFolder={selectedFolder}
             >
