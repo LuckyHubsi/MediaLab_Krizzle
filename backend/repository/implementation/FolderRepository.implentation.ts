@@ -92,16 +92,8 @@ export class FolderRepositoryImpl
     folderName: string,
   ): Promise<boolean> {
     try {
-      const result = await this.executeTransaction(async (txn) => {
-        await this.executeQuery(
-          updateFolderByIDQuery,
-          [folderName, folderId],
-          txn,
-        );
-
-        return true;
-      });
-      return result;
+      await this.executeQuery(updateFolderByIDQuery, [folderName, folderId]);
+      return true;
     } catch (error) {
       throw new RepositoryError("Failed to update folder.");
     }
@@ -116,13 +108,10 @@ export class FolderRepositoryImpl
    */
   async deleteFolderByID(folderId: FolderID): Promise<boolean> {
     try {
-      const result = await this.executeTransaction(async (txn) => {
-        await this.executeQuery(deleteFolderByIDQuery, [folderId], txn);
-        return true;
-      });
-      return result;
+      await this.executeQuery(deleteFolderByIDQuery, [folderId]);
+      return true;
     } catch (error) {
-      throw new RepositoryError("Folder not found.");
+      throw new RepositoryError("Failed to delete folder.");
     }
   }
 }
