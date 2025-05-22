@@ -8,6 +8,7 @@ import {
   insertFolderQuery,
   selectAllFoldersQuery,
   selectFolderByIDQuery,
+  updateFolderByIDQuery,
 } from "../query/FolderQuery";
 import { FolderModel } from "../model/FolderModel";
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
@@ -75,6 +76,34 @@ export class FolderRepositoryImpl
       throw new RepositoryError("Folder not found.");
     } catch (error) {
       throw new RepositoryError("Failed to fetch the folder.");
+    }
+  }
+
+  /**
+   * Updates a folder's name by its ID.
+   *
+   * @param folderId - The ID of the folder to update.
+   * @param folderName - The new name for the folder.
+   * @returns A Promise resolving to `true` if update succeeded.
+   * @throws RepositoryError if the update fails.
+   */
+  async updateFolderByID(
+    folderId: FolderID,
+    folderName: string,
+  ): Promise<boolean> {
+    try {
+      const result = await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updateFolderByIDQuery,
+          [folderName, folderId],
+          txn,
+        );
+
+        return true;
+      });
+      return result;
+    } catch (error) {
+      throw new RepositoryError("Failed to update folder.");
     }
   }
 
