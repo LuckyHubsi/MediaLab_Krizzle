@@ -31,11 +31,11 @@ import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { TagDTO } from "@/dto/TagDTO";
-import { PageType } from "@/utils/enums/PageType";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { useFocusEffect } from "@react-navigation/native";
-import { getAllTags } from "@/services/TagService";
 import { useSnackbar } from "../../Snackbar/Snackbar";
+import { PageType } from "@/shared/enum/PageType";
+import { useServices } from "@/context/ServiceContext";
 
 interface CreateCollectionProps {
   data: {
@@ -69,6 +69,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   setData,
   onNext,
 }) => {
+  const { tagService } = useServices();
+
   const colorScheme = useActiveColorScheme();
   const title = data.title;
   const selectedTag = data.selectedTag;
@@ -110,7 +112,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);

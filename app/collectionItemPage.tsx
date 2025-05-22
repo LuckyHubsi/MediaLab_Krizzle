@@ -22,6 +22,7 @@ export default function CollectionItemScreen() {
   const { itemId } = useLocalSearchParams<{
     itemId: string;
   }>();
+  const { collectionService } = useServices();
 
   const [item, setItem] = useState<ItemDTO>();
   const [showModal, setShowModal] = useState(false);
@@ -41,7 +42,7 @@ export default function CollectionItemScreen() {
     useCallback(() => {
       (async () => {
         const numericItemId = Number(itemId);
-        const item = await getItemById(numericItemId);
+        const item = await collectionService.getItemByID(numericItemId);
 
         setItem(item);
 
@@ -168,7 +169,8 @@ export default function CollectionItemScreen() {
           if (item) {
             try {
               const itemIdAsNumber = Number(item.itemID);
-              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+              const successfullyDeleted =
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowDeleteModal(false);
               router.replace({

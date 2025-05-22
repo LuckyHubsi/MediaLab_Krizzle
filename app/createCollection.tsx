@@ -7,17 +7,19 @@ import CreateCollection, {
 import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
-import { saveCollection } from "@/services/CollectionService";
-import { CollectionDTO } from "@/dto/CollectionDTO";
-import { ItemTemplateDTO } from "@/dto/ItemTemplateDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { CollectionCategoryDTO } from "@/dto/CollectionCategoryDTO";
-import { AttributeDTO } from "@/dto/AttributeDTO";
-import { AttributeType } from "@/utils/enums/AttributeType";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
+import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { Platform } from "react-native";
+import { PageType } from "@/shared/enum/PageType";
+import { AttributeType } from "@/shared/enum/AttributeType";
+import { useServices } from "@/context/ServiceContext";
 
 export default function CollectionTemplateScreen() {
+  const { collectionService } = useServices();
+
   const [step, setStep] = useState<"create" | "list" | "template">("create");
 
   const [collectionData, setCollectionData] = useState<CollectionData>({
@@ -46,6 +48,7 @@ export default function CollectionTemplateScreen() {
       pinned: false,
       categories: lists,
       tag: collectionData.selectedTag,
+      pin_count: 0,
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(
@@ -71,7 +74,10 @@ export default function CollectionTemplateScreen() {
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
-    const pageId = await saveCollection(dtos.collection, dtos.template);
+    const pageId = await collectionService.saveCollection(
+      dtos.collection,
+      dtos.template,
+    );
     router.replace({
       pathname: "/collectionPage",
       params: { pageId: pageId, title: collectionData.title },

@@ -21,27 +21,24 @@ import {
   iconLabelMap,
 } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { PageType } from "@/utils/enums/PageType";
-import { insertNote } from "@/services/NoteService";
-import { TagDTO } from "@/dto/TagDTO";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
 import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
-import { getAllTags } from "@/services/TagService";
 import { useFocusEffect } from "@react-navigation/native";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
-import {
-  getGeneralPageByID,
-  updateGeneralPageData,
-} from "@/services/GeneralPageService";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
+import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function EditWidgetScreen() {
+  const { generalPageService, tagService } = useServices();
+
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
   const { widgetID } = useLocalSearchParams<{ widgetID: string }>();
@@ -117,13 +114,17 @@ export default function EditWidgetScreen() {
       }
     }
 
-    await updateGeneralPageData(
-      Number(widgetID),
-      title,
-      selectedIcon || "",
-      selectedColor,
-      tagDTO?.tagID || null,
-    );
+    const newPageDTO: GeneralPageDTO = {
+      pageID: Number(widgetID),
+      page_title: title,
+      page_icon: selectedIcon,
+      page_color: selectedColor,
+      tag: tagDTO,
+      page_type: pageData?.page_type ?? PageType.Note,
+      archived: pageData?.archived ?? false,
+      pinned: pageData?.pinned ?? false,
+    };
+    await generalPageService.updateGeneralPageData(newPageDTO);
 
     // only send snackbar if data has changed
     const hasChanges =
@@ -144,7 +145,7 @@ export default function EditWidgetScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -153,7 +154,9 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const generalPageData = await getGeneralPageByID(Number(widgetID));
+          const generalPageData = await generalPageService.getGeneralPageByID(
+            Number(widgetID),
+          );
           if (generalPageData) {
             setPageData(generalPageData);
             setTitle(generalPageData.page_title || "");

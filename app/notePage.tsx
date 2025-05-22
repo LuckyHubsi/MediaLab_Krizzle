@@ -6,21 +6,19 @@ import { AppState, AppStateStatus, Platform, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
-import { NoteDTO } from "@/dto/NoteDTO";
-import { getNoteDataByPageID, updateNoteContent } from "@/services/NoteService";
+import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
-import {
-  deleteGeneralPage,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import { useColorScheme } from "react-native";
-import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import QuickActionModal, {
+  QuickActionItem,
+} from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -28,6 +26,8 @@ export default function NotesScreen() {
     title?: string;
     routing?: string;
   }>();
+  const { generalPageService, noteService } = useServices();
+
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
@@ -36,6 +36,8 @@ export default function NotesScreen() {
   const [noteData, setNoteData] = useState<NoteDTO | null>();
   const [shouldReload, setShouldReload] = useState<boolean>();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
@@ -46,8 +48,8 @@ export default function NotesScreen() {
       if (!isNaN(numericID)) {
         (async () => {
           const noteDataByID: NoteDTO | null =
-            await getNoteDataByPageID(numericID);
-          let noteContent = noteDataByID?.note_content;
+            await noteService.getNoteDataByPageID(numericID);
+          let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
@@ -63,7 +65,7 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const success = await updateNoteContent(Number(pageId), html);
+    const success = await noteService.updateNoteContent(Number(pageId), html);
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
@@ -122,83 +124,91 @@ export default function NotesScreen() {
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        items={[
-          {
-            label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
-            icon: "push-pin",
-            disabled:
-              noteData?.pinned === false &&
-              noteData?.pin_count != null &&
-              noteData.pin_count >= 4,
-            onPress: async () => {
-              if (
-                (noteData &&
-                  !noteData.pinned &&
-                  noteData.pin_count != null &&
-                  noteData.pin_count < 4) ||
-                (noteData && noteData?.pinned)
-              ) {
-                const success = await togglePagePin(
-                  Number(pageId),
-                  noteData.pinned,
-                );
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Edit",
-            icon: "edit",
-            onPress: () => {
-              goToEditPage();
-            },
-          },
-          {
-            label: noteData?.archived ? "Restore" : "Archive",
-            icon: noteData?.archived ? "restore" : "archive",
-            onPress: async () => {
-              if (noteData) {
-                const success = await togglePageArchive(
-                  Number(pageId),
-                  noteData.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    noteData.archived
-                      ? "Successfully restored Note."
-                      : "Successfully archived Note.",
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    noteData.archived
-                      ? "Failed to restore Note."
-                      : "Failed to archive Note.",
-                    "bottom",
-                    "error",
-                  );
+        items={
+          [
+            noteData && !noteData.archived
+              ? {
+                  label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
+                  icon: "push-pin",
+                  disabled:
+                    noteData?.pinned === false &&
+                    noteData?.pin_count != null &&
+                    noteData.pin_count >= 4,
+                  onPress: async () => {
+                    if (
+                      (noteData &&
+                        !noteData.pinned &&
+                        noteData.pin_count != null &&
+                        noteData.pin_count < 4) ||
+                      (noteData && noteData?.pinned)
+                    ) {
+                      const success = await generalPageService.togglePagePin(
+                        Number(pageId),
+                        noteData.pinned,
+                      );
+                      setShouldReload(success);
+                    }
+                  },
                 }
-                setShouldReload(success);
-              }
+              : null,
+            noteData && !noteData.archived
+              ? {
+                  label: "Edit",
+                  icon: "edit",
+                  onPress: () => {
+                    goToEditPage();
+                  },
+                }
+              : null,
+            {
+              label: noteData?.archived ? "Restore" : "Archive",
+              icon: noteData?.archived ? "restore" : "archive",
+              onPress: async () => {
+                if (noteData) {
+                  const success = await generalPageService.togglePageArchive(
+                    Number(pageId),
+                    noteData.archived,
+                  );
+                  if (success) {
+                    showSnackbar(
+                      noteData.archived
+                        ? "Successfully restored Note."
+                        : "Successfully archived Note.",
+                      "bottom",
+                      "success",
+                    );
+                  } else {
+                    showSnackbar(
+                      noteData.archived
+                        ? "Failed to restore Note."
+                        : "Failed to archive Note.",
+                      "bottom",
+                      "error",
+                    );
+                  }
+                  setShouldReload(success);
+                }
+              },
             },
-          },
-          {
-            label: "Delete",
-            icon: "delete",
-            onPress: () => {
-              setShowModal(false);
-              if (Platform.OS === "ios") {
-                setTimeout(() => {
-                  setShowDeleteModal(true);
-                }, 300);
-              } else {
+            noteData && !noteData.archived
+              ? {
+                  label: "Move to Folder",
+                  icon: "folder",
+                  onPress: async () => {
+                    setShowFolderSelectionModal(true);
+                  },
+                }
+              : null,
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
                 setShowDeleteModal(true);
-              }
+              },
+              danger: true,
             },
-            danger: true,
-          },
-        ]}
+          ].filter(Boolean) as QuickActionItem[]
+        }
       />
       <DeleteModal
         visible={showDeleteModal}
@@ -209,7 +219,7 @@ export default function NotesScreen() {
             try {
               const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {
@@ -218,6 +228,12 @@ export default function NotesScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <SelectFolderModal
+        widgetTitle={title}
+        onClose={() => setShowFolderSelectionModal(false)}
+        visible={showFolderSelectionModal}
       />
     </>
   );

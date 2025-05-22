@@ -20,24 +20,19 @@ import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
-import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { TagDTO } from "@/dto/TagDTO";
-import { getAllTags } from "@/services/TagService";
+import { TagDTO } from "@/shared/dto/TagDTO";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
-import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { PageType } from "@/shared/enum/PageType";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -55,6 +50,8 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function HomeScreen() {
+  const { generalPageService, tagService } = useServices();
+
   const colorScheme = useActiveColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
@@ -88,6 +85,9 @@ export default function HomeScreen() {
     GeneralPageState.GeneralModfied,
   );
 
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
+
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -120,13 +120,14 @@ export default function HomeScreen() {
     useCallback(() => {
       (async () => {
         try {
-          const pinnedData = await getAllGeneralPageData(
+          const pinnedData = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
           const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
           setPinnedWidgets(pinnedEnrichedWidgets);
 
-          const data = await getAllGeneralPageData(sortingMode);
+          const data =
+            await generalPageService.getAllGeneralPageData(sortingMode);
           const enrichedWidgets = mapToEnrichedWidgets(data);
           setWidgets(enrichedWidgets);
         } catch (error) {
@@ -136,7 +137,7 @@ export default function HomeScreen() {
 
       (async () => {
         try {
-          const tagData = await getAllTags();
+          const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -217,7 +218,10 @@ export default function HomeScreen() {
             />
           ) : (
             <>
-              <SearchBar placeholder="Search" onSearch={setSearchQuery} />
+              <SearchBar
+                placeholder="Search for title"
+                onSearch={setSearchQuery}
+              />
               <TagList
                 tags={tags}
                 onSelect={(tag) => setSelectedTag(tag)}
@@ -381,7 +385,7 @@ export default function HomeScreen() {
                   pinnedWidgets.length < 4) ||
                 (selectedWidget && selectedWidget?.pinned)
               ) {
-                const success = await togglePagePin(
+                const success = await generalPageService.togglePagePin(
                   Number(selectedWidget.id),
                   selectedWidget.pinned,
                 );
@@ -399,7 +403,7 @@ export default function HomeScreen() {
             icon: "archive",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await togglePageArchive(
+                const success = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
@@ -419,6 +423,11 @@ export default function HomeScreen() {
                 setShouldReload(success);
               }
             },
+          },
+          {
+            label: "Move to Folder",
+            icon: "folder",
+            onPress: () => setShowFolderSelectionModal(true),
           },
           {
             label: "Delete",
@@ -444,6 +453,13 @@ export default function HomeScreen() {
         onClose={() => setModalVisible(false)}
       />
 
+      <SelectFolderModal
+        widgetTitle={selectedWidget?.title}
+        widgetId={selectedWidget?.id}
+        onClose={() => setShowFolderSelectionModal(false)}
+        visible={showFolderSelectionModal}
+      />
+
       <DeleteModal
         visible={showDeleteModal}
         title={selectedWidget?.title}
@@ -451,9 +467,10 @@ export default function HomeScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted = await deleteGeneralPage(
-                Number(selectedWidget.id),
-              );
+              const successfullyDeleted =
+                await generalPageService.deleteGeneralPage(
+                  Number(selectedWidget.id),
+                );
               setShouldReload(successfullyDeleted);
               setSelectedWidget(null);
               setShowDeleteModal(false);

@@ -1,43 +1,35 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
+import React, { useCallback, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, ScrollView, Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import CollectionWidget from "@/components/ui/CollectionWidget/CollectionWidget";
-import CollectionList from "@/components/ui/CollectionList/CollectionList";
-import { getCollectionByPageId } from "@/services/CollectionService";
-import { CollectionDTO } from "@/dto/CollectionDTO";
-import { template } from "@babel/core";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { ItemsDTO } from "@/dto/ItemsDTO";
-import { deleteItemById, getItemsByPageId } from "@/services/ItemService";
-import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
+import { CollectionDTO } from "@/shared/dto/CollectionDTO";
+import { ItemsDTO } from "@/shared/dto/ItemsDTO";
+import QuickActionModal, {
+  QuickActionItem,
+} from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import {
-  deleteGeneralPage,
-  togglePageArchive,
-  togglePagePin,
-} from "@/services/GeneralPageService";
-import { PreviewItemDTO } from "@/dto/ItemDTO";
-
-import { is } from "date-fns/locale";
+import { PreviewItemDTO } from "@/shared/dto/ItemDTO";
+import { ThemedText } from "@/components/ThemedText";
+import { useFocusEffect } from "@react-navigation/native";
 import { CollectionListCard } from "@/components/ui/CollectionListCard/CollectionListCard";
-import {
-  GradientBackgroundWrapper,
-  StyledView,
-} from "@/components/ui/GradientBackground/GradientBackground.styles";
+import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function CollectionScreen() {
+  const { generalPageService, collectionService } = useServices();
+
   const router = useRouter();
-  const { pageId, title, selectedIcon } = useLocalSearchParams<{
+  const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
     selectedIcon?: keyof typeof MaterialIcons.glyphMap;
+    routing?: string;
   }>();
 
   const { showSnackbar } = useSnackbar();
@@ -53,27 +45,37 @@ export default function CollectionScreen() {
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
+  const [collectionTitle, setCollectionTitle] = useState<string>(title || "");
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
-          const collectionData = await getCollectionByPageId(numericID);
+          const collectionData =
+            await collectionService.getCollectionByPageId(numericID);
           if (collectionData) {
             setCollection(collectionData);
+            setCollectionTitle(title || collectionData.page_title);
+
             if (collectionData.categories) {
-              const listNames = [];
-              for (const list of collectionData.categories) {
-                listNames.push(list.category_name);
-              }
-              setListNames(listNames);
+              const names = collectionData.categories.map(
+                (c) => c.category_name,
+              );
+              setListNames(names);
+              setSelectedList(names[0]); // ✅ set selected list directly here
             }
+            const retrievedItems: ItemsDTO =
+              await collectionService.getItemsByPageId(numericID);
+            if (retrievedItems) setItems(retrievedItems);
           }
-          const retrievedItems: ItemsDTO = await getItemsByPageId(numericID);
+          const retrievedItems: ItemsDTO =
+            await collectionService.getItemsByPageId(numericID);
           if (retrievedItems) setItems(retrievedItems);
+          setShouldReload(false);
         }
-        setShouldReload(false);
       })();
     }, [pageId, shouldReload]),
   );
@@ -104,7 +106,7 @@ export default function CollectionScreen() {
     return items.items.filter((item) => {
       const category = item.categoryName;
 
-      const matchesList = selectedList === "All" || category === selectedList;
+      const matchesList = category === selectedList;
 
       const matchesTitle = item.values
         .join(" ")
@@ -120,7 +122,6 @@ export default function CollectionScreen() {
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "transparent", gap: 12 }}
       >
-        {/* Background layers */}
         <GradientBackgroundWrapper
           colors={["#4599E8", "#583FE7"]}
           style={{
@@ -128,26 +129,26 @@ export default function CollectionScreen() {
             top: 0,
             left: 0,
             right: 0,
-            bottom: 400,
-            zIndex: -1, // Set zIndex lower than other elements
+            bottom: 0,
+            zIndex: -1,
           }}
         />
         <CustomStyledHeader
-          title={title || "Collection"} //Here should be the title of the collection
-          backBehavior="goHome" // Go back to home when back button is pressed
+          title={collectionTitle || "Collection"}
+          backBehavior="goHome"
           iconName={selectedIcon || undefined}
-          onIconPress={() => {}} // No action when pressed
-          iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => setShowModal(true)} // action when icon menu is pressed
+          onIconPress={() => {}}
+          iconName2="more-horiz"
+          onIconMenuPress={() => setShowModal(true)}
           leftIconName={
             collection?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
-          isTransparent={true} // Make the header transparent
+          isTransparent={true}
         />
 
         <View style={{ paddingHorizontal: 20 }}>
           <SearchBar
-            placeholder="Search" // Placeholder text for the search bar
+            placeholder="Search"
             onSearch={(text) => setSearchQuery(text)}
           />
         </View>
@@ -157,8 +158,10 @@ export default function CollectionScreen() {
           listNames={listNames}
           setSelectedList={setSelectedList}
           onSelect={(collectionList) => {
-            if (setSelectedList) {
-              setSelectedList(collectionList || "All"); // Safely call setSelectedList
+            if (setSelectedList && collectionList) {
+              if (collectionList !== selectedList) {
+                setSelectedList(collectionList);
+              }
             }
           }}
           filteredItems={filteredItems}
@@ -172,88 +175,99 @@ export default function CollectionScreen() {
       <QuickActionModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        items={[
-          {
-            label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
-            icon: "push-pin",
-            disabled: !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
-            onPress: async () => {
-              if (
-                (collection &&
-                  !collection.pinned &&
-                  collection.pin_count != null &&
-                  collection.pin_count < 4) ||
-                (collection && collection?.pinned)
-              ) {
-                const success = await togglePagePin(
-                  Number(collection.pageID),
-                  collection.pinned,
-                );
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Edit Widget",
-            icon: "edit",
-            onPress: () => {
-              goToEditPage();
-            },
-          },
-          {
-            label: "Edit Lists",
-            icon: "edit-note",
-            onPress: () => {
-              goToEditListsPage();
-            },
-          },
-          {
-            label: collection?.archived ? "Restore" : "Archive",
-            icon: collection?.archived ? "restore" : "archive",
-
-            onPress: async () => {
-              if (collection) {
-                const success = await togglePageArchive(
-                  Number(pageId),
-                  collection.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    collection.archived
-                      ? "Successfully restored Collection."
-                      : "Successfully archived Collection.",
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    collection.archived
-                      ? "Failed to restore Collection."
-                      : "Failed to archive Collection.",
-                    "bottom",
-                    "error",
-                  );
+        items={
+          [
+            collection && !collection.archived
+              ? {
+                  label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
+                  icon: "push-pin",
+                  disabled:
+                    !collection?.pinned && (collection?.pin_count ?? 0) >= 4,
+                  onPress: async () => {
+                    if (
+                      (collection &&
+                        !collection.pinned &&
+                        collection.pin_count != null &&
+                        collection.pin_count < 4) ||
+                      (collection && collection?.pinned)
+                    ) {
+                      const success = await generalPageService.togglePagePin(
+                        Number(collection.pageID),
+                        collection.pinned,
+                      );
+                      setShouldReload(success);
+                    }
+                  },
                 }
-                setShouldReload(success);
-              }
+              : null,
+            collection && !collection.archived
+              ? {
+                  label: "Edit Widget",
+                  icon: "edit",
+                  onPress: () => {
+                    goToEditPage();
+                  },
+                }
+              : null,
+            collection && !collection.archived
+              ? {
+                  label: "Edit Lists",
+                  icon: "edit-note",
+                  onPress: () => {
+                    goToEditListsPage();
+                  },
+                }
+              : null,
+            {
+              label: collection?.archived ? "Restore" : "Archive",
+              icon: collection?.archived ? "restore" : "archive",
+
+              onPress: async () => {
+                if (collection) {
+                  const success = await generalPageService.togglePageArchive(
+                    Number(pageId),
+                    collection.archived,
+                  );
+                  if (success) {
+                    showSnackbar(
+                      collection.archived
+                        ? "Successfully restored Collection."
+                        : "Successfully archived Collection.",
+                      "bottom",
+                      "success",
+                    );
+                  } else {
+                    showSnackbar(
+                      collection.archived
+                        ? "Failed to restore Collection."
+                        : "Failed to archive Collection.",
+                      "bottom",
+                      "error",
+                    );
+                  }
+                  setShouldReload(success);
+                }
+              },
             },
-          },
-          {
-            label: "Delete",
-            icon: "delete",
-            onPress: () => {
-              setShowModal(false);
-              if (Platform.OS === "ios") {
-                setTimeout(() => {
-                  setShowDeleteModal(true);
-                }, 300);
-              } else {
+            collection && !collection.archived
+              ? {
+                  label: "Move to Folder",
+                  icon: "folder",
+                  onPress: () => {
+                    setShowFolderSelectionModal(true);
+                  },
+                }
+              : null,
+            {
+              label: "Delete",
+              icon: "delete",
+              onPress: () => {
                 setShowDeleteModal(true);
-              }
+              },
+              danger: true,
             },
-            danger: true,
-          },
-        ]}
+          ].filter(Boolean) as QuickActionItem[]
+        }
       />
       <QuickActionModal
         visible={showItemModal}
@@ -297,7 +311,7 @@ export default function CollectionScreen() {
             try {
               const widgetIdAsNumber = Number(pageId);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
               setShowDeleteModal(false);
               router.replace("/");
             } catch (error) {
@@ -315,7 +329,8 @@ export default function CollectionScreen() {
           if (selectedItem) {
             try {
               const itemIdAsNumber = Number(selectedItem.itemID);
-              const successfullyDeleted = await deleteItemById(itemIdAsNumber);
+              const successfullyDeleted =
+                await collectionService.deleteItemById(itemIdAsNumber);
 
               setShowItemDeleteModal(false);
               setShouldReload(successfullyDeleted);
@@ -345,9 +360,14 @@ export default function CollectionScreen() {
                 pageId: pageId,
               },
             });
-          }} // navigate to add collection item screen
+          }}
         />
       </View>
+      <SelectFolderModal
+        widgetTitle={title}
+        onClose={() => setShowFolderSelectionModal(false)}
+        visible={showFolderSelectionModal}
+      />
     </>
   );
 }

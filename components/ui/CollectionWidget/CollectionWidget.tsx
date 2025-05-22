@@ -8,7 +8,7 @@ import {
   CollectionSelectable,
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { AttributeDTO } from "@/dto/AttributeDTO";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
 

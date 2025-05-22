@@ -27,20 +27,17 @@ import {
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
-import {
-  getCollectionCategories,
-  insertCollectionCategory,
-  updateCollectionCategory,
-  deleteCollectionCategoryByID,
-} from "@/services/CollectionCategoriesService";
 import Card from "@/components/ui/Card/Card";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { useServices } from "@/context/ServiceContext";
 
 export default function EditCollectionListsScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
+  const { collectionService } = useServices();
+
   const numericId = Number(collectionId);
   const colorScheme = useActiveColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -75,7 +72,8 @@ export default function EditCollectionListsScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const collectionLists = await getCollectionCategories(numericId);
+        const collectionLists =
+          await collectionService.getCollectionCategories(numericId);
         const mapped = collectionLists.map((l) => ({
           id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
           title: l.category_name ?? "",
@@ -149,14 +147,14 @@ export default function EditCollectionListsScreen() {
       };
 
       if (!isPersisted(l.id)) {
-        await insertCollectionCategory({
+        await collectionService.insertCollectionCategory({
           category_name: l.title,
           collectionID: numericId,
         });
 
         setInitialIds((prev) => new Set(prev).add(l.id));
       } else {
-        await updateCollectionCategory(updateDto);
+        await collectionService.updateCollectionCategory(updateDto);
       }
     });
 
@@ -171,7 +169,7 @@ export default function EditCollectionListsScreen() {
 
     if (!isNaN(Number(id))) {
       try {
-        await deleteCollectionCategoryByID(Number(id));
+        await collectionService.deleteCollectionCategoryByID(Number(id));
 
         setLists((prev) => prev.filter((l) => l.id !== id));
         setInitialIds((prev) => {

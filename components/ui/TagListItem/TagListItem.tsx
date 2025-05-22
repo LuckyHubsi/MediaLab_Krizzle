@@ -55,7 +55,7 @@ export const TagListItem: React.FC<Props> = ({
         </TouchableOpacity>
         <TouchableOpacity onPress={onDelete}>
           <MaterialIcons
-            name="close"
+            name="delete"
             size={24}
             color={colorScheme === "light" ? "#d00" : "#f66"}
           />

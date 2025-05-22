@@ -21,6 +21,8 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { SQLiteProvider } from "expo-sqlite";
 import { UserThemeProvider } from "@/context/ThemeContext";
 import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
+import { RepositoryProvider } from "@/context/RepositoryContext";
+import { ServiceProvider } from "@/context/ServiceContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,71 +54,81 @@ export default function RootLayout() {
           assetId: require("../assets/database/krizzle_local.db"),
         }}
       >
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <SnackbarProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="createNote"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="collectionPage"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="notePage" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="tagManagement"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="createCollection"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="editWidget"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="editCollectionLists"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="addCollectionItem"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="collectionItemPage"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="listManagement"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="appearance"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="faq" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="editCollectionItem"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="archivePage"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="+not-found" />
-              <Stack.Screen
-                name="resetDatabase"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-            <StatusBar style="auto" />
-          </SnackbarProvider>
-        </ThemeProvider>
+        <RepositoryProvider>
+          <ServiceProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <SnackbarProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="createNote"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="collectionPage"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="notePage"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="tagManagement"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="createCollection"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="editWidget"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="editCollectionLists"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="addCollectionItem"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="collectionItemPage"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="appearance"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="faq" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="editCollectionItem"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="archivePage"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                  <Stack.Screen
+                    name="resetDatabase"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="folderPage"
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
+                <StatusBar style="auto" />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </ServiceProvider>
+        </RepositoryProvider>
       </SQLiteProvider>
     </UserThemeProvider>
   );

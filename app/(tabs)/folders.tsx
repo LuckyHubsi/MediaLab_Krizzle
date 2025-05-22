@@ -10,20 +10,18 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-import {
-  deleteGeneralPage,
-  getAllGeneralPageData,
-  togglePageArchive,
-} from "@/services/GeneralPageService";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/dto/GeneralPageDTO";
 import { useRouter } from "expo-router";
-import { PageType } from "@/utils/enums/PageType";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { GeneralPageState } from "@/utils/enums/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import FolderComponent from "@/components/ui/FolderComponent/FolderComponent";
+import { PageType } from "@/shared/enum/PageType";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { GeneralPageState } from "@/shared/enum/GeneralPageState";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
+import { useServices } from "@/context/ServiceContext";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -41,31 +39,26 @@ export const getIconForPageType = (type: string) => {
 };
 
 export default function FoldersScreen() {
+  const { generalPageService, folderService } = useServices();
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
+
   const router = useRouter();
 
-  interface ArchivedWidget {
+  interface Folder {
     id: string;
     title: string;
-    tag: string;
-    page_icon?: string;
-    page_type: PageType;
-    color?: string;
-    archived: boolean;
-    [key: string]: any;
+    itemCount: number;
   }
 
   const [shouldReload, setShouldReload] = useState<boolean>(false);
-  const [widgets, setWidgets] = useState<ArchivedWidget[]>([]);
+  // const [widgets, setWidgets] = useState<ArchivedWidget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [selectedWidget, setSelectedWidget] = useState<ArchivedWidget | null>(
-    null,
-  );
+  const [folders, setFolders] = useState<Folder[]>([]);
 
   const getColorKeyFromValue = (
     value: string,
@@ -82,65 +75,102 @@ export default function FoldersScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
-  const mapToEnrichedWidgets = (
-    data: GeneralPageDTO[] | null,
-  ): ArchivedWidget[] => {
-    if (data == null) {
-      return [];
-    } else {
-      const enrichedWidgets: ArchivedWidget[] = (data || []).map((widget) => ({
-        id: String(widget.pageID),
-        title: widget.page_title,
-        tag: widget.tag?.tag_label || "Uncategorized",
-        color:
-          getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
-        page_type: widget.page_type,
-        icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
-        archived: widget.archived,
-      }));
-      return enrichedWidgets;
-    }
-  };
+  // const mapToEnrichedWidgets = (
+  //   data: GeneralPageDTO[] | null,
+  // ): ArchivedWidget[] => {
+  //   if (data == null) {
+  //     return [];
+  //   } else {
+  //     const enrichedWidgets: ArchivedWidget[] = (data || []).map((widget) => ({
+  //       id: String(widget.pageID),
+  //       title: widget.page_title,
+  //       tag: widget.tag?.tag_label || "Uncategorized",
+  //       color:
+  //         getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
+  //       page_type: widget.page_type,
+  //       icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
+  //       archived: widget.archived,
+  //     }));
+  //     return enrichedWidgets;
+  //   }
+  // };
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const fetchWidgets = async () => {
+  //       try {
+  //         const data = await getAllGeneralPageData(GeneralPageState.Archived);
+
+  //         const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
+
+  //         setWidgets(enrichedWidgets);
+  //       } catch (error) {
+  //         console.error("Error loading widgets:", error);
+  //       }
+  //     };
+
+  //     setShouldReload(false);
+  //     fetchWidgets();
+  //   }, [shouldReload]),
+  // );
+
+  // const filteredWidgets = useMemo(() => {
+  //   const lowerQuery = searchQuery.toLowerCase();
+  //   return widgets.filter((widget) =>
+  //     widget.title.toLowerCase().includes(lowerQuery),
+  //   );
+  // }, [widgets, searchQuery]);
+
+  // useEffect(() => {}, [widgets]);
+
+  // const goToPage = (widget: ArchivedWidget) => {
+  //   const path =
+  //     widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
+
+  //   router.push({
+  //     pathname: path,
+  //     params: { pageId: widget.id, title: widget.title },
+  //   });
+  // };
+
+  interface Folder {
+    id: string;
+    title: string;
+    itemCount: number;
+  }
 
   useFocusEffect(
     useCallback(() => {
-      const fetchWidgets = async () => {
+      const fetchFolders = async () => {
         try {
-          const data = await getAllGeneralPageData(GeneralPageState.Archived);
+          const data = await folderService.getAllFolders();
 
-          const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
-
-          setWidgets(enrichedWidgets);
+          const shapedFolders = mapToFolderShape(data);
+          setFolders(shapedFolders);
         } catch (error) {
-          console.error("Error loading widgets:", error);
+          console.error("Error loading folders:", error);
         }
       };
 
       setShouldReload(false);
-      fetchWidgets();
+      fetchFolders();
     }, [shouldReload]),
   );
-
-  const filteredWidgets = useMemo(() => {
-    const lowerQuery = searchQuery.toLowerCase();
-    return widgets.filter((widget) =>
-      widget.title.toLowerCase().includes(lowerQuery),
-    );
-  }, [widgets, searchQuery]);
-
-  useEffect(() => {}, [widgets]);
-
-  const goToPage = (widget: ArchivedWidget) => {
-    const path =
-      widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
-
-    router.push({
-      pathname: path,
-      params: { pageId: widget.id, title: widget.title },
-    });
+  const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
+    if (data == null) {
+      return [];
+    } else {
+      return (data || []).map((folder) => ({
+        id: String(folder.folderID),
+        title: folder.folderName,
+        itemCount: folder.itemCount ?? 0,
+      }));
+    }
   };
 
   const { showSnackbar } = useSnackbar();
+
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
 
   return (
     <>
@@ -165,44 +195,47 @@ export default function FoldersScreen() {
             Folders
           </ThemedText>
 
-          {widgets.length === 0 ? (
+          {folders.length === 0 ? (
             <EmptyHome text="No folders yet" showButton={false} />
           ) : (
             <>
               <SearchBar
-                placeholder="Search"
+                placeholder="Search for title"
                 onSearch={(query) => setSearchQuery(query)}
               />
 
-              {filteredWidgets.length > 0 ? (
-                <>
-                  <FlatList
-                    data={filteredWidgets}
-                    keyExtractor={(item) => item.id}
-                    showsVerticalScrollIndicator={false}
-                    numColumns={columns}
-                    columnWrapperStyle={{
-                      justifyContent: "space-between",
-                      marginBottom: 16,
+              {/* {filteredWidgets.length > 0 ? ( */}
+              {/* <> */}
+              <FlatList
+                data={folders}
+                showsVerticalScrollIndicator={false}
+                numColumns={columns}
+                columnWrapperStyle={{
+                  justifyContent: "space-between",
+                  marginBottom: 16,
+                  marginTop: 16,
+                }}
+                renderItem={({ item }) => (
+                  <FolderComponent
+                    title={item.title}
+                    itemCount={item.itemCount}
+                    key={item.id}
+                    cardWidth={(width - 25 * (columns + 1)) / columns}
+                    onPress={() => {
+                      router.push({
+                        pathname: "/folderPage",
+                        params: { folderId: item.id, title: item.title },
+                      });
                     }}
-                    renderItem={({ item }) => (
-                      <Widget
-                        title={item.title}
-                        label={item.tag}
-                        icon={item.icon}
-                        color={item.color as keyof typeof Colors.widget}
-                        pageType={item.page_type}
-                        onPress={() => {
-                          goToPage(item);
-                        }}
-                        onLongPress={() => {
-                          setSelectedWidget(item);
-                          setShowModal(true);
-                        }}
-                      />
-                    )}
+                    onLongPress={() => {
+                      setSelectedFolder(item);
+                      setShowModal(true);
+                    }}
                   />
-                </>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+              {/* </>
               ) : (
                 <ThemedText
                   fontSize="regular"
@@ -213,7 +246,7 @@ export default function FoldersScreen() {
                     ? "No entries found."
                     : `No entries for "${searchQuery}"`}
                 </ThemedText>
-              )}
+              )} */}
             </>
           )}
         </ThemedView>
@@ -223,62 +256,33 @@ export default function FoldersScreen() {
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: "Restore",
-            icon: "restore",
-            onPress: async () => {
-              if (selectedWidget) {
-                const success = await togglePageArchive(
-                  Number(selectedWidget.id),
-                  selectedWidget.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    `Successfully restored ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    `Failed to restore ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "error",
-                  );
-                }
-                setShouldReload(success);
-              }
-            },
+            label: "Edit Folder",
+            icon: "edit",
+            //TODO: Add onPress Logic for editing Folder
+            onPress: async () => {},
           },
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => {
-              setShowModal(false);
-              if (Platform.OS === "ios") {
-                setTimeout(() => {
-                  setShowDeleteModal(true);
-                }, 300);
-              } else {
-                setShowDeleteModal(true);
-              }
-            },
+            onPress: () => setShowDeleteModal(true),
             danger: true,
           },
         ]}
       />
       <DeleteModal
         visible={showDeleteModal}
-        title={selectedWidget?.title}
+        title={selectedFolder?.title}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          if (selectedWidget) {
+          if (selectedFolder) {
             try {
-              const widgetIdAsNumber = Number(selectedWidget.id);
+              const folderIdAsNumber = Number(selectedFolder.id);
               const successfullyDeleted =
-                await deleteGeneralPage(widgetIdAsNumber);
+                await folderService.deleteFolder(folderIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 
-              setSelectedWidget(null);
+              setSelectedFolder(null);
               setShowDeleteModal(false);
             } catch (error) {
               console.error("Error deleting page:", error);

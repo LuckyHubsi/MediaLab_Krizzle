@@ -3,7 +3,7 @@ import { ScrollView, View } from "react-native";
 import { TagButton, TagText } from "./TagList.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
-import { TagDTO } from "@/dto/TagDTO";
+import { TagDTO } from "@/shared/dto/TagDTO";
 
 type TagListProps = {
   tags: TagDTO[];
@@ -57,6 +57,16 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           </TagText>
         </TagButton>
 
+        {tags.length !== 0 && (
+          <TagButton themeMode={themeMode} onPress={onPress}>
+            <MaterialIcons
+              name="add"
+              size={16}
+              color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+            />
+          </TagButton>
+        )}
+
         {tags.map((tag) => (
           <TagButton
             key={tag.tagID}
@@ -78,17 +88,17 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           </TagButton>
         ))}
 
-        {/* {tags.length === 0 && ( */}
-        <TagButton themeMode={themeMode} onPress={onPress}>
-          <MaterialIcons
-            name="add"
-            size={16}
-            color={themeMode === "dark" ? "#FBFBFB" : "#000"}
-            style={{ marginRight: 5 }}
-          />
-          <TagText themeMode={themeMode}>Add a tag</TagText>
-        </TagButton>
-        {/* )} */}
+        {tags.length === 0 && (
+          <TagButton themeMode={themeMode} onPress={onPress}>
+            <MaterialIcons
+              name="add"
+              size={16}
+              color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+              style={{ marginRight: 5 }}
+            />
+            <TagText themeMode={themeMode}>Add a tag</TagText>
+          </TagButton>
+        )}
       </ScrollView>
     </View>
   );
