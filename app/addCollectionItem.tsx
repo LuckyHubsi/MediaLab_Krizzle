@@ -72,11 +72,28 @@ export default function AddCollectionItem() {
     }
   }, []);
 
-  const handleInputChange = (attributeID: number, value: any) => {
-    setAttributeValues((prevValues) => ({
-      ...prevValues,
-      [attributeID]: value,
-    }));
+  const handleInputChange = (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => {
+    setAttributeValues((prevValues) => {
+      const isLink =
+        attributes.find((a) => a.attributeID === attributeID)?.type ===
+        AttributeType.Link;
+
+      return {
+        ...prevValues,
+        [attributeID]: isLink
+          ? value?.trim()
+            ? {
+                value: value.trim(),
+                displayText: (displayText || value).trim(),
+              }
+            : null
+          : value,
+      };
+    });
   };
 
   const handleListChange = (categoryID: number | null) => {
@@ -106,6 +123,14 @@ export default function AddCollectionItem() {
             return { ...attribute, valueNumber: value };
           case AttributeType.Multiselect:
             return { ...attribute, valueMultiselect: value };
+          case AttributeType.Link:
+            return {
+              ...attribute,
+              valueString: value?.value?.trim() || null,
+              displayText: value?.displayText?.trim() || null,
+            };
+          case AttributeType.Image:
+            return { ...attribute, valueString: value };
           default:
             return { ...attribute };
         }

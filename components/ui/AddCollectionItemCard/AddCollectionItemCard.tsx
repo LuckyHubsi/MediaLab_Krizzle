@@ -11,12 +11,18 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import LinkPicker from "../LinkPicker/LinkPicker";
+import ImagePickerField from "../ImagePickerField/ImagePickerField";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
   attributeValues: Record<number, any>;
-  onInputChange: (attributeID: number, value: any) => void;
+  onInputChange: (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => void;
   hasNoInputError?: boolean;
   onListChange: (categoryID: number | null) => void;
   selectedCategoryID?: number | null;
@@ -37,7 +43,9 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {},
   );
-
+  const [customLinkText, setCustomLinkText] = useState<{
+    [id: number]: string;
+  }>({});
   const handleTagSelect = (attributeLabel: string, tag: string) => {
     setSelectedTags((prev) => {
       const currentTags = prev[attributeLabel] || [];
@@ -178,6 +186,48 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 />,
               );
             }
+            break;
+          case AttributeType.Link:
+            elements.push(
+              <LinkPicker
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue?.value || ""}
+                onChange={(text) =>
+                  onInputChange(
+                    Number(attribute.attributeID),
+                    text,
+                    customLinkText[Number(attribute.attributeID)] ?? text,
+                  )
+                }
+                linkText={customLinkText[Number(attribute.attributeID)] || ""}
+                onLinkTextChange={(text) => {
+                  setCustomLinkText((prev) => ({
+                    ...prev,
+                    [Number(attribute.attributeID)]: text,
+                  }));
+
+                  const currentVal = currentValue?.value ?? "";
+                  onInputChange(
+                    Number(attribute.attributeID),
+                    currentVal,
+                    text,
+                  );
+                }}
+              />,
+            );
+            break;
+          case AttributeType.Image:
+            elements.push(
+              <ImagePickerField
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue || ""}
+                onChange={(uri) =>
+                  onInputChange(Number(attribute.attributeID), uri)
+                }
+              />,
+            );
             break;
           default:
             break;
