@@ -66,6 +66,26 @@ export class FolderService {
   }
 
   /**
+   * Updates a folder.
+   *
+   * @param folderDTO - `FolderDTO` representing the updated folder data.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if update fails.
+   */
+  async updateFolder(folderDTO: FolderDTO): Promise<boolean> {
+    try {
+      const updatedFolder = FolderMapper.toUpdatedEntity(folderDTO);
+      await this.folderRepo.updateFolderByID(
+        updatedFolder.folderID,
+        updatedFolder.folderName,
+      );
+      return true;
+    } catch (error) {
+      throw new ServiceError("Error updating folder.");
+    }
+  }
+
+  /**
    * Deletes a folder.
    *
    * @param folderId - Number representing the folderID.
