@@ -59,9 +59,6 @@ export default function FoldersScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
-  // const [selectedWidget, setSelectedWidget] = useState<ArchivedWidget | null>(
-  //   null,
-  // );
 
   const getColorKeyFromValue = (
     value: string,
@@ -279,9 +276,9 @@ export default function FoldersScreen() {
         onConfirm={async () => {
           if (selectedFolder) {
             try {
-              const widgetIdAsNumber = Number(selectedFolder.id);
+              const folderIdAsNumber = Number(selectedFolder.id);
               const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(widgetIdAsNumber);
+                await folderService.deleteFolder(folderIdAsNumber);
 
               setShouldReload(successfullyDeleted);
 
