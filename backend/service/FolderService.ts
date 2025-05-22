@@ -1,5 +1,4 @@
 import { FolderDTO } from "@/shared/dto/FolderDTO";
-import { folderRepository } from "../repository/implementation/FolderRepository.implentation";
 import { FolderRepository } from "../repository/interfaces/FolderRepository.interface";
 import { NewFolder } from "../domain/entity/Folder";
 import { FolderMapper } from "../util/mapper/FolderMapper";
@@ -15,7 +14,8 @@ import { folderID } from "../domain/common/IDs";
  * - Handles and wraps errors in service-specific error types.
  */
 export class FolderService {
-  constructor(private folderRepo: FolderRepository = folderRepository) {}
+  // constructor accepts repo instace
+  constructor(private folderRepo: FolderRepository) {}
 
   /**
    * Inserts a new folder based on the provided DTO.
@@ -65,6 +65,3 @@ export class FolderService {
     }
   }
 }
-
-// Singleton instance of the FolderService.
-export const folderService = new FolderService();

@@ -21,18 +21,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectFolderComponent from "./SelectFolderComponent/SelectFolderComponent";
-import { folderService } from "@/backend/service/FolderService";
-import { generalPageService } from "@/backend/service/GeneralPageService";
 import { FlatList } from "react-native";
 import { Button } from "../Button/Button";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { useSnackbar } from "../Snackbar/Snackbar";
 import { TagDTO } from "@/shared/dto/TagDTO";
-import { tagService } from "@/backend/service/TagService";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { useServices } from "@/context/ServiceContext";
 
 interface SelectFolderModalProps {
   visible: boolean;
@@ -56,6 +54,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const [editingFolder, setEditingFolder] = useState<FolderDTO | null>(null);
   const [folders, setFolders] = useState<FolderDTO[]>([]);
 
+  const { generalPageService, tagService, folderService } = useServices();
   const { showSnackbar } = useSnackbar();
 
   const handleFolderSubmit = async () => {

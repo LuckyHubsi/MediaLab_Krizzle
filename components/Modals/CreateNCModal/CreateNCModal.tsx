@@ -26,9 +26,8 @@ import { BottomInputModal } from "../BottomInputModal/BottomInputModal";
 import { set } from "date-fns";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagDTO } from "@/shared/dto/TagDTO";
-import { tagService } from "@/backend/service/TagService";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
-import { folderService } from "@/backend/service/FolderService";
+import { useServices } from "@/context/ServiceContext";
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -39,6 +38,8 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   isVisible,
   onClose,
 }) => {
+  const { folderService, tagService } = useServices();
+
   const colorScheme = useActiveColorScheme() ?? "light";
   const router = useRouter();
 

@@ -10,6 +10,7 @@ import {
 } from "../query/FolderQuery";
 import { FolderModel } from "../model/FolderModel";
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Implementation of the FolderRepository interface using SQL queries.
@@ -21,6 +22,11 @@ export class FolderRepositoryImpl
   extends BaseRepositoryImpl
   implements FolderRepository
 {
+  // constructor accepts database instace
+  constructor(db: SQLite.SQLiteDatabase) {
+    super(db);
+  }
+
   /**
    * Inserts a new folder into the database.
    *
@@ -77,6 +83,3 @@ export class FolderRepositoryImpl
     }
   }
 }
-
-// Singleton instance of the FolderRepository implementation.
-export const folderRepository = new FolderRepositoryImpl();

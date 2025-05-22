@@ -30,10 +30,8 @@ import { TagDTO } from "@/shared/dto/TagDTO";
 import { PageType } from "@/shared/enum/PageType";
 import { FolderState } from "@/shared/enum/FolderState";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { generalPageService } from "@/backend/service/GeneralPageService";
-import { tagService } from "@/backend/service/TagService";
-import { folderService } from "@/backend/service/FolderService";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { useServices } from "@/context/ServiceContext";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -55,6 +53,7 @@ export default function FolderScreen() {
     folderId: string;
     title: string;
   }>();
+  const { generalPageService, tagService, folderService } = useServices();
   const colorScheme = useActiveColorScheme();
   const router = useRouter();
 
