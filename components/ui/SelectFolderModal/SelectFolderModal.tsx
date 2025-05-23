@@ -218,7 +218,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
           >
             {folders.length !== 0 ? (
               <ThemedText>
-                Move{" "}
+                Move
                 <ThemedText fontWeight="semibold">{widgetTitle}</ThemedText> to
                 {selectedFolder && (
                   <ThemedText colorVariant="primary" fontWeight="semibold">

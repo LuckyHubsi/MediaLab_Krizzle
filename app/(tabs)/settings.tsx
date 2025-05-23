@@ -25,7 +25,7 @@ export default function TabThreeScreen() {
               style={{ width: 30, height: 32 }}
             />
           </TouchableOpacity>
-        </IconTopRight>{" "}
+        </IconTopRight>
         <ThemedText fontSize="xl" fontWeight="bold">
           Settings
         </ThemedText>
