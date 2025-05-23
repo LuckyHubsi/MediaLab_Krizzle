@@ -212,7 +212,18 @@ export default function EditWidgetScreen() {
       <View style={{ marginBottom: 8 }}>
         <Card>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <Header title="Edit Widget" onIconPress={() => alert("Popup!")} />
+            <View style={{ alignItems: "center" }}>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Edit Widget
+              </ThemedText>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Change the appearance of your widget
+              </ThemedText>
+            </View>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}
@@ -306,12 +317,21 @@ export default function EditWidgetScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View style={{ marginBottom: 10 }}>
+        <View
+          style={{
+            paddingBottom: Platform.OS === "android" ? 8 : 24,
+          }}
+        >
           <BottomButtons
-            singleButtonText={"Save Changes"}
+            titleLeftButton="Discard"
+            titleRightButton="Save"
+            onDiscard={() => {
+              router.back();
+            }}
             onNext={updateWidget}
+            variant="back"
             hasProgressIndicator={false}
-            progressStep={1}
+            progressStep={2}
           />
         </View>
       )}
