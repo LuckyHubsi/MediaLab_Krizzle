@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import Textfield from "../Textfield/Textfield";
 import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./AddCollectionItemCard.styles";
@@ -43,9 +43,51 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {},
   );
+
   const [customLinkText, setCustomLinkText] = useState<{
     [id: number]: string;
   }>({});
+
+  const [linkValues, setLinkValues] = useState<{
+    [id: number]: string;
+  }>({});
+
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!attributes || initializedRef.current) return;
+
+    const linkTextMap: { [id: number]: string } = {};
+    const linkValueMap: { [id: number]: string } = {};
+    let hasLinkAttributes = false;
+
+    attributes.forEach((attribute) => {
+      if (attribute.type === AttributeType.Link && attribute.attributeID) {
+        hasLinkAttributes = true;
+        const attributeId = Number(attribute.attributeID);
+        const currentValue = attributeValues[attributeId];
+
+        if (
+          currentValue &&
+          typeof currentValue === "object" &&
+          "displayText" in currentValue
+        ) {
+          linkTextMap[attributeId] = currentValue.displayText || "";
+          linkValueMap[attributeId] = currentValue.value || "";
+        } else {
+          linkTextMap[attributeId] = "";
+          linkValueMap[attributeId] = "";
+        }
+      }
+    });
+
+    if (hasLinkAttributes) {
+      setCustomLinkText(linkTextMap);
+      setLinkValues(linkValueMap);
+      initializedRef.current = true;
+    }
+  }, [attributes]);
+
   const handleTagSelect = (attributeLabel: string, tag: string) => {
     setSelectedTags((prev) => {
       const currentTags = prev[attributeLabel] || [];
@@ -188,29 +230,30 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
             }
             break;
           case AttributeType.Link:
+            const attributeId = Number(attribute.attributeID);
             elements.push(
               <LinkPicker
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
-                value={currentValue?.value || ""}
+                value={linkValues[attributeId] || ""}
                 onChange={(text) => {
-                  const attributeId = Number(attribute.attributeID);
-                  const customText = customLinkText[attributeId] || "";
-                  onInputChange(attributeId, text, customText);
+                  setLinkValues((prev) => ({
+                    ...prev,
+                    [attributeId]: text,
+                  }));
+
+                  const currentDisplayText = customLinkText[attributeId] || "";
+                  onInputChange(attributeId, text, currentDisplayText);
                 }}
-                linkText={customLinkText[Number(attribute.attributeID)] || ""}
+                linkText={customLinkText[attributeId] || ""}
                 onLinkTextChange={(text) => {
                   setCustomLinkText((prev) => ({
                     ...prev,
-                    [Number(attribute.attributeID)]: text,
+                    [attributeId]: text,
                   }));
 
-                  const currentVal = currentValue?.value ?? "";
-                  onInputChange(
-                    Number(attribute.attributeID),
-                    currentVal,
-                    text,
-                  );
+                  const currentLinkValue = linkValues[attributeId] || "";
+                  onInputChange(attributeId, currentLinkValue, text);
                 }}
               />,
             );
