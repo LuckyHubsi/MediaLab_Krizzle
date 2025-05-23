@@ -65,7 +65,10 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
-    if (!trimmedFolder) return;
+    if (!trimmedFolder) {
+      showSnackbar("Please enter a folder name.", "top", "error");
+      return;
+    }
 
     if (trimmedFolder.length > 30) {
       showSnackbar(
