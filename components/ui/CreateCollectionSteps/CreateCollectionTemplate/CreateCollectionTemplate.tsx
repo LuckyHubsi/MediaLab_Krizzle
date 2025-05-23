@@ -25,6 +25,7 @@ import { Colors } from "@/constants/Colors";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 interface CreateCollectionTemplateProps {
   data: CollectionData;
@@ -221,11 +222,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       >
         <View style={{ gap: 10, paddingBottom: 10 }}>
           <Card>
-            <CardText>
-              <CardHeader>
-                <ThemedText fontSize="l" fontWeight="bold">
-                  Adding Templates
-                </ThemedText>
+            <View style={{ top: 5, position: "absolute", right: 10 }}>
+              <IconTopRight>
                 <TouchableOpacity onPress={() => setShowHelp(true)}>
                   <MaterialIcons
                     name="help-outline"
@@ -233,6 +231,13 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     color={Colors.primary}
                   />
                 </TouchableOpacity>
+              </IconTopRight>
+            </View>
+            <CardText>
+              <CardHeader>
+                <ThemedText fontSize="l" fontWeight="bold">
+                  Adding Templates
+                </ThemedText>
               </CardHeader>
               <ThemedText
                 fontSize="s"

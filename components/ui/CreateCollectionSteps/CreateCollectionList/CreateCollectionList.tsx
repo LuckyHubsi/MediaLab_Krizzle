@@ -34,6 +34,7 @@ import {
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -129,11 +130,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     >
       <View style={{ flex: 1 }}>
         <Card>
-          <CardText>
-            <CardHeader>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Adding Lists
-              </ThemedText>
+          <View style={{ top: 5, position: "absolute", right: 10 }}>
+            <IconTopRight>
               <TouchableOpacity onPress={() => setShowHelp(true)}>
                 <MaterialIcons
                   name="help-outline"
@@ -141,6 +139,13 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
                   color={Colors.primary}
                 />
               </TouchableOpacity>
+            </IconTopRight>
+          </View>
+          <CardText>
+            <CardHeader>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Adding Lists
+              </ThemedText>
             </CardHeader>
             <ThemedText
               fontSize="s"
