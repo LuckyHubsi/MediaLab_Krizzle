@@ -1,4 +1,10 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { TagRepositoryImpl } from "@/backend/repository/implementation/TagRepository.implementation";
 import { GeneralPageRepositoryImpl } from "@/backend/repository/implementation/GeneralPageRepository.implementation";
@@ -10,6 +16,7 @@ import { CollectionRepositoryImpl } from "@/backend/repository/implementation/Co
 import { CollectionCategoryRepositoryImpl } from "@/backend/repository/implementation/CollectionCategoryRepository.implementation";
 import { ItemRepositoryImpl } from "@/backend/repository/implementation/ItemRepository.implementation";
 import { FolderRepositoryImpl } from "@/backend/repository/implementation/FolderRepository.implentation";
+import { runMigrations } from "@/backend/migrations/runMigration";
 
 /**
  * Provides access to all repository implementations via React context.
@@ -46,6 +53,7 @@ const RepositoryContext = createContext<RepositoryContextType | null>(null);
  */
 export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
   const db = useSQLiteContext();
+  const [ready, setReady] = useState(false);
 
   db.runAsync("PRAGMA foreign_keys = ON;");
 
@@ -59,6 +67,17 @@ export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
   const collectionCategoryRepository = new CollectionCategoryRepositoryImpl(db);
   const itemRepository = new ItemRepositoryImpl(db);
   const folderRepository = new FolderRepositoryImpl(db);
+
+  // run db migration as soon as possible
+  useEffect(() => {
+    (async () => {
+      await runMigrations(db);
+      setReady(true);
+    })();
+  }, []);
+
+  // don't render until the database hasn't been updated
+  if (!ready) return null;
 
   return (
     <RepositoryContext.Provider
