@@ -25,6 +25,7 @@ export const ModalContent = styled.View<{ backgroundColor: string }>`
 export const StyledTextInput = styled.TextInput<{ textColor: string }>`
   flex: 1;
   border-color: #ccc;
+  min-height: 50px;
   color: ${({ colorScheme }: ColorSchemeProps) => Colors[colorScheme].text};
   padding-vertical: 8px;
   font-size: 16px;

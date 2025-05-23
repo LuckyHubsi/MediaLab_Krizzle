@@ -58,10 +58,20 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                 textColor={Colors[colorScheme].text}
                 autoFocus
               />
-              <TouchableOpacity onPress={onSubmit}>
+              <TouchableOpacity
+                onPress={onSubmit}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  marginRight: -10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <MaterialIcons
                   name="arrow-upward"
-                  size={28}
+                  size={24}
                   color={Colors[colorScheme].text}
                 />
               </TouchableOpacity>
