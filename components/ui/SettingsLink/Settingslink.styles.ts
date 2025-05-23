@@ -9,6 +9,7 @@ export const LinkContainer = styled(TouchableOpacity)<ColorSchemeProps>`
   flex-direction: row;
   align-items: center;
   padding: 5px 10px;
+  height: 50px;
 `;
 
 export const IconWrapper = styled.View`
