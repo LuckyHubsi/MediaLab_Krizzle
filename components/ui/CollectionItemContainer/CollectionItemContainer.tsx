@@ -9,7 +9,7 @@ import {
   SubtitleText,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { View, Linking, TouchableOpacity } from "react-native";
+import { View, Linking, TouchableOpacity, Image } from "react-native";
 
 interface CollectionItemContainerProps {
   type?: string | number;
@@ -41,13 +41,23 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       {imageUri && (
         <View
           style={{
-            height: 320,
+            height: 400,
             width: "100%",
             borderRadius: 16,
             backgroundColor: "#EAEAEA",
             marginTop: 8,
+            overflow: "hidden",
           }}
-        />
+        >
+          <Image
+            source={{ uri: imageUri }}
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "cover",
+            }}
+          />
+        </View>
       )}
       {title && (
         <View style={{ marginTop: -4 }}>

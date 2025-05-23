@@ -89,7 +89,7 @@ export default function CollectionItemScreen() {
           />
         </View>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
           <ThemedView topPadding={0}>
@@ -97,34 +97,6 @@ export default function CollectionItemScreen() {
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}
             />
-            {/* <View
-              style={{
-                flexDirection: "row",
-                rowGap: 16,
-                columnGap: 32,
-                flexWrap: "wrap",
-              }}
-            >
-              <CollectionItemContainer
-                type="12.12.2025"
-                subtitle="Recently Read"
-                icon="calendar-month"
-              />
-              <CollectionItemContainer
-                type="4/5"
-                subtitle="Rating"
-                icon="star"
-              />
-            </View>
-            <CollectionItemContainer
-              type="Textsfdojisfdjoifsojifdoijfdsoijs"
-              subtitle="Description"
-            />{" "}
-            <CollectionItemContainer
-              link="https://www.google.com"
-              linkPreview="Google"
-              subtitle="link"
-            /> */}
           </ThemedView>
         </ScrollView>
       </SafeAreaView>

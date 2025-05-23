@@ -38,6 +38,24 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
     const elements: React.ReactNode[] = [];
 
+    const imageAttribute = attributeValues.find(
+      (attr) =>
+        attr.type === AttributeType.Image &&
+        "valueString" in attr &&
+        attr.valueString,
+    );
+    if (imageAttribute) {
+      elements.push(
+        <CollectionItemContainer
+          key={`title-${imageAttribute.attributeID}`}
+          subtitle={imageAttribute.attributeLabel}
+          imageUri={
+            "valueString" in imageAttribute ? imageAttribute.valueString : ""
+          }
+        />,
+      );
+    }
+
     const titleAttribute = attributeValues.find(
       (attr) => "valueString" in attr && attr.valueString,
     );
@@ -116,7 +134,25 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     }
 
-    // 4. Description text (text that isn't the title)
+    const linkAttribute = attributeValues.find(
+      (attr) =>
+        attr.type === AttributeType.Link &&
+        "valueString" in attr &&
+        attr.valueString,
+    );
+    if (linkAttribute) {
+      elements.push(
+        <CollectionItemContainer
+          key={`title-${linkAttribute.attributeID}`}
+          subtitle={linkAttribute.attributeLabel}
+          link={"valueString" in linkAttribute ? linkAttribute.valueString : ""}
+          linkPreview={
+            "displayText" in linkAttribute ? linkAttribute.displayText : ""
+          }
+        />,
+      );
+    }
+
     const descriptionTexts = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Text &&
