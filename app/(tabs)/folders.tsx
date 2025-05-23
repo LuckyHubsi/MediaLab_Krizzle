@@ -5,23 +5,20 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
-import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import FolderComponent from "@/components/ui/FolderComponent/FolderComponent";
-import { PageType } from "@/shared/enum/PageType";
-import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { useServices } from "@/context/ServiceContext";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
+import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -59,6 +56,9 @@ export default function FoldersScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [editMode, setEditMode] = useState(false);
+  const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
+  const [folderNameInput, setFolderNameInput] = useState("");
 
   const getColorKeyFromValue = (
     value: string,
@@ -132,6 +132,40 @@ export default function FoldersScreen() {
   //     params: { pageId: widget.id, title: widget.title },
   //   });
   // };
+
+  const handleFolderSubmit = async () => {
+    const trimmedName = folderNameInput.trim();
+    if (!trimmedName || !editingFolder) return;
+
+    if (trimmedName.length > 30) {
+      showSnackbar(
+        "Folder name must be less than 30 characters.",
+        "top",
+        "error",
+      );
+      return;
+    }
+
+    try {
+      const success = await folderService.updateFolder({
+        folderID: Number(editingFolder.id),
+        folderName: trimmedName,
+        itemCount: editingFolder.itemCount,
+      });
+
+      if (success) {
+        showSnackbar("Folder updated", "top", "success");
+        setShouldReload(true);
+      }
+    } catch (error) {
+      console.error("Error updating folder:", error);
+      showSnackbar("Update failed", "top", "error");
+    } finally {
+      setEditMode(false);
+      setEditingFolder(null);
+      setFolderNameInput("");
+    }
+  };
 
   interface Folder {
     id: string;
@@ -258,8 +292,12 @@ export default function FoldersScreen() {
           {
             label: "Edit Folder",
             icon: "edit",
-            //TODO: Add onPress Logic for editing Folder
-            onPress: async () => {},
+            onPress: () => {
+              setFolderNameInput(selectedFolder?.title ?? "");
+              setEditingFolder(selectedFolder);
+              setEditMode(true);
+              setShowModal(false);
+            },
           },
           {
             label: "Delete",
@@ -290,6 +328,18 @@ export default function FoldersScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+      <BottomInputModal
+        visible={editMode}
+        value={folderNameInput}
+        onChangeText={setFolderNameInput}
+        onSubmit={handleFolderSubmit}
+        onClose={() => {
+          setEditMode(false);
+          setEditingFolder(null);
+          setFolderNameInput("");
+        }}
+        placeholderText="Enter new folder name"
       />
     </>
   );
