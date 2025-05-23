@@ -48,6 +48,7 @@ interface CreateCollectionProps {
   };
   setData: React.Dispatch<React.SetStateAction<any>>;
   onNext?: () => void;
+  onBack?: () => void;
 }
 export type CollectionData = {
   title: string;
@@ -67,6 +68,7 @@ export type CollectionData = {
 const CreateCollection: FC<CreateCollectionProps> = ({
   data,
   setData,
+  onBack,
   onNext,
 }) => {
   const { tagService } = useServices();
@@ -154,10 +156,13 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             </TouchableOpacity>
           </IconTopRight>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <Header
-              title="Create Collection"
-              onIconPress={() => alert("Popup!")}
-            />
+            <ThemedText
+              fontSize="l"
+              fontWeight="bold"
+              style={{ alignSelf: "flex-start", marginLeft: 10 }}
+            >
+              Create Collection
+            </ThemedText>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}
@@ -244,9 +249,21 @@ const CreateCollection: FC<CreateCollectionProps> = ({
         </ContentWrapper>
       </ScrollContainer>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <ButtonContainer>
+        <View
+          style={{
+            paddingBottom: Platform.OS === "android" ? 8 : 24,
+          }}
+        >
           <BottomButtons
-            singleButtonText={"Next"}
+            titleLeftButton="Discard"
+            titleRightButton="Next"
+            onDiscard={() => {
+              if (onBack) {
+                onBack();
+              } else {
+                router.back(); // fallback
+              }
+            }}
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
@@ -259,12 +276,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               }
               onNext?.();
             }}
+            variant="back"
             hasProgressIndicator={false}
-            progressStep={1}
+            progressStep={2}
           />
-        </ButtonContainer>
+        </View>
       )}
-
       <ChoosePopup
         visible={popupVisible}
         type={popupType}
