@@ -84,7 +84,7 @@ export default function FoldersScreen() {
       });
 
       if (success) {
-        showSnackbar("Folder updated", "top", "success");
+        showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
       }
     } catch (error) {
