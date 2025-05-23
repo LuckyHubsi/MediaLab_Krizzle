@@ -112,31 +112,33 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
-      <AndroidPickerWrapper colorScheme={colorScheme}>
-        <CustomPicker
-          value={itemType}
-          onValueChange={(value) => {
-            if (onTypeChange) onTypeChange(value as string);
-          }}
-          items={
-            isTitleCard
-              ? [{ label: "Text", value: "text" }]
-              : typeArray
-                  .filter((item) => item !== "item")
-                  .map((item) => ({
-                    label: item.charAt(0).toUpperCase() + item.slice(1),
-                    value: item,
-                  }))
-          }
-          placeholder={{ label: "Select item", value: "" }}
-          colorScheme={colorScheme}
-        />
-      </AndroidPickerWrapper>
+      {!isTitleCard && (
+        <AndroidPickerWrapper colorScheme={colorScheme}>
+          <CustomPicker
+            value={itemType}
+            onValueChange={(value) => {
+              if (onTypeChange) onTypeChange(value as string);
+            }}
+            items={typeArray
+              .filter((item) => item !== "item")
+              .map((item) => ({
+                label: item.charAt(0).toUpperCase() + item.slice(1),
+                value: item,
+              }))}
+            placeholder={{ label: "Select item", value: "" }}
+            colorScheme={colorScheme}
+          />
+        </AndroidPickerWrapper>
+      )}
 
       <Textfield
         showTitle={false}
         textfieldIcon={textfieldIcon}
-        placeholderText={`Add a title to your ${itemType}`}
+        placeholderText={
+          isTitleCard
+            ? "Add a title to your item"
+            : `Add a title to your ${itemType}`
+        }
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
