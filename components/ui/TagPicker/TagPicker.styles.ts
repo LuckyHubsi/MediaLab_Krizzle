@@ -58,3 +58,10 @@ export const TagPill = styled.View<{
         ? Colors[colorScheme].pillBackground
         : Colors[colorScheme].pillBackground};
 `;
+
+export const EditTextContainer = styled.TouchableOpacity`
+  height: 48;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
