@@ -34,6 +34,7 @@ import {
 } from "../CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
+import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -60,6 +61,8 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
+  const Wrapper =
+    Platform.OS === "ios" ? TouchableWithoutFeedback : React.Fragment;
 
   const { showSnackbar } = useSnackbar();
 
@@ -120,21 +123,25 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <Wrapper
+      {...(Platform.OS === "ios"
+        ? { onPress: Keyboard.dismiss, accessible: false }
+        : {})}
+    >
       <View style={{ flex: 1 }}>
         <Card>
+          <IconTopRight onPress={() => setShowHelp(true)}>
+            <MaterialIcons
+              name="help-outline"
+              size={26}
+              color={Colors.primary}
+            />
+          </IconTopRight>
           <CardText>
             <CardHeader>
               <ThemedText fontSize="l" fontWeight="bold">
                 Adding Lists
               </ThemedText>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={Colors.primary}
-                />
-              </TouchableOpacity>
             </CardHeader>
             <ThemedText
               fontSize="s"
@@ -159,8 +166,6 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           </ItemCount>
         </ItemCountContainer>
         <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="on-drag"
           contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
         >
@@ -284,7 +289,7 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           />
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </Wrapper>
   );
 };
 

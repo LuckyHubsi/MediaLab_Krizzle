@@ -6,7 +6,7 @@ export const Container = styled.View`
 
 export const ScrollContainer = styled.ScrollView.attrs(() => ({
   contentContainerStyle: {
-    paddingBottom: 85,
+    paddingBottom: 70,
   },
   showsVerticalScrollIndicator: false,
 }))``;

@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
-import React, { useState } from "react";
-import { Platform, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Keyboard, Platform, View } from "react-native";
 import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { HapticTab } from "@/components/HapticTab";
@@ -12,31 +12,57 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 export default function TabLayout() {
   const colorScheme = useActiveColorScheme();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true),
+    );
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false),
+    );
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const theme = colorScheme ?? "light";
 
   return (
     <View style={{ flex: 1 }}>
       <Tabs
-        screenOptions={() => {
-          const theme = colorScheme ?? "light";
-          return {
-            tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
-            tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
-            headerShown: false,
-            tabBarButton: HapticTab,
-            tabBarBackground: TabBarBackground,
-            tabBarLabelStyle: {
-              fontFamily: "Lexend_400Regular",
-              fontSize: 12,
-            },
-            tabBarStyle: {
-              position: Platform.OS === "ios" ? "absolute" : "relative",
-              height: Platform.OS === "ios" ? 80 : 60,
-              paddingTop: Platform.OS === "ios" ? 5 : 2,
-              backgroundColor: Colors[theme].tabBarBackgroundColor,
-              borderTopWidth: 0,
-              paddingRight: 75,
-            },
-          };
+        screenOptions={{
+          tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
+          tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarBackground: () =>
+            Platform.OS === "android" && isKeyboardVisible ? null : (
+              <TabBarBackground />
+            ),
+          tabBarHideOnKeyboard: Platform.OS === "android",
+          tabBarLabelStyle: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 12,
+          },
+          tabBarStyle: {
+            position: Platform.OS === "ios" ? "absolute" : "relative",
+            height:
+              Platform.OS === "android" && isKeyboardVisible
+                ? 0
+                : Platform.OS === "ios"
+                  ? 80
+                  : 60,
+            paddingTop: Platform.OS === "ios" ? 5 : 2,
+            backgroundColor:
+              Platform.OS === "android" && isKeyboardVisible
+                ? "transparent"
+                : Colors[theme].tabBarBackgroundColor,
+            borderTopWidth: 0,
+            paddingRight: 75,
+          },
         }}
       >
         <Tabs.Screen
@@ -67,16 +93,20 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <View
-        style={{
-          position: "absolute",
 
-          right: 0,
-          bottom: 0,
-        }}
-      >
-        <FloatingAddButton onPress={() => setModalVisible(true)} />
-      </View>
+      {/* FloatingAddButton only visible if keyboard is not open on Android */}
+      {!(Platform.OS === "android" && isKeyboardVisible) && (
+        <View
+          style={{
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <FloatingAddButton onPress={() => setModalVisible(true)} />
+        </View>
+      )}
+
       <ModalSelection
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}

@@ -48,6 +48,7 @@ interface CreateCollectionProps {
   };
   setData: React.Dispatch<React.SetStateAction<any>>;
   onNext?: () => void;
+  onBack?: () => void;
 }
 export type CollectionData = {
   title: string;
@@ -67,6 +68,7 @@ export type CollectionData = {
 const CreateCollection: FC<CreateCollectionProps> = ({
   data,
   setData,
+  onBack,
   onNext,
 }) => {
   const { tagService } = useServices();
@@ -144,20 +146,26 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     <>
       <View style={{ marginBottom: 8 }}>
         <Card>
-          <IconTopRight>
-            <TouchableOpacity onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={Colors.primary}
-              />
-            </TouchableOpacity>
+          <IconTopRight onPress={() => setShowHelp(true)}>
+            <MaterialIcons
+              name="help-outline"
+              size={26}
+              color={Colors.primary}
+            />
           </IconTopRight>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <Header
-              title="Create Collection"
-              onIconPress={() => alert("Popup!")}
-            />
+            <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Create Collection
+              </ThemedText>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Design your new collection's widget
+              </ThemedText>
+            </View>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}
@@ -244,9 +252,21 @@ const CreateCollection: FC<CreateCollectionProps> = ({
         </ContentWrapper>
       </ScrollContainer>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <ButtonContainer>
+        <View
+          style={{
+            paddingBottom: Platform.OS === "android" ? 8 : 24,
+          }}
+        >
           <BottomButtons
-            singleButtonText={"Next"}
+            titleLeftButton="Discard"
+            titleRightButton="Next"
+            onDiscard={() => {
+              if (onBack) {
+                onBack();
+              } else {
+                router.back(); // fallback
+              }
+            }}
             onNext={() => {
               setHasClickedNext(true);
               if (!data.title || data.title.trim() === "") {
@@ -259,12 +279,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               }
               onNext?.();
             }}
+            variant="back"
             hasProgressIndicator={false}
-            progressStep={1}
+            progressStep={2}
           />
-        </ButtonContainer>
+        </View>
       )}
-
       <ChoosePopup
         visible={popupVisible}
         type={popupType}

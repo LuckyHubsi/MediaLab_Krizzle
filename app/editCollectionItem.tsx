@@ -11,6 +11,7 @@ import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function EditCollectionItem() {
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
@@ -29,6 +30,8 @@ export default function EditCollectionItem() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasClickedSave, setHasClickedSave] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     (async () => {
@@ -161,6 +164,13 @@ export default function EditCollectionItem() {
     setSelectedCategoryID(numericCategoryID);
   };
 
+  const validateTitle = () => {
+    const titleAttr = attributes.find((a) => a.type === AttributeType.Text);
+    if (!titleAttr) return true;
+    const val = attributeValues[titleAttr.attributeID!];
+    return typeof val === "string" && val.trim().length > 0;
+  };
+
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
@@ -186,6 +196,7 @@ export default function EditCollectionItem() {
             onInputChange={handleInputChange}
             onListChange={handleListChange}
             selectedCategoryID={selectedCategoryID}
+            hasNoInputError={hasClickedSave && !validateTitle()}
           />
         </ScrollView>
         {(Platform.OS !== "android" || !keyboardVisible) && (
@@ -195,6 +206,11 @@ export default function EditCollectionItem() {
             variant="discard"
             onDiscard={router.back}
             onNext={async () => {
+              setHasClickedSave(true);
+              if (!validateTitle()) {
+                showSnackbar("Please enter a title.", "bottom", "error");
+                return;
+              }
               try {
                 const numericItemId = Number(itemId);
                 const currentItem =

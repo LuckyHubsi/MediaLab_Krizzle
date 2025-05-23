@@ -24,7 +24,7 @@ export const TagListItem: React.FC<Props> = ({
 
   return (
     <Row>
-      <Column>
+      <Column style={{ marginLeft: 14 }}>
         <ThemedText
           style={{
             flexWrap: "wrap",
@@ -46,14 +46,30 @@ export const TagListItem: React.FC<Props> = ({
         )}
       </Column>
       <IconRow>
-        <TouchableOpacity onPress={onEdit} style={{ marginRight: 16 }}>
+        <TouchableOpacity
+          onPress={onEdit}
+          style={{
+            height: 48,
+            width: 48,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <MaterialIcons
             name="edit"
             size={24}
             color={colorScheme === "light" ? "#000" : "#fff"}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onDelete}>
+        <TouchableOpacity
+          onPress={onDelete}
+          style={{
+            height: 48,
+            width: 48,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <MaterialIcons
             name="delete"
             size={24}

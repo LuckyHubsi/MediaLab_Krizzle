@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
@@ -18,7 +18,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const colorScheme = useActiveColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
 
-  // Call onSearch live as user types
   useEffect(() => {
     onSearch(query);
   }, [query]);
@@ -35,9 +34,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
         value={query}
         onChangeText={setQuery}
         returnKeyType="search"
+        accessibilityRole="search"
+        accessibilityHint="Type to search"
       />
       {query.length > 0 && (
-        <TouchableOpacity onPress={() => setQuery("")}>
+        <TouchableOpacity
+          onPress={() => setQuery("")}
+          style={{
+            width: 48,
+            height: 48,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: -12,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Clear search input"
+        >
           <MaterialIcons name="close" size={20} color={themeColors.text} />
         </TouchableOpacity>
       )}

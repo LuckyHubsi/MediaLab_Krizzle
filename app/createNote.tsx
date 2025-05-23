@@ -82,6 +82,7 @@ export default function CreateNoteScreen() {
   const createNote = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
+      showSnackbar("Please enter a title to continue.", "bottom", "error");
       return;
     }
 
@@ -164,7 +165,18 @@ export default function CreateNoteScreen() {
       <View style={{ marginBottom: 8 }}>
         <Card>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <Header title="Create Note" onIconPress={() => alert("Popup!")} />
+            <View style={{ alignItems: "center" }}>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Create Note
+              </ThemedText>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Design your new note’s widget
+              </ThemedText>
+            </View>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label ?? ""}
@@ -185,7 +197,7 @@ export default function CreateNoteScreen() {
         </Card>
       </View>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 85 }}
+        contentContainerStyle={{ paddingBottom: 70 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
@@ -258,12 +270,21 @@ export default function CreateNoteScreen() {
         </View>
       </ScrollView>
       {(Platform.OS !== "android" || !keyboardVisible) && (
-        <View>
+        <View
+          style={{
+            paddingBottom: Platform.OS === "android" ? 8 : 24,
+          }}
+        >
           <BottomButtons
-            singleButtonText={"Create"}
+            titleLeftButton="Discard"
+            titleRightButton="Save"
+            onDiscard={() => {
+              router.back();
+            }}
             onNext={createNote}
+            variant="back"
             hasProgressIndicator={false}
-            progressStep={1}
+            progressStep={2}
           />
         </View>
       )}
