@@ -46,7 +46,16 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         {tags.map((tag) => {
           const isSelected = selectedTag?.tagID === tag.tagID;
           return (
-            <TouchableOpacity key={tag.tagID} onPress={() => onSelectTag(tag)}>
+            <TouchableOpacity
+              key={tag.tagID}
+              onPress={() => onSelectTag(tag)}
+              style={{
+                height: 48,
+                alignItems: "center",
+                marginRight: 4,
+                justifyContent: "center",
+              }}
+            >
               <TagPill isSelected={isSelected} colorScheme={themeMode}>
                 {isSelected && (
                   <MaterialIcons

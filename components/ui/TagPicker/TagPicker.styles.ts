@@ -11,7 +11,8 @@ export const HeaderRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-top: 4px;
+  margin-bottom: 2px;
 `;
 
 export const BackIcon = styled(Ionicons)<ColorSchemeProps>`
@@ -42,6 +43,7 @@ export const TagPill = styled.View<{
   flex-direction: row;
   margin-top: 3px;
   align-items: center;
+  min-width: 50px;
   padding: 5px 15px;
   margin-right: 4px;
   border-radius: 33px;
