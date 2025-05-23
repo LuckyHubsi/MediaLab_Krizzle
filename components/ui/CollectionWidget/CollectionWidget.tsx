@@ -5,12 +5,12 @@ import {
   CollectionCardContainer,
   CollectionText,
   CollectionRating,
-  CollectionTitle,
   CollectionSelectable,
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { ThemedText } from "@/components/ThemedText";
 
 type Item = {
   itemID: number;
@@ -67,7 +67,9 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     >
       <CollectionCardContainer colorScheme={colorScheme}>
         {/* Title */}
-        <CollectionTitle colorScheme={colorScheme}>{title}</CollectionTitle>
+        <ThemedText fontWeight="bold" fontSize="regular">
+          {title}
+        </ThemedText>
 
         {/* Text preview */}
         {text && (

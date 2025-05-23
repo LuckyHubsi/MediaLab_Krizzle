@@ -3,20 +3,42 @@ import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { ColorSchemeProps } from "@/context/ThemeContext";
 
-export const StyledHeader = styled.View<ColorSchemeProps>`
+export const StyledHeader = styled.View<{
+  colorScheme: "light" | "dark";
+  isTransparent?: boolean;
+}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 16px;
-  background-color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "#FBFBFB" : "#111111"};
+  background-color: ${({
+    colorScheme,
+    isTransparent,
+  }: {
+    colorScheme: "light" | "dark";
+    isTransparent?: boolean;
+  }) =>
+    isTransparent
+      ? "transparent"
+      : colorScheme === "light"
+        ? "#FBFBFB"
+        : "#111111"};
 `;
 
-export const BackIcon = styled(Ionicons)<ColorSchemeProps>`
+export const BackIcon = styled(Ionicons)<{
+  colorScheme: "light" | "dark";
+  isTransparent?: boolean;
+}>`
   font-size: 24px;
-  color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "black" : "white"};
+  color: ${({
+    colorScheme,
+    isTransparent,
+  }: {
+    colorScheme: "light" | "dark";
+    isTransparent?: boolean;
+  }) =>
+    isTransparent ? "white" : colorScheme === "light" ? "black" : "white"};
   margin-right: 15px;
   margin-top: 5px;
   margin-left: 5px;

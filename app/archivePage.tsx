@@ -155,7 +155,7 @@ export default function ArchiveScreen() {
           ) : (
             <>
               <SearchBar
-                placeholder="Search"
+                placeholder="Search for title"
                 onSearch={(query) => setSearchQuery(query)}
               />
 

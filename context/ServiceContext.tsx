@@ -5,6 +5,7 @@ import { GeneralPageService } from "@/backend/service/GeneralPageService";
 import { NoteService } from "@/backend/service/NoteService";
 import { ItemTemplateService } from "@/backend/service/ItemTemplateService";
 import { CollectionService } from "@/backend/service/CollectionService";
+import { FolderService } from "@/backend/service/FolderService";
 
 /**
  * Provides application-level services via React context.
@@ -20,6 +21,7 @@ type ServiceContextType = {
   noteService: NoteService;
   itemTemplateService: ItemTemplateService;
   collectionService: CollectionService;
+  folderService: FolderService;
 };
 
 /**
@@ -45,6 +47,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     collectionRepository,
     collectionCategoryRepository,
     itemRepository,
+    folderRepository,
   } = useRepositories();
 
   const tagService = new TagService(tagRepository);
@@ -60,6 +63,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     collectionCategoryRepository,
     itemRepository,
   );
+  const folderService = new FolderService(folderRepository);
 
   return (
     <ServiceContext.Provider
@@ -69,6 +73,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         noteService,
         itemTemplateService,
         collectionService,
+        folderService,
       }}
     >
       {children}

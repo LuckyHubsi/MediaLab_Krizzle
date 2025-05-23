@@ -4,35 +4,34 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
-import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { TagDTO } from "@/shared/dto/TagDTO";
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
-import { useActiveColorScheme } from "@/context/ThemeContext";
-import { PageType } from "@/shared/enum/PageType";
-import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
+import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { TagDTO } from "@/shared/dto/TagDTO";
+import { PageType } from "@/shared/enum/PageType";
+import { FolderState } from "@/shared/enum/FolderState";
+import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
+import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
-import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -49,13 +48,13 @@ export const getIconForPageType = (type: string) => {
   }
 };
 
-export default function HomeScreen() {
-  const { generalPageService, tagService } = useServices();
-
+export default function FolderScreen() {
+  const { folderId, title } = useLocalSearchParams<{
+    folderId: string;
+    title: string;
+  }>();
+  const { generalPageService, tagService, folderService } = useServices();
   const colorScheme = useActiveColorScheme();
-  const color = Colors[colorScheme || "light"].tint;
-  const { width } = useWindowDimensions();
-  const columns = width >= 768 ? 3 : 2;
   const router = useRouter();
 
   interface Widget {
@@ -81,12 +80,10 @@ export default function HomeScreen() {
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
-  const [sortingMode, setSortingMode] = useState<GeneralPageState>(
-    GeneralPageState.GeneralModfied,
+  const [sortingMode, setSortingMode] = useState<FolderState>(
+    FolderState.GeneralModfied,
   );
-
-  const [showFolderSelectionModal, setShowFolderSelectionModal] =
-    useState(false);
+  const [folder, setFolder] = useState<FolderDTO | null>(null);
 
   const getColorKeyFromValue = (
     value: string,
@@ -118,34 +115,33 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
-        try {
-          const pinnedData = await generalPageService.getAllGeneralPageData(
-            GeneralPageState.Pinned,
-          );
-          const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
-          setPinnedWidgets(pinnedEnrichedWidgets);
+      const loadData = async () => {
+        if (!folderId) return;
 
-          const data =
-            await generalPageService.getAllGeneralPageData(sortingMode);
-          const enrichedWidgets = mapToEnrichedWidgets(data);
+        try {
+          const folderData = await folderService.getFolder(Number(folderId));
+          setFolder(folderData);
+          const fetchedWidgets =
+            await generalPageService.getAllFolderGeneralPageData(
+              sortingMode,
+              Number(folderId),
+            );
+          const enrichedWidgets = mapToEnrichedWidgets(fetchedWidgets);
           setWidgets(enrichedWidgets);
         } catch (error) {
-          console.error("Error loading widgets:", error);
+          console.error("Error loading folder:", error);
         }
-      })();
 
-      (async () => {
         try {
           const tagData = await tagService.getAllTags();
           if (tagData) setTags(tagData);
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
-      })();
+      };
 
-      setShouldReload(false);
-    }, [shouldReload, sortingMode]),
+      loadData();
+    }, [folderId, sortingMode]),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -189,44 +185,19 @@ export default function HomeScreen() {
   return (
     <>
       <SafeAreaView>
+        {/* TODO: pass correct backBehavior */}
+        <CustomStyledHeader
+          title={title}
+          iconName="more-horiz"
+          //   backBehavior={routing}
+          onIconPress={() => setShowModal(true)}
+        />
         <ThemedView>
-          <IconTopRight>
-            <TouchableOpacity
-              onPress={() => {
-                router.push({
-                  pathname: "/faq",
-                });
-              }}
-            >
-              <Image
-                source={require("@/assets/images/kriz.png")}
-                style={{ width: 30, height: 32 }}
-              />
-            </TouchableOpacity>
-          </IconTopRight>
-
-          <ThemedText fontSize="xl" fontWeight="bold">
-            Home
-          </ThemedText>
-
           {widgets.length === 0 && pinnedWidgets.length === 0 ? (
-            <EmptyHome
-              text="Add your first note/collection"
-              buttonLabel="Start"
-              useModal={false}
-              onButtonPress={() => setModalVisible(true)}
-            />
+            <ThemedText textIsCentered>Your Folder is empty.</ThemedText>
           ) : (
             <>
-              <SearchBar
-                placeholder="Search for title"
-                onSearch={setSearchQuery}
-              />
-              <TagList
-                tags={tags}
-                onSelect={(tag) => setSelectedTag(tag)}
-                onPress={() => router.push("/tagManagement")}
-              />
+              <SearchBar placeholder="Search" onSearch={setSearchQuery} />
 
               <ScrollView
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -342,6 +313,17 @@ export default function HomeScreen() {
               </ScrollView>
             </>
           )}
+
+          <View
+            style={{
+              position: "absolute",
+              right: 10,
+              bottom: 50,
+            }}
+          >
+            {/* TODO: Add onPress Logic */}
+            <FloatingAddButton onPress={() => {}} />
+          </View>
         </ThemedView>
       </SafeAreaView>
 
@@ -352,18 +334,18 @@ export default function HomeScreen() {
           {
             label: "Last modified descending",
             icon: "swap-vert", // or "arrow-upward"/"arrow-downward"
-            disabled: sortingMode === GeneralPageState.GeneralModfied,
+            disabled: sortingMode === FolderState.GeneralModfied,
             onPress: () => {
-              setSortingMode(GeneralPageState.GeneralModfied);
+              setSortingMode(FolderState.GeneralModfied);
               setShowSortModal(false);
             },
           },
           {
             label: "Alphabet ascending",
             icon: "sort-by-alpha",
-            disabled: sortingMode === GeneralPageState.GeneralAlphabet,
+            disabled: sortingMode === FolderState.GeneralAlphabet,
             onPress: () => {
-              setSortingMode(GeneralPageState.GeneralAlphabet);
+              setSortingMode(FolderState.GeneralAlphabet);
               setShowSortModal(false);
             },
           },
@@ -375,74 +357,15 @@ export default function HomeScreen() {
         onClose={() => setShowModal(false)}
         items={[
           {
-            label: selectedWidget?.pinned ? "Unpin Widget" : "Pin Widget",
-            icon: "push-pin",
-            disabled: !selectedWidget?.pinned && pinnedWidgets.length >= 4,
-            onPress: async () => {
-              if (
-                (selectedWidget &&
-                  !selectedWidget.pinned &&
-                  pinnedWidgets.length < 4) ||
-                (selectedWidget && selectedWidget?.pinned)
-              ) {
-                const success = await generalPageService.togglePagePin(
-                  Number(selectedWidget.id),
-                  selectedWidget.pinned,
-                );
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Edit Widget",
+            label: "Edit Folder",
             icon: "edit",
-            onPress: () => selectedWidget && goToEditPage(selectedWidget),
-          },
-          {
-            label: "Archive",
-            icon: "archive",
-            onPress: async () => {
-              if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
-                  Number(selectedWidget.id),
-                  selectedWidget.archived,
-                );
-                if (success) {
-                  showSnackbar(
-                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "success",
-                  );
-                } else {
-                  showSnackbar(
-                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                    "bottom",
-                    "error",
-                  );
-                }
-                setShouldReload(success);
-              }
-            },
-          },
-          {
-            label: "Move to Folder",
-            icon: "folder",
-            onPress: () => setShowFolderSelectionModal(true),
+            //TODO: Add onPress Logic for editing Folder
+            onPress: async () => {},
           },
           {
             label: "Delete",
             icon: "delete",
-            onPress: () => {
-              setShowModal(false); // close the QuickActionModal
-
-              if (Platform.OS === "ios") {
-                setTimeout(() => {
-                  setShowDeleteModal(true);
-                }, 300); // match iOS fade-out duration
-              } else {
-                setShowDeleteModal(true); // no delay on Android
-              }
-            },
+            onPress: () => setShowDeleteModal(true),
             danger: true,
           },
         ]}
@@ -453,13 +376,7 @@ export default function HomeScreen() {
         onClose={() => setModalVisible(false)}
       />
 
-      <SelectFolderModal
-        widgetTitle={selectedWidget?.title}
-        widgetId={selectedWidget?.id}
-        onClose={() => setShowFolderSelectionModal(false)}
-        visible={showFolderSelectionModal}
-      />
-
+      {/* TODO: Add Delete Folder Page Logic */}
       <DeleteModal
         visible={showDeleteModal}
         title={selectedWidget?.title}

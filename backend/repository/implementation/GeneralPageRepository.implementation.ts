@@ -10,19 +10,23 @@ import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
   selectAllArchivedPagesQuery,
+  selectAllPagesByAlphabetAndParentIDQuery,
   selectAllPagesByAlphabetQuery,
+  selectAllPagesByCreatedAndParentIDQuery,
   selectAllPagesByCreatedQuery,
+  selectAllPagesByLastModifiedAndParentIDQuery,
   selectAllPagesByLastModifiedQuery,
   selectAllPinnedPagesQuery,
   selectGeneralPageByIdQuery,
   updateArchivedByPageIDQuery,
   updateDateModifiedByPageIDQuery,
   updatePageByIDQuery,
+  updateParentFolderQuery,
   updatePinnedByPageIDQuery,
 } from "../query/GeneralPageQuery";
 import * as SQLite from "expo-sqlite";
 import { GeneralPageModel } from "../model/GeneralPageModel";
-import { PageID, pageID } from "@/backend/domain/common/IDs";
+import { FolderID, PageID, pageID } from "@/backend/domain/common/IDs";
 
 /**
  * Implementation of the GeneralPageRepository interface using SQL queries.
@@ -89,6 +93,71 @@ export class GeneralPageRepositoryImpl
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByCreatedQuery,
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by their last modified date (descending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByModified(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByLastModifiedAndParentIDQuery,
+        [folderId],
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError(
+        "Failed to fetch all pages sorted by last modified.",
+      );
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by alphabet (ascending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByAlphabet(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByAlphabetAndParentIDQuery,
+        [folderId],
+      );
+      return result.map(GeneralPageMapper.toEntity);
+    } catch (error) {
+      throw new RepositoryError("Failed to fetch all pages.");
+    }
+  }
+
+  /**
+   * Fetches all general pages sorted by their creation date (descending).
+   *
+   * @param folderID - A branded folderID.
+   * @returns A Promise resolving to an array of `GeneralPage` domain entities.
+   * @throws RepositoryError if the query fails.
+   */
+  async getAllFolderPagesSortedByCreated(
+    folderId: FolderID,
+  ): Promise<GeneralPage[]> {
+    try {
+      const result = await this.fetchAll<GeneralPageModel>(
+        selectAllPagesByCreatedAndParentIDQuery,
+        [folderId],
       );
       return result.map(GeneralPageMapper.toEntity);
     } catch (error) {
@@ -209,6 +278,7 @@ export class GeneralPageRepositoryImpl
             model.archived ? 1 : 0,
             model.pinned ? 1 : 0,
             model.tagID,
+            model.parentID,
           ],
           txn ?? transaction,
         );
@@ -318,6 +388,24 @@ export class GeneralPageRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryError("Failed to update last modified date");
+    }
+  }
+
+  /**
+   * Updates the folderID (parent) of a general page.
+   *
+   * @param pageId - A branded pageID.
+   * @param parentId - A branded folderID to which the page should be moved.
+   * @returns A Promise resolving to true if successful.
+   * @throws RepositoryError if the query fails.
+   */
+  async updateParentID(pageId: PageID, parentId: FolderID): Promise<boolean> {
+    try {
+      await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);
+      const allpages = await this.fetchAll("SELECT * FROM general_page_data");
+      return true;
+    } catch (error) {
+      throw new RepositoryError("Failed to update parent folderID");
     }
   }
 }

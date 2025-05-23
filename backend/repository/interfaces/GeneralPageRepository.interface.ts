@@ -4,7 +4,7 @@ import {
 } from "@/backend/domain/entity/GeneralPage";
 import { BaseRepository } from "./BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
-import { PageID } from "@/backend/domain/common/IDs";
+import { FolderID, PageID } from "@/backend/domain/common/IDs";
 
 /**
  * GeneralPageRepository defines CRUD operations for `GeneralPage` entities.
@@ -15,6 +15,9 @@ export interface GeneralPageRepository extends BaseRepository {
   getAllPagesSortedByModified(): Promise<GeneralPage[]>;
   getAllPagesSortedByCreated(): Promise<GeneralPage[]>;
   getAllPagesSortedByAlphabet(): Promise<GeneralPage[]>;
+  getAllFolderPagesSortedByModified(folderId: FolderID): Promise<GeneralPage[]>;
+  getAllFolderPagesSortedByCreated(folderId: FolderID): Promise<GeneralPage[]>;
+  getAllFolderPagesSortedByAlphabet(folderId: FolderID): Promise<GeneralPage[]>;
   getAllPinnedPages(): Promise<GeneralPage[]>;
   getAllArchivedPages(): Promise<GeneralPage[]>;
   getByPageID(pageId: PageID): Promise<GeneralPage>;
@@ -36,4 +39,5 @@ export interface GeneralPageRepository extends BaseRepository {
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+  updateParentID(pageId: PageID, parentId: FolderID): Promise<boolean>;
 }

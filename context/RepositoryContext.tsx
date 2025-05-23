@@ -9,6 +9,7 @@ import { BaseRepositoryImpl } from "@/backend/repository/implementation/BaseRepo
 import { CollectionRepositoryImpl } from "@/backend/repository/implementation/CollectionRepository.implementation";
 import { CollectionCategoryRepositoryImpl } from "@/backend/repository/implementation/CollectionCategoryRepository.implementation";
 import { ItemRepositoryImpl } from "@/backend/repository/implementation/ItemRepository.implementation";
+import { FolderRepositoryImpl } from "@/backend/repository/implementation/FolderRepository.implentation";
 
 /**
  * Provides access to all repository implementations via React context.
@@ -28,6 +29,7 @@ type RepositoryContextType = {
   collectionRepository: CollectionRepositoryImpl;
   collectionCategoryRepository: CollectionCategoryRepositoryImpl;
   itemRepository: ItemRepositoryImpl;
+  folderRepository: FolderRepositoryImpl;
 };
 
 /**
@@ -45,6 +47,8 @@ const RepositoryContext = createContext<RepositoryContextType | null>(null);
 export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
   const db = useSQLiteContext();
 
+  db.runAsync("PRAGMA foreign_keys = ON;");
+
   const baseRepository = new BaseRepositoryImpl(db);
   const tagRepository = new TagRepositoryImpl(db);
   const generalPageRepository = new GeneralPageRepositoryImpl(db);
@@ -54,6 +58,7 @@ export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
   const collectionRepository = new CollectionRepositoryImpl(db);
   const collectionCategoryRepository = new CollectionCategoryRepositoryImpl(db);
   const itemRepository = new ItemRepositoryImpl(db);
+  const folderRepository = new FolderRepositoryImpl(db);
 
   return (
     <RepositoryContext.Provider
@@ -67,6 +72,7 @@ export const RepositoryProvider = ({ children }: { children: ReactNode }) => {
         collectionRepository,
         collectionCategoryRepository,
         itemRepository,
+        folderRepository,
       }}
     >
       {children}

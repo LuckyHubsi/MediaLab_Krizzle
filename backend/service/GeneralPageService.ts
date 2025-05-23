@@ -3,10 +3,11 @@ import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepos
 import { GeneralPageMapper } from "../util/mapper/GeneralPageMapper";
 import { GeneralPage, NewGeneralPage } from "../domain/entity/GeneralPage";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
-import { PageID, pageID } from "../domain/common/IDs";
+import { folderID, PageID, pageID } from "../domain/common/IDs";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { ZodError } from "zod";
 import { ServiceError } from "../util/error/ServiceError";
+import { FolderState } from "@/shared/enum/FolderState";
 
 /**
  * GeneralPageService encapsulates all general-page-related application logic.
@@ -47,6 +48,49 @@ export class GeneralPageService {
           break;
         case GeneralPageState.Pinned:
           pages = await this.generalPageRepo.getAllPinnedPages();
+          break;
+        default:
+          break;
+      }
+      return pages.map(GeneralPageMapper.toDTO);
+    } catch (error) {
+      throw new ServiceError("Error retrieving all pages.");
+    }
+  }
+
+  /**
+   * Fetch pages by state (sorted, pinned, or archived) and parent folder ID.
+   *
+   * @param pageState - Enum - the state of the pages to be retrieved (sorted, pinned, archived)
+   * @param folderId - The ID representing the folder the page is a part of.
+   * @returns A Promise resolving to an array of `GeneralPageDTO` objects.
+   * @throws ServiceError if retrieval fails.
+   */
+  async getAllFolderGeneralPageData(
+    pageState: FolderState,
+    folderId: number,
+  ): Promise<GeneralPageDTO[]> {
+    try {
+      const brandedFolderID = folderID.parse(folderId);
+      let pages: GeneralPage[] = [];
+      switch (pageState) {
+        case FolderState.GeneralModfied:
+          pages =
+            await this.generalPageRepo.getAllFolderPagesSortedByModified(
+              brandedFolderID,
+            );
+          break;
+        case FolderState.GeneralCreated:
+          pages =
+            await this.generalPageRepo.getAllFolderPagesSortedByCreated(
+              brandedFolderID,
+            );
+          break;
+        case FolderState.GeneralAlphabet:
+          pages =
+            await this.generalPageRepo.getAllFolderPagesSortedByAlphabet(
+              brandedFolderID,
+            );
           break;
         default:
           break;
@@ -154,6 +198,25 @@ export class GeneralPageService {
       return true;
     } catch (error) {
       throw new ServiceError("Error deleting page.");
+    }
+  }
+
+  /**
+   * Updates which folder a general page belongs to.
+   *
+   * @param folderId - Number representing the folderID of the folder the page should be moved to.
+   * @param pageId - Number representing the pageID.
+   * @returns A Promise resolving to true on success.
+   * @throws ServiceError if udpate fails.
+   */
+  async updateFolderID(pageId: number, folderId: number): Promise<boolean> {
+    try {
+      const brandedPageID = pageID.parse(pageId);
+      const brandedFolderID = folderID.parse(folderId);
+      await this.generalPageRepo.updateParentID(brandedPageID, brandedFolderID);
+      return true;
+    } catch (error) {
+      throw new ServiceError("Error moving page to folder.");
     }
   }
 }

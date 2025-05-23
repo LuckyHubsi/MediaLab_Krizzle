@@ -11,32 +11,38 @@ export const CollectionListContainer = styled(
 )<CollectionListProps>`
   background-color: ${({ active, themeMode }: CollectionListProps) =>
     active
-      ? Colors.widget.blue
-      : themeMode === "dark"
-        ? Colors.dark.pillBackground
-        : Colors.light.pillBackground};
+      ? themeMode === "light"
+        ? Colors.white
+        : Colors.black
+      : "transparent"};
   display: flex;
-  width: 124px;
-  height: 42px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 0px;
+  border-color: ${({ themeMode }: CollectionListProps) =>
+    themeMode === "light" ? Colors.white : Colors.black};
+  border-style: solid;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 33px;
+  border-radius: 25px 25px 0px 0px;
   margin-right: 6px;
 `;
 
 export const CollectionListText = styled(Text)<CollectionListProps>`
   color: ${({ active, themeMode }: CollectionListProps) =>
     active
-      ? "#fff"
-      : themeMode === "dark"
-        ? Colors.dark.text
-        : Colors.light.text};
-  font-family: Lexend;
+      ? Colors.widget.blue
+      : themeMode === "light"
+        ? Colors.white
+        : Colors.black};
+  font-family: Lexend_400Regular;
   font-size: 16px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: ${({ active }: CollectionListProps) => (active ? 900 : 400)};
   line-height: 24px; /* 150% */
   letter-spacing: -0.4px;
   text-align: center;
