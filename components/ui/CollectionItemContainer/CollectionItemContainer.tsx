@@ -9,7 +9,7 @@ import {
   SubtitleText,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { View, Linking, TouchableOpacity, Image } from "react-native";
+import { View, Linking, TouchableOpacity, Image, Alert } from "react-native";
 
 interface CollectionItemContainerProps {
   type?: string | number;
@@ -35,6 +35,23 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   linkPreview,
   imageUri,
 }) => {
+  const getValidUrl = (url: string): string => {
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return "https://" + url;
+    }
+    return url;
+  };
+
+  const handlePressLink = async () => {
+    if (!link) return;
+    const validUrl = getValidUrl(link);
+    const supported = await Linking.canOpenURL(validUrl);
+    if (supported) {
+      await Linking.openURL(validUrl);
+    } else {
+      Alert.alert("Can't open this URL:", validUrl);
+    }
+  };
   return (
     <ItemContainer>
       <SubtitleText>{subtitle}</SubtitleText>
@@ -98,7 +115,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       {link && (
-        <TouchableOpacity onPress={() => Linking.openURL(link)}>
+        <TouchableOpacity onPress={handlePressLink}>
           <ContentText
             style={{ color: "#2980ff", textDecorationLine: "underline" }}
           >
