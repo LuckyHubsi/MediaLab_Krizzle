@@ -46,15 +46,6 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
 
   return (
     <AddMultiSelectablesContainer>
-      {options.length < 20 && (
-        <AddMultiSelectableButton
-          colorScheme={colorScheme}
-          onPress={handleAddButtonClick}
-        >
-          <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
-          <ThemedText colorVariant="primary">Add a selectable</ThemedText>
-        </AddMultiSelectableButton>
-      )}
       {options.length > 0 && <ThemedText>Add up to 20 Selectables</ThemedText>}
       {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
@@ -71,14 +62,19 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
           </TextfieldWrapper>
 
           <TouchableOpacity onPress={() => handleRemoveTextfield(index)}>
-            <MaterialIcons
-              name="remove-circle"
-              size={24}
-              color={Colors.negative}
-            />
+            <MaterialIcons name="delete" size={24} color={Colors.negative} />
           </TouchableOpacity>
         </SelectablesContainer>
       ))}
+      {options.length < 20 && (
+        <AddMultiSelectableButton
+          colorScheme={colorScheme}
+          onPress={handleAddButtonClick}
+        >
+          <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
+          <ThemedText colorVariant="primary">Add a selectable</ThemedText>
+        </AddMultiSelectableButton>
+      )}
       {hasNoInputError && (
         <ThemedText fontSize="s" colorVariant={"red"}>
           Please enter a text in all fields.
