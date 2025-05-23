@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import Textfield from "../Textfield/Textfield";
 import DateField from "../DateField/DateField";
 import { StyledCardWrapper } from "./AddCollectionItemCard.styles";
@@ -11,12 +11,18 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import LinkPicker from "../LinkPicker/LinkPicker";
+import ImagePickerField from "../ImagePickerField/ImagePickerField";
 
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
   attributeValues: Record<number, any>;
-  onInputChange: (attributeID: number, value: any) => void;
+  onInputChange: (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => void;
   hasNoInputError?: boolean;
   onListChange: (categoryID: number | null) => void;
   selectedCategoryID?: number | null;
@@ -37,6 +43,50 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
     {},
   );
+
+  const [customLinkText, setCustomLinkText] = useState<{
+    [id: number]: string;
+  }>({});
+
+  const [linkValues, setLinkValues] = useState<{
+    [id: number]: string;
+  }>({});
+
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!attributes || initializedRef.current) return;
+
+    const linkTextMap: { [id: number]: string } = {};
+    const linkValueMap: { [id: number]: string } = {};
+    let hasLinkAttributes = false;
+
+    attributes.forEach((attribute) => {
+      if (attribute.type === AttributeType.Link && attribute.attributeID) {
+        hasLinkAttributes = true;
+        const attributeId = Number(attribute.attributeID);
+        const currentValue = attributeValues[attributeId];
+
+        if (
+          currentValue &&
+          typeof currentValue === "object" &&
+          "displayText" in currentValue
+        ) {
+          linkTextMap[attributeId] = currentValue.displayText || "";
+          linkValueMap[attributeId] = currentValue.value || "";
+        } else {
+          linkTextMap[attributeId] = "";
+          linkValueMap[attributeId] = "";
+        }
+      }
+    });
+
+    if (hasLinkAttributes) {
+      setCustomLinkText(linkTextMap);
+      setLinkValues(linkValueMap);
+      initializedRef.current = true;
+    }
+  }, [attributes]);
 
   const handleTagSelect = (attributeLabel: string, tag: string) => {
     setSelectedTags((prev) => {
@@ -178,6 +228,47 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 />,
               );
             }
+            break;
+          case AttributeType.Link:
+            const attributeId = Number(attribute.attributeID);
+            elements.push(
+              <LinkPicker
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={linkValues[attributeId] || ""}
+                onChange={(text) => {
+                  setLinkValues((prev) => ({
+                    ...prev,
+                    [attributeId]: text,
+                  }));
+
+                  const currentDisplayText = customLinkText[attributeId] || "";
+                  onInputChange(attributeId, text, currentDisplayText);
+                }}
+                linkText={customLinkText[attributeId] || ""}
+                onLinkTextChange={(text) => {
+                  setCustomLinkText((prev) => ({
+                    ...prev,
+                    [attributeId]: text,
+                  }));
+
+                  const currentLinkValue = linkValues[attributeId] || "";
+                  onInputChange(attributeId, currentLinkValue, text);
+                }}
+              />,
+            );
+            break;
+          case AttributeType.Image:
+            elements.push(
+              <ImagePickerField
+                key={attribute.attributeID}
+                title={attribute.attributeLabel}
+                value={currentValue || ""}
+                onChange={(uri) =>
+                  onInputChange(Number(attribute.attributeID), uri)
+                }
+              />,
+            );
             break;
           default:
             break;
