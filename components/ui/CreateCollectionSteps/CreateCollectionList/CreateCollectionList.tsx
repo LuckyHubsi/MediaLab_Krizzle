@@ -165,8 +165,6 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
           </ItemCount>
         </ItemCountContainer>
         <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="on-drag"
           contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
         >
