@@ -156,13 +156,18 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             </TouchableOpacity>
           </IconTopRight>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <ThemedText
-              fontSize="l"
-              fontWeight="bold"
-              style={{ alignSelf: "flex-start", marginLeft: 10 }}
-            >
-              Create Collection
-            </ThemedText>
+            <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Create Collection
+              </ThemedText>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Design your new collection's widget
+              </ThemedText>
+            </View>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}

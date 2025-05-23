@@ -165,9 +165,18 @@ export default function CreateNoteScreen() {
       <View style={{ marginBottom: 8 }}>
         <Card>
           <View style={{ alignItems: "center", gap: 20 }}>
-            <ThemedText fontSize="l" fontWeight="bold">
-              Create Note
-            </ThemedText>
+            <View style={{ alignItems: "center" }}>
+              <ThemedText fontSize="l" fontWeight="bold">
+                Create Note
+              </ThemedText>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Design your new note’s widget
+              </ThemedText>
+            </View>
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label ?? ""}
@@ -268,7 +277,7 @@ export default function CreateNoteScreen() {
         >
           <BottomButtons
             titleLeftButton="Discard"
-            titleRightButton="Next"
+            titleRightButton="Save"
             onDiscard={() => {
               router.back();
             }}
