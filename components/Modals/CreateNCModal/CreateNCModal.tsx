@@ -104,6 +104,13 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
       }
 
       if (success) setShouldRefetch(true);
+      showSnackbar(
+        editMode
+          ? "Folder updated successfully."
+          : "Folder created successfully.",
+        "top",
+        "success",
+      );
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {
