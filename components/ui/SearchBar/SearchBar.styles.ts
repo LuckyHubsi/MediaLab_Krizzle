@@ -20,7 +20,9 @@ export const SearchInput = styled.TextInput`
   font-weight: 300;
   letter-spacing: -0.4px;
   background-color: transparent;
-  padding-vertical: 0px;
   flex: 1;
   font-family: "Lexend_400Regular";
+  padding-vertical: 10px;
+  min-height: 56px;
+  line-height: 22px;
 `;
