@@ -82,6 +82,7 @@ export default function CreateNoteScreen() {
   const createNote = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
+      showSnackbar("Please enter a title to continue.", "bottom", "error");
       return;
     }
 
