@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { FC, useState } from "react";
+import { format } from "date-fns";
 import {
   ContentText,
   ItemContainer,
@@ -11,12 +12,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View, Linking, TouchableOpacity } from "react-native";
 
 interface CollectionItemContainerProps {
-  type?: string;
+  type?: string | number;
   multiselectArray?: string[];
-  contentText?: string;
+  date?: Date | null;
   title?: string;
   subtitle?: string;
   icon?: keyof typeof MaterialIcons.glyphMap;
+  iconColor?: string;
   link?: string;
   linkPreview?: string;
   imageUri?: string;
@@ -24,9 +26,11 @@ interface CollectionItemContainerProps {
 const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   type,
   multiselectArray,
+  date,
   title,
   subtitle,
   icon,
+  iconColor,
   link,
   linkPreview,
   imageUri,
@@ -62,8 +66,15 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        {icon && <MaterialIcons name={icon} size={24} color="#585858" />}
+        {icon && (
+          <MaterialIcons name={icon} size={24} color={iconColor || "#585858"} />
+        )}
         {type && <ContentText>{type}</ContentText>}
+        {date && (
+          <ContentText>
+            {date ? format(date, "dd.MM.yyyy") : "dd.mm.yyyy"}
+          </ContentText>
+        )}
       </View>
 
       {multiselectArray && (

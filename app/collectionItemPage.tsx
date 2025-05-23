@@ -73,40 +73,31 @@ export default function CollectionItemScreen() {
             zIndex: -1, // Set zIndex lower than other elements
           }}
         />
-
-        <CustomStyledHeader
-          title={item?.page_title || "Collection Item"} //Here should be the title of the collection
-          subtitle={item?.categoryName || "Collection List"}
-          backBehavior="default" // Go back to home when back button is pressed
-          iconName={undefined} // No icon for the header
-          onIconPress={() => {}} // No action when pressed
-          iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => {
-            setShowModal(true);
-          }} // action when icon menu is pressed
-          param={item?.pageID.toString()}
-          borderRadiusTop={33}
-        />
-
+        <View style={{ marginTop: 16 }}>
+          <CustomStyledHeader
+            title={item?.page_title || "Collection Item"} //Here should be the title of the collection
+            subtitle={item?.categoryName || "Collection List"}
+            backBehavior="default" // Go back to home when back button is pressed
+            iconName={undefined} // No icon for the header
+            onIconPress={() => {}} // No action when pressed
+            iconName2="more-horiz" // icon for the pop up menu
+            onIconMenuPress={() => {
+              setShowModal(true);
+            }} // action when icon menu is pressed
+            param={item?.pageID.toString()}
+            borderRadiusTop={33}
+          />
+        </View>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
           <ThemedView topPadding={0}>
-            {/* <CollectionLoadItem
+            <CollectionLoadItem
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}
-            /> */}
-            <CollectionItemContainer imageUri="aaa" subtitle="Image" />
-            <CollectionItemContainer
-              title={item?.page_title}
-              subtitle="harry potter"
             />
-            <CollectionItemContainer
-              subtitle="Genre"
-              multiselectArray={multiselectArrray}
-            />
-            <View
+            {/* <View
               style={{
                 flexDirection: "row",
                 rowGap: 16,
@@ -133,7 +124,7 @@ export default function CollectionItemScreen() {
               link="https://www.google.com"
               linkPreview="Google"
               subtitle="link"
-            />
+            /> */}
           </ThemedView>
         </ScrollView>
       </SafeAreaView>
