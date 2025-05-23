@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { IconWrapper } from "./IconTopRight.styles";
 
 type IconTopRightProps = {
@@ -12,8 +12,8 @@ export const IconTopRight: React.FC<IconTopRightProps> = ({
   onPress,
 }) => {
   return (
-    <Pressable onPress={onPress} hitSlop={15} style={{ alignItems: "center" }}>
-      <IconWrapper>{children}</IconWrapper>
-    </Pressable>
+    <IconWrapper as={TouchableOpacity} onPress={onPress}>
+      {children}
+    </IconWrapper>
   );
 };

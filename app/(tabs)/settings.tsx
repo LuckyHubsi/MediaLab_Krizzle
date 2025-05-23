@@ -12,20 +12,13 @@ export default function TabThreeScreen() {
   return (
     <SafeAreaView>
       <ThemedView>
-        <IconTopRight>
-          <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "/faq",
-              });
-            }}
-          >
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
-          </TouchableOpacity>
+        <IconTopRight onPress={() => router.push({ pathname: "/faq" })}>
+          <Image
+            source={require("@/assets/images/kriz.png")}
+            style={{ width: 30, height: 32 }}
+          />
         </IconTopRight>
+
         <ThemedText fontSize="xl" fontWeight="bold">
           Settings
         </ThemedText>

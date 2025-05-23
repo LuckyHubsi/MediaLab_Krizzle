@@ -130,17 +130,13 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     >
       <View style={{ flex: 1 }}>
         <Card>
-          <View style={{ top: 5, position: "absolute", right: 10 }}>
-            <IconTopRight>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={Colors.primary}
-                />
-              </TouchableOpacity>
-            </IconTopRight>
-          </View>
+          <IconTopRight onPress={() => setShowHelp(true)}>
+            <MaterialIcons
+              name="help-outline"
+              size={26}
+              color={Colors.primary}
+            />
+          </IconTopRight>
           <CardText>
             <CardHeader>
               <ThemedText fontSize="l" fontWeight="bold">
