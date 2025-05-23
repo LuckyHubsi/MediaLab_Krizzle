@@ -51,7 +51,6 @@ export default function FoldersScreen() {
   }
 
   const [shouldReload, setShouldReload] = useState<boolean>(false);
-  // const [widgets, setWidgets] = useState<ArchivedWidget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -60,78 +59,9 @@ export default function FoldersScreen() {
   const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
   const [folderNameInput, setFolderNameInput] = useState("");
 
-  const getColorKeyFromValue = (
-    value: string,
-  ): keyof typeof Colors.widget | undefined => {
-    const colorKeys = Object.keys(Colors.widget);
-
-    return colorKeys.find((key) => {
-      const currentColor = Colors.widget[key as keyof typeof Colors.widget];
-      return (
-        value === key || // if the value is already the color key like "rose"
-        (typeof currentColor === "string" && currentColor === value) || // hex match
-        (Array.isArray(currentColor) && currentColor.includes(value)) // match inside gradients
-      );
-    }) as keyof typeof Colors.widget | undefined;
-  };
-
-  // const mapToEnrichedWidgets = (
-  //   data: GeneralPageDTO[] | null,
-  // ): ArchivedWidget[] => {
-  //   if (data == null) {
-  //     return [];
-  //   } else {
-  //     const enrichedWidgets: ArchivedWidget[] = (data || []).map((widget) => ({
-  //       id: String(widget.pageID),
-  //       title: widget.page_title,
-  //       tag: widget.tag?.tag_label || "Uncategorized",
-  //       color:
-  //         getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
-  //       page_type: widget.page_type,
-  //       icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
-  //       archived: widget.archived,
-  //     }));
-  //     return enrichedWidgets;
-  //   }
-  // };
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const fetchWidgets = async () => {
-  //       try {
-  //         const data = await getAllGeneralPageData(GeneralPageState.Archived);
-
-  //         const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
-
-  //         setWidgets(enrichedWidgets);
-  //       } catch (error) {
-  //         console.error("Error loading widgets:", error);
-  //       }
-  //     };
-
-  //     setShouldReload(false);
-  //     fetchWidgets();
-  //   }, [shouldReload]),
-  // );
-
-  // const filteredWidgets = useMemo(() => {
-  //   const lowerQuery = searchQuery.toLowerCase();
-  //   return widgets.filter((widget) =>
-  //     widget.title.toLowerCase().includes(lowerQuery),
-  //   );
-  // }, [widgets, searchQuery]);
-
-  // useEffect(() => {}, [widgets]);
-
-  // const goToPage = (widget: ArchivedWidget) => {
-  //   const path =
-  //     widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
-
-  //   router.push({
-  //     pathname: path,
-  //     params: { pageId: widget.id, title: widget.title },
-  //   });
-  // };
+  const filteredFolders = folders.filter((folder) =>
+    folder.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleFolderSubmit = async () => {
     const trimmedName = folderNameInput.trim();
@@ -238,49 +168,48 @@ export default function FoldersScreen() {
                 onSearch={(query) => setSearchQuery(query)}
               />
 
-              {/* {filteredWidgets.length > 0 ? ( */}
-              {/* <> */}
-              <FlatList
-                data={folders}
-                showsVerticalScrollIndicator={false}
-                numColumns={columns}
-                columnWrapperStyle={{
-                  justifyContent: "space-between",
-                  marginBottom: 16,
-                  marginTop: 16,
-                }}
-                renderItem={({ item }) => (
-                  <FolderComponent
-                    title={item.title}
-                    itemCount={item.itemCount}
-                    key={item.id}
-                    cardWidth={(width - 25 * (columns + 1)) / columns}
-                    onPress={() => {
-                      router.push({
-                        pathname: "/folderPage",
-                        params: { folderId: item.id, title: item.title },
-                      });
-                    }}
-                    onLongPress={() => {
-                      setSelectedFolder(item);
-                      setShowModal(true);
-                    }}
-                  />
-                )}
-                keyExtractor={(item) => item.id}
-              />
-              {/* </>
-              ) : (
-                <ThemedText
-                  fontSize="regular"
-                  fontWeight="regular"
-                  style={{ textAlign: "center", marginTop: 25 }}
+              {filteredFolders.length === 0 ? (
+                <ThemedView
+                  style={{
+                    marginTop: 32,
+                    alignItems: "center",
+                  }}
                 >
-                  {!searchQuery
-                    ? "No entries found."
-                    : `No entries for "${searchQuery}"`}
-                </ThemedText>
-              )} */}
+                  <ThemedText fontSize="regular" fontWeight="regular">
+                    No folders found for "{searchQuery}"
+                  </ThemedText>
+                </ThemedView>
+              ) : (
+                <FlatList
+                  data={filteredFolders}
+                  showsVerticalScrollIndicator={false}
+                  numColumns={columns}
+                  columnWrapperStyle={{
+                    justifyContent: "space-between",
+                    marginBottom: 16,
+                    marginTop: 16,
+                  }}
+                  renderItem={({ item }) => (
+                    <FolderComponent
+                      title={item.title}
+                      itemCount={item.itemCount}
+                      key={item.id}
+                      cardWidth={(width - 25 * (columns + 1)) / columns}
+                      onPress={() => {
+                        router.push({
+                          pathname: "/folderPage",
+                          params: { folderId: item.id, title: item.title },
+                        });
+                      }}
+                      onLongPress={() => {
+                        setSelectedFolder(item);
+                        setShowModal(true);
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item) => item.id}
+                />
+              )}
             </>
           )}
         </ThemedView>
