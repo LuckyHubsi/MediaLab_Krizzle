@@ -8,6 +8,8 @@ const SCHEMA_KEY = "DB_SCHEMA_VERSION";
  * Runs pending database migrations in order based on stored schema version.
  */
 export const runMigrations = async (db: SQLiteDatabase): Promise<void> => {
+  // await setStoredSchemaVersion(0); // use this to reset the schema for testing
+
   const currentVersion = await getStoredSchemaVersion();
 
   for (let version = currentVersion + 1; version <= SCHEMA_VERSION; version++) {
@@ -17,7 +19,6 @@ export const runMigrations = async (db: SQLiteDatabase): Promise<void> => {
       await migrate(db);
     }
   }
-  // await setStoredSchemaVersion(0); // use this to reset the schema for testing
   await setStoredSchemaVersion(SCHEMA_VERSION);
 };
 
