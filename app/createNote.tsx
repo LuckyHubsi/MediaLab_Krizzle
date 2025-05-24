@@ -112,6 +112,7 @@ export default function CreateNoteScreen() {
       note_content: null,
       tag: tagDTO,
       pin_count: 0,
+      parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
     const id = await noteService.insertNote(noteDTO);

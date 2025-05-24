@@ -49,6 +49,7 @@ export default function CollectionTemplateScreen() {
       categories: lists,
       tag: collectionData.selectedTag,
       pin_count: 0,
+      parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(

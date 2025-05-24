@@ -124,6 +124,7 @@ export default function EditWidgetScreen() {
       page_type: pageData?.page_type ?? PageType.Note,
       archived: pageData?.archived ?? false,
       pinned: pageData?.pinned ?? false,
+      parentID: pageData?.parentID ?? null,
     };
     await generalPageService.updateGeneralPageData(newPageDTO);
 
