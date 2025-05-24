@@ -13,6 +13,7 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function TagManagementScreen() {
   const { tagService } = useServices();
@@ -100,8 +101,12 @@ export default function TagManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const tagData = await tagService.getAllTags();
-        if (tagData) setTags(tagData);
+        const result = await tagService.getAllTags();
+        if (result.success) {
+          if (result.value) setTags(result.value);
+        } else {
+          // TODO: show the error modal
+        }
       } catch (error) {
         console.error("Failed to load tags:", error);
       }
@@ -115,8 +120,12 @@ export default function TagManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const tagData = await tagService.getAllTags();
-        if (tagData) setTags(tagData);
+        const result = await tagService.getAllTags();
+        if (result.success) {
+          if (result.value) setTags(result.value);
+        } else {
+          // TODO: show the error modal
+        }
       } catch (error) {
         console.error("Failed to refresh tags:", error);
       } finally {

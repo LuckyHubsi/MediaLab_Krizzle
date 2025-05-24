@@ -1,9 +1,14 @@
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { TagRepository } from "../repository/interfaces/TagRepository.interface";
 import { TagMapper } from "../util/mapper/TagMapper";
-import { ServiceError } from "../util/error/ServiceError";
 import { NewTag, Tag } from "../domain/entity/Tag";
 import { tagID, TagID } from "../domain/common/IDs";
+import { failure, Result, success } from "@/shared/result/Result";
+import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import errorMap from "zod/lib/locales/en";
+import { TagErrorMessages } from "@/shared/error/ErrorMessages";
+import { ServiceError } from "../util/error/ServiceError";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 /**
  * TagService encapsulates all tag-related application logic.
@@ -20,15 +25,27 @@ export class TagService {
   /**
    * Retrieves all tags and maps them to DTOs.
    *
-   * @returns A Promise resolving to an array of `TagDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either an array of `TagDTO`s or a `ServiceErrorType`.
    */
-  async getAllTags(): Promise<TagDTO[]> {
+  async getAllTags(): Promise<Result<TagDTO[], ServiceErrorType>> {
     try {
       const tags = await this.tagRepo.getAllTags();
-      return tags.map(TagMapper.toDTO);
+      return success(tags.map(TagMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Error retrieving all tags.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: TagErrorMessages.loadingAllTags,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: TagErrorMessages.unknown,
+        });
+      }
     }
   }
 

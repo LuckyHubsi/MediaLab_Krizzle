@@ -31,6 +31,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function CreateNoteScreen() {
   const { noteService, tagService } = useServices();
@@ -132,8 +133,12 @@ export default function CreateNoteScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            if (result.value) setTags(result.value);
+          } else {
+            // TODO: show the error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }

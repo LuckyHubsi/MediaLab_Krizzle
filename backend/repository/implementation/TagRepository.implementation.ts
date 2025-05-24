@@ -9,7 +9,10 @@ import {
 } from "../query/TagQuery";
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagModel } from "../model/TagModel";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import { TagID } from "@/backend/domain/common/IDs";
 import * as SQLite from "expo-sqlite";
 
@@ -32,17 +35,29 @@ export class TagRepositoryImpl
   }
 
   /**
-   * Retrieves all tags from the database.
+   * Retrieves all tags from the database and returns the validated tags.
    *
    * @returns A Promise resolving to an array of `Tag` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllTags(): Promise<Tag[]> {
     try {
       const result = await this.fetchAll<TagModel>(selectAllTagsQuery);
-      return result.map(TagMapper.toEntity);
+      const validTags: Tag[] = [];
+
+      for (const model of result) {
+        try {
+          const tag = TagMapper.toEntity(model);
+          validTags.push(tag);
+        } catch (err) {
+          // skipping invalide tags (tags that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+
+      return validTags;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all tags.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
