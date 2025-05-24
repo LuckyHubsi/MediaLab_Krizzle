@@ -80,7 +80,6 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           style={{
             height: 400,
             width: screenWidth - 40,
-
             borderRadius: 16,
             backgroundColor: "#EAEAEA",
             marginTop: 8,
@@ -88,12 +87,22 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             gap: 8,
           }}
         >
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
+            }}
+          />
           <Image
             source={{ uri: imageUri }}
             style={{
               width: "100%",
               height: "100%",
-              resizeMode: "cover",
+              resizeMode: "contain",
             }}
           />
         </View>
