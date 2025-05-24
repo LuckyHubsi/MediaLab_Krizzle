@@ -67,7 +67,12 @@ export default function TagManagementScreen() {
         });
       } else {
         const newTagObject: TagDTO = { tag_label: trimmedTag };
-        success = await tagService.insertTag(newTagObject);
+        const result = await tagService.insertTag(newTagObject);
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+        }
       }
 
       if (success) setShouldRefetch(true);

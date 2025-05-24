@@ -9,6 +9,7 @@ import errorMap from "zod/lib/locales/en";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
 import { ServiceError } from "../util/error/ServiceError";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { ZodError } from "zod";
 
 /**
  * TagService encapsulates all tag-related application logic.
@@ -53,16 +54,33 @@ export class TagService {
    * Inserts a new tag based on the provided DTO.
    *
    * @param tagDTO - The data transfer object containing the tag label.
-   * @returns A Promise resolving to `true` if the operation succeeds.
-   * @throws ServiceError if insertion fails or validation fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async insertTag(tagDTO: TagDTO): Promise<boolean> {
+  async insertTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const tag: NewTag = TagMapper.toNewEntity(tagDTO);
       await this.tagRepo.insertTag(tag);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error inserting tag.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: TagErrorMessages.validateNewTag,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Insert Failed"
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: TagErrorMessages.insertNewTag,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: TagErrorMessages.unknown,
+        });
+      }
     }
   }
 

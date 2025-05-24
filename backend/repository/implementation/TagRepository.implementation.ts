@@ -66,14 +66,14 @@ export class TagRepositoryImpl
    *
    * @param tag - A `NewTag` object containing the tag label.
    * @returns A Promise resolving to `true` if insertion succeeded.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertTag(tag: NewTag): Promise<boolean> {
     try {
       await this.executeQuery(insertTagQuery, [tag.tagLabel]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to insert tag.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

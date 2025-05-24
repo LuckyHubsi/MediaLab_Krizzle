@@ -51,7 +51,7 @@ export class TagMapper {
    *
    * @param dto - The incoming DTO (from API, etc.).
    * @returns A validated `NewTag` object.
-   * @throws Error if validation fails.
+   * @throws Rethrows error if validation fails.
    */
   static toNewEntity(dto: TagDTO): NewTag {
     try {
@@ -59,8 +59,8 @@ export class TagMapper {
         tagLabel: dto.tag_label,
       });
     } catch (error: any) {
-      console.error("Error mapping TagDTO to New Entity:", error.issues);
-      throw new Error("Failed to map TagDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
