@@ -88,7 +88,10 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                     onPress={() => {
                       router.push({
                         pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
+                        params: {
+                          itemId: item.itemID.toString(),
+                          collectionItemText: item.values[0],
+                        },
                       });
                     }}
                     onLongPress={() => {
