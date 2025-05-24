@@ -82,14 +82,14 @@ export class TagRepositoryImpl
    *
    * @param tagID - The ID of the tag to delete.
    * @returns A Promise resolving to `true` if deletion succeeded.
-   * @throws RepositoryError if the deletion fails.
+   * @throws RepositoryErrorNew if the deletion fails.
    */
   async deleteTag(tagID: TagID): Promise<boolean> {
     try {
       await this.executeQuery(deleteTagQuery, [tagID]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to delete tag.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 

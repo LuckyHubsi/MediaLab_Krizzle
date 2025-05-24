@@ -90,16 +90,35 @@ export class TagService {
    * Converts the ID to a branded `TagID` and delegates to the repository.
    *
    * @param tagId - The numeric ID of the tag to delete.
-   * @returns A Promise resolving to `true` if the deletion succeeds.
-   * @throws ServiceError if parsing or deletion fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async deleteTagByID(tagId: number): Promise<boolean> {
+  async deleteTagByID(
+    tagId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedId: TagID = tagID.parse(tagId);
       await this.tagRepo.deleteTag(brandedId);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error deleting tag.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: TagErrorMessages.validateTagToDelete,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: TagErrorMessages.deleteTag,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: TagErrorMessages.unknown,
+        });
+      }
     }
   }
 

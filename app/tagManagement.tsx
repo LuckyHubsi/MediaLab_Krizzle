@@ -89,8 +89,12 @@ export default function TagManagementScreen() {
 
   const deleteTag = async (tagID: number) => {
     try {
-      const success = await tagService.deleteTagByID(tagID);
-      if (success) setShouldRefetch(true);
+      const result = await tagService.deleteTagByID(tagID);
+      if (result.success) {
+        setShouldRefetch(true);
+      } else {
+        // TODO: show error modal
+      }
     } catch (error) {
       console.error("Failed to delete tag:", error);
     }
