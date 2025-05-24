@@ -39,23 +39,21 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
     const elements: React.ReactNode[] = [];
 
-    const imageAttribute = attributeValues.find(
+    const imageAttribute = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Image &&
         "valueString" in attr &&
         attr.valueString,
     );
-    if (imageAttribute) {
+    imageAttribute.forEach((multi) => {
       elements.push(
         <CollectionItemContainer
-          key={`title-${imageAttribute.attributeID}`}
-          subtitle={imageAttribute.attributeLabel}
-          imageUri={
-            "valueString" in imageAttribute ? imageAttribute.valueString : ""
-          }
+          key={`title-${multi.attributeID}`}
+          subtitle={multi.attributeLabel}
+          imageUri={"valueString" in multi ? multi.valueString : ""}
         />,
       );
-    }
+    });
 
     const titleAttribute = attributeValues.find(
       (attr) => "valueString" in attr && attr.valueString,
