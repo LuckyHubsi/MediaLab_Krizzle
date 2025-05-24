@@ -6,7 +6,7 @@ interface CollectionItemContainerProps {
 }
 
 export const ItemContainer = styled.View`
-  gap: 0px;
+  gap: 6px;
 `;
 export const SelectableContainer = styled.View<CollectionItemContainerProps>`
   background-color: transparent;

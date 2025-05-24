@@ -7,7 +7,15 @@ import {
   SelectableContainer,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { View, Linking, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  Linking,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
@@ -44,6 +52,8 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   const themeMode = useActiveColorScheme() ?? "light";
   const colorScheme = useActiveColorScheme();
   const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const screenWidth = Dimensions.get("window").width;
+  const safeAreaWidth = Dimensions.get("screen").width;
 
   const handlePressLink = async () => {
     if (!link) return;
@@ -60,19 +70,22 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       <ThemedText
         fontWeight="regular"
         fontSize="s"
-        style={{ color: greyColor, marginBottom: 6 }}
+        style={{ color: greyColor }}
       >
         {subtitle}
       </ThemedText>
+
       {imageUri && (
         <View
           style={{
             height: 400,
-            width: "100%",
+            width: screenWidth - 40,
+
             borderRadius: 16,
             backgroundColor: "#EAEAEA",
             marginTop: 8,
             overflow: "hidden",
+            gap: 8,
           }}
         >
           <Image
@@ -85,6 +98,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           />
         </View>
       )}
+
       {title && (
         <View style={{ marginTop: -4 }}>
           <ThemedText fontWeight="semibold" fontSize="l">

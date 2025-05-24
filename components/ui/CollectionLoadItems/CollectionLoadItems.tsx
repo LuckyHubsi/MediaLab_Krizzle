@@ -5,7 +5,7 @@ import { StyledCardWrapper } from "./CollectionLoadItems.stlyle";
 import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
 import RatingPicker from "../RatingPicker/RatingPicker";
 import { useRouter } from "expo-router";
-import { View } from "react-native";
+import { ScrollView, View, Dimensions } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ListCOntainer } from "./CollectionLoadItems.stlyle";
 import { ThemedText } from "@/components/ThemedText";
@@ -16,6 +16,7 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import CollectionItemContainer from "../CollectionItemContainer/CollectionItemContainer";
 import { date } from "zod";
+import { Colors } from "@/constants/Colors";
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];
@@ -29,6 +30,8 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
   const router = useRouter();
   const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
+  const screenWidth = Dimensions.get("window").width;
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleSelectionChange = (value: string) => {
     setSelectedList(value);
@@ -45,15 +48,62 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
         "valueString" in attr &&
         attr.valueString,
     );
-    imageAttribute.forEach((multi) => {
+    if (imageAttribute.length > 0) {
       elements.push(
-        <CollectionItemContainer
-          key={`title-${multi.attributeID}`}
-          subtitle={multi.attributeLabel}
-          imageUri={"valueString" in multi ? multi.valueString : ""}
-        />,
+        <View style={{ height: 450 }}>
+          <ScrollView
+            contentContainerStyle={{ height: 400, gap: 16 }}
+            horizontal
+            onScroll={(e) => {
+              const index = Math.round(
+                e.nativeEvent.contentOffset.x / (screenWidth - 24),
+              );
+              setCurrentImageIndex(index);
+            }}
+            scrollEventThrottle={16}
+            snapToInterval={screenWidth - 24}
+            decelerationRate="fast"
+            alwaysBounceHorizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            {imageAttribute.map((multi) => (
+              <View
+                key={`img-${multi.attributeID}`}
+                style={{ height: 400, gap: 16 }}
+              >
+                <CollectionItemContainer
+                  subtitle={multi.attributeLabel}
+                  imageUri={"valueString" in multi ? multi.valueString : ""}
+                />
+              </View>
+            ))}
+          </ScrollView>
+          {imageAttribute.length > 1 && (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                marginTop: 8,
+              }}
+            >
+              {imageAttribute.map((_, idx) => (
+                <View
+                  key={idx}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    marginHorizontal: 4,
+                    backgroundColor:
+                      idx === currentImageIndex ? Colors.primary : "#ccc",
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </View>,
       );
-    });
+    }
 
     const titleAttribute = attributeValues.find(
       (attr) => "valueString" in attr && attr.valueString,
