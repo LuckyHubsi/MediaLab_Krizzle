@@ -125,7 +125,10 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
             <CollectionItemContainer
               key={`rating-${ratingAttr.attributeID}`}
               subtitle={ratingAttr.attributeLabel}
-              icon="star"
+              icon={
+                (ratingAttr.symbol as keyof typeof MaterialIcons.glyphMap) ||
+                "default-icon"
+              }
               iconColor="#E7C716"
               type={`${"valueNumber" in ratingAttr ? ratingAttr.valueNumber || 0 : 0}/5`}
             />
