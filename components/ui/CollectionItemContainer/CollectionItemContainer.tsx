@@ -10,6 +10,8 @@ import {
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View, Linking, TouchableOpacity, Image, Alert } from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 interface CollectionItemContainerProps {
   type?: string | number;
@@ -41,6 +43,8 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
     }
     return url;
   };
+  const colorScheme = useActiveColorScheme();
+  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
 
   const handlePressLink = async () => {
     if (!link) return;
@@ -54,7 +58,13 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   };
   return (
     <ItemContainer>
-      <SubtitleText>{subtitle}</SubtitleText>
+      <ThemedText
+        fontWeight="regular"
+        fontSize="s"
+        style={{ color: greyColor }}
+      >
+        {subtitle}
+      </ThemedText>
       {imageUri && (
         <View
           style={{
@@ -96,11 +106,23 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         {icon && (
           <MaterialIcons name={icon} size={24} color={iconColor || "#585858"} />
         )}
-        {type && <ContentText>{type}</ContentText>}
+        {type && (
+          <ThemedText
+            fontWeight="semibold"
+            fontSize="s"
+            style={{ color: greyColor }}
+          >
+            {type}
+          </ThemedText>
+        )}
         {date && (
-          <ContentText>
+          <ThemedText
+            fontWeight="semibold"
+            fontSize="s"
+            style={{ color: greyColor }}
+          >
             {date ? format(date, "dd.MM.yyyy") : "dd.mm.yyyy"}
-          </ContentText>
+          </ThemedText>
         )}
       </View>
 
