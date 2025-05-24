@@ -15,6 +15,7 @@ import { parseISO } from "date-fns";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import CollectionItemContainer from "../CollectionItemContainer/CollectionItemContainer";
+import { date } from "zod";
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];
@@ -71,36 +72,38 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     }
 
-    const multiSelect = attributeValues.find(
+    const multiSelect = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Multiselect &&
         "valueMultiselect" in attr &&
-        attr.valueMultiselect &&
-        attr.valueMultiselect.length > 0,
+        attr.valueMultiselect,
     );
-    if (multiSelect) {
+
+    multiSelect.forEach((multi) => {
       elements.push(
         <CollectionItemContainer
-          key={`multi-${multiSelect.attributeID}`}
-          subtitle={multiSelect.attributeLabel}
+          key={`multi-${multi.attributeID}`}
+          subtitle={multi.attributeLabel}
           multiselectArray={
-            "valueMultiselect" in multiSelect &&
-            Array.isArray(multiSelect.valueMultiselect)
-              ? multiSelect.valueMultiselect
+            "valueMultiselect" in multi && Array.isArray(multi.valueMultiselect)
+              ? multi.valueMultiselect
               : undefined
           }
         />,
       );
-    }
+    });
 
-    const dateAttr = attributeValues.find(
+    const dateAttr = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Date &&
         "valueString" in attr &&
         attr.valueString,
     );
-    const ratingAttr = attributeValues.find(
-      (attr) => attr.type === AttributeType.Rating,
+    const ratingAttr = attributeValues.filter(
+      (attr) =>
+        attr.type === AttributeType.Rating &&
+        "valueNumber" in attr &&
+        attr.valueNumber,
     );
 
     if (dateAttr || ratingAttr) {
@@ -109,52 +112,53 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
           key="horizontal-group"
           style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}
         >
-          {dateAttr && (
-            <CollectionItemContainer
-              key={`date-${dateAttr.attributeID}`}
-              subtitle={dateAttr.attributeLabel}
-              icon="calendar-month"
-              date={
-                "valueString" in dateAttr && dateAttr.valueString
-                  ? parseISO(dateAttr.valueString)
-                  : undefined
-              }
-            />
-          )}
-          {ratingAttr && (
-            <CollectionItemContainer
-              key={`rating-${ratingAttr.attributeID}`}
-              subtitle={ratingAttr.attributeLabel}
-              icon={
-                (ratingAttr.symbol as keyof typeof MaterialIcons.glyphMap) ||
-                "default-icon"
-              }
-              iconColor="#E7C716"
-              type={`${"valueNumber" in ratingAttr ? ratingAttr.valueNumber || 0 : 0}/5`}
-            />
-          )}
+          {dateAttr &&
+            dateAttr.map((date) => (
+              <CollectionItemContainer
+                key={`date-${date.attributeID}`}
+                subtitle={date.attributeLabel}
+                icon="calendar-month"
+                date={
+                  "valueString" in date && date.valueString
+                    ? parseISO(date.valueString)
+                    : undefined
+                }
+              />
+            ))}
+          {ratingAttr &&
+            ratingAttr.map((rating) => (
+              <CollectionItemContainer
+                key={`rating-${rating.attributeID}`}
+                subtitle={rating.attributeLabel}
+                icon={
+                  (rating.symbol as keyof typeof MaterialIcons.glyphMap) ||
+                  "default-icon"
+                }
+                iconColor="#E7C716"
+                type={`${"valueNumber" in rating ? rating.valueNumber || 0 : 0}/5`}
+              />
+            ))}
         </View>,
       );
     }
 
-    const linkAttribute = attributeValues.find(
+    const linkAttributes = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Link &&
         "valueString" in attr &&
         attr.valueString,
     );
-    if (linkAttribute) {
+
+    linkAttributes.forEach((link) => {
       elements.push(
         <CollectionItemContainer
-          key={`title-${linkAttribute.attributeID}`}
-          subtitle={linkAttribute.attributeLabel}
-          link={"valueString" in linkAttribute ? linkAttribute.valueString : ""}
-          linkPreview={
-            "displayText" in linkAttribute ? linkAttribute.displayText : ""
-          }
+          key={`link-${link.attributeID}`}
+          subtitle={link.attributeLabel}
+          link={"valueString" in link ? link.valueString : ""}
+          linkPreview={"displayText" in link ? link.displayText : ""}
         />,
       );
-    }
+    });
 
     const descriptionTexts = attributeValues.filter(
       (attr) =>
