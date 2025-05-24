@@ -82,10 +82,10 @@ export default function CollectionItemScreen() {
           />
         </View>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
-          <ThemedView topPadding={0}>
+          <ThemedView topPadding={0} style={{ paddingBottom: 20 }}>
             <CollectionLoadItem
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}

@@ -5,8 +5,6 @@ import {
   ContentText,
   ItemContainer,
   SelectableContainer,
-  SelectableText,
-  SubtitleText,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { View, Linking, TouchableOpacity, Image, Alert } from "react-native";
@@ -43,6 +41,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
     }
     return url;
   };
+  const themeMode = useActiveColorScheme() ?? "light";
   const colorScheme = useActiveColorScheme();
   const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
 
@@ -61,7 +60,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       <ThemedText
         fontWeight="regular"
         fontSize="s"
-        style={{ color: greyColor }}
+        style={{ color: greyColor, marginBottom: 6 }}
       >
         {subtitle}
       </ThemedText>
@@ -129,8 +128,18 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       {multiselectArray && (
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
           {multiselectArray.map((multiselectArray, index) => (
-            <SelectableContainer key={`${multiselectArray}-${index}`}>
-              <SelectableText>{multiselectArray}</SelectableText>
+            <SelectableContainer
+              key={`${multiselectArray}-${index}`}
+              themeMode={themeMode}
+              style={{ border: `1px solid ${greyColor}` }}
+            >
+              <ThemedText
+                fontWeight="regular"
+                fontSize="s"
+                style={{ color: greyColor }}
+              >
+                {multiselectArray}
+              </ThemedText>
             </SelectableContainer>
           ))}
         </View>
@@ -139,7 +148,10 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       {link && (
         <TouchableOpacity onPress={handlePressLink}>
           <ContentText
-            style={{ color: "#2980ff", textDecorationLine: "underline" }}
+            style={{
+              color: "#2980ff",
+              textDecorationLine: "underline",
+            }}
           >
             {linkPreview || link}
           </ContentText>
