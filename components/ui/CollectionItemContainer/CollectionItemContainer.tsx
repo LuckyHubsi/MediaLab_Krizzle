@@ -117,7 +117,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: colorScheme === "dark" ? "#ABABAB" : "#EAEAEA",
+              backgroundColor: colorScheme === "dark" ? "#3d3d3d" : "#EAEAEA",
               marginTop: 8,
             }}
           />
