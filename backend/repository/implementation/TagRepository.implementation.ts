@@ -98,7 +98,7 @@ export class TagRepositoryImpl
    *
    * @param tag - A full `Tag` object with updated data.
    * @returns A Promise resolving to `true` if the update succeeded.
-   * @throws RepositoryError if the update fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateTag(tag: Tag): Promise<boolean> {
     try {
@@ -106,7 +106,7 @@ export class TagRepositoryImpl
       await this.executeQuery(updateTagQuery, [model.tag_label, model.tagID]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update tag.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }

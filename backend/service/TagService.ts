@@ -126,17 +126,34 @@ export class TagService {
    * Updates an existing tag using data from a DTO.
    *
    * @param tagDTO - The full `TagDTO` with updated label and usage count.
-   * @returns A Promise resolving to `true` if the update succeeds.
-   * @throws ServiceError if validation or persistence fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async updateTag(tagDTO: TagDTO): Promise<boolean> {
+  async updateTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const tag: Tag = TagMapper.toUpdatedEntity(tagDTO);
 
       await this.tagRepo.updateTag(tag);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error updating tag.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: TagErrorMessages.validateTagToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: TagErrorMessages.updateTag,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: TagErrorMessages.unknown,
+        });
+      }
     }
   }
 }

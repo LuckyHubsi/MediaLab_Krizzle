@@ -61,10 +61,15 @@ export default function TagManagementScreen() {
       let success = false;
 
       if (editMode && editingTag) {
-        success = await tagService.updateTag({
+        const result = await tagService.updateTag({
           ...editingTag,
           tag_label: trimmedTag,
         });
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+        }
       } else {
         const newTagObject: TagDTO = { tag_label: trimmedTag };
         const result = await tagService.insertTag(newTagObject);

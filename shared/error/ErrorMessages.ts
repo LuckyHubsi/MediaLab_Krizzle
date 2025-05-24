@@ -12,6 +12,10 @@ export const TagErrorMessages = {
     "The system does not seem to recognize the tag you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
   deleteTag:
     "There was a problem deleting your tag. Please try again. If the error persists, consider trying again after reopening the application.",
+  validateTagToUpdate:
+    "The system either does not recognize the tag you want to update or the tag label is invalid. Please try again. If the error persists, consider renaming your tag or trying again after reopening the application.",
+  updateTag:
+    "There was a problem updating your tag. Please try again. If the error persists, consider trying again after renaming or reopening the application.",
   unknown:
-    "An unexpected error occurred while handling tags. Some features may not work as expected.",
+    "An unexpected error occurred while handling tags. Some tag-related features may not work as expected.",
 };

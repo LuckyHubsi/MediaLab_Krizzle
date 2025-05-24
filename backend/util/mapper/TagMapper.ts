@@ -69,7 +69,7 @@ export class TagMapper {
    *
    * @param dto - The DTO containing all tag fields.
    * @returns A validated `Tag` domain entity.
-   * @throws Error if validation fails.
+   * @throws Rethrows if validation fails.
    */
   static toUpdatedEntity(dto: TagDTO): Tag {
     try {
@@ -79,8 +79,8 @@ export class TagMapper {
         usageCount: 0, // default value - not used for db persistence
       });
     } catch (error: any) {
-      console.error("Error mapping TagDTO to Updatde Entity:", error.issues);
-      throw new Error("Failed to map TagDTO to Updatde Entity");
+      console.error(error);
+      throw error;
     }
   }
 
