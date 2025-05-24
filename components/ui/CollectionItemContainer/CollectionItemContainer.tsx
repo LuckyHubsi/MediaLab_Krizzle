@@ -109,7 +109,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       {title && (
-        <View style={{ marginTop: -4 }}>
+        <View style={{ marginTop: -8 }}>
           <ThemedText fontWeight="semibold" fontSize="l">
             {title}
           </ThemedText>
@@ -149,7 +149,14 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       </View>
 
       {multiselectArray && (
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 6,
+            marginTop: -5,
+          }}
+        >
           {multiselectArray.map((multiselectArray, index) => (
             <SelectableContainer
               key={`${multiselectArray}-${index}`}
@@ -174,6 +181,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             style={{
               color: "#2980ff",
               textDecorationLine: "underline",
+              marginTop: -10,
             }}
           >
             {linkPreview || link}
