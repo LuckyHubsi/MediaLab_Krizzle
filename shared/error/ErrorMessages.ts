@@ -74,6 +74,8 @@ export const PageErrorMessages = {
     "There was a problem chnaging the pin status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
   updatePageArchive:
     "There was a problem chnaging the archive status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
+  updatePageParent:
+    "There was a problem moving your widget to or from a folder. Please try again. If the error persists, consider trying again after reopening the application.",
   unknown:
     "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
 };

@@ -358,17 +358,37 @@ export class GeneralPageService {
    *
    * @param folderId - Number representing the folderID of the folder the page should be moved to.
    * @param pageId - Number representing the pageID.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if udpate fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async updateFolderID(pageId: number, folderId: number): Promise<boolean> {
+  async updateFolderID(
+    pageId: number,
+    folderId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
       const brandedFolderID = folderID.parse(folderId);
       await this.generalPageRepo.updateParentID(brandedPageID, brandedFolderID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error moving page to folder.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: PageErrorMessages.validatePageToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: PageErrorMessages.updatePageParent,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 }

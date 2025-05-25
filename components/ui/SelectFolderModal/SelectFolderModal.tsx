@@ -325,14 +325,19 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               {folders.length !== 0 ? (
                 <NextButton
                   onPress={async () => {
-                    const success = await generalPageService.updateFolderID(
+                    const result = await generalPageService.updateFolderID(
                       Number(widgetId),
                       Number(selectedFolder?.id),
                     );
-
-                    setInternalVisible(false);
-                    setSelectedFolder(null);
-                    onClose();
+                    if (result.success) {
+                      setInternalVisible(false);
+                      setSelectedFolder(null);
+                      onClose();
+                    } else {
+                      // TODO: show error modal
+                      console.log(result.error.type);
+                      console.log(result.error.message);
+                    }
                   }}
                   colorScheme={colorScheme}
                   selectedFolder={selectedFolder}

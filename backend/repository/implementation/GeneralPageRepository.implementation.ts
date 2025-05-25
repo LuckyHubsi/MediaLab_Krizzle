@@ -485,15 +485,14 @@ export class GeneralPageRepositoryImpl
    * @param pageId - A branded pageID.
    * @param parentId - A branded folderID to which the page should be moved.
    * @returns A Promise resolving to true if successful.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateParentID(pageId: PageID, parentId: FolderID): Promise<boolean> {
     try {
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);
-      const allpages = await this.fetchAll("SELECT * FROM general_page_data");
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update parent folderID");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }
