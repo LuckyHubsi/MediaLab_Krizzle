@@ -66,6 +66,10 @@ export const PageErrorMessages = {
     "Something went wrong while loading the widget you tried to access. Some widget details may be unavailable or outdated.",
   notFound:
     "The system does not recognize the widget you tried to access or had trouble reading its data. Some widget details and functionalities may be unavailable or outdated.",
+  validatePageToUpdate:
+    "The system either does not recognize the widget you want to update or your input data is invalid. Please try again. If the error persists, consider changing your input or trying again after reopening the application.",
+  updatePage:
+    "There was a problem updating your folder. Please try again. If the error persists, consider trying again after changing your input or reopening the application.",
   unknown:
     "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
 };

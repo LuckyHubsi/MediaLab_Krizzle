@@ -127,21 +127,25 @@ export default function EditWidgetScreen() {
       pinned: pageData?.pinned ?? false,
       parentID: pageData?.parentID ?? null,
     };
-    await generalPageService.updateGeneralPageData(newPageDTO);
+    const result = await generalPageService.updateGeneralPageData(newPageDTO);
 
-    // only send snackbar if data has changed
-    const hasChanges =
-      title !== initialValuesRef.current.title ||
-      selectedColor !== initialValuesRef.current.selectedColor ||
-      selectedIcon !== initialValuesRef.current.selectedIcon ||
-      (selectedTag?.tagID || null) !==
-        (initialValuesRef.current.selectedTag?.tagID || null);
+    if (result.success) {
+      // only send snackbar if data has changed
+      const hasChanges =
+        title !== initialValuesRef.current.title ||
+        selectedColor !== initialValuesRef.current.selectedColor ||
+        selectedIcon !== initialValuesRef.current.selectedIcon ||
+        (selectedTag?.tagID || null) !==
+          (initialValuesRef.current.selectedTag?.tagID || null);
 
-    if (hasChanges) {
-      showSnackbar("Successfully updated Widget!", "bottom", "success");
+      if (hasChanges) {
+        showSnackbar("Successfully updated Widget!", "bottom", "success");
+      }
+
+      router.back();
+    } else {
+      // TODO: show error modal
     }
-
-    router.back();
   };
 
   useFocusEffect(

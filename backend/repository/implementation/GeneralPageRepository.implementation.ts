@@ -315,7 +315,7 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param updatedPage - A NewGeneralPage entity.
    * @returns A Promise resolving to a boolean.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateGeneralPageData(
     pageID: PageID,
@@ -332,7 +332,7 @@ export class GeneralPageRepositoryImpl
       ]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update page.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 

@@ -212,10 +212,11 @@ export class GeneralPageService {
    * Updates a single page.
    *
    * @param pageDTO - `GeneralPageDTO` representing the updated page data.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if udpate fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async updateGeneralPageData(pageDTO: GeneralPageDTO): Promise<boolean> {
+  async updateGeneralPageData(
+    pageDTO: GeneralPageDTO,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const updatedPage: GeneralPage =
         GeneralPageMapper.toUpdatedEntity(pageDTO);
@@ -223,9 +224,27 @@ export class GeneralPageService {
         updatedPage.pageID,
         updatedPage,
       );
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error updating page.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: PageErrorMessages.validatePageToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: PageErrorMessages.updatePage,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 
