@@ -461,7 +461,7 @@ export class GeneralPageRepositoryImpl
    * @param pageId - A branded pageID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async updateDateModified(
     pageId: PageID,
@@ -475,7 +475,7 @@ export class GeneralPageRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update last modified date");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 

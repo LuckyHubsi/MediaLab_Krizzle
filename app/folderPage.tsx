@@ -396,11 +396,15 @@ export default function FolderScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(
-                  Number(selectedWidget.id),
-                );
-              setShouldReload(successfullyDeleted);
+              const result = await generalPageService.deleteGeneralPage(
+                Number(selectedWidget.id),
+              );
+
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+              }
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

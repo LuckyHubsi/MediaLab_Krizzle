@@ -223,10 +223,15 @@ export default function NotesScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
-              setShowDeleteModal(false);
-              router.replace("/");
+              if (result.success) {
+                setShowDeleteModal(false);
+
+                router.replace("/");
+              } else {
+                // TODO: show error modal
+              }
             } catch (error) {
               console.error("Error deleting note:", error);
             }

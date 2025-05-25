@@ -479,11 +479,17 @@ export default function HomeScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(
-                  Number(selectedWidget.id),
-                );
-              setShouldReload(successfullyDeleted);
+              const result = await generalPageService.deleteGeneralPage(
+                Number(selectedWidget.id),
+              );
+
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+                console.log(result.error.type);
+                console.log(result.error.message);
+              }
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

@@ -315,9 +315,14 @@ export default function CollectionScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
-              setShowDeleteModal(false);
+
+              if (result.success) {
+                setShowDeleteModal(false);
+              } else {
+                // TODO: show error modal
+              }
               router.replace("/");
             } catch (error) {
               console.error("Error deleting collection:", error);

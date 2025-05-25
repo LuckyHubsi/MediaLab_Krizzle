@@ -254,11 +254,14 @@ export default function ArchiveScreen() {
           if (selectedWidget) {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
-              setShouldReload(successfullyDeleted);
-
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+              }
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

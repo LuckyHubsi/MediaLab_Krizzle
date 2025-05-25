@@ -331,25 +331,35 @@ export class GeneralPageService {
    * Deletes a general page.
    *
    * @param pageId - Number representing the pageID.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if delete fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async deleteGeneralPage(pageId: number): Promise<boolean> {
+  async deleteGeneralPage(
+    pageId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
-
-      // try {
-      //   await collectionService.getCollectionByPageId(pageId);
-
-      //   await collectionService.deleteCollectionImages(pageId);
-      // } catch (error) {
-      //   console.log("Not a collection or error getting collection:", error);
-      // }
-
       await this.generalPageRepo.deletePage(brandedPageID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error deleting page.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: PageErrorMessages.validatePageToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: PageErrorMessages.deletePage,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 
