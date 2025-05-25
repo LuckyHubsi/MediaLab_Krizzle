@@ -291,7 +291,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to a `GeneralPage` domain entity.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails or if the page was not found.
    */
   async getByPageID(pageID: PageID): Promise<GeneralPage> {
     try {
@@ -299,13 +299,13 @@ export class GeneralPageRepositoryImpl
         selectGeneralPageByIdQuery,
         [pageID],
       );
-      if (result) {
+      if (result !== null) {
         return GeneralPageMapper.toEntity(result);
       } else {
-        throw new RepositoryError("Failed to fetch page by id.");
+        throw new RepositoryErrorNew("Not Found");
       }
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page by id.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

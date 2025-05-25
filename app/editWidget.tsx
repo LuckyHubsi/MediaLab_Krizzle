@@ -161,29 +161,31 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const generalPageData = await generalPageService.getGeneralPageByID(
+          const result = await generalPageService.getGeneralPageByID(
             Number(widgetID),
           );
-          if (generalPageData) {
-            setPageData(generalPageData);
-            setTitle(generalPageData.page_title || "");
-            setSelectedColor(generalPageData.page_color || "");
+          if (result.success) {
+            setPageData(result.value);
+            setTitle(result.value.page_title || "");
+            setSelectedColor(result.value.page_color || "");
             setSelectedIcon(
-              (generalPageData.page_icon as
+              (result.value.page_icon as
                 | keyof typeof MaterialIcons.glyphMap
                 | null) || null,
             );
             //save current data to compare if new data has been entered
             initialValuesRef.current = {
-              title: generalPageData.page_title || "",
-              selectedColor: generalPageData.page_color || "",
+              title: result.value.page_title || "",
+              selectedColor: result.value.page_color || "",
               selectedIcon:
-                (generalPageData.page_icon as keyof typeof MaterialIcons.glyphMap) ||
-                null,
-              selectedTag: generalPageData.tag || null,
+                (result.value
+                  .page_icon as keyof typeof MaterialIcons.glyphMap) || null,
+              selectedTag: result.value.tag || null,
             };
 
-            setSelectedTag(generalPageData.tag || null);
+            setSelectedTag(result.value.tag || null);
+          } else {
+            // TODO: show error modal
           }
         } catch (error) {
           console.error("Failed to load page data:", error);

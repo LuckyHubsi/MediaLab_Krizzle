@@ -62,6 +62,10 @@ export const PageErrorMessages = {
     "Something went wrong while loading your widgets in this folder sorted by their last creation date. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
   loadingAllFolderPagesSortedByAlphabet:
     "Something went wrong while loading your widgets in this folder sorted by their title in alphabetical order. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingPage:
+    "Something went wrong while loading the widget you tried to access. Some widget details may be unavailable or outdated.",
+  notFound:
+    "The system does not recognize the widget you tried to access or had trouble reading its data. Some widget details and functionalities may be unavailable or outdated.",
   unknown:
     "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
 };

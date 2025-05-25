@@ -173,16 +173,38 @@ export class GeneralPageService {
    * Fetch a single page by its ID.
    *
    * @param pageId - Number representing the pageID.
-   * @returns A Promise resolving to a `GeneralPageDTO`.
-   * @throws ServiceError if retrieval fails.
+   * @returns  A Promise resolving to a `Result` containing a `GeneralPageDTO` or a `ServiceErrorType`
    */
-  async getGeneralPageByID(pageId: number): Promise<GeneralPageDTO> {
+  async getGeneralPageByID(
+    pageId: number,
+  ): Promise<Result<GeneralPageDTO, ServiceErrorType>> {
     try {
       const brandedPageID: PageID = pageID.parse(pageId);
       const page = await this.generalPageRepo.getByPageID(brandedPageID);
-      return GeneralPageMapper.toDTO(page);
+      return success(GeneralPageMapper.toDTO(page));
     } catch (error) {
-      throw new ServiceError("Error retrieving page by id.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: PageErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: PageErrorMessages.loadingPage,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 
