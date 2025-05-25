@@ -79,7 +79,7 @@ export class FolderRepositoryImpl
    * Retrieves a folder from the database by its ID.
    *
    * @returns A Promise resolving to a `Folder` domain entity.
-   * @throws RepositoryError if the fetch fails.
+   * @throws RepositoryErrorNew if the fetch fails or if the folder was not found.
    */
   async getFolderByID(folderId: FolderID): Promise<Folder> {
     try {
@@ -89,9 +89,9 @@ export class FolderRepositoryImpl
       if (result !== null) {
         return FolderMapper.toEntity(result);
       }
-      throw new RepositoryError("Folder not found.");
+      throw new RepositoryErrorNew("Not Found");
     } catch (error) {
-      throw new RepositoryError("Failed to fetch the folder.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

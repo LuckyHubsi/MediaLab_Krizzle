@@ -88,16 +88,38 @@ export class FolderService {
   /**
    * Retrieves a folder and maps it to a FolderDTO.
    *
-   * @returns A Promise resolving to a `FolderDTO` object.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either a `FolderDTO` or a `ServiceErrorType`.
    */
-  async getFolder(folderId: number): Promise<FolderDTO> {
+  async getFolder(
+    folderId: number,
+  ): Promise<Result<FolderDTO, ServiceErrorType>> {
     try {
       const brandedID = folderID.parse(folderId);
       const folder = await this.folderRepo.getFolderByID(brandedID);
-      return FolderMapper.toDTO(folder);
+      return success(FolderMapper.toDTO(folder));
     } catch (error) {
-      throw new ServiceError("Error retrieving folder.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: FolderErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: FolderErrorMessages.loadingFolder,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: FolderErrorMessages.unknown,
+        });
+      }
     }
   }
 

@@ -119,8 +119,12 @@ export default function FolderScreen() {
         if (!folderId) return;
 
         try {
-          const folderData = await folderService.getFolder(Number(folderId));
-          setFolder(folderData);
+          const result = await folderService.getFolder(Number(folderId));
+          if (result.success) {
+            setFolder(result.value);
+          } else {
+            // TODO: show error modal
+          }
           const fetchedWidgets =
             await generalPageService.getAllFolderGeneralPageData(
               sortingMode,
