@@ -13,6 +13,7 @@ import {
   itemTemplateID,
   pageID,
 } from "@/backend/domain/common/IDs";
+import { GeneralPageMapper } from "./GeneralPageMapper";
 
 /**
  * Mapper class for converting between Collection domain entities, DTOs, and database models:
@@ -59,17 +60,9 @@ export class CollectionMapper {
    */
   static toNewEntity(dto: CollectionDTO): NewCollection {
     try {
+      const generalPage = GeneralPageMapper.toNewEntity(dto);
       const parsedDTO = createNewCollectionSchema.parse({
-        pageType: dto.page_type,
-        pageTitle: dto.page_title,
-        pageIcon: dto.page_icon,
-        pageColor: dto.page_color,
-        archived: dto.archived,
-        pinned: dto.pinned,
-        tag:
-          dto.tag && dto.tag.tagID && dto.tag.tag_label
-            ? TagMapper.toUpdatedEntity(dto.tag)
-            : null,
+        ...generalPage,
         categories: dto.categories
           ? dto.categories.map(CollectionCategoryMapper.toNewEntity)
           : [],

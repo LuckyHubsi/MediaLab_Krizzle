@@ -43,6 +43,31 @@ export class GeneralPageMapper {
   }
 
   /**
+   * Maps a GeneralPageDTO to a NewGeneralPage, used when creating a new note or collection.
+   *
+   * @param dto - The incoming DTO.
+   * @returns A validated `NewGeneralPage` object.
+   * @throws Rethrows error if validation fails.
+   */
+  static toNewEntity(dto: GeneralPageDTO): NewGeneralPage {
+    try {
+      return createNewGeneralPage.parse({
+        pageType: dto.page_type,
+        pageTitle: dto.page_title,
+        pageIcon: dto.page_icon,
+        pageColor: dto.page_color,
+        archived: dto.archived,
+        pinned: dto.pinned,
+        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
+        parentID: dto.parentID ? dto.parentID : null,
+      });
+    } catch (error: any) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  /**
    * Maps a GeneralPageDTO from the frontend to a GeneralPage domain entity.
    *
    * @param dto - The updated GeneralPageDTO from the frontend.

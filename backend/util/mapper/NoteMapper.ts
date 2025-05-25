@@ -8,6 +8,7 @@ import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { TagMapper } from "./TagMapper";
 import { NoteModel } from "@/backend/repository/model/NoteModel";
 import { pageID } from "@/backend/domain/common/IDs";
+import { GeneralPageMapper } from "./GeneralPageMapper";
 
 /**
  * Mapper class for converting between Note domain entities, DTOs, and database models:
@@ -50,14 +51,9 @@ export class NoteMapper {
    */
   static toNewEntity(dto: NoteDTO): NewNote {
     try {
+      const generalPage = GeneralPageMapper.toNewEntity(dto);
       const parsedDTO = createNewNote.parse({
-        pageType: dto.page_type,
-        pageTitle: dto.page_title,
-        pageIcon: dto.page_icon,
-        pageColor: dto.page_color,
-        archived: dto.archived,
-        pinned: dto.pinned,
-        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
+        ...generalPage,
         noteContent: dto.note_content,
       });
       return parsedDTO;
