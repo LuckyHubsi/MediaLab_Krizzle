@@ -253,19 +253,36 @@ export class GeneralPageService {
    *
    * @param pageId - Number representing the pageID.
    * @param currentPinStatus - Boolean representing the page's current pin status.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if udpate fails.
+   * @returns  A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
   async togglePagePin(
     pageId: number,
     currentPinStatus: boolean,
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
       await this.generalPageRepo.updatePin(brandedPageID, currentPinStatus);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error updating pin status.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: PageErrorMessages.validatePageToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: PageErrorMessages.updatePagePin,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 

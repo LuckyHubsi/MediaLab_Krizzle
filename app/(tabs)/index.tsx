@@ -392,11 +392,15 @@ export default function HomeScreen() {
                   pinnedWidgets.length < 4) ||
                 (selectedWidget && selectedWidget?.pinned)
               ) {
-                const success = await generalPageService.togglePagePin(
+                const result = await generalPageService.togglePagePin(
                   Number(selectedWidget.id),
                   selectedWidget.pinned,
                 );
-                setShouldReload(success);
+                if (result.success) {
+                  setShouldReload(true);
+                } else {
+                  // TODO: show error modal
+                }
               }
             },
           },

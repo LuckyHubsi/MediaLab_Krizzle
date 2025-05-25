@@ -191,11 +191,15 @@ export default function CollectionScreen() {
                         collection.pin_count < 4) ||
                       (collection && collection?.pinned)
                     ) {
-                      const success = await generalPageService.togglePagePin(
+                      const result = await generalPageService.togglePagePin(
                         Number(collection.pageID),
                         collection.pinned,
                       );
-                      setShouldReload(success);
+                      if (result.success) {
+                        setShouldReload(true);
+                      } else {
+                        // TODO: show error modal
+                      }
                     }
                   },
                 }

@@ -402,7 +402,7 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param currentPinStatus - A boolean representing the current pin status.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
     try {
@@ -420,7 +420,7 @@ export class GeneralPageRepositoryImpl
 
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update pinned state");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 

@@ -142,11 +142,15 @@ export default function NotesScreen() {
                         noteData.pin_count < 4) ||
                       (noteData && noteData?.pinned)
                     ) {
-                      const success = await generalPageService.togglePagePin(
+                      const result = await generalPageService.togglePagePin(
                         Number(pageId),
                         noteData.pinned,
                       );
-                      setShouldReload(success);
+                      if (result.success) {
+                        setShouldReload(true);
+                      } else {
+                        // TODO: show error modal
+                      }
                     }
                   },
                 }
