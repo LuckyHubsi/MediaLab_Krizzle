@@ -102,8 +102,7 @@ export class TagRepositoryImpl
    */
   async updateTag(tag: Tag): Promise<boolean> {
     try {
-      const model: TagModel = TagMapper.toModel(tag);
-      await this.executeQuery(updateTagQuery, [model.tag_label, model.tagID]);
+      await this.executeQuery(updateTagQuery, [tag.tagLabel, tag.tagID]);
       return true;
     } catch (error) {
       throw new RepositoryErrorNew("Update Failed");

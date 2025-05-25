@@ -33,20 +33,6 @@ export class TagMapper {
   }
 
   /**
-   * Maps a Tag domain entity to a TagModel for persistence.
-   *
-   * @param entity - The `Tag` domain entity.
-   * @returns A corresponding `TagModel` object.
-   */
-  static toModel(entity: Tag): TagModel {
-    return {
-      tagID: entity.tagID,
-      tag_label: entity.tagLabel,
-      usage_count: entity.usageCount,
-    };
-  }
-
-  /**
    * Maps a TagDTO to a NewTag, used when creating a new tag.
    *
    * @param dto - The incoming DTO (from API, etc.).
