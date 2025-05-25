@@ -2,7 +2,10 @@ import { Folder, NewFolder } from "@/backend/domain/entity/Folder";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import {
   deleteFolderByIDQuery,
   insertFolderQuery,
@@ -34,19 +37,14 @@ export class FolderRepositoryImpl
    *
    * @param folder - A `NewFolder` object containing the tag label.
    * @returns A Promise resolving to `true` if insertion succeeded.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertFolder(folder: NewFolder): Promise<boolean> {
     try {
-      const folderId = await this.executeTransaction(async (txn) => {
-        await this.executeQuery(insertFolderQuery, [folder.folderName], txn);
-
-        const lastInsertedID = await this.getLastInsertId(txn);
-        return lastInsertedID;
-      });
+      await this.executeQuery(insertFolderQuery, [folder.folderName]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to insert folder.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

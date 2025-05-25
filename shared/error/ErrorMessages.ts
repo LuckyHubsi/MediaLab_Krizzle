@@ -19,3 +19,13 @@ export const TagErrorMessages = {
   unknown:
     "An unexpected error occurred while handling tags. Some tag-related features may not work as expected.",
 };
+
+// FOLDERS
+export const FolderErrorMessages = {
+  validateNewFolder:
+    "There was a problem validating your input. Consider using a different folder name with up to 30 characters.",
+  insertNewFolder:
+    "There was a problem adding your folder. Please try again. If the error persists, consider choosing a different folder name.",
+  unknown:
+    "An unexpected error occurred while handling folders. Some folder-related features may not work as expected.",
+};
