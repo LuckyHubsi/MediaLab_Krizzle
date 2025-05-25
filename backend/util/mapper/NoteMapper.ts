@@ -72,24 +72,9 @@ export class NoteMapper {
    */
   static toEntity(model: NoteModel): Note {
     try {
+      const generalPage = GeneralPageMapper.toEntity(model);
       return noteSchema.parse({
-        pageID: pageID.parse(model.pageID),
-        pageType: model.page_type,
-        pageTitle: model.page_title,
-        pageIcon: model.page_icon,
-        pageColor: model.page_color,
-        archived: model.archived === 1,
-        pinned: model.pinned === 1,
-        tag:
-          model.tagID && model.tag_label
-            ? TagMapper.toEntity({
-                tagID: model.tagID,
-                tag_label: model.tag_label,
-                usage_count: 0,
-              })
-            : null,
-        createdAt: new Date(model.date_created),
-        updatedAt: new Date(model.date_modified),
+        ...generalPage,
         noteID: model.noteID,
         noteContent: model.note_content,
         pinCount: model.pin_count,

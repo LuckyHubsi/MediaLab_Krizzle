@@ -83,24 +83,9 @@ export class CollectionMapper {
    */
   static toEntity(model: CollectionModel): Collection {
     try {
+      const generalPage = GeneralPageMapper.toEntity(model);
       return collectionSchema.parse({
-        pageID: pageID.parse(model.pageID),
-        pageType: model.page_type,
-        pageTitle: model.page_title,
-        pageIcon: model.page_icon,
-        pageColor: model.page_color,
-        archived: model.archived === 1,
-        pinned: model.pinned === 1,
-        tag:
-          model.tagID && model.tag_label
-            ? TagMapper.toEntity({
-                tagID: model.tagID,
-                tag_label: model.tag_label ?? "123",
-                usage_count: 0, // placeholder since this value is not used for persistence
-              })
-            : null,
-        createdAt: new Date(model.date_created),
-        updatedAt: new Date(model.date_modified),
+        ...generalPage,
         collectionID: collectionID.parse(model.collectionID),
         templateID: itemTemplateID.parse(model.templateID),
         categories: model.categories
