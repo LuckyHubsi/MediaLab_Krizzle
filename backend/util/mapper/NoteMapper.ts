@@ -39,6 +39,7 @@ export class NoteMapper {
       noteID: entity.noteID,
       note_content: entity.noteContent,
       pin_count: entity.pinCount,
+      parentID: entity.parentID,
     };
   }
 
@@ -58,8 +59,8 @@ export class NoteMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping NoteDTO to New Entity:", error);
-      throw new Error("Failed to map NoteDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -80,8 +81,8 @@ export class NoteMapper {
         pinCount: model.pin_count,
       });
     } catch (error) {
-      console.error("Error mapping NoteModel to Entity:", error);
-      throw new Error("Failed to map NoteModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }
