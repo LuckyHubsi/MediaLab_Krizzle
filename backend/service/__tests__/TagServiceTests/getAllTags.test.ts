@@ -1,6 +1,6 @@
 import { TagRepository } from "@/backend/repository/interfaces/TagRepository.interface";
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
-import { TagService } from "../TagService";
+import { TagService } from "../../TagService";
 import { success } from "@/shared/result/Result";
 import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
