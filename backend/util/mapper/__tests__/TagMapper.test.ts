@@ -1,93 +1,112 @@
-import { NewTag, Tag, tagID } from "@/backend/domain/entity/Tag";
+import { NewTag, Tag } from "@/backend/domain/entity/Tag";
 import { TagModel } from "@/backend/repository/model/TagModel";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { TagMapper } from "../TagMapper";
+import { tagID } from "@/backend/domain/common/IDs";
+import { ZodError } from "zod";
 
 describe("TagMapper", () => {
-  const mockTagID = tagID.parse(1);
+  const brandedTagID = tagID.parse(1);
 
-  const mockTag: Tag = {
-    tagID: mockTagID,
+  const tagEntity: Tag = {
+    tagID: brandedTagID,
     tagLabel: "test tag",
     usageCount: 2,
   };
 
-  const mockTagDTO: TagDTO = {
-    tagID: 1,
-    tag_label: "test tag",
-    usage_count: 2,
-  };
-
-  const mockTagModel: TagModel = {
-    tagID: 1,
-    tag_label: "test tag",
-    usage_count: 2,
-  };
-
-  const mockNewTag: NewTag = {
+  const updatedTagEntity: Tag = {
+    tagID: brandedTagID,
     tagLabel: "test tag",
+    usageCount: 0,
+  };
+
+  const newTagEntity: NewTag = {
+    tagLabel: "test tag",
+  };
+
+  const tagDTO: TagDTO = {
+    tagID: 1,
+    tag_label: "test tag",
+    usage_count: 2,
+  };
+
+  const invalidTagLabelDTO: TagDTO = {
+    tagID: 1,
+    tag_label: "",
+  };
+
+  const invalidTagIdDTO: TagDTO = {
+    tagID: -1,
+    tag_label: "test tag",
+  };
+
+  const tagModel: TagModel = {
+    tagID: 1,
+    tag_label: "test tag",
+    usage_count: 2,
+  };
+
+  const invalidTagLabelModel: TagModel = {
+    tagID: -1,
+    tag_label: "test tag",
+    usage_count: 2,
+  };
+
+  const invalidTagIdModel: TagModel = {
+    tagID: -1,
+    tag_label: "test tag",
+    usage_count: 2,
   };
 
   describe("toDTO", () => {
     it("should map a Tag entity to a TagDTO", () => {
-      const result = TagMapper.toDTO(mockTag);
-      expect(result).toEqual(mockTagDTO);
-    });
-  });
-
-  describe("toModel", () => {
-    it("should map a Tag entity to a TagModel", () => {
-      const result = TagMapper.toModel(mockTag);
-      expect(result).toEqual(mockTagModel);
+      const result = TagMapper.toDTO(tagEntity);
+      expect(result).toEqual(tagDTO);
     });
   });
 
   describe("toNewEntity", () => {
     it("should map a TagDTO to a NewTag entity", () => {
-      const result = TagMapper.toNewEntity(mockTagDTO);
-      expect(result).toEqual(mockNewTag);
+      const result = TagMapper.toNewEntity(tagDTO);
+      expect(result).toEqual(newTagEntity);
     });
 
     it("should throw an error if TagDTO tag label is invalid", () => {
-      const invalidTagDTO: TagDTO = {
-        tagID: 1,
-        tag_label: "",
-      };
+      expect(() => TagMapper.toNewEntity(invalidTagLabelDTO)).toThrow(ZodError);
+    });
+  });
 
-      expect(() => TagMapper.toNewEntity(invalidTagDTO)).toThrow(
-        "Failed to map TagDTO to New Entity",
+  describe("toUpdatedEntity", () => {
+    it("should map a TagDTO to an updated Tag entity", () => {
+      const result = TagMapper.toUpdatedEntity(tagDTO);
+      expect(result).toEqual(updatedTagEntity);
+    });
+
+    it("should throw an error if TagDTO tag label is invalid", () => {
+      expect(() => TagMapper.toUpdatedEntity(invalidTagLabelDTO)).toThrow(
+        ZodError,
+      );
+    });
+
+    it("should throw an error if TagDTO tag ID is invalid", () => {
+      expect(() => TagMapper.toUpdatedEntity(invalidTagIdDTO)).toThrow(
+        ZodError,
       );
     });
   });
 
   describe("toEntity", () => {
     it("should map a TagModel to a Tag entity", () => {
-      const result = TagMapper.toEntity(mockTagModel);
-      expect(result).toEqual(mockTag);
+      const result = TagMapper.toEntity(tagModel);
+      expect(result).toEqual(tagEntity);
     });
 
     it("should throw an error if TagModel tag id is invalid", () => {
-      const invalidTagModel: TagModel = {
-        tagID: -1,
-        tag_label: "test tag",
-        usage_count: 2,
-      };
-
-      expect(() => TagMapper.toEntity(invalidTagModel)).toThrow(
-        "Failed to map TagModel to Entity",
-      );
+      expect(() => TagMapper.toEntity(invalidTagIdModel)).toThrow(ZodError);
     });
 
     it("should throw an error if TagModel tag label is invalid", () => {
-      const invalidTagModel: TagModel = {
-        tagID: 1,
-        tag_label: "",
-        usage_count: 2,
-      };
-
-      expect(() => TagMapper.toEntity(invalidTagModel)).toThrow(
-        "Failed to map TagModel to Entity",
-      );
+      expect(() => TagMapper.toEntity(invalidTagLabelModel)).toThrow(ZodError);
     });
   });
 });
