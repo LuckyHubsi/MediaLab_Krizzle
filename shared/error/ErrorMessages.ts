@@ -32,6 +32,10 @@ export const FolderErrorMessages = {
     "There was a problem validating your input. Consider using a different folder name with up to 30 characters.",
   insertNewFolder:
     "There was a problem adding your folder. Please try again. If the error persists, consider choosing a different folder name.",
+  validateFolderToUpdate:
+    "The system either does not recognize the folder you want to update or the folder name is invalid. Please try again. If the error persists, consider renaming your folder or trying again after reopening the application.",
+  updateFolder:
+    "There was a problem updating your folder. Please try again. If the error persists, consider trying again after renaming your folder or reopening the application.",
   unknown:
     "An unexpected error occurred while handling folders. Some folder-related features may not work as expected.",
 };

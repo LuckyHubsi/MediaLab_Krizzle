@@ -101,7 +101,7 @@ export class FolderRepositoryImpl
    * @param folderId - The ID of the folder to update.
    * @param folderName - The new name for the folder.
    * @returns A Promise resolving to `true` if update succeeded.
-   * @throws RepositoryError if the update fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateFolderByID(
     folderId: FolderID,
@@ -111,7 +111,7 @@ export class FolderRepositoryImpl
       await this.executeQuery(updateFolderByIDQuery, [folderName, folderId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update folder.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 

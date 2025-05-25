@@ -87,11 +87,16 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       let success = false;
 
       if (editFolderMode && editingFolder) {
-        //TODO: use updateFolder instead of updateTag
-        success = await folderService.updateFolder({
+        const result = await folderService.updateFolder({
           ...editingFolder,
           folderName: trimmedFolder,
         });
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+          success = false;
+        }
       } else {
         const newFolderObject: FolderDTO = { folderName: trimmedFolder };
         const result = await folderService.insertFolder(newFolderObject);

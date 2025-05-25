@@ -77,15 +77,19 @@ export default function FoldersScreen() {
     }
 
     try {
-      const success = await folderService.updateFolder({
+      const result = await folderService.updateFolder({
         folderID: Number(editingFolder.id),
         folderName: trimmedName,
         itemCount: editingFolder.itemCount,
       });
 
-      if (success) {
+      if (result.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
+      } else {
+        // TODO: show error modal
+        console.log(result.error.type);
+        console.log(result.error.message);
       }
     } catch (error) {
       console.error("Error updating folder:", error);

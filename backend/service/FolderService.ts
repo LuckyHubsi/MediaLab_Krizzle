@@ -127,19 +127,38 @@ export class FolderService {
    * Updates a folder.
    *
    * @param folderDTO - `FolderDTO` representing the updated folder data.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if update fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async updateFolder(folderDTO: FolderDTO): Promise<boolean> {
+  async updateFolder(
+    folderDTO: FolderDTO,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const updatedFolder = FolderMapper.toUpdatedEntity(folderDTO);
       await this.folderRepo.updateFolderByID(
         updatedFolder.folderID,
         updatedFolder.folderName,
       );
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error updating folder.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: FolderErrorMessages.validateFolderToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: FolderErrorMessages.updateFolder,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: FolderErrorMessages.unknown,
+        });
+      }
     }
   }
 
