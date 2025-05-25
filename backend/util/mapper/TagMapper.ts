@@ -76,7 +76,6 @@ export class TagMapper {
       return tagSchema.parse({
         tagID: dto.tagID,
         tagLabel: dto.tag_label,
-        usageCount: 0, // default value - not used for db persistence
       });
     } catch (error: any) {
       console.error(error);
