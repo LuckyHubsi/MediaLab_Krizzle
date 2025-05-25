@@ -133,8 +133,12 @@ export default function FolderScreen() {
         }
 
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            setTags(result.value);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
