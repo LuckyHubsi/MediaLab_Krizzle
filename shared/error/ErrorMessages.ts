@@ -81,3 +81,13 @@ export const PageErrorMessages = {
   unknown:
     "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
 };
+
+// NOTE
+export const NoteErrorMessages = {
+  loadingNote:
+    "Something went wrong while loading the note you tried to access. Some note details may be unavailable or outdated.",
+  notFound:
+    "The system does not recognize the note you tried to access or had trouble reading its data. Some note details and functionalities may be unavailable or outdated.",
+  unknown:
+    "An unexpected error occurred while handling notes. Some note-related features may not work as expected.",
+};

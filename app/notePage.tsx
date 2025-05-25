@@ -47,15 +47,18 @@ export default function NotesScreen() {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const noteDataByID: NoteDTO | null =
-            await noteService.getNoteDataByPageID(numericID);
+          const result = await noteService.getNoteDataByPageID(numericID);
           let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
-          setNoteContent(noteContent);
-          setNoteData(noteDataByID);
-          setShouldReload(false);
+          if (result.success) {
+            setNoteContent(noteContent);
+            setNoteData(result.value);
+            setShouldReload(false);
+          } else {
+            // TODO: show error modal
+          }
         })();
       } else {
         console.error("Error fetching note data");

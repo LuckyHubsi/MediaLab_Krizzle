@@ -10,7 +10,10 @@ import {
   selectNoteByPageIDQuery,
   updateNoteContentQuery,
 } from "../query/NoteQuery";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import * as common from "../../domain/common/types";
 import { PageID } from "@/backend/domain/common/IDs";
 import * as SQLite from "expo-sqlite";
@@ -38,7 +41,7 @@ export class NoteRepositoryImpl
    *
    * @param pageId - The pageID of the note.
    * @returns A Promise resolving to a `Note` domain entity.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getByPageId(pageId: PageID): Promise<Note> {
     try {
@@ -47,11 +50,11 @@ export class NoteRepositoryImpl
         [pageId],
       );
       if (!noteData || noteData.page_type !== PageType.Note) {
-        throw new RepositoryError("Failed to fetch page.");
+        throw new RepositoryErrorNew("Not Found");
       }
       return NoteMapper.toEntity(noteData);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

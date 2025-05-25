@@ -4,6 +4,11 @@ import { NoteMapper } from "../util/mapper/NoteMapper";
 import { ServiceError } from "../util/error/ServiceError";
 import * as common from "../domain/common/types";
 import { pageID } from "../domain/common/IDs";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { failure, Result, success } from "@/shared/result/Result";
+import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
+import { ZodError } from "zod";
 
 /**
  * NoteService encapsulates all note-related application logic.
@@ -21,16 +26,38 @@ export class NoteService {
    * Fetch a note by page ID.
    *
    * @param pageId - Number representing page ID.
-   * @returns A Promise resolving to a `NoteDTO` object.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either a `NoteDTO` or a `ServiceErrorType`.
    */
-  async getNoteDataByPageID(pageId: number): Promise<NoteDTO> {
+  async getNoteDataByPageID(
+    pageId: number,
+  ): Promise<Result<NoteDTO, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
       const note = await this.noteRepo.getByPageId(brandedPageID);
-      return NoteMapper.toDTO(note);
+      return success(NoteMapper.toDTO(note));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve note.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: NoteErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: NoteErrorMessages.loadingNote,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: NoteErrorMessages.unknown,
+        });
+      }
     }
   }
 
