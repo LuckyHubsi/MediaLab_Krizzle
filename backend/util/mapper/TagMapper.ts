@@ -98,8 +98,8 @@ export class TagMapper {
         usageCount: model.usage_count,
       });
     } catch (error: any) {
-      console.error("Error mapping TagModel to Entity:", error.issues);
-      throw new Error("Failed to map TagModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }
