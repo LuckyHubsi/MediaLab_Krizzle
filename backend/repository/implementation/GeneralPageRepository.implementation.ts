@@ -5,7 +5,10 @@ import {
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
@@ -51,18 +54,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their last modified date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByModified(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByLastModifiedQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError(
-        "Failed to fetch all pages sorted by last modified.",
-      );
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -70,16 +82,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by alphabet (ascending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByAlphabet(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByAlphabetQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -87,16 +110,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their creation date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByCreated(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByCreatedQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -169,16 +203,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all pinned general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPinnedPages(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPinnedPagesQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -186,16 +231,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all archived general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllArchivedPages(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllArchivedPagesQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

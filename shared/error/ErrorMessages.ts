@@ -43,3 +43,19 @@ export const FolderErrorMessages = {
   unknown:
     "An unexpected error occurred while handling folders. Some folder-related features may not work as expected.",
 };
+
+// GENERAL PAGE
+export const PageErrorMessages = {
+  loadingAllPagesSortedByModificationDate:
+    "Something went wrong while loading your widgets sorted by their last modification date. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingAllPagesSortedByCreationDate:
+    "Something went wrong while loading your widgets sorted by their last creation date. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingAllPagesSortedByAlphabet:
+    "Something went wrong while loading your widgets sorted by their title in alphabetical order. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingAllArchivedPages:
+    "Something went wrong while loading your archived widgets. You might experience missing or incorrect widget behavior.",
+  loadingAllPinnedPages:
+    "Something went wrong while loading your pinned widgets. You might experience missing or incorrect widget behavior.",
+  unknown:
+    "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
+};

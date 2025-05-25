@@ -103,13 +103,18 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await generalPageService.getAllGeneralPageData(
+          const result = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Archived,
           );
 
-          const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
-
-          setWidgets(enrichedWidgets);
+          if (result.success) {
+            const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(
+              result.value,
+            );
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading widgets:", error);
         }

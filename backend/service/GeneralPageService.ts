@@ -8,6 +8,10 @@ import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { ZodError } from "zod";
 import { ServiceError } from "../util/error/ServiceError";
 import { FolderState } from "@/shared/enum/FolderState";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { failure, Result, success } from "@/shared/result/Result";
+import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 // import { collectionService } from "./CollectionService";
 
 /**
@@ -26,12 +30,11 @@ export class GeneralPageService {
    * Fetch pages by state (sorted, pinned, or archived).
    *
    * @param pageState - Enum - the state of the pages to be retrieved (sorted, pinned, archived)
-   * @returns A Promise resolving to an array of `GeneralPageDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either an array of `GeneralPageDTO`s or a `ServiceErrorType`.
    */
   async getAllGeneralPageData(
     pageState: GeneralPageState,
-  ): Promise<GeneralPageDTO[]> {
+  ): Promise<Result<GeneralPageDTO[], ServiceErrorType>> {
     try {
       let pages: GeneralPage[] = [];
       switch (pageState) {
@@ -53,9 +56,44 @@ export class GeneralPageService {
         default:
           break;
       }
-      return pages.map(GeneralPageMapper.toDTO);
+      return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Error retrieving all pages.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        let errorMessage: string = "";
+        switch (pageState) {
+          case GeneralPageState.GeneralModfied:
+            errorMessage =
+              PageErrorMessages.loadingAllPagesSortedByModificationDate;
+            break;
+          case GeneralPageState.GeneralCreated:
+            errorMessage =
+              PageErrorMessages.loadingAllPagesSortedByCreationDate;
+            break;
+          case GeneralPageState.GeneralAlphabet:
+            errorMessage = PageErrorMessages.loadingAllPagesSortedByAlphabet;
+            break;
+          case GeneralPageState.Archived:
+            errorMessage = PageErrorMessages.loadingAllArchivedPages;
+            break;
+          case GeneralPageState.Pinned:
+            errorMessage = PageErrorMessages.loadingAllPinnedPages;
+            break;
+          default:
+            break;
+        }
+        return failure({
+          type: "Retrieval Failed",
+          message: errorMessage,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 

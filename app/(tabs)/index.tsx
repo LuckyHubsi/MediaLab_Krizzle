@@ -121,16 +121,26 @@ export default function HomeScreen() {
     useCallback(() => {
       (async () => {
         try {
-          const pinnedData = await generalPageService.getAllGeneralPageData(
+          const pinnedResult = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
-          const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
-          setPinnedWidgets(pinnedEnrichedWidgets);
+          if (pinnedResult.success) {
+            const pinnedEnrichedWidgets = mapToEnrichedWidgets(
+              pinnedResult.value,
+            );
+            setPinnedWidgets(pinnedEnrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
 
-          const data =
+          const result =
             await generalPageService.getAllGeneralPageData(sortingMode);
-          const enrichedWidgets = mapToEnrichedWidgets(data);
-          setWidgets(enrichedWidgets);
+          if (result.success) {
+            const enrichedWidgets = mapToEnrichedWidgets(result.value);
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
