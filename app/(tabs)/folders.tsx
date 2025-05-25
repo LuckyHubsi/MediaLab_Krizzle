@@ -107,10 +107,13 @@ export default function FoldersScreen() {
     useCallback(() => {
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-
-          const shapedFolders = mapToFolderShape(data);
-          setFolders(shapedFolders);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            const shapedFolders = mapToFolderShape(result.value);
+            setFolders(shapedFolders);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         }

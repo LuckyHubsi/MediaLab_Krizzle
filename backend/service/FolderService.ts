@@ -61,15 +61,27 @@ export class FolderService {
   /**
    * Retrieves all folders and maps them to DTOs.
    *
-   * @returns A Promise resolving to an array of `FolderDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either an array of `FolderDTO`s or a `ServiceErrorType`.
    */
-  async getAllFolders(): Promise<FolderDTO[]> {
+  async getAllFolders(): Promise<Result<FolderDTO[], ServiceErrorType>> {
     try {
       const folders = await this.folderRepo.getAllFolders();
-      return folders.map(FolderMapper.toDTO);
+      return success(folders.map(FolderMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Error retrieving all folders.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: FolderErrorMessages.loadingAllFolders,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: FolderErrorMessages.unknown,
+        });
+      }
     }
   }
 

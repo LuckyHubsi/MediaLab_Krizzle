@@ -52,14 +52,26 @@ export class FolderRepositoryImpl
    * Retrieves all folders from the database.
    *
    * @returns A Promise resolving to an array of `Folder` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolders(): Promise<Folder[]> {
     try {
       const result = await this.fetchAll<FolderModel>(selectAllFoldersQuery);
-      return result.map(FolderMapper.toEntity);
+      const validFolders: Folder[] = [];
+
+      for (const model of result) {
+        try {
+          const tag = FolderMapper.toEntity(model);
+          validFolders.push(tag);
+        } catch (err) {
+          // skipping invalide folders (folders that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+
+      return validFolders;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all folders.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

@@ -103,18 +103,24 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       }
 
       if (success && !editFolderMode) {
-        const updatedFolders = await folderService.getAllFolders();
-        setFolders(updatedFolders ?? []);
-
-        const newFolder = updatedFolders.find(
-          (f) => f.folderName === trimmedFolder,
-        );
-        if (newFolder) {
-          setSelectedFolder({
-            id: String(newFolder.folderID),
-            title: newFolder.folderName,
-            itemCount: newFolder.itemCount ?? 0,
-          });
+        const result = await folderService.getAllFolders();
+        if (result.success) {
+          const updatedFolders = result.value;
+          setFolders(updatedFolders ?? []);
+          const newFolder = updatedFolders.find(
+            (f) => f.folderName === trimmedFolder,
+          );
+          if (newFolder) {
+            setSelectedFolder({
+              id: String(newFolder.folderID),
+              title: newFolder.folderName,
+              itemCount: newFolder.itemCount ?? 0,
+            });
+          }
+        } else {
+          // TODO: show error modal
+          console.log(result.error.type);
+          console.log(result.error.message);
         }
       } else if (success && editFolderMode) {
         setShouldRefetch(true);
@@ -142,9 +148,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       setInternalVisible(true);
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-
-          setFolders(data ?? []);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            setFolders(result.value);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         }
@@ -172,8 +181,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
 
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-          setFolders(data ?? []);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            setFolders(result.value);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         } finally {

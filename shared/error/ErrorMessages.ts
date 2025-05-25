@@ -22,6 +22,8 @@ export const TagErrorMessages = {
 
 // FOLDERS
 export const FolderErrorMessages = {
+  loadingAllFolders:
+    "Something went wrong while loading your folders. You might experience missing or incorrect folder behavior.",
   validateNewFolder:
     "There was a problem validating your input. Consider using a different folder name with up to 30 characters.",
   insertNewFolder:
