@@ -72,7 +72,7 @@ export class GeneralPageMapper {
    *
    * @param dto - The updated GeneralPageDTO from the frontend.
    * @returns A validated `GeneralPage` domain entity.
-   * @throws Error if validation fails.
+   * @throws Rethrows error if validation fails.
    */
   static toUpdatedEntity(dto: GeneralPageDTO): GeneralPage {
     try {
@@ -91,8 +91,8 @@ export class GeneralPageMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping GeneralPageDTO to Updated Entity:", error);
-      throw new Error("Failed to map GeneralPageDTO to Updated Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -101,7 +101,7 @@ export class GeneralPageMapper {
    *
    * @param model - The raw GeneralPageModel from the DB.
    * @returns A validated `GeneralPage` domain entity.
-   * @throws Error if validation fails.
+   * @throws Rethrows error if validation fails.
    */
   static toEntity(model: GeneralPageModel): GeneralPage {
     try {
@@ -125,8 +125,8 @@ export class GeneralPageMapper {
         parentID: model.parentID,
       });
     } catch (error) {
-      console.error("Error mapping GeneralPageModel to Entity:", error);
-      throw new Error("Failed to map GeneralPageModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }
