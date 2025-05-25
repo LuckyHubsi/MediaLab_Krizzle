@@ -342,7 +342,7 @@ export class GeneralPageRepositoryImpl
    * @param page - A `NewGeneralPage` entity.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to a PageID.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertPage(
     page: NewGeneralPage,
@@ -372,7 +372,7 @@ export class GeneralPageRepositoryImpl
       });
       return pageID.parse(pageId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert page.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

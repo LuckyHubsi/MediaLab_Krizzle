@@ -65,10 +65,11 @@ export class NoteService {
    * Insert a note.
    *
    * @param noteDTO - Note data to be inserted.
-   * @returns A Promise resolving to a number (new pageID).
-   * @throws ServiceError if insert fails.
+   * @returns A Promise resolving to a `Result` containing either a `number` (new pageID) or a `ServiceErrorType`.
    */
-  async insertNote(noteDTO: NoteDTO): Promise<number> {
+  async insertNote(
+    noteDTO: NoteDTO,
+  ): Promise<Result<number, ServiceErrorType>> {
     try {
       const note = NoteMapper.toNewEntity(noteDTO);
       const pageId = await this.noteRepo.executeTransaction<number>(
@@ -78,9 +79,27 @@ export class NoteService {
           return retrievedPageID;
         },
       );
-      return pageId;
+      return success(pageId);
     } catch (error) {
-      throw new ServiceError("Failed to insert note data.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: NoteErrorMessages.validateNewNote,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Insert Failed"
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: NoteErrorMessages.insertNewNote,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: NoteErrorMessages.unknown,
+        });
+      }
     }
   }
 

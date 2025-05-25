@@ -88,6 +88,10 @@ export const NoteErrorMessages = {
     "Something went wrong while loading the note you tried to access. Some note details may be unavailable or outdated.",
   notFound:
     "The system does not recognize the note you tried to access or had trouble reading its data. Some note details and functionalities may be unavailable or outdated.",
+  validateNewNote:
+    "There was a problem validating your input. Consider using a different note title, tag, color or icon.",
+  insertNewNote:
+    "There was a problem adding your note. Please try again. If the error persists, consider choosing a different different note title, tag, color or icon or trying again after reopening the application.",
   unknown:
     "An unexpected error occurred while handling notes. Some note-related features may not work as expected.",
 };

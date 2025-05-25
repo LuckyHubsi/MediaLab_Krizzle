@@ -64,7 +64,7 @@ export class NoteRepositoryImpl
    * @param note - The note data to be inserted.
    * @param pageId - The pageID of the note.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertNote(
     note: NewNote,
@@ -74,8 +74,7 @@ export class NoteRepositoryImpl
     try {
       await this.executeQuery(insertNoteQuery, [note.noteContent, pageId], txn);
     } catch (error) {
-      console.error("Error inserting note:", error);
-      throw new RepositoryError("Failed to isnert note.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

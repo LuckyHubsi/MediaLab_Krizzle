@@ -116,17 +116,21 @@ export default function CreateNoteScreen() {
       parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
-    const id = await noteService.insertNote(noteDTO);
-    router.replace({
-      pathname: "/notePage",
-      params: { pageId: id, title: title },
-    });
+    const result = await noteService.insertNote(noteDTO);
+    if (result.success) {
+      router.replace({
+        pathname: "/notePage",
+        params: { pageId: result.value, title: title },
+      });
 
-    showSnackbar(
-      `Successfully created Note: "${title}". `,
-      "bottom",
-      "success",
-    );
+      showSnackbar(
+        `Successfully created Note: "${title}". `,
+        "bottom",
+        "success",
+      );
+    } else {
+      // TODO: show error modal
+    }
   };
 
   useFocusEffect(
