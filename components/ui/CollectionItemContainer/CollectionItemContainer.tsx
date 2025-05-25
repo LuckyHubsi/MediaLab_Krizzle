@@ -2,7 +2,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { FC, useState } from "react";
 import { format } from "date-fns";
 import {
-  ContentText,
   ItemContainer,
   SelectableContainer,
 } from "./CollectionItemContainer.styles";
@@ -129,20 +128,12 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           <MaterialIcons name={icon} size={24} color={iconColor || "#585858"} />
         )}
         {type && (
-          <ThemedText
-            fontWeight="semibold"
-            fontSize="s"
-            style={{ color: greyColor }}
-          >
+          <ThemedText fontWeight="regular" fontSize="regular">
             {type}
           </ThemedText>
         )}
         {date && (
-          <ThemedText
-            fontWeight="semibold"
-            fontSize="s"
-            style={{ color: greyColor }}
-          >
+          <ThemedText fontWeight="regular" fontSize="regular">
             {date ? format(date, "dd.MM.yyyy") : "dd.mm.yyyy"}
           </ThemedText>
         )}
@@ -163,11 +154,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
               themeMode={themeMode}
               style={{ border: `1px solid ${greyColor}` }}
             >
-              <ThemedText
-                fontWeight="regular"
-                fontSize="s"
-                style={{ color: greyColor }}
-              >
+              <ThemedText fontWeight="regular" fontSize="s">
                 {multiselectArray}
               </ThemedText>
             </SelectableContainer>
@@ -177,15 +164,19 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
 
       {link && (
         <TouchableOpacity onPress={handlePressLink}>
-          <ContentText
+          <ThemedText
+            fontWeight="semibold"
+            fontSize="regular"
             style={{
               color: "#2980ff",
               textDecorationLine: "underline",
-              marginTop: -10,
+              marginTop: -8,
+              height: 48,
+              textAlignVertical: "center",
             }}
           >
             {linkPreview || link}
-          </ContentText>
+          </ThemedText>
         </TouchableOpacity>
       )}
     </ItemContainer>

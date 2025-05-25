@@ -20,14 +20,3 @@ export const SelectableContainer = styled.View<CollectionItemContainerProps>`
   align-items: center;
   gap: 10px;
 `;
-
-export const ContentText = styled.Text`
-  color: #585858;
-
-  font-family: Lexend;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 800;
-  line-height: 24px; /* 171.429% */
-  letter-spacing: -0.35px;
-`;
