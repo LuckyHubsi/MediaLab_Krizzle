@@ -235,14 +235,12 @@ export class GeneralPageRepositoryImpl
     updatedPage: NewGeneralPage,
   ): Promise<boolean> {
     try {
-      const pageModel: Omit<GeneralPageModel, "pageID"> =
-        GeneralPageMapper.toInsertModel(updatedPage);
       await this.executeQuery(updatePageByIDQuery, [
-        pageModel.page_title,
-        pageModel.page_icon,
-        pageModel.page_color,
-        pageModel.tagID,
-        pageModel.date_modified,
+        updatedPage.pageTitle,
+        updatedPage.pageIcon,
+        updatedPage.pageColor,
+        updatedPage.tag?.tagID ?? null,
+        updatedPage.updatedAt.toISOString(),
         pageID,
       ]);
       return true;
@@ -264,21 +262,20 @@ export class GeneralPageRepositoryImpl
     txn?: SQLite.SQLiteDatabase,
   ): Promise<PageID> {
     try {
-      const model = GeneralPageMapper.toInsertModel(page);
       const pageId = await this.executeTransaction(async (transaction) => {
         await this.executeQuery(
           insertNewPageQuery,
           [
-            model.page_type,
-            model.page_title,
-            model.page_icon,
-            model.page_color,
-            model.date_created,
-            model.date_modified,
-            model.archived ? 1 : 0,
-            model.pinned ? 1 : 0,
-            model.tagID,
-            model.parentID,
+            page.pageType,
+            page.pageTitle,
+            page.pageIcon,
+            page.pageColor,
+            page.createdAt.toISOString(),
+            page.updatedAt.toISOString(),
+            page.archived ? 1 : 0,
+            page.pinned ? 1 : 0,
+            page.tag?.tagID ?? null,
+            page.parentID,
           ],
           txn ?? transaction,
         );

@@ -72,29 +72,6 @@ export class GeneralPageMapper {
   }
 
   /**
-   * Maps a NewGeneralPage domain entity to a GeneralPageModel for persistence.
-   *
-   * @param entity - The `NewGeneralPage` domain entity.
-   * @returns A corresponding `GeneralPageModel` (ommited pageID) object.
-   */
-  static toInsertModel(
-    entity: NewGeneralPage,
-  ): Omit<GeneralPageModel, "pageID"> {
-    return {
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      parentID: entity.parentID,
-    };
-  }
-
-  /**
    * Maps a GeneralPageModel from the db to a GeneralPage domain entity.
    *
    * @param model - The raw GeneralPageModel from the DB.
