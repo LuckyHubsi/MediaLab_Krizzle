@@ -100,19 +100,18 @@ export class GeneralPageService {
   /**
    * Fetch pages by state (sorted, pinned, or archived) and parent folder ID.
    *
-   * @param pageState - Enum - the state of the pages to be retrieved (sorted, pinned, archived)
+   * @param sortingMode - Enum - the sorting mode of the folder page
    * @param folderId - The ID representing the folder the page is a part of.
-   * @returns A Promise resolving to an array of `GeneralPageDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either an array of `GeneralPageDTO`s or a `ServiceErrorType`.
    */
   async getAllFolderGeneralPageData(
-    pageState: FolderState,
+    sortingMode: FolderState,
     folderId: number,
-  ): Promise<GeneralPageDTO[]> {
+  ): Promise<Result<GeneralPageDTO[], ServiceErrorType>> {
     try {
       const brandedFolderID = folderID.parse(folderId);
       let pages: GeneralPage[] = [];
-      switch (pageState) {
+      switch (sortingMode) {
         case FolderState.GeneralModfied:
           pages =
             await this.generalPageRepo.getAllFolderPagesSortedByModified(
@@ -134,9 +133,39 @@ export class GeneralPageService {
         default:
           break;
       }
-      return pages.map(GeneralPageMapper.toDTO);
+      return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Error retrieving all pages.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        let errorMessage: string = "";
+        switch (sortingMode) {
+          case FolderState.GeneralModfied:
+            errorMessage =
+              PageErrorMessages.loadingAllFolderPagesSortedByModificationDate;
+            break;
+          case FolderState.GeneralCreated:
+            errorMessage =
+              PageErrorMessages.loadingAllFolderPagesSortedByCreationDate;
+            break;
+          case FolderState.GeneralAlphabet:
+            errorMessage =
+              PageErrorMessages.loadingAllFolderPagesSortedByAlphabet;
+            break;
+          default:
+            break;
+        }
+        return failure({
+          type: "Retrieval Failed",
+          message: errorMessage,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: PageErrorMessages.unknown,
+        });
+      }
     }
   }
 

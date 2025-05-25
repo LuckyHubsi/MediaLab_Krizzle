@@ -139,7 +139,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByModified(
     folderId: FolderID,
@@ -149,11 +149,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByLastModifiedAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError(
-        "Failed to fetch all pages sorted by last modified.",
-      );
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -162,7 +171,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByAlphabet(
     folderId: FolderID,
@@ -172,9 +181,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByAlphabetAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -183,7 +203,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByCreated(
     folderId: FolderID,
@@ -193,9 +213,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByCreatedAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

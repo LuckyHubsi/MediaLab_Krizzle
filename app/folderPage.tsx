@@ -125,13 +125,17 @@ export default function FolderScreen() {
           } else {
             // TODO: show error modal
           }
-          const fetchedWidgets =
+          const resultFolder =
             await generalPageService.getAllFolderGeneralPageData(
               sortingMode,
               Number(folderId),
             );
-          const enrichedWidgets = mapToEnrichedWidgets(fetchedWidgets);
-          setWidgets(enrichedWidgets);
+          if (resultFolder.success) {
+            const enrichedWidgets = mapToEnrichedWidgets(resultFolder.value);
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folder:", error);
         }

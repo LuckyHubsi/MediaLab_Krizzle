@@ -56,6 +56,12 @@ export const PageErrorMessages = {
     "Something went wrong while loading your archived widgets. You might experience missing or incorrect widget behavior.",
   loadingAllPinnedPages:
     "Something went wrong while loading your pinned widgets. You might experience missing or incorrect widget behavior.",
+  loadingAllFolderPagesSortedByModificationDate:
+    "Something went wrong while loading the widgets in this folder sorted by their last modification date. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingAllFolderPagesSortedByCreationDate:
+    "Something went wrong while loading your widgets in this folder sorted by their last creation date. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
+  loadingAllFolderPagesSortedByAlphabet:
+    "Something went wrong while loading your widgets in this folder sorted by their title in alphabetical order. You might experience missing or incorrect widget behavior. If the error persists, consider using a different sorting mode.",
   unknown:
     "An unexpected error occurred while handling widgets. Some widget-related features may not work as expected.",
 };
