@@ -166,16 +166,35 @@ export class FolderService {
    * Deletes a folder.
    *
    * @param folderId - Number representing the folderID.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if delete fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
-  async deleteFolder(folderId: number): Promise<boolean> {
+  async deleteFolder(
+    folderId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedFolderID = folderID.parse(folderId);
       await this.folderRepo.deleteFolderByID(brandedFolderID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Error deleting folder.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: FolderErrorMessages.validateFolderToDelete,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: FolderErrorMessages.deleteFolder,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: FolderErrorMessages.unknown,
+        });
+      }
     }
   }
 }

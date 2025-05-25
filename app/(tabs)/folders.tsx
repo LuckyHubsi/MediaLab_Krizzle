@@ -243,10 +243,15 @@ export default function FoldersScreen() {
           if (selectedFolder) {
             try {
               const folderIdAsNumber = Number(selectedFolder.id);
-              const successfullyDeleted =
-                await folderService.deleteFolder(folderIdAsNumber);
+              const result = await folderService.deleteFolder(folderIdAsNumber);
 
-              setShouldReload(successfullyDeleted);
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+                console.log(result.error.type);
+                console.log(result.error.message);
+              }
 
               setSelectedFolder(null);
               setShowDeleteModal(false);

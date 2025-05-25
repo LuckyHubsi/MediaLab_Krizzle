@@ -120,14 +120,14 @@ export class FolderRepositoryImpl
    *
    * @param folderId - The ID of the folder to delete.
    * @returns A Promise resolving to `true` if deletion is successful.
-   * @throws RepositoryError if the deletion fails.
+   * @throws RepositoryErrorNew if the deletion fails.
    */
   async deleteFolderByID(folderId: FolderID): Promise<boolean> {
     try {
       await this.executeQuery(deleteFolderByIDQuery, [folderId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to delete folder.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 }

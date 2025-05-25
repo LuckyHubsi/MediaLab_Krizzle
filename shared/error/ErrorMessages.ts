@@ -32,6 +32,10 @@ export const FolderErrorMessages = {
     "There was a problem validating your input. Consider using a different folder name with up to 30 characters.",
   insertNewFolder:
     "There was a problem adding your folder. Please try again. If the error persists, consider choosing a different folder name.",
+  validateFolderToDelete:
+    "The system does not seem to recognize the folder you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
+  deleteFolder:
+    "There was a problem deleting your folder. Please try again. If the error persists, consider trying again after reopening the application.",
   validateFolderToUpdate:
     "The system either does not recognize the folder you want to update or the folder name is invalid. Please try again. If the error persists, consider renaming your folder or trying again after reopening the application.",
   updateFolder:
