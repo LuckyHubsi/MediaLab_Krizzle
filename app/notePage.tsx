@@ -169,11 +169,11 @@ export default function NotesScreen() {
               icon: noteData?.archived ? "restore" : "archive",
               onPress: async () => {
                 if (noteData) {
-                  const success = await generalPageService.togglePageArchive(
+                  const result = await generalPageService.togglePageArchive(
                     Number(pageId),
                     noteData.archived,
                   );
-                  if (success) {
+                  if (result.success) {
                     showSnackbar(
                       noteData.archived
                         ? "Successfully restored Note."
@@ -181,7 +181,9 @@ export default function NotesScreen() {
                       "bottom",
                       "success",
                     );
+                    setShouldReload(true);
                   } else {
+                    // TODO: show error modal
                     showSnackbar(
                       noteData.archived
                         ? "Failed to restore Note."
@@ -190,7 +192,6 @@ export default function NotesScreen() {
                       "error",
                     );
                   }
-                  setShouldReload(success);
                 }
               },
             },

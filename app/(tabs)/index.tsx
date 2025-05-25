@@ -414,24 +414,25 @@ export default function HomeScreen() {
             icon: "archive",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
+                const result = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
-                if (success) {
+                if (result.success) {
                   showSnackbar(
                     `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
                     "bottom",
                     "success",
                   );
+                  setShouldReload(true);
                 } else {
+                  // TODO: show error modal
                   showSnackbar(
                     `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
                     "bottom",
                     "error",
                   );
                 }
-                setShouldReload(success);
               }
             },
           },

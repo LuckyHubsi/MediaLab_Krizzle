@@ -228,11 +228,11 @@ export default function CollectionScreen() {
 
               onPress: async () => {
                 if (collection) {
-                  const success = await generalPageService.togglePageArchive(
+                  const result = await generalPageService.togglePageArchive(
                     Number(pageId),
                     collection.archived,
                   );
-                  if (success) {
+                  if (result.success) {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
@@ -240,7 +240,9 @@ export default function CollectionScreen() {
                       "bottom",
                       "success",
                     );
+                    setShouldReload(true);
                   } else {
+                    // TODO: show error modal
                     showSnackbar(
                       collection.archived
                         ? "Failed to restore Collection."
@@ -249,7 +251,6 @@ export default function CollectionScreen() {
                       "error",
                     );
                   }
-                  setShouldReload(success);
                 }
               },
             },

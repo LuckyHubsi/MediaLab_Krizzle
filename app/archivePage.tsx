@@ -217,11 +217,15 @@ export default function ArchiveScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
+                const result = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
-                setShouldReload(success);
+                if (result.success) {
+                  setShouldReload(true);
+                } else {
+                  // TODO: show error modal
+                }
               }
             },
           },
