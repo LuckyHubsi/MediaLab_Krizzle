@@ -1,6 +1,5 @@
 import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { NoteRepository } from "../repository/interfaces/NoteRepository.interface";
-import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 import { NoteMapper } from "../util/mapper/NoteMapper";
 import { ServiceError } from "../util/error/ServiceError";
 import * as common from "../domain/common/types";
@@ -16,10 +15,7 @@ import { pageID } from "../domain/common/IDs";
  */
 export class NoteService {
   // constructor accepts repo instaces
-  constructor(
-    private noteRepo: NoteRepository,
-    private generalPageRepo: GeneralPageRepository,
-  ) {}
+  constructor(private noteRepo: NoteRepository) {}
 
   /**
    * Fetch a note by page ID.
@@ -50,10 +46,7 @@ export class NoteService {
       const note = NoteMapper.toNewEntity(noteDTO);
       const pageId = await this.noteRepo.executeTransaction<number>(
         async (txn) => {
-          const retrievedPageID = await this.generalPageRepo.insertPage(
-            note,
-            txn,
-          );
+          const retrievedPageID = await this.noteRepo.insertPage(note, txn);
           await this.noteRepo.insertNote(note, retrievedPageID, txn);
           return retrievedPageID;
         },

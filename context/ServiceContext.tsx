@@ -52,7 +52,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
 
   const tagService = new TagService(tagRepository);
   const generalPageService = new GeneralPageService(generalPageRepository);
-  const noteService = new NoteService(noteRepository, generalPageRepository);
+  const noteService = new NoteService(noteRepository);
   const itemTemplateService = new ItemTemplateService(itemTemplateRepository);
   const collectionService = new CollectionService(
     baseRepository,
