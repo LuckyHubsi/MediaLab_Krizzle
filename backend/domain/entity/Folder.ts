@@ -15,7 +15,7 @@ import * as common from "@/backend/domain/common/types";
 export const folderSchema = z.object({
   folderID: folderID,
   folderName: common.string30,
-  itemCount: z.number().optional().default(0),
+  itemCount: z.number().min(0).optional().default(0),
 });
 
 /**
