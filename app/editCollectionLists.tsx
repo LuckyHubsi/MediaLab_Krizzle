@@ -72,14 +72,18 @@ export default function EditCollectionListsScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const collectionLists =
+        const listResult =
           await collectionService.getCollectionCategories(numericId);
-        const mapped = collectionLists.map((l) => ({
-          id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
-          title: l.category_name ?? "",
-        }));
-        setLists(mapped);
-        setInitialIds(new Set(mapped.map((l) => l.id)));
+        if (listResult.success) {
+          const mapped = listResult.value.map((l) => ({
+            id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
+            title: l.category_name ?? "",
+          }));
+          setLists(mapped);
+          setInitialIds(new Set(mapped.map((l) => l.id)));
+        } else {
+          // TODO: show error modal
+        }
       } catch (err) {
         console.error("Failed to load lists:", err);
         showSnackbar("Failed to load lists.", "top", "error");

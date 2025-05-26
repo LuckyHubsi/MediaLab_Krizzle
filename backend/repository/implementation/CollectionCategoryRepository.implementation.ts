@@ -69,7 +69,7 @@ export class CollectionCategoryRepositoryImpl
    *
    * @param collectionId - A `CollectionID` representing the collection it belongs to.
    * @returns A Promise resolving to an array of `CollectionCategory`.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getCategoriesByCollectionID(
     collectionId: CollectionID,
@@ -81,7 +81,7 @@ export class CollectionCategoryRepositoryImpl
       );
       return categories.map(CollectionCategoryMapper.toEntity);
     } catch (error) {
-      throw new RepositoryError("Failed to retrieve categories.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

@@ -23,7 +23,10 @@ import { Item } from "@/backend/domain/entity/Item";
 import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
 import { ZodError } from "zod";
 import { RepositoryErrorNew } from "../util/error/RepositoryError";
-import { CollectionErrorMessages } from "@/shared/error/ErrorMessages";
+import {
+  CategoryErrorMessages,
+  CollectionErrorMessages,
+} from "@/shared/error/ErrorMessages";
 import { failure, Result, success } from "@/shared/result/Result";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 
@@ -194,21 +197,33 @@ export class CollectionService {
    * Fetch categories by collectionID.
    *
    * @param collectionId - A number representing the collection the categories belong to.
-   * @returns A Promise resolving to an array of `CollectionCategoryDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns Promise resolving to a `Result` containing either a `CollectionCategoryDTO` or `ServiceErrorType`
    */
   async getCollectionCategories(
     collectionId: number,
-  ): Promise<CollectionCategoryDTO[]> {
+  ): Promise<Result<CollectionCategoryDTO[], ServiceErrorType>> {
     try {
       const brandedCollectionId = collectionID.parse(collectionId);
       const categories =
         await this.categoryRepo.getCategoriesByCollectionID(
           brandedCollectionId,
         );
-      return categories.map(CollectionCategoryMapper.toDTO);
+      return success(categories.map(CollectionCategoryMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: CategoryErrorMessages.loadingAllCategories,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 

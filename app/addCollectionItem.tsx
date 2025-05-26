@@ -54,10 +54,12 @@ export default function AddCollectionItem() {
         }
       }
       if (!isNaN(numericCollectionID)) {
-        const lists =
+        const listResult =
           await collectionService.getCollectionCategories(numericCollectionID);
-        if (lists) {
-          setLists(lists);
+        if (listResult.success) {
+          setLists(listResult.value);
+        } else {
+          // TODO: show error modal
         }
       }
     })();

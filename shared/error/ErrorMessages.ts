@@ -128,3 +128,11 @@ export const CollectionErrorMessages = {
   unknown:
     "An unexpected error occurred while handling collection. Some related features may not work as expected.",
 };
+
+// COLLECTION CATEGORIES
+export const CategoryErrorMessages = {
+  loadingAllCategories:
+    "Something went wrong while loading your collection lists. You might experience missing or incorrect list behavior.",
+  unknown:
+    "An unexpected error occurred while handling collection lists. Some related features may not work as expected.",
+};

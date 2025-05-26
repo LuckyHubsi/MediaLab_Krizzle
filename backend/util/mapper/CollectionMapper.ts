@@ -48,6 +48,7 @@ export class CollectionMapper {
         ? entity.categories.map(CollectionCategoryMapper.toDTO)
         : [],
       pin_count: entity.pinCount,
+      parentID: entity.parentID,
     };
   }
 
