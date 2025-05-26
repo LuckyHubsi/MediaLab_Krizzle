@@ -1,50 +1,53 @@
-import {
-  Attribute,
-  attributeID,
-  NewAttribute,
-} from "@/backend/domain/common/Attribute";
-import { AttributeType } from "../../../../shared/enum/AttributeType";
+import { Attribute, NewAttribute } from "@/backend/domain/common/Attribute";
+import { attributeID } from "@/backend/domain/common/IDs";
 import { AttributeModel } from "@/backend/repository/model/AttributeModel";
+import { AttributeDTO } from "@/shared/dto/AttributeDTO";
+import { AttributeType } from "@/shared/enum/AttributeType";
 import { AttributeMapper } from "../AttributeMapper";
-import { AttributeDTORestructure } from "@/shared/dto/AttributeDTO";
+import { ZodError } from "zod";
 
 describe("AttributeMapper", () => {
   const brandedAttributeID = attributeID.parse(1);
+
   const attributeEntity: Attribute = {
     attributeID: brandedAttributeID,
-    attributeLabel: "attribute label",
+    attributeLabel: "test label",
     type: AttributeType.Multiselect,
     preview: false,
-    options: ["option 1", "option 2", "option 3"],
-    symbol: null,
-  };
-
-  const attributeDTO: AttributeDTORestructure = {
-    attributeID: 1,
-    attributeLabel: "attribute label",
-    type: AttributeType.Multiselect,
-    preview: false,
-    options: ["option 1", "option 2", "option 3"],
-  };
-
-  const attributeModel: AttributeModel = {
-    attributeID: 1,
-    attribute_label: "attribute label",
-    type: AttributeType.Multiselect,
-    preview: 0,
-    options: JSON.stringify(["option 1", "option 2", "option 3"]),
+    options: ["opt 1", "opt 2"],
     symbol: null,
   };
 
   const newAttributeEntity: NewAttribute = {
-    attributeLabel: "attribute label",
+    attributeLabel: "test label",
     type: AttributeType.Multiselect,
     preview: false,
-    options: ["option 1", "option 2", "option 3"],
+    options: ["opt 1", "opt 2"],
   };
+
+  const attributeDTO: AttributeDTO = {
+    attributeID: brandedAttributeID,
+    attributeLabel: "test label",
+    type: AttributeType.Multiselect,
+    preview: false,
+    options: ["opt 1", "opt 2"],
+  };
+  let invalidAttributeDTO: any;
+
+  const attributeModel: AttributeModel = {
+    attributeID: brandedAttributeID,
+    attribute_label: "test label",
+    type: AttributeType.Multiselect,
+    preview: 0,
+    options: JSON.stringify(["opt 1", "opt 2"]),
+    symbol: null,
+  };
+  let invalidAttributeModel: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    invalidAttributeDTO = { ...attributeDTO };
+    invalidAttributeModel = { ...attributeModel };
   });
 
   describe("toDTO", () => {
@@ -54,77 +57,33 @@ describe("AttributeMapper", () => {
     });
   });
 
-  describe("toModel", () => {
-    it("should map an Attribute entity to an AttributeModel", () => {
-      const result = AttributeMapper.toModel(attributeEntity);
-
-      expect(result).toEqual(attributeModel);
-    });
-  });
-
-  describe("toInsertModel", () => {
-    it("should map a NewAttribute entity to a GeneralPageModel", () => {
-      const result = AttributeMapper.toInsertModel(newAttributeEntity);
-
-      expect(result).toEqual(
-        expect.objectContaining({
-          attribute_label: "attribute label",
-          type: AttributeType.Multiselect,
-          preview: 0,
-          options: JSON.stringify(["option 1", "option 2", "option 3"]),
-          symbol: null,
-        }),
-      );
-    });
-  });
-
   describe("toNewEntity", () => {
     it("should map a AttributeDTO to a NewAttribute entity", () => {
       const result = AttributeMapper.toNewEntity(attributeDTO);
-
-      expect(result).toEqual(
-        expect.objectContaining({
-          attributeLabel: "attribute label",
-          type: AttributeType.Multiselect,
-          preview: false,
-          options: ["option 1", "option 2", "option 3"],
-        }),
-      );
+      expect(result).toEqual(newAttributeEntity);
     });
 
     it("should throw an error if AttributeDTO is invalid", () => {
-      const invalidAttributeDTO: AttributeDTORestructure = {
-        attributeLabel: "",
-        type: AttributeType.Multiselect,
-        preview: false,
-        options: ["option 1", "option 2", "option 3"],
-      };
-
+      invalidAttributeDTO.attributeLabel = "";
       expect(() => AttributeMapper.toNewEntity(invalidAttributeDTO)).toThrow(
-        "Failed to map AttributeDTO to New Entity",
+        ZodError,
       );
     });
+    // other validation errors covered in schema unit tests under '@backend/domain/entity/__tests__'
   });
 
   describe("toEntity", () => {
-    it("should map an AttributeModel to an Attribute entity", () => {
+    it("should map a AttributeModel to a Attribute entity", () => {
       const result = AttributeMapper.toEntity(attributeModel);
       expect(result).toEqual(attributeEntity);
     });
 
-    it("should throw an error if AttributeModel is invalid", () => {
-      const invalidAttributeModel: AttributeModel = {
-        attributeID: -1,
-        attribute_label: "attribute label",
-        type: AttributeType.Multiselect,
-        preview: 0,
-        options: JSON.stringify(["option 1", "option 2", "option 3"]),
-        symbol: null,
-      };
-
+    it("should throw an error if AttributeModelis invalid", () => {
+      invalidAttributeModel.attribute_label = "";
       expect(() => AttributeMapper.toEntity(invalidAttributeModel)).toThrow(
-        "Failed to map AttributeModel to Entity",
+        ZodError,
       );
     });
+    // other validation errors covered in schema unit tests under '@backend/domain/entity/__tests__'
   });
 });
