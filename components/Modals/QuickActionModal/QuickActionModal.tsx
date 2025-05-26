@@ -69,6 +69,8 @@ export default function QuickActionModal({
         style={{ flex: 1 }}
         activeOpacity={1}
         onPress={handleFadeOut}
+        accessible={false}
+        importantForAccessibility="no"
       >
         <Animated.View
           style={{
