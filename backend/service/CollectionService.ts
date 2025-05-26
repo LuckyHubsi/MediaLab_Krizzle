@@ -26,6 +26,7 @@ import { RepositoryErrorNew } from "../util/error/RepositoryError";
 import {
   CategoryErrorMessages,
   CollectionErrorMessages,
+  ItemErrorMessages,
 } from "@/shared/error/ErrorMessages";
 import { failure, Result, success } from "@/shared/result/Result";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
@@ -403,16 +404,38 @@ export class CollectionService {
    * Fetches an item and its values.
    *
    * @param itemId - A number representing the itemID.
-   * @returns A Promise resolving to `ItemDTO` on succes.
-   * @throws ServiceError if fetch fails.
+   * @returns A Promise resolving to a `Result` containing either an `ItemDTO` or `ServiceErrorType`
    */
-  async getItemByID(itemId: number): Promise<ItemDTO> {
+  async getItemByID(
+    itemId: number,
+  ): Promise<Result<ItemDTO, ServiceErrorType>> {
     try {
       const brandedItemID = itemID.parse(itemId);
       const item = await this.itemRepo.getItemByID(brandedItemID);
-      return ItemMapper.toDTO(item);
+      return success(ItemMapper.toDTO(item));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection item.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: ItemErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: ItemErrorMessages.loadingItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 

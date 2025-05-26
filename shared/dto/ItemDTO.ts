@@ -10,7 +10,7 @@ export type ItemDTO = {
   page_title?: string; // the title of the page the item belongs to
   categoryID: number | null; // the category the item was assigned to
   categoryName?: string; // the name of the category the item was assigned to
-  attributeValues?: ItemAttributeValueDTO[]; // an array of ItemAttributeValueDTOs
+  attributeValues: ItemAttributeValueDTO[]; // an array of ItemAttributeValueDTOs
 };
 
 /**

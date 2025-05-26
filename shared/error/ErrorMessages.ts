@@ -148,3 +148,13 @@ export const CategoryErrorMessages = {
   unknown:
     "An unexpected error occurred while handling collection lists. Some related features may not work as expected.",
 };
+
+// COLLECTION ITEM
+export const ItemErrorMessages = {
+  loadingItem:
+    "Something went wrong while loading the collection item you tried to access. Some item details may be unavailable or outdated.",
+  notFound:
+    "The system does not recognize the collection item you tried to access or had trouble reading its data. Some item details and functionalities may be unavailable or outdated.",
+  unknown:
+    "An unexpected error occurred while handling collection item. Some related features may not work as expected.",
+};

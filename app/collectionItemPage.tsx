@@ -43,9 +43,13 @@ export default function CollectionItemScreen() {
     useCallback(() => {
       (async () => {
         const numericItemId = Number(itemId);
-        const item = await collectionService.getItemByID(numericItemId);
+        const itemResult = await collectionService.getItemByID(numericItemId);
 
-        setItem(item);
+        if (itemResult.success) {
+          setItem(itemResult.value);
+        } else {
+          // TODO: show error modal
+        }
 
         if (
           item &&

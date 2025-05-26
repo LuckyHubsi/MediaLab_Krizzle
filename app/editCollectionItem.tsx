@@ -37,92 +37,93 @@ export default function EditCollectionItem() {
     (async () => {
       try {
         const numericItemId = Number(itemId);
-        const item = await collectionService.getItemByID(numericItemId);
-        if (!item) throw new Error("Item not found.");
+        const itemResult = await collectionService.getItemByID(numericItemId);
 
-        setItem(item);
+        if (itemResult.success) {
+          setItem(itemResult.value);
+          const collectionResult =
+            await collectionService.getCollectionByPageId(
+              itemResult.value.pageID,
+            );
+          if (collectionResult.success) {
+            setLists(collectionResult.value.categories);
+            setSelectedCategoryID(itemResult.value.categoryID || null);
+            const templateResult = await itemTemplateService.getTemplate(
+              collectionResult.value.templateID!,
+            );
 
-        const collectionResult = await collectionService.getCollectionByPageId(
-          item.pageID,
-        );
-        if (collectionResult.success) {
-          setLists(collectionResult.value.categories);
-          setSelectedCategoryID(item.categoryID || null);
-          const templateResult = await itemTemplateService.getTemplate(
-            collectionResult.value.templateID!,
-          );
+            if (templateResult.success) {
+              setAttributes(templateResult.value.attributes || []);
 
-          if (templateResult.success) {
-            setAttributes(templateResult.value.attributes || []);
+              const mappedValues: Record<number, any> = {};
 
-            const mappedValues: Record<number, any> = {};
+              itemResult.value.attributeValues?.forEach((attrValue) => {
+                const attrID = attrValue.attributeID;
+                if (attrID == null) return;
 
-            item.attributeValues?.forEach((attrValue) => {
-              const attrID = attrValue.attributeID;
-              if (attrID == null) return;
+                const templateAttr = templateResult.value.attributes?.find(
+                  (a) => a.attributeID === attrID,
+                );
+                if (!templateAttr) return;
 
-              const templateAttr = templateResult.value.attributes?.find(
-                (a) => a.attributeID === attrID,
-              );
-              if (!templateAttr) return;
+                switch (templateAttr.type) {
+                  case AttributeType.Date:
+                    mappedValues[attrID] =
+                      "valueString" in attrValue && attrValue.valueString
+                        ? new Date(attrValue.valueString)
+                        : null;
+                    break;
 
-              switch (templateAttr.type) {
-                case AttributeType.Date:
-                  mappedValues[attrID] =
-                    "valueString" in attrValue && attrValue.valueString
-                      ? new Date(attrValue.valueString)
-                      : null;
-                  break;
+                  case AttributeType.Rating:
+                    mappedValues[attrID] =
+                      "valueNumber" in attrValue
+                        ? (attrValue.valueNumber ?? null)
+                        : null;
+                    break;
 
-                case AttributeType.Rating:
-                  mappedValues[attrID] =
-                    "valueNumber" in attrValue
-                      ? (attrValue.valueNumber ?? null)
-                      : null;
-                  break;
+                  case AttributeType.Multiselect:
+                    mappedValues[attrID] =
+                      "valueMultiselect" in attrValue
+                        ? (attrValue.valueMultiselect ?? [])
+                        : [];
+                    break;
 
-                case AttributeType.Multiselect:
-                  mappedValues[attrID] =
-                    "valueMultiselect" in attrValue
-                      ? (attrValue.valueMultiselect ?? [])
-                      : [];
-                  break;
+                  case AttributeType.Link:
+                    mappedValues[attrID] = {
+                      value:
+                        "valueString" in attrValue
+                          ? (attrValue.valueString ?? "")
+                          : "",
+                      displayText:
+                        "displayText" in attrValue
+                          ? (attrValue.displayText ?? "")
+                          : "",
+                    };
+                    break;
 
-                case AttributeType.Link:
-                  mappedValues[attrID] = {
-                    value:
+                  case AttributeType.Image:
+                    mappedValues[attrID] =
                       "valueString" in attrValue
                         ? (attrValue.valueString ?? "")
-                        : "",
-                    displayText:
-                      "displayText" in attrValue
-                        ? (attrValue.displayText ?? "")
-                        : "",
-                  };
-                  break;
+                        : "";
+                    break;
 
-                case AttributeType.Image:
-                  mappedValues[attrID] =
-                    "valueString" in attrValue
-                      ? (attrValue.valueString ?? "")
-                      : "";
-                  break;
+                  case AttributeType.Text:
+                  default:
+                    mappedValues[attrID] =
+                      "valueString" in attrValue
+                        ? (attrValue.valueString ?? "")
+                        : "";
+                    break;
+                }
+              });
 
-                case AttributeType.Text:
-                default:
-                  mappedValues[attrID] =
-                    "valueString" in attrValue
-                      ? (attrValue.valueString ?? "")
-                      : "";
-                  break;
-              }
-            });
-
-            setAttributeValues(mappedValues);
-          } else {
-            // TODO: show error modal
-            console.log(templateResult.error.type);
-            console.log(templateResult.error.message);
+              setAttributeValues(mappedValues);
+            } else {
+              // TODO: show error modal
+              console.log(templateResult.error.type);
+              console.log(templateResult.error.message);
+            }
           }
         }
       } catch (err: any) {
@@ -225,85 +226,84 @@ export default function EditCollectionItem() {
               }
               try {
                 const numericItemId = Number(itemId);
-                const currentItem =
+                const currentItemResult =
                   await collectionService.getItemByID(numericItemId);
 
-                if (!currentItem.attributeValues) {
-                  throw new Error("Current item has no attribute values");
-                }
-
-                const currentAttributeValuesMap = new Map();
-                currentItem.attributeValues.forEach((value) => {
-                  if (value.attributeID) {
-                    currentAttributeValuesMap.set(value.attributeID, value);
-                  }
-                });
-
-                const updatedAttributeValues = attributes
-                  .map((attr) => {
-                    const attrID = attr.attributeID;
-                    if (attrID == null) return null;
-
-                    const currentValue = currentAttributeValuesMap.get(
-                      attrID,
-                    ) || { ...attr, itemID: numericItemId };
-                    const newValue = attributeValues[attrID];
-
-                    const updatedValue = {
-                      ...currentValue,
-                      itemID: numericItemId,
-                    };
-
-                    switch (attr.type) {
-                      case AttributeType.Text:
-                        updatedValue.valueString = newValue || "";
-                        break;
-                      case AttributeType.Date:
-                        updatedValue.valueString = newValue
-                          ? newValue.toISOString()
-                          : null;
-                        break;
-                      case AttributeType.Rating:
-                        updatedValue.valueNumber =
-                          newValue !== undefined ? Number(newValue) : null;
-                        break;
-                      case AttributeType.Multiselect:
-                        updatedValue.valueMultiselect = Array.isArray(newValue)
-                          ? newValue
-                          : [];
-                        break;
-                      case AttributeType.Link:
-                        updatedValue.valueString =
-                          newValue?.value?.trim() || null;
-                        updatedValue.displayText =
-                          newValue?.displayText?.trim() || null;
-                        break;
-                      case AttributeType.Image:
-                        updatedValue.valueString = newValue || null;
-                        break;
+                if (currentItemResult.success) {
+                  const currentAttributeValuesMap = new Map();
+                  currentItemResult.value.attributeValues.forEach((value) => {
+                    if (value.attributeID) {
+                      currentAttributeValuesMap.set(value.attributeID, value);
                     }
-
-                    return updatedValue;
-                  })
-                  .filter(Boolean) as ItemAttributeValueDTO[];
-
-                const updatedItem: ItemDTO = {
-                  itemID: Number(itemId),
-                  pageID: Number(currentItem.pageID),
-                  categoryID: selectedCategoryID,
-                  attributeValues: updatedAttributeValues || [],
-                };
-
-                const success =
-                  await collectionService.editItemByID(updatedItem);
-
-                if (success) {
-                  router.replace({
-                    pathname: "/collectionItemPage",
-                    params: { itemId: itemId },
                   });
+                  const updatedAttributeValues = attributes
+                    .map((attr) => {
+                      const attrID = attr.attributeID;
+                      if (attrID == null) return null;
+
+                      const currentValue = currentAttributeValuesMap.get(
+                        attrID,
+                      ) || { ...attr, itemID: numericItemId };
+                      const newValue = attributeValues[attrID];
+
+                      const updatedValue = {
+                        ...currentValue,
+                        itemID: numericItemId,
+                      };
+
+                      switch (attr.type) {
+                        case AttributeType.Text:
+                          updatedValue.valueString = newValue || "";
+                          break;
+                        case AttributeType.Date:
+                          updatedValue.valueString = newValue
+                            ? newValue.toISOString()
+                            : null;
+                          break;
+                        case AttributeType.Rating:
+                          updatedValue.valueNumber =
+                            newValue !== undefined ? Number(newValue) : null;
+                          break;
+                        case AttributeType.Multiselect:
+                          updatedValue.valueMultiselect = Array.isArray(
+                            newValue,
+                          )
+                            ? newValue
+                            : [];
+                          break;
+                        case AttributeType.Link:
+                          updatedValue.valueString =
+                            newValue?.value?.trim() || null;
+                          updatedValue.displayText =
+                            newValue?.displayText?.trim() || null;
+                          break;
+                        case AttributeType.Image:
+                          updatedValue.valueString = newValue || null;
+                          break;
+                      }
+
+                      return updatedValue;
+                    })
+                    .filter(Boolean) as ItemAttributeValueDTO[];
+
+                  const updatedItem: ItemDTO = {
+                    itemID: Number(itemId),
+                    pageID: Number(currentItemResult.value.pageID),
+                    categoryID: selectedCategoryID,
+                    attributeValues: updatedAttributeValues || [],
+                  };
+
+                  const success =
+                    await collectionService.editItemByID(updatedItem);
+
+                  if (success) {
+                    router.replace({
+                      pathname: "/collectionItemPage",
+                      params: { itemId: itemId },
+                    });
+                  }
                 } else {
-                  console.log("Failed to save changes");
+                  // TODO: show error modal
                 }
               } catch (error) {
                 console.error("Error saving item:", error);

@@ -1,4 +1,7 @@
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import { ItemRepository } from "../interfaces/ItemRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import {
@@ -62,7 +65,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The ID of the item to be fetched.
    * @returns A Promise resolving to an `Item` domain entity.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getItemByID(itemId: ItemID): Promise<Item> {
     try {
@@ -72,10 +75,10 @@ export class ItemRepositoryImpl
       if (item) {
         return ItemMapper.toEntity(item);
       } else {
-        throw new RepositoryError("Failed to fetch item.");
+        throw new RepositoryErrorNew("Not Found");
       }
     } catch (error) {
-      throw new RepositoryError("Failed to fetch item.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
