@@ -99,3 +99,7 @@ export const NoteErrorMessages = {
   unknown:
     "An unexpected error occurred while handling notes. Some note-related features may not work as expected.",
 };
+
+export const ResetErrorMessages = {
+  fail: "Failed to delete all your data. You may experience missing functionality.",
+};
