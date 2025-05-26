@@ -142,11 +142,17 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
 
   return (
     <>
-      <Modal transparent visible={isModalVisible}>
+      <Modal
+        transparent
+        visible={isModalVisible}
+        accessibilityViewIsModal={true}
+      >
         <TouchableOpacity
           style={{ flex: 1 }}
           activeOpacity={1}
           onPress={onClose}
+          accessible={false}
+          importantForAccessibility="no"
         >
           <Overlay animationType="fade">
             {shouldRenderSheet && (
@@ -161,6 +167,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           router.push("/createNote");
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a note"
+                        accessibilityHint="Opens the screen to create a new note"
                       >
                         <OptionIcon>
                           <MaterialIcons
@@ -182,6 +191,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           router.push("/createCollection");
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a collection"
+                        accessibilityHint="Opens the screen to create a new collection"
                       >
                         <OptionIcon>
                           <MaterialIcons
@@ -204,6 +216,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           onClose();
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a folder"
+                        accessibilityHint="Opens the screen to create a new folder"
                       >
                         <OptionIcon>
                           <MaterialIcons
