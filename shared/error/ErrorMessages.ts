@@ -155,6 +155,10 @@ export const ItemErrorMessages = {
     "Something went wrong while loading the collection item you tried to access. Some item details may be unavailable or outdated.",
   notFound:
     "The system does not recognize the collection item you tried to access or had trouble reading its data. Some item details and functionalities may be unavailable or outdated.",
+  validateNewItem:
+    "There was a problem validating your input. Consider making changes in your input for the collectionitem.",
+  insertNewItem:
+    "There was a problem adding your collection item. Please try again. If the error persists, consider changing your input in the form.",
   unknown:
     "An unexpected error occurred while handling collection item. Some related features may not work as expected.",
 };

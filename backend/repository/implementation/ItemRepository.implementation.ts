@@ -115,7 +115,7 @@ export class ItemRepositoryImpl
    * @param categoryId - The `CategoryID` of the category the item was assigned to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to a ItemID.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertItemAndReturnID(
     pageId: PageID,
@@ -135,7 +135,7 @@ export class ItemRepositoryImpl
       });
       return itemID.parse(itemId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert item.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -146,7 +146,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertTextValue(
     itemAttributeValue: ItemAttributeValue,
@@ -165,7 +165,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryError("Failed to insert text value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -176,7 +176,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertDateValue(
     itemAttributeValue: ItemAttributeValue,
@@ -195,7 +195,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryError("Failed to insert date value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -206,7 +206,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertRatingValue(
     itemAttributeValue: ItemAttributeValue,
@@ -225,7 +225,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryError("Failed to insert rating value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -236,7 +236,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertMultiselectValue(
     itemAttributeValue: ItemAttributeValue,
@@ -255,7 +255,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryError("Failed to insert multi-select value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -265,7 +265,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertImageValue(
     itemAttributeValue: ItemAttributeValue,
@@ -290,8 +290,7 @@ export class ItemRepositoryImpl
         );
       }
     } catch (error) {
-      console.error("Error inserting image value:", error);
-      throw new RepositoryError("Failed to insert image value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -301,7 +300,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertLinkValue(
     itemAttributeValue: ItemAttributeValue,
@@ -327,8 +326,7 @@ export class ItemRepositoryImpl
         );
       }
     } catch (error) {
-      console.error("Error inserting hyperlink value:", error);
-      throw new RepositoryError("Failed to insert hyperlink value.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

@@ -158,11 +158,15 @@ export default function AddCollectionItem() {
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
-    const itemId = await collectionService.insertItemAndReturnID(itemDTO);
-    router.replace({
-      pathname: "/collectionItemPage",
-      params: { itemId: itemId },
-    });
+    const itemIdResult = await collectionService.insertItemAndReturnID(itemDTO);
+    if (itemIdResult.success) {
+      router.replace({
+        pathname: "/collectionItemPage",
+        params: { itemId: itemIdResult.value },
+      });
+    } else {
+      // TODO: show error modal
+    }
   };
 
   const { showSnackbar } = useSnackbar();

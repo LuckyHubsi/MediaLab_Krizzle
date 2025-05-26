@@ -446,76 +446,100 @@ export class CollectionService {
    * @returns A Promise resolving to a number reresenting the itemID on success.
    * @throws ServiceError if insert fails.
    */
-  async insertItemAndReturnID(itemDTO: ItemDTO): Promise<number> {
+  async insertItemAndReturnID(
+    itemDTO: ItemDTO,
+  ): Promise<Result<number, ServiceErrorType>> {
     try {
       const item = ItemMapper.toNewEntity(itemDTO);
       const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
-      const itemId = this.baseRepo.executeTransaction<number>(async (txn) => {
-        const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
-          item.pageID,
-          categoryId,
-        );
+      const itemId = await this.baseRepo.executeTransaction<number>(
+        async (txn) => {
+          const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
+            item.pageID,
+            categoryId,
+          );
 
-        // dependent on the attribute type it calls the appropriate repo method
-        item.attributeValues.forEach((attributeValue) => {
-          switch (attributeValue.type) {
-            case AttributeType.Text:
-              this.itemRepo.insertTextValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Date:
-              this.itemRepo.insertDateValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Rating:
-              this.itemRepo.insertRatingValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Multiselect:
-              this.itemRepo.insertMultiselectValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Image:
-              this.itemRepo.insertImageValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Link:
-              if ("valueString" in attributeValue) {
-                this.itemRepo.insertLinkValue(
+          // dependent on the attribute type it calls the appropriate repo method
+          item.attributeValues.forEach((attributeValue) => {
+            switch (attributeValue.type) {
+              case AttributeType.Text:
+                this.itemRepo.insertTextValue(
                   attributeValue,
                   retrievedItemID,
                   txn,
                 );
-              }
-              break;
-            default:
-              break;
-          }
-        });
+                break;
+              case AttributeType.Date:
+                this.itemRepo.insertDateValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Rating:
+                this.itemRepo.insertRatingValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Multiselect:
+                this.itemRepo.insertMultiselectValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Image:
+                this.itemRepo.insertImageValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Link:
+                if ("valueString" in attributeValue) {
+                  this.itemRepo.insertLinkValue(
+                    attributeValue,
+                    retrievedItemID,
+                    txn,
+                  );
+                }
+                break;
+              default:
+                break;
+            }
+          });
 
-        // update the last modified date of the collection
-        await this.generalPageRepo.updateDateModified(item.pageID, txn);
+          // update the last modified date of the collection
+          await this.generalPageRepo.updateDateModified(item.pageID, txn);
 
-        return retrievedItemID;
-      });
-      return itemId;
+          return retrievedItemID;
+        },
+      );
+      return success(itemId);
     } catch (error) {
-      throw new ServiceError("Failed to insert collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateNewItem,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: ItemErrorMessages.insertNewItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
