@@ -311,16 +311,35 @@ export class CollectionService {
    * Deleting a category.
    *
    * @param categoryId - A number representing the categoryID.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if update fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
-  async deleteCollectionCategoryByID(categoryId: number): Promise<boolean> {
+  async deleteCollectionCategoryByID(
+    categoryId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedCategoryID = collectionCategoryID.parse(categoryId);
       await this.categoryRepo.deleteCategory(brandedCategoryID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CategoryErrorMessages.validateCategoryToDelete,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: CategoryErrorMessages.deleteCategory,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 

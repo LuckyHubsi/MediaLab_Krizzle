@@ -181,14 +181,19 @@ export default function EditCollectionListsScreen() {
 
     if (!isNaN(Number(id))) {
       try {
-        await collectionService.deleteCollectionCategoryByID(Number(id));
+        const deleteListResult =
+          await collectionService.deleteCollectionCategoryByID(Number(id));
 
-        setLists((prev) => prev.filter((l) => l.id !== id));
-        setInitialIds((prev) => {
-          const updated = new Set(prev);
-          updated.delete(id);
-          return updated;
-        });
+        if (deleteListResult.success) {
+          setLists((prev) => prev.filter((l) => l.id !== id));
+          setInitialIds((prev) => {
+            const updated = new Set(prev);
+            updated.delete(id);
+            return updated;
+          });
+        } else {
+          // TODO: show error modal
+        }
       } catch (error) {
         console.error("Error deleting list:", error);
       }

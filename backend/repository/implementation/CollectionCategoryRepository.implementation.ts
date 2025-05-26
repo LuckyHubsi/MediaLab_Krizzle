@@ -113,14 +113,14 @@ export class CollectionCategoryRepositoryImpl
    *
    * @param categoryId - A `CollectionCategoryID` representing the category ID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deleteCategory(categoryId: CategoryID): Promise<boolean> {
     try {
       await this.executeQuery(deleteCategoryQuery, [categoryId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to delete category.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 }

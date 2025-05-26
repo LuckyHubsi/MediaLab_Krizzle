@@ -141,6 +141,10 @@ export const CategoryErrorMessages = {
     "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application.",
   updateCategory:
     "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application.",
+  validateCategoryToDelete:
+    "The system does not seem to recognize the collection list you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
+  deleteCategory:
+    "There was a problem deleting your collection list. Please try again. If the error persists, consider trying again after reopening the application.",
   unknown:
     "An unexpected error occurred while handling collection lists. Some related features may not work as expected.",
 };
