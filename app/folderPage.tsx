@@ -23,6 +23,7 @@ import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -75,6 +76,9 @@ export default function FolderScreen() {
   const [showSortModal, setShowSortModal] = useState(false);
   const [showFolderDeleteModal, setShowFolderDeleteModal] = useState(false);
   const [showWidgetDeleteModal, setShowWidgetDeleteModal] = useState(false);
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
+
   const [sortingMode, setSortingMode] = useState<FolderState>(
     FolderState.GeneralModfied,
   );
@@ -405,14 +409,38 @@ export default function FolderScreen() {
         onClose={() => setShowWidgetModal(false)}
         items={[
           {
-            label: "Move to back Home",
-            icon: "edit",
-            onPress: async () => {},
+            label: "Move back Home",
+            icon: "home",
+            onPress: async () => {
+              if (selectedWidget) {
+                try {
+                  const success = await generalPageService.updateFolderID(
+                    Number(selectedWidget.id),
+                    0,
+                  );
+
+                  if (success) {
+                    showSnackbar("Moved back to home", "bottom", "success");
+                    setShouldReload(true);
+                  } else {
+                    showSnackbar("Failed to move widget", "bottom", "error");
+                  }
+                } catch (error) {
+                  console.error("Error moving back home:", error);
+                  showSnackbar("Error moving widget", "top", "error");
+                } finally {
+                  setShowWidgetModal(false);
+                }
+              }
+            },
           },
           {
             label: "Move to another Folder",
-            icon: "edit",
-            onPress: async () => {},
+            icon: "folder",
+            onPress: () => {
+              setShowWidgetModal(false);
+              setShowFolderSelectionModal(true);
+            },
           },
           {
             label: "Delete Widget",
@@ -489,6 +517,14 @@ export default function FolderScreen() {
           }
         }}
         onclose={() => setShowWidgetDeleteModal(false)}
+      />
+      <SelectFolderModal
+        widgetTitle={selectedWidget?.title}
+        widgetId={selectedWidget?.id}
+        initialSelectedFolderId={Number(folderId)}
+        visible={showFolderSelectionModal}
+        onClose={() => setShowFolderSelectionModal(false)}
+        onMoved={() => setShouldReload(true)}
       />
     </>
   );

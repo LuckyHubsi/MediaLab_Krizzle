@@ -37,6 +37,8 @@ interface SelectFolderModalProps {
   widgetTitle?: string;
   widgetId?: string;
   onClose: () => void;
+  initialSelectedFolderId?: number;
+  onMoved?: () => void;
 }
 
 const SelectFolderModal: FC<SelectFolderModalProps> = ({
@@ -44,6 +46,8 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   widgetTitle,
   widgetId,
   onClose,
+  initialSelectedFolderId,
+  onMoved,
 }) => {
   const colorScheme = useActiveColorScheme();
   const [internalVisible, setInternalVisible] = useState(visible);
@@ -87,7 +91,6 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       let success = false;
 
       if (editFolderMode && editingFolder) {
-        //TODO: use updateFolder instead of updateTag
         success = await tagService.updateTag({
           ...editingFolder,
           //use folder_label instead of tag_label
@@ -139,8 +142,20 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       const fetchFolders = async () => {
         try {
           const data = await folderService.getAllFolders();
-
           setFolders(data ?? []);
+
+          if (initialSelectedFolderId) {
+            const matching = data?.find(
+              (f) => f.folderID === initialSelectedFolderId,
+            );
+            if (matching) {
+              setSelectedFolder({
+                id: String(matching.folderID),
+                title: matching.folderName,
+                itemCount: matching.itemCount ?? 0,
+              });
+            }
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         }
@@ -307,6 +322,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                       Number(widgetId),
                       Number(selectedFolder?.id),
                     );
+
+                    if (success && onMoved) {
+                      onMoved();
+                    }
 
                     setInternalVisible(false);
                     setSelectedFolder(null);
