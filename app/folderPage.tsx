@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  View,
-  Image,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, View, Pressable } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Colors } from "@/constants/Colors";
@@ -12,11 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
-import TagList from "@/components/ui/TagList/TagList";
-import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-
+import React, { useState, useMemo, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -79,8 +69,6 @@ export default function FolderScreen() {
   const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
   const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -159,7 +147,7 @@ export default function FolderScreen() {
 
         try {
           const folderData = await folderService.getFolder(Number(folderId));
-          setFolder(folderData); // ✅ updates title
+          setFolder(folderData);
           const fetchedWidgets =
             await generalPageService.getAllFolderGeneralPageData(
               sortingMode,
@@ -178,11 +166,11 @@ export default function FolderScreen() {
           console.error("Failed to load tags:", error);
         }
 
-        setShouldReload(false); // ✅ reset reload flag
+        setShouldReload(false);
       };
 
       loadData();
-    }, [folderId, sortingMode, shouldReload]), // ✅ now watches shouldReload
+    }, [folderId, sortingMode, shouldReload]),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -226,11 +214,9 @@ export default function FolderScreen() {
   return (
     <>
       <SafeAreaView>
-        {/* TODO: pass correct backBehavior */}
         <CustomStyledHeader
           title={folder?.folderName ?? ""}
           iconName="more-horiz"
-          //   backBehavior={routing}
           onIconPress={() => setShowFolderModal(true)}
         />
         <ThemedView>
@@ -433,7 +419,7 @@ export default function FolderScreen() {
             icon: "delete",
             onPress: () => {
               setShowWidgetModal(false);
-              setShowWidgetDeleteModal(true); // ✅ open delete confirmation
+              setShowWidgetDeleteModal(true);
             },
             danger: true,
           },
