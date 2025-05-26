@@ -9,18 +9,8 @@ import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageMapper } from "../GeneralPageMapper";
 import { ZodError } from "zod";
 
-jest.mock("@/backend/util/mapper/TagMapper", () => ({
-  TagMapper: {
-    toDTO: jest.fn(),
-    toUpdatedEntity: jest.fn(),
-    toEntity: jest.fn(),
-  },
-}));
-
 describe("GeneralPageMapper", () => {
   const brandedPageID = pageID.parse(1);
-  const mockedTagID: any = 1;
-  const mockedFolderID: any = 1;
   const date: Date = new Date();
   const dateString: string = date.toISOString();
 
@@ -77,7 +67,6 @@ describe("GeneralPageMapper", () => {
     date_modified: dateString,
     parentID: null,
   };
-
   let invalidModel: GeneralPageModel;
 
   beforeEach(() => {

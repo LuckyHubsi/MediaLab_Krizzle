@@ -5,10 +5,7 @@ import {
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
@@ -381,7 +378,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deletePage(pageID: PageID): Promise<boolean> {
     try {
@@ -392,7 +389,7 @@ export class GeneralPageRepositoryImpl
       });
     } catch (error) {
       console.error("Error in deletePage:", error);
-      throw new RepositoryError("Failed to delete the page");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 

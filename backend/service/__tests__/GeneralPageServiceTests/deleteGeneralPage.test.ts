@@ -49,8 +49,8 @@ describe("GeneralPageService - deleteGeneralPage", () => {
   });
 
   it("should return a success Result containing true", async () => {
+    (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockResolvedValue(true);
-    (pageID.parse as jest.Mock).mockReturnValue(1);
 
     const result = await generalPageService.deleteGeneralPage(1);
 
@@ -74,10 +74,12 @@ describe("GeneralPageService - deleteGeneralPage", () => {
       // this would mean an error in the test
       throw new Error("Expected failure result, but got success");
     }
+    expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(0);
   });
 
   it("should return failure Result if RepositoryErrorNew('Delete Failed') is thrown", async () => {
-    (pageID.parse as jest.Mock).mockReturnValue(1);
+    (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(
       new RepositoryErrorNew("Delete Failed"),
     );
@@ -92,10 +94,12 @@ describe("GeneralPageService - deleteGeneralPage", () => {
       // this would mean an error in the test
       throw new Error("Expected failure result, but got success");
     }
+    expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(1);
   });
 
   it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Delete Failed') is thrown", async () => {
-    (pageID.parse as jest.Mock).mockReturnValue(1);
+    (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(new Error());
 
     const result = await generalPageService.deleteGeneralPage(1);
@@ -108,5 +112,7 @@ describe("GeneralPageService - deleteGeneralPage", () => {
       // this would mean an error in the test
       throw new Error("Expected failure result, but got success");
     }
+    expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
+    expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(1);
   });
 });

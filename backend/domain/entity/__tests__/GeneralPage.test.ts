@@ -41,7 +41,7 @@ describe("GeneralPage Schema Validation", () => {
   });
 
   describe("generalPageSchema", () => {
-    it("should validate a correct NewGeneralPage object", () => {
+    it("should validate a correct GeneralPage object", () => {
       const result = generalPageSchema.safeParse(validGeneralPage);
       expect(result.success).toBe(true);
     });
@@ -72,6 +72,16 @@ describe("GeneralPage Schema Validation", () => {
       const result = generalPageSchema.safeParse(invalidGeneralPage);
       expect(result.success).toBe(false);
     });
+    it("should invalidate when incorrect archived", () => {
+      invalidGeneralPage.archived = "";
+      const result = generalPageSchema.safeParse(invalidGeneralPage);
+      expect(result.success).toBe(false);
+    });
+    it("should invalidate when incorrect pinned", () => {
+      invalidGeneralPage.pinned = "";
+      const result = generalPageSchema.safeParse(invalidGeneralPage);
+      expect(result.success).toBe(false);
+    });
     it("should invalidate when incorrect tag", () => {
       invalidGeneralPage.tag = "";
       const result = generalPageSchema.safeParse(invalidGeneralPage);
@@ -95,40 +105,50 @@ describe("GeneralPage Schema Validation", () => {
   });
 
   describe("createNewGeneralPage", () => {
-    it("should validate a correct GeneralPage object", () => {
-      const result = generalPageSchema.safeParse(validGeneralPage);
+    it("should validate a correct NewGeneralPage object", () => {
+      const result = createNewGeneralPage.safeParse(validGeneralPage);
       expect(result.success).toBe(true);
     });
 
-    // invalidated GeneralPage object cases
+    // invalidated NewGeneralPage object cases
     it("should invalidate when incorrect pageType", () => {
       invalidNewGeneralPage.pageType = "wrong";
-      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect pageTitle", () => {
       invalidNewGeneralPage.pageTitle = "";
-      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect pageIcon", () => {
       invalidNewGeneralPage.pageIcon = 1;
-      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect pageColor", () => {
       invalidNewGeneralPage.pageColor = "blue";
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
+      expect(result.success).toBe(false);
+    });
+    it("should invalidate when incorrect archived", () => {
+      invalidNewGeneralPage.archived = "";
+      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      expect(result.success).toBe(false);
+    });
+    it("should invalidate when incorrect pinned", () => {
+      invalidNewGeneralPage.pinned = "";
       const result = generalPageSchema.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect tag", () => {
       invalidNewGeneralPage.tag = "";
-      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect parentID", () => {
       invalidNewGeneralPage.parentID = -1;
-      const result = generalPageSchema.safeParse(invalidNewGeneralPage);
+      const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });
   });
