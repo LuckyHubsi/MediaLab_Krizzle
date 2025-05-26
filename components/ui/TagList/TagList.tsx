@@ -47,7 +47,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           accessibilityRole="button"
           accessibilityLabel="All tags"
           accessibilityState={{ selected: activeTag === "All" }}
-          accessibilityHint="Filters notes by all tags"
+          accessibilityHint="Filters notes and collections by all tags"
         >
           {activeTag === "All" && (
             <MaterialIcons
@@ -63,7 +63,13 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
         </TagButton>
 
         {tags.length !== 0 && (
-          <TagButton themeMode={themeMode} onPress={onPress}>
+          <TagButton
+            themeMode={themeMode}
+            onPress={onPress}
+            accessibilityRole="button"
+            accessibilityLabel="Add a new tag"
+            accessibilityHint="Opens the tag management screen"
+          >
             <MaterialIcons
               name="add"
               size={16}
@@ -80,9 +86,8 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
             onPress={() => handlePress(tag)}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel={`Tag: ${tag.tag_label}`}
+            accessibilityLabel={`Filter by tag ${tag.tag_label}`}
             accessibilityState={{ selected: isActive(tag) }}
-            accessibilityHint={`Filters notes by the ${tag.tag_label} tag`}
           >
             {isActive(tag) && (
               <MaterialIcons

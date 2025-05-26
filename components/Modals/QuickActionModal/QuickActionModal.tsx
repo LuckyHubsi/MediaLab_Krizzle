@@ -80,7 +80,10 @@ export default function QuickActionModal({
         >
           <ModalBackground>
             <TouchableOpacity activeOpacity={1}>
-              <ModalBox colorScheme={colorScheme}>
+              <ModalBox
+                colorScheme={colorScheme}
+                accessibilityViewIsModal={true}
+              >
                 {items.map((item, index) => {
                   const textColorVariant = item.disabled
                     ? "disabled"
@@ -105,6 +108,10 @@ export default function QuickActionModal({
                       colorScheme={colorScheme}
                       isLast={index === items.length - 1}
                       disabled={item.disabled}
+                      accessibilityRole="button"
+                      accessible={true}
+                      accessibilityLabel={item.label}
+                      accessibilityState={{ disabled: item.disabled }}
                     >
                       <ThemedText
                         fontSize="regular"

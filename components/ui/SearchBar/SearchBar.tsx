@@ -41,7 +41,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChangeText={setQuery}
         returnKeyType="search"
         accessibilityRole="search"
-        accessibilityHint="Type to search"
+        accessibilityLabel="Search"
+        accessibilityHint="Enter a title to filter your notes or collections"
       />
       {query.length > 0 && (
         <TouchableOpacity

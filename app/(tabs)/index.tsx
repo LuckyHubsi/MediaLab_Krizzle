@@ -208,7 +208,11 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </IconTopRight>
 
-          <ThemedText fontSize="xl" fontWeight="bold">
+          <ThemedText
+            fontSize="xl"
+            fontWeight="bold"
+            accessibilityRole="header"
+          >
             Home
           </ThemedText>
 
@@ -241,6 +245,7 @@ export default function HomeScreen() {
                       fontSize="regular"
                       fontWeight="regular"
                       style={{ marginBottom: 8 }}
+                      accessibilityRole="text"
                     >
                       Pinned
                     </ThemedText>
@@ -282,10 +287,19 @@ export default function HomeScreen() {
                         marginBottom: 8,
                       }}
                     >
-                      <ThemedText fontSize="regular" fontWeight="regular">
+                      <ThemedText
+                        fontSize="regular"
+                        fontWeight="regular"
+                        accessibilityRole="text"
+                      >
                         Recent
                       </ThemedText>
-                      <Pressable onPress={() => setShowSortModal(true)}>
+                      <Pressable
+                        onPress={() => setShowSortModal(true)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Sort items"
+                        accessibilityHint="Opens a menu to sort widgets"
+                      >
                         <View
                           style={{
                             flexDirection: "row",
@@ -336,6 +350,8 @@ export default function HomeScreen() {
                       fontSize="regular"
                       fontWeight="regular"
                       style={{ textAlign: "center", marginTop: 25 }}
+                      accessibilityRole="text"
+                      accessibilityLiveRegion="polite"
                     >
                       {selectedTag === "All" && !searchQuery
                         ? "No entries found."
