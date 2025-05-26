@@ -21,6 +21,11 @@ import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import * as FileSystem from "expo-file-system";
 import { Item } from "@/backend/domain/entity/Item";
 import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
+import { ZodError } from "zod";
+import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { CollectionErrorMessages } from "@/shared/error/ErrorMessages";
+import { failure, Result, success } from "@/shared/result/Result";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 /**
  * CollectionService encapsulates all collection-related application logic.
@@ -46,19 +51,38 @@ export class CollectionService {
    * Fetch collection by its pageID.
    *
    * @param pageId - A number representing the collection's pageID.
-   * @returns A Promise resolving to a `CollectionDTO` object.
-   * @throws ServiceError if retrieval fails.
+   * @returns  Promise resolving to a `Result` containing either a `CollectionDTO` or `ServiceTypeError`.
    */
-  async getCollectionByPageId(pageId: number): Promise<CollectionDTO> {
+  async getCollectionByPageId(
+    pageId: number,
+  ): Promise<Result<CollectionDTO, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
       const collection = await this.collectionRepo.getCollection(brandedPageID);
-      if (!collection) {
-        throw new ServiceError("Collection not found.");
-      }
-      return CollectionMapper.toDTO(collection);
+      return success(CollectionMapper.toDTO(collection));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: CollectionErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: CollectionErrorMessages.loadingCollection,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CollectionErrorMessages.unknown,
+        });
+      }
     }
   }
 

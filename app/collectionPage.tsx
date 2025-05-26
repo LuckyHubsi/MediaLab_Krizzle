@@ -54,22 +54,22 @@ export default function CollectionScreen() {
       (async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
-          const collectionData =
+          const result =
             await collectionService.getCollectionByPageId(numericID);
-          if (collectionData) {
-            setCollection(collectionData);
-            setCollectionTitle(title || collectionData.page_title);
+          if (result.success) {
+            setCollection(result.value);
+            setCollectionTitle(title || result.value.page_title);
 
-            if (collectionData.categories) {
-              const names = collectionData.categories.map(
-                (c) => c.category_name,
-              );
+            if (result.value.categories) {
+              const names = result.value.categories.map((c) => c.category_name);
               setListNames(names);
               setSelectedList(names[0]); // ✅ set selected list directly here
             }
             const retrievedItems: ItemsDTO =
               await collectionService.getItemsByPageId(numericID);
             if (retrievedItems) setItems(retrievedItems);
+          } else {
+            // TODO: show error modal
           }
           const retrievedItems: ItemsDTO =
             await collectionService.getItemsByPageId(numericID);

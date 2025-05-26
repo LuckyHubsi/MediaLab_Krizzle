@@ -105,11 +105,22 @@ export const ResetErrorMessages = {
   fail: "Failed to delete all your data. You may experience missing functionality.",
 };
 
+// ITEM TEMPLATE
 export const TemplateErrorMessages = {
   loadingTemplate:
-    "Something went wrong while loading the item template for the input form. Some note details may be unavailable or outdated.",
+    "Something went wrong while loading the item template for the input form. Some template details may be unavailable or outdated.",
   notFound:
-    "The system does not recognize the item template you tried to access or had trouble reading its data. Some note details and functionalities may be unavailable or outdated.",
+    "The system does not recognize the item template you tried to access or had trouble reading its data. Some template details and functionalities may be unavailable or outdated.",
   unknown:
     "An unexpected error occurred while handling item templates. Some related features may not work as expected.",
+};
+
+// COLLECTION
+export const CollectionErrorMessages = {
+  loadingCollection:
+    "Something went wrong while loading the collection you tried to access. Some collection details may be unavailable or outdated.",
+  notFound:
+    "The system does not recognize the collection you tried to access or had trouble reading its data. Some collection details and functionalities may be unavailable or outdated.",
+  unknown:
+    "An unexpected error occurred while handling collection. Some related features may not work as expected.",
 };

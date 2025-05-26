@@ -4,7 +4,10 @@ import { CollectionModel } from "../model/CollectionModel";
 import { PageType } from "@/shared/enum/PageType";
 import { CollectionMapper } from "@/backend/util/mapper/CollectionMapper";
 import { Collection } from "@/backend/domain/entity/Collection";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import {
   collectionSelectByPageIdQuery,
   insertCollectionQuery,
@@ -38,7 +41,7 @@ export class CollectionRepositoryImpl
    *
    * @param pageID - A `PageID` representing the page ID the collection belongs to.
    * @returns A Promise resolving to `Collection`.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails or if result is null.
    */
   async getCollection(pageID: PageID): Promise<Collection> {
     try {
@@ -47,11 +50,11 @@ export class CollectionRepositoryImpl
         [pageID],
       );
       if (!collectionData || collectionData.page_type !== PageType.Collection) {
-        throw new RepositoryError("Failed to fetch page.");
+        throw new RepositoryErrorNew("Not Found");
       }
       return CollectionMapper.toEntity(collectionData);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
