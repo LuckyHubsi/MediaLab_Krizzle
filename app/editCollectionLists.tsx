@@ -162,7 +162,11 @@ export default function EditCollectionListsScreen() {
           // TODO: show error modal
         }
       } else {
-        await collectionService.updateCollectionCategory(updateDto);
+        const updateListResult =
+          await collectionService.updateCollectionCategory(updateDto);
+        if (!updateListResult.success) {
+          // TODO: Show error modal
+        }
       }
     });
 

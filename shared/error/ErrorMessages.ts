@@ -125,10 +125,6 @@ export const CollectionErrorMessages = {
     "There was a problem validating your input. Consider making changes in your input for the collection and the template.",
   insertNewCollection:
     "There was a problem adding your collection and corresponding template. Please try again. If the error persists, consider changing your input in the widget, list and template creation.",
-  validateNewCollectionCat:
-    "There was a problem validating your input for one of your new lists. Consider renaming them if the error persists.",
-  insertNewCollectionCat:
-    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names.",
   unknown:
     "An unexpected error occurred while handling collection. Some related features may not work as expected.",
 };
@@ -137,6 +133,14 @@ export const CollectionErrorMessages = {
 export const CategoryErrorMessages = {
   loadingAllCategories:
     "Something went wrong while loading your collection lists. You might experience missing or incorrect list behavior.",
+  validateNewCollectionCat:
+    "There was a problem validating your input for one of your new lists. Consider renaming them if the error persists.",
+  insertNewCollectionCat:
+    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names.",
+  validateCategoryToUpdate:
+    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application.",
+  updateCategory:
+    "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application.",
   unknown:
     "An unexpected error occurred while handling collection lists. Some related features may not work as expected.",
 };

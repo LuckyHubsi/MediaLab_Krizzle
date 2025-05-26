@@ -91,7 +91,7 @@ export class CollectionCategoryRepositoryImpl
    * @param category - A `NewCollectionCategory` with a label to save.
    * @param categoryId - A `CollectionCategoryID` representing the category ID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateCategory(
     category: NewCollectionCategory,
@@ -104,7 +104,7 @@ export class CollectionCategoryRepositoryImpl
       ]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update category.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 

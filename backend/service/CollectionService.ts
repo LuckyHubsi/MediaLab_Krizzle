@@ -246,7 +246,7 @@ export class CollectionService {
       if (error instanceof ZodError) {
         return failure({
           type: "Validation Error",
-          message: CollectionErrorMessages.validateNewCollectionCat,
+          message: CategoryErrorMessages.validateNewCollectionCat,
         });
       } else if (
         error instanceof RepositoryErrorNew &&
@@ -254,12 +254,12 @@ export class CollectionService {
       ) {
         return failure({
           type: "Creation Failed",
-          message: CollectionErrorMessages.insertNewCollectionCat,
+          message: CategoryErrorMessages.insertNewCollectionCat,
         });
       } else {
         return failure({
           type: "Unknown Error",
-          message: CollectionErrorMessages.unknown,
+          message: CategoryErrorMessages.unknown,
         });
       }
     }
@@ -269,12 +269,11 @@ export class CollectionService {
    * Update an existing category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be updated.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if update fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async updateCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const updatedCategory = CollectionCategoryMapper.toNewEntity(categoryDTO);
       const brandedCategoryID = collectionCategoryID.parse(
@@ -284,9 +283,27 @@ export class CollectionService {
         updatedCategory,
         brandedCategoryID,
       );
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to update collection category.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CategoryErrorMessages.validateCategoryToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: CategoryErrorMessages.updateCategory,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 
