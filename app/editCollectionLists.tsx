@@ -151,12 +151,16 @@ export default function EditCollectionListsScreen() {
       };
 
       if (!isPersisted(l.id)) {
-        await collectionService.insertCollectionCategory({
-          category_name: l.title,
-          collectionID: numericId,
-        });
-
-        setInitialIds((prev) => new Set(prev).add(l.id));
+        const insertListResult =
+          await collectionService.insertCollectionCategory({
+            category_name: l.title,
+            collectionID: numericId,
+          });
+        if (insertListResult.success) {
+          setInitialIds((prev) => new Set(prev).add(l.id));
+        } else {
+          // TODO: show error modal
+        }
       } else {
         await collectionService.updateCollectionCategory(updateDto);
       }

@@ -232,18 +232,36 @@ export class CollectionService {
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
    * @returns A Promise resolving to true on success.
-   * @throws ServiceError if retrieval fails.
+   * @throws A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedCollectionID = collectionID.parse(categoryDTO.collectionID);
       const category = CollectionCategoryMapper.toNewEntity(categoryDTO);
       await this.categoryRepo.insertCategory(category, brandedCollectionID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to insert collection category.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CollectionErrorMessages.validateNewCollectionCat,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Insert Failed"
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: CollectionErrorMessages.insertNewCollectionCat,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CollectionErrorMessages.unknown,
+        });
+      }
     }
   }
 

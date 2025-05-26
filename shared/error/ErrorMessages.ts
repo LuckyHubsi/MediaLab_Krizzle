@@ -124,7 +124,11 @@ export const CollectionErrorMessages = {
   validateNewCollection:
     "There was a problem validating your input. Consider making changes in your input for the collection and the template.",
   insertNewCollection:
-    "There was a problem adding your collection and corresponding template. Please try again. If the error persists, consider changing your input in the widget, lista nd template creation.",
+    "There was a problem adding your collection and corresponding template. Please try again. If the error persists, consider changing your input in the widget, list and template creation.",
+  validateNewCollectionCat:
+    "There was a problem validating your input for one of your new lists. Consider renaming them if the error persists.",
+  insertNewCollectionCat:
+    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names.",
   unknown:
     "An unexpected error occurred while handling collection. Some related features may not work as expected.",
 };
