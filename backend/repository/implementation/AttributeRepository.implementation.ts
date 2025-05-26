@@ -47,14 +47,13 @@ export class AttributeRepositoryImpl
     txn?: SQLite.SQLiteDatabase,
   ): Promise<AttributeID> {
     try {
-      const attribute = AttributeMapper.toInsertModel(newAttribute);
       const attributeId = await this.executeTransaction(async (transaction) => {
         await this.executeQuery(
           insertAttributeQuery,
           [
-            attribute.attribute_label,
-            attribute.type,
-            attribute.preview,
+            newAttribute.attributeLabel,
+            newAttribute.type,
+            newAttribute.preview ? 1 : 0,
             templateID,
           ],
           txn ?? transaction,
