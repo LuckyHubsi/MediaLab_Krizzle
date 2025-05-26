@@ -37,6 +37,8 @@ interface SelectFolderModalProps {
   widgetTitle?: string;
   widgetId?: string;
   onClose: () => void;
+  initialSelectedFolderId?: number;
+  onMoved?: () => void;
 }
 
 const SelectFolderModal: FC<SelectFolderModalProps> = ({
@@ -44,6 +46,8 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   widgetTitle,
   widgetId,
   onClose,
+  initialSelectedFolderId,
+  onMoved,
 }) => {
   const colorScheme = useActiveColorScheme();
   const [internalVisible, setInternalVisible] = useState(visible);
@@ -155,7 +159,20 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
         try {
           const result = await folderService.getAllFolders();
           if (result.success) {
-            setFolders(result.value);
+            setFolders(result.value ?? []);
+
+            if (initialSelectedFolderId) {
+              const matching = result.value?.find(
+                (f) => f.folderID === initialSelectedFolderId,
+              );
+              if (matching) {
+                setSelectedFolder({
+                  id: String(matching.folderID),
+                  title: matching.folderName,
+                  itemCount: matching.itemCount ?? 0,
+                });
+              }
+            }
           } else {
             // TODO: show error modal
           }
@@ -330,14 +347,14 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                       Number(selectedFolder?.id),
                     );
                     if (result.success) {
-                      setInternalVisible(false);
-                      setSelectedFolder(null);
-                      onClose();
+                      if (onMoved) onMoved();
                     } else {
                       // TODO: show error modal
-                      console.log(result.error.type);
-                      console.log(result.error.message);
                     }
+
+                    setInternalVisible(false);
+                    setSelectedFolder(null);
+                    onClose();
                   }}
                   colorScheme={colorScheme}
                   selectedFolder={selectedFolder}

@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  View,
-  Image,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, View, Pressable } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Colors } from "@/constants/Colors";
@@ -12,11 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
-import TagList from "@/components/ui/TagList/TagList";
-import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-
+import React, { useState, useMemo, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -32,6 +22,8 @@ import { FolderState } from "@/shared/enum/FolderState";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
+import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
+import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -56,6 +48,10 @@ export default function FolderScreen() {
   const { generalPageService, tagService, folderService } = useServices();
   const colorScheme = useActiveColorScheme();
   const router = useRouter();
+  const [folderEditMode, setFolderEditMode] = useState(false);
+  const [folderNameInput, setFolderNameInput] = useState("");
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [showWidgetModal, setShowWidgetModal] = useState(false);
 
   interface Widget {
     id: string;
@@ -74,12 +70,15 @@ export default function FolderScreen() {
   const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
   const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [showFolderDeleteModal, setShowFolderDeleteModal] = useState(false);
+  const [showWidgetDeleteModal, setShowWidgetDeleteModal] = useState(false);
+  const [showFolderSelectionModal, setShowFolderSelectionModal] =
+    useState(false);
+
   const [sortingMode, setSortingMode] = useState<FolderState>(
     FolderState.GeneralModfied,
   );
@@ -111,6 +110,38 @@ export default function FolderScreen() {
       archived: widget.archived,
       pinned: widget.pinned,
     }));
+  };
+  const handleFolderUpdate = async () => {
+    const trimmedName = folderNameInput.trim();
+    if (!folder || !trimmedName) return;
+
+    if (trimmedName.length > 30) {
+      showSnackbar(
+        "Folder name must be less than 30 characters.",
+        "top",
+        "error",
+      );
+      return;
+    }
+
+    try {
+      const success = await folderService.updateFolder({
+        folderID: folder.folderID,
+        folderName: trimmedName,
+        itemCount: folder.itemCount ?? 0,
+      });
+
+      if (success) {
+        showSnackbar("Folder updated", "bottom", "success");
+        setShouldReload(true);
+      }
+    } catch (error) {
+      console.error("Error updating folder:", error);
+      showSnackbar("Update failed", "top", "error");
+    } finally {
+      setFolderEditMode(false);
+      setFolderNameInput("");
+    }
   };
 
   useFocusEffect(
@@ -150,10 +181,12 @@ export default function FolderScreen() {
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
+
+        setShouldReload(false);
       };
 
       loadData();
-    }, [folderId, sortingMode]),
+    }, [folderId, sortingMode, shouldReload]),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -197,12 +230,10 @@ export default function FolderScreen() {
   return (
     <>
       <SafeAreaView>
-        {/* TODO: pass correct backBehavior */}
         <CustomStyledHeader
-          title={title}
+          title={folder?.folderName ?? ""}
           iconName="more-horiz"
-          //   backBehavior={routing}
-          onIconPress={() => setShowModal(true)}
+          onIconPress={() => setShowFolderModal(true)}
         />
         <ThemedView>
           {widgets.length === 0 && pinnedWidgets.length === 0 ? (
@@ -244,7 +275,7 @@ export default function FolderScreen() {
                           onPress={() => goToPage(item)}
                           onLongPress={() => {
                             setSelectedWidget(item);
-                            setShowModal(true);
+                            setShowWidgetModal(true);
                           }}
                         />
                       ))}
@@ -302,7 +333,7 @@ export default function FolderScreen() {
                           onPress={() => goToPage(item)}
                           onLongPress={() => {
                             setSelectedWidget(item);
-                            setShowModal(true);
+                            setShowWidgetModal(true);
                           }}
                         />
                       ))}
@@ -365,19 +396,71 @@ export default function FolderScreen() {
       />
 
       <QuickActionModal
-        visible={showModal}
-        onClose={() => setShowModal(false)}
+        visible={showFolderModal}
+        onClose={() => setShowFolderModal(false)}
         items={[
           {
             label: "Edit Folder",
             icon: "edit",
-            //TODO: Add onPress Logic for editing Folder
-            onPress: async () => {},
+            onPress: () => {
+              setFolderNameInput(folder?.folderName ?? "");
+              setFolderEditMode(true);
+              setShowFolderModal(false);
+            },
           },
           {
-            label: "Delete",
+            label: "Delete Folder",
             icon: "delete",
-            onPress: () => setShowDeleteModal(true),
+            onPress: () => setShowFolderDeleteModal(true),
+            danger: true,
+          },
+        ]}
+      />
+      <QuickActionModal
+        visible={showWidgetModal}
+        onClose={() => setShowWidgetModal(false)}
+        items={[
+          {
+            label: "Move back Home",
+            icon: "home",
+            onPress: async () => {
+              if (selectedWidget) {
+                try {
+                  const success = await generalPageService.updateFolderID(
+                    Number(selectedWidget.id),
+                    null,
+                  );
+
+                  if (success) {
+                    showSnackbar("Moved back to home", "bottom", "success");
+                    setShouldReload(true);
+                  } else {
+                    showSnackbar("Failed to move widget", "bottom", "error");
+                  }
+                } catch (error) {
+                  console.error("Error moving back home:", error);
+                  showSnackbar("Error moving widget", "top", "error");
+                } finally {
+                  setShowWidgetModal(false);
+                }
+              }
+            },
+          },
+          {
+            label: "Move to another Folder",
+            icon: "folder",
+            onPress: () => {
+              setShowWidgetModal(false);
+              setShowFolderSelectionModal(true);
+            },
+          },
+          {
+            label: "Delete Widget",
+            icon: "delete",
+            onPress: () => {
+              setShowWidgetModal(false);
+              setShowWidgetDeleteModal(true);
+            },
             danger: true,
           },
         ]}
@@ -388,11 +471,45 @@ export default function FolderScreen() {
         onClose={() => setModalVisible(false)}
       />
 
-      {/* TODO: Add Delete Folder Page Logic */}
       <DeleteModal
-        visible={showDeleteModal}
+        visible={showFolderDeleteModal}
+        title={folder?.folderName}
+        onCancel={() => setShowFolderDeleteModal(false)}
+        onConfirm={async () => {
+          if (folder) {
+            try {
+              const success = await folderService.deleteFolder(
+                Number(folder.folderID),
+              );
+              if (success) {
+                showSnackbar("Folder deleted", "bottom", "success");
+                router.replace("/folders");
+              }
+            } catch (error) {
+              console.error("Error deleting folder:", error);
+              showSnackbar("Error deleting folder", "top", "error");
+            } finally {
+              setShowFolderDeleteModal(false);
+            }
+          }
+        }}
+        onclose={() => setShowFolderDeleteModal(false)}
+      />
+      <BottomInputModal
+        visible={folderEditMode}
+        value={folderNameInput}
+        onChangeText={setFolderNameInput}
+        onSubmit={handleFolderUpdate}
+        onClose={() => {
+          setFolderEditMode(false);
+          setFolderNameInput("");
+        }}
+        placeholderText="Enter new folder name"
+      />
+      <DeleteModal
+        visible={showWidgetDeleteModal}
         title={selectedWidget?.title}
-        onCancel={() => setShowDeleteModal(false)}
+        onCancel={() => setShowWidgetDeleteModal(false)}
         onConfirm={async () => {
           if (selectedWidget) {
             try {
@@ -406,13 +523,24 @@ export default function FolderScreen() {
                 // TODO: show error modal
               }
               setSelectedWidget(null);
-              setShowDeleteModal(false);
+              showSnackbar("Widget deleted", "bottom", "success");
             } catch (error) {
-              console.error("Error deleting page:", error);
+              console.error("Error deleting widget:", error);
+              showSnackbar("Error deleting widget", "top", "error");
+            } finally {
+              setShowWidgetDeleteModal(false);
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onclose={() => setShowWidgetDeleteModal(false)}
+      />
+      <SelectFolderModal
+        widgetTitle={selectedWidget?.title}
+        widgetId={selectedWidget?.id}
+        initialSelectedFolderId={Number(folderId)}
+        visible={showFolderSelectionModal}
+        onClose={() => setShowFolderSelectionModal(false)}
+        onMoved={() => setShouldReload(true)}
       />
     </>
   );

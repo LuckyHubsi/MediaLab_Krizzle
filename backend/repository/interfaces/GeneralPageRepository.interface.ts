@@ -39,5 +39,5 @@ export interface GeneralPageRepository extends BaseRepository {
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
-  updateParentID(pageId: PageID, parentId: FolderID): Promise<boolean>;
+  updateParentID(pageId: PageID, parentId: FolderID | null): Promise<boolean>;
 }

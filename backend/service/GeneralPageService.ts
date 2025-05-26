@@ -372,12 +372,16 @@ export class GeneralPageService {
    */
   async updateFolderID(
     pageId: number,
-    folderId: number,
+    folderId: number | null,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
-      const brandedFolderID = folderID.parse(folderId);
-      await this.generalPageRepo.updateParentID(brandedPageID, brandedFolderID);
+      const brandedFolderIDOrNull =
+        folderId === null ? null : folderID.parse(folderId);
+      await this.generalPageRepo.updateParentID(
+        brandedPageID,
+        brandedFolderIDOrNull,
+      );
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
