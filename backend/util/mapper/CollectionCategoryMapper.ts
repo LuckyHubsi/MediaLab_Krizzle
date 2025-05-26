@@ -48,8 +48,8 @@ export class CollectionCategoryMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping CollectionCategoryDTO to New Entity");
-      throw new Error("Failed to map CollectionCategoryDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -69,7 +69,7 @@ export class CollectionCategoryMapper {
       });
     } catch (error) {
       console.error("Error mapping CollectionCategoryModel to Entity:", error);
-      throw new Error("Failed to map CollectionCategoryModel to Entity");
+      throw error;
     }
   }
 }

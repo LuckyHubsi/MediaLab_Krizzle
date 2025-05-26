@@ -69,8 +69,8 @@ export class CollectionMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping CollectionDTO to New Entity");
-      throw new Error("Failed to map CollectionDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -94,8 +94,8 @@ export class CollectionMapper {
         pinCount: model.pin_count,
       });
     } catch (error) {
-      console.error("Error mapping CollectionModel to Entity:", error);
-      throw new Error("Failed to map CollectionModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

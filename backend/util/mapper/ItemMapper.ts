@@ -153,8 +153,8 @@ export class ItemMapper {
         attributeValues: dto.attributeValues ?? [],
       });
     } catch (error) {
-      console.error("Error mapping ItemDTO to NewItem:", error);
-      throw new Error("Invalid ItemDTO for new item entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -244,8 +244,8 @@ export class ItemMapper {
         attributeValues: parsedAttributes,
       });
     } catch (error) {
-      console.error("Error mapping ItemModel to Item:", error);
-      throw new Error("Failed to map ItemModel to domain Item");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -325,8 +325,8 @@ export class ItemMapper {
 
       return items;
     } catch (error) {
-      console.error("Error mapping PreviewItems[]:", error);
-      throw new Error("Failed to map to PreviewItems[]");
+      console.error(error);
+      throw error;
     }
   }
 }
