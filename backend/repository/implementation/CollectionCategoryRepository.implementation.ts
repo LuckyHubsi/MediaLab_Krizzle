@@ -6,7 +6,10 @@ import {
 import { SQLiteDatabase } from "expo-sqlite";
 import { CollectionCategoryRepository } from "../interfaces/CollectionCategoryRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import {
   deleteCategoryQuery,
   insertCollectionCategoryQuery,
@@ -43,7 +46,7 @@ export class CollectionCategoryRepositoryImpl
    * @param collectionId - A `CollectionID` representing the collection it belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertCategory(
     category: NewCollectionCategory,
@@ -57,7 +60,7 @@ export class CollectionCategoryRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to insert category.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

@@ -65,7 +65,7 @@ export class CollectionRepositoryImpl
    * @param templateId - A `ItemTemplateID` representing the template ID the collection uses.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the transaction fails.
    */
   async insertCollection(
     pageId: PageID,
@@ -87,7 +87,7 @@ export class CollectionRepositoryImpl
       );
       return collectionID.parse(collectionId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert collection.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 }

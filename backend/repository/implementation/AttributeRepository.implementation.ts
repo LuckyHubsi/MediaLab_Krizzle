@@ -9,7 +9,10 @@ import {
   selectPreviewAttributesQuery,
 } from "../query/AttributeQuery";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import {
   attributeID,
   AttributeID,
@@ -39,7 +42,7 @@ export class AttributeRepositoryImpl
    * @param templateID - A `TemplateID` object representing the template ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an `AttributeID` if insertion succeeded.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertAttribute(
     newAttribute: NewAttribute,
@@ -64,7 +67,7 @@ export class AttributeRepositoryImpl
       });
       return attributeID.parse(attributeId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert attribute.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -75,7 +78,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertMultiselectOptions(
     options: string[],
@@ -89,7 +92,7 @@ export class AttributeRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to insert multi-select options.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -100,7 +103,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertRatingSymbol(
     symbol: string,
@@ -114,7 +117,7 @@ export class AttributeRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to insert rating symbol.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 

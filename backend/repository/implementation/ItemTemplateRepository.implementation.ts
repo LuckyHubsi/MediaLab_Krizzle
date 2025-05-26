@@ -39,7 +39,7 @@ export class ItemTemplateRepositoryImpl
    * @param itemTemplateID - An `ItemTemplateID` representing the template ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an `ItemTemplate` if query succeeded.
-   * @throws RepositoryError if the fetch fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getItemTemplateById(
     itemTemplateID: ItemTemplateID,
@@ -67,7 +67,7 @@ export class ItemTemplateRepositoryImpl
    * @param itemTemplate - A `NewItemTemplate` object containing the template data.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an `ItemTemplateID` if insertion succeeded.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertTemplateAndReturnID(
     itemTemplate: NewItemTemplate,
@@ -88,7 +88,7 @@ export class ItemTemplateRepositoryImpl
       );
       return itemTemplateID.parse(templateID);
     } catch (error) {
-      throw new RepositoryError("Failed to save template.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 }

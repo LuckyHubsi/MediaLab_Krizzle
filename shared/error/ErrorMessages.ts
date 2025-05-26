@@ -121,6 +121,10 @@ export const CollectionErrorMessages = {
     "Something went wrong while loading the collection you tried to access. Some collection details may be unavailable or outdated.",
   notFound:
     "The system does not recognize the collection you tried to access or had trouble reading its data. Some collection details and functionalities may be unavailable or outdated.",
+  validateNewCollection:
+    "There was a problem validating your input. Consider making changes in your input for the collection and the template.",
+  insertNewCollection:
+    "There was a problem adding your collection and corresponding template. Please try again. If the error persists, consider changing your input in the widget, lista nd template creation.",
   unknown:
     "An unexpected error occurred while handling collection. Some related features may not work as expected.",
 };

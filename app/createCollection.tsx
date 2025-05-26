@@ -75,14 +75,18 @@ export default function CollectionTemplateScreen() {
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
-    const pageId = await collectionService.saveCollection(
+    const result = await collectionService.saveCollection(
       dtos.collection,
       dtos.template,
     );
-    router.replace({
-      pathname: "/collectionPage",
-      params: { pageId: pageId, title: collectionData.title },
-    });
+    if (result.success) {
+      router.replace({
+        pathname: "/collectionPage",
+        params: { pageId: result.value, title: collectionData.title },
+      });
+    } else {
+      // TODO: show error modal
+    }
   };
 
   return (

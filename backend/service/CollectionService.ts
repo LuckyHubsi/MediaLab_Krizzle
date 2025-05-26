@@ -100,73 +100,93 @@ export class CollectionService {
    *
    * @param collectionDTO - The collectionDTO containing all data needed to create the collection.
    * @param templateDTO - The templateDTO containing all data needed to create the template.
-   * @returns A promise that resolves to a pageID if the collection is saved successfully, or rejects with an error.
-   *
-   * @throws ServiceError if insert fails.
+   * @returns Promise resolving to a `Result` containing either a `number` (new pageID) or `ServiceTypeError`.
    */
   async saveCollection(
     collectionDTO: CollectionDTO,
     templateDTO: ItemTemplateDTO,
-  ): Promise<number> {
+  ): Promise<Result<number, ServiceErrorType>> {
     try {
       // validate the user input
       const collection = CollectionMapper.toNewEntity(collectionDTO);
       const template = ItemTemplateMapper.toNewEntity(templateDTO);
 
-      const pageId = this.baseRepo.executeTransaction<number>(async (txn) => {
-        // 1. Insert general page, retrieve ID
-        const retrievedPageId = await this.generalPageRepo.insertPage(
-          collection,
-          txn,
-        );
+      const pageId = await this.baseRepo.executeTransaction<number>(
+        async (txn) => {
+          // 1. Insert general page, retrieve ID
+          const retrievedPageId = await this.generalPageRepo.insertPage(
+            collection,
+            txn,
+          );
 
-        // 2. Insert template, retrieve ID
-        const templateId = await this.templateRepo.insertTemplateAndReturnID(
-          template,
-          txn,
-        );
+          // 2. Insert template, retrieve ID
+          const templateId = await this.templateRepo.insertTemplateAndReturnID(
+            template,
+            txn,
+          );
 
-        // 3. Insert all Attributes
-        for (const attr of template.attributes) {
-          const attributeID = await this.attributeRepo.insertAttribute(
-            attr,
+          // 3. Insert all Attributes
+          for (const attr of template.attributes) {
+            const attributeID = await this.attributeRepo.insertAttribute(
+              attr,
+              templateId,
+              txn,
+            );
+
+            if (attr.type === AttributeType.Multiselect && attr.options) {
+              await this.attributeRepo.insertMultiselectOptions(
+                attr.options,
+                attributeID,
+                txn,
+              );
+            } else if (attr.type === AttributeType.Rating && attr.symbol) {
+              await this.attributeRepo.insertRatingSymbol(
+                attr.symbol,
+                attributeID,
+                txn,
+              );
+            }
+          }
+
+          // 4. Inserts Collection, retrieves ID
+          const collectionId = await this.collectionRepo.insertCollection(
+            retrievedPageId,
             templateId,
             txn,
           );
 
-          if (attr.type === AttributeType.Multiselect && attr.options) {
-            await this.attributeRepo.insertMultiselectOptions(
-              attr.options,
-              attributeID,
-              txn,
-            );
-          } else if (attr.type === AttributeType.Rating && attr.symbol) {
-            await this.attributeRepo.insertRatingSymbol(
-              attr.symbol,
-              attributeID,
-              txn,
-            );
+          // 5. Insert Categories
+          for (const category of collection.categories) {
+            await this.categoryRepo.insertCategory(category, collectionId, txn);
           }
-        }
 
-        // 4. Inserts Collection, retrieves ID
-        const collectionId = await this.collectionRepo.insertCollection(
-          retrievedPageId,
-          templateId,
-          txn,
-        );
+          return retrievedPageId;
+        },
+      );
 
-        // 5. Insert Categories
-        for (const category of collection.categories) {
-          await this.categoryRepo.insertCategory(category, collectionId, txn);
-        }
-
-        return retrievedPageId;
-      });
-
-      return pageId;
+      return success(pageId);
     } catch (error) {
-      throw new ServiceError("Failed to save collection.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CollectionErrorMessages.validateNewCollection,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: CollectionErrorMessages.insertNewCollection,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CollectionErrorMessages.unknown,
+        });
+      }
     }
   }
 
