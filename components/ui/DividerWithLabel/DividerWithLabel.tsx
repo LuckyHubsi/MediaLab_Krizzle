@@ -40,6 +40,8 @@ export const DividerWithLabel = ({
                 marginBottom: label ? 10 : 0,
                 marginTop: label ? 4 : 0,
               }}
+              accessible={false}
+              importantForAccessibility="no"
             />
           </View>
         )}
