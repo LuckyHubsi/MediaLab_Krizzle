@@ -331,7 +331,7 @@ export default function FolderScreen() {
                           onPress={() => goToPage(item)}
                           onLongPress={() => {
                             setSelectedWidget(item);
-                            setShowModal(true);
+                            setShowWidgetModal(true);
                           }}
                         />
                       ))}
@@ -431,7 +431,10 @@ export default function FolderScreen() {
           {
             label: "Delete Widget",
             icon: "delete",
-            onPress: () => setShowWidgetDeleteModal(true),
+            onPress: () => {
+              setShowWidgetModal(false);
+              setShowWidgetDeleteModal(true); // ✅ open delete confirmation
+            },
             danger: true,
           },
         ]}
