@@ -399,7 +399,10 @@ export class GeneralPageRepositoryImpl
    * @returns A Promise resolving to true if successful.
    * @throws RepositoryError if the query fails.
    */
-  async updateParentID(pageId: PageID, parentId: FolderID): Promise<boolean> {
+  async updateParentID(
+    pageId: PageID,
+    parentId: FolderID | null,
+  ): Promise<boolean> {
     try {
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);
       const allpages = await this.fetchAll("SELECT * FROM general_page_data");

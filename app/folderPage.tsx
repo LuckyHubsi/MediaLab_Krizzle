@@ -416,7 +416,7 @@ export default function FolderScreen() {
                 try {
                   const success = await generalPageService.updateFolderID(
                     Number(selectedWidget.id),
-                    0,
+                    null,
                   );
 
                   if (success) {
