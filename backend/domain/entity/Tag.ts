@@ -15,7 +15,7 @@ import { tagID } from "../common/IDs";
 export const tagSchema = z.object({
   tagID: tagID,
   tagLabel: common.string30,
-  usageCount: z.number().optional().default(0),
+  usageCount: z.number().min(0).optional().default(0),
 });
 
 /**
