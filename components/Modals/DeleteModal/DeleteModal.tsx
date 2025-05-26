@@ -40,12 +40,26 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       transparent
       animationType="fade"
       onRequestClose={onCancel}
+      accessibilityViewIsModal={true}
+      accessible={true}
     >
-      <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onclose}>
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        activeOpacity={1}
+        onPress={onclose}
+        accessible={false}
+        importantForAccessibility="no"
+        accessibilityElementsHidden={true}
+      >
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
             <OverlayTextBox>
-              <ThemedText fontSize="regular" fontWeight="semibold">
+              <ThemedText
+                fontSize="regular"
+                fontWeight="semibold"
+                accessibilityRole="header"
+                accessibilityLabel={`Delete confirmation for ${title}`}
+              >
                 {titleHasApostrophes
                   ? `Do you want to delete "${title}"?`
                   : `Do you want to delete ${title}?`}
@@ -60,10 +74,22 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
               </ThemedText>
             </OverlayTextBox>
             <ButtonRow>
-              <Action onPress={onConfirm} colorScheme={colorScheme}>
+              <Action
+                onPress={onConfirm}
+                colorScheme={colorScheme}
+                accessibilityRole="button"
+                accessibilityLabel="Confirm deletion"
+                accessibilityHint="Deletes this item permanently"
+              >
                 <ThemedText colorVariant="red">Delete</ThemedText>
               </Action>
-              <Action onPress={onCancel} colorScheme={colorScheme}>
+              <Action
+                onPress={onCancel}
+                colorScheme={colorScheme}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel deletion"
+                accessibilityHint="Closes the dialog without deleting"
+              >
                 <ThemedText colorVariant="primary">Cancel</ThemedText>
               </Action>
             </ButtonRow>
