@@ -26,7 +26,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <SearchContainer
       style={{ backgroundColor: themeColors.searchBarBackground }}
     >
-      <SearchIcon name="magnify" size={20} color={themeColors.text} />
+      <SearchIcon
+        name="magnify"
+        size={20}
+        color={themeColors.text}
+        accessible={false}
+        importantForAccessibility="no"
+      />
       <SearchInput
         style={{ color: themeColors.text }}
         placeholder={placeholder}
