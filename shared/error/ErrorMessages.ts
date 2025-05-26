@@ -92,6 +92,10 @@ export const NoteErrorMessages = {
     "There was a problem validating your input. Consider using a different note title, tag, color or icon.",
   insertNewNote:
     "There was a problem adding your note. Please try again. If the error persists, consider choosing a different different note title, tag, color or icon or trying again after reopening the application.",
+  validateNoteToUpdate:
+    "The system does not recognize the note you want to update. Please try again. If the error persists, consider trying again after reopening the application.",
+  updateNoteContent:
+    "There was a problem saving changes in your note. If the error persists, consider trying again after exiting and accessing the note again or reopening the application.",
   unknown:
     "An unexpected error occurred while handling notes. Some note-related features may not work as expected.",
 };

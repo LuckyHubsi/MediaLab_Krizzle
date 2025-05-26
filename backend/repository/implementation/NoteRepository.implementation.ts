@@ -84,7 +84,7 @@ export class NoteRepositoryImpl
    * @param pageId - The pageID of the note.
    * @param newContent - The textual note content to be updated.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateContent(
     pageId: PageID,
@@ -101,8 +101,7 @@ export class NoteRepositoryImpl
       });
       return true;
     } catch (error) {
-      console.error("Error updating note content:", error);
-      throw new RepositoryError("Failed to update content.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }

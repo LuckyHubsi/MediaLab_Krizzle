@@ -68,7 +68,10 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const success = await noteService.updateNoteContent(Number(pageId), html);
+    const result = await noteService.updateNoteContent(Number(pageId), html);
+    if (!result.success) {
+      // TODO: show error modal
+    }
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);

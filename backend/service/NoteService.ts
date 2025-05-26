@@ -110,19 +110,37 @@ export class NoteService {
    *
    * @param pageId - Number representing the pageID.
    * @param newContent - Textual content to be saved.
-   * @returns A Promise resolving to void.
-   * @throws ServiceError if uopdate fails.
+   * @returns A Promise resolving to a `Result` containing either a `void` or a `ServiceErrorType`.
    */
-  async updateNoteContent(pageId: number, newContent: string): Promise<void> {
+  async updateNoteContent(
+    pageId: number,
+    newContent: string,
+  ): Promise<Result<void, ServiceErrorType>> {
     try {
-      if (newContent === null) {
-        throw new ServiceError("Content cannot be null.");
-      }
       const parsedContent = common.string50000.parse(newContent);
       const brandedPageID = pageID.parse(pageId);
       await this.noteRepo.updateContent(brandedPageID, parsedContent);
+      return success(undefined);
     } catch (error) {
-      throw new ServiceError("Failed to update note content.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: NoteErrorMessages.validateNoteToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: NoteErrorMessages.updateNoteContent,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: NoteErrorMessages.unknown,
+        });
+      }
     }
   }
 }
