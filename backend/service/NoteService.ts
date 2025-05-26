@@ -87,8 +87,10 @@ export class NoteService {
           message: NoteErrorMessages.validateNewNote,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Insert Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Creation Failed",
