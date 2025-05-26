@@ -40,79 +40,92 @@ export default function EditCollectionItem() {
         const item = await collectionService.getItemByID(numericItemId);
         if (!item) throw new Error("Item not found.");
 
+        setItem(item);
+
         const collection = await collectionService.getCollectionByPageId(
           item.pageID,
         );
         if (!collection) throw new Error("Collection not found.");
 
-        const template = await itemTemplateService.getTemplate(
+        const templateResult = await itemTemplateService.getTemplate(
           collection.templateID!,
         );
 
-        setAttributes(template.attributes || []);
         setLists(collection.categories);
         setSelectedCategoryID(item.categoryID || null);
-        setItem(item);
-        const mappedValues: Record<number, any> = {};
 
-        item.attributeValues?.forEach((attrValue) => {
-          const attrID = attrValue.attributeID;
-          if (attrID == null) return;
+        if (templateResult.success) {
+          setAttributes(templateResult.value.attributes || []);
 
-          const templateAttr = template.attributes?.find(
-            (a) => a.attributeID === attrID,
-          );
-          if (!templateAttr) return;
+          const mappedValues: Record<number, any> = {};
 
-          switch (templateAttr.type) {
-            case AttributeType.Date:
-              mappedValues[attrID] =
-                "valueString" in attrValue && attrValue.valueString
-                  ? new Date(attrValue.valueString)
-                  : null;
-              break;
+          item.attributeValues?.forEach((attrValue) => {
+            const attrID = attrValue.attributeID;
+            if (attrID == null) return;
 
-            case AttributeType.Rating:
-              mappedValues[attrID] =
-                "valueNumber" in attrValue
-                  ? (attrValue.valueNumber ?? null)
-                  : null;
-              break;
+            const templateAttr = templateResult.value.attributes?.find(
+              (a) => a.attributeID === attrID,
+            );
+            if (!templateAttr) return;
 
-            case AttributeType.Multiselect:
-              mappedValues[attrID] =
-                "valueMultiselect" in attrValue
-                  ? (attrValue.valueMultiselect ?? [])
-                  : [];
-              break;
+            switch (templateAttr.type) {
+              case AttributeType.Date:
+                mappedValues[attrID] =
+                  "valueString" in attrValue && attrValue.valueString
+                    ? new Date(attrValue.valueString)
+                    : null;
+                break;
 
-            case AttributeType.Link:
-              mappedValues[attrID] = {
-                value:
+              case AttributeType.Rating:
+                mappedValues[attrID] =
+                  "valueNumber" in attrValue
+                    ? (attrValue.valueNumber ?? null)
+                    : null;
+                break;
+
+              case AttributeType.Multiselect:
+                mappedValues[attrID] =
+                  "valueMultiselect" in attrValue
+                    ? (attrValue.valueMultiselect ?? [])
+                    : [];
+                break;
+
+              case AttributeType.Link:
+                mappedValues[attrID] = {
+                  value:
+                    "valueString" in attrValue
+                      ? (attrValue.valueString ?? "")
+                      : "",
+                  displayText:
+                    "displayText" in attrValue
+                      ? (attrValue.displayText ?? "")
+                      : "",
+                };
+                break;
+
+              case AttributeType.Image:
+                mappedValues[attrID] =
                   "valueString" in attrValue
                     ? (attrValue.valueString ?? "")
-                    : "",
-                displayText:
-                  "displayText" in attrValue
-                    ? (attrValue.displayText ?? "")
-                    : "",
-              };
-              break;
+                    : "";
+                break;
 
-            case AttributeType.Image:
-              mappedValues[attrID] =
-                "valueString" in attrValue ? (attrValue.valueString ?? "") : "";
-              break;
+              case AttributeType.Text:
+              default:
+                mappedValues[attrID] =
+                  "valueString" in attrValue
+                    ? (attrValue.valueString ?? "")
+                    : "";
+                break;
+            }
+          });
 
-            case AttributeType.Text:
-            default:
-              mappedValues[attrID] =
-                "valueString" in attrValue ? (attrValue.valueString ?? "") : "";
-              break;
-          }
-        });
-
-        setAttributeValues(mappedValues);
+          setAttributeValues(mappedValues);
+        } else {
+          // TODO: show error modal
+          console.log(templateResult.error.type);
+          console.log(templateResult.error.message);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {

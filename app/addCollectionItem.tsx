@@ -40,11 +40,17 @@ export default function AddCollectionItem() {
       const numericTemplateID = Number(templateId);
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
-        const template =
-          await itemTemplateService.getTemplate(numericTemplateID);
+        const result = await itemTemplateService.getTemplate(numericTemplateID);
 
-        if (template && template.attributes) {
-          setAttributes(template.attributes);
+        if (result.success) {
+          if (result.value && result.value.attributes) {
+            setAttributes(result.value.attributes);
+          }
+        } else {
+          // TODO: show error modal
+
+          console.log(result.error.type);
+          console.log(result.error.message);
         }
       }
       if (!isNaN(numericCollectionID)) {

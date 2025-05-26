@@ -11,7 +11,10 @@ import {
   selectItemTemplateByTemplateIDQuery,
 } from "../query/ItemTemplateQuery";
 import { ItemTemplateMapper } from "@/backend/util/mapper/ItemTemplateMapper";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  RepositoryError,
+  RepositoryErrorNew,
+} from "@/backend/util/error/RepositoryError";
 import { itemTemplateID, ItemTemplateID } from "@/backend/domain/common/IDs";
 
 /**
@@ -51,10 +54,10 @@ export class ItemTemplateRepositoryImpl
       if (template) {
         return ItemTemplateMapper.toEntity(template);
       } else {
-        throw new RepositoryError("Failed to fetch template.");
+        throw new RepositoryErrorNew("Not Found");
       }
     } catch (error) {
-      throw new RepositoryError("Failed to fetch template.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

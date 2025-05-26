@@ -100,6 +100,16 @@ export const NoteErrorMessages = {
     "An unexpected error occurred while handling notes. Some note-related features may not work as expected.",
 };
 
+// DATABASE
 export const ResetErrorMessages = {
   fail: "Failed to delete all your data. You may experience missing functionality.",
+};
+
+export const TemplateErrorMessages = {
+  loadingTemplate:
+    "Something went wrong while loading the item template for the input form. Some note details may be unavailable or outdated.",
+  notFound:
+    "The system does not recognize the item template you tried to access or had trouble reading its data. Some note details and functionalities may be unavailable or outdated.",
+  unknown:
+    "An unexpected error occurred while handling item templates. Some related features may not work as expected.",
 };
