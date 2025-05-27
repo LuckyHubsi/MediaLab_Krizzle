@@ -127,6 +127,10 @@ export default function RootLayout() {
                     name="folderPage"
                     options={{ headerShown: false }}
                   />
+                  <Stack.Screen
+                    name="editCollectionTemplate"
+                    options={{ headerShown: false }}
+                  />
                 </Stack>
                 <StatusBar style="auto" />
               </SnackbarProvider>

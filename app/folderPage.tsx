@@ -447,6 +447,44 @@ export default function FolderScreen() {
             },
           },
           {
+            label: "Edit Widget",
+            icon: "edit",
+            onPress: () => selectedWidget && goToEditPage(selectedWidget),
+          },
+          {
+            label: "Archive",
+            icon: "archive",
+            onPress: async () => {
+              if (selectedWidget) {
+                const updateFolderSuccess =
+                  await generalPageService.updateFolderID(
+                    Number(selectedWidget.id),
+                    null,
+                  );
+                const archiveSuccess =
+                  await generalPageService.togglePageArchive(
+                    Number(selectedWidget.id),
+                    selectedWidget.archived,
+                  );
+
+                if (updateFolderSuccess && archiveSuccess) {
+                  showSnackbar(
+                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "success",
+                  );
+                } else {
+                  showSnackbar(
+                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    "bottom",
+                    "error",
+                  );
+                }
+                setShouldReload(true);
+              }
+            },
+          },
+          {
             label: "Move to another Folder",
             icon: "folder",
             onPress: () => {

@@ -6,7 +6,7 @@
  * - `Date`: Represents a date attribute.
  * - `Multiselect`: Represents a list of 'labels' grouped in the multi-select attribute.
  * - `Image`: Represents an image attribute.
- * - `Link`: Represents a hyperlink attribute.
+ * - `Link`: Represents a link attribute.
  */
 export enum AttributeType {
   Text = "text",

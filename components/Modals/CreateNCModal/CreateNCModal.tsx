@@ -109,6 +109,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
         const result = await folderService.insertFolder(newFolderObject);
         if (result.success) {
           success = true;
+          router.push("/folders?reload=1");
         } else {
           // TODO: show error modal
         }

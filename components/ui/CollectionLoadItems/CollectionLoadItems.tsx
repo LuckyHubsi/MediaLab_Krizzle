@@ -156,7 +156,10 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
     if (dateAttr || ratingAttr) {
       elements.push(
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
+        <View
+          key="date-rating-wrapper"
+          style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}
+        >
           {dateAttr &&
             dateAttr.map((date) => (
               <CollectionItemContainer

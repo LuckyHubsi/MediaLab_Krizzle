@@ -22,7 +22,8 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function CollectionScreen() {
-  const { generalPageService, collectionService } = useServices();
+  const { generalPageService, collectionService, itemTemplateService } =
+    useServices();
 
   const router = useRouter();
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
@@ -51,7 +52,7 @@ export default function CollectionScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
+      const fetchData = async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
           const result =
@@ -63,7 +64,7 @@ export default function CollectionScreen() {
             if (result.value.categories) {
               const names = result.value.categories.map((c) => c.category_name);
               setListNames(names);
-              setSelectedList(names[0]); // ✅ set selected list directly here
+              setSelectedList(names[0]);
             }
             const retrievedItemsResult =
               await collectionService.getItemsByPageId(numericID);
@@ -75,7 +76,8 @@ export default function CollectionScreen() {
           }
           setShouldReload(false);
         }
-      })();
+      };
+      fetchData();
     }, [pageId, shouldReload]),
   );
 
@@ -209,6 +211,22 @@ export default function CollectionScreen() {
                   icon: "edit",
                   onPress: () => {
                     goToEditPage();
+                  },
+                }
+              : null,
+            collection && !collection.archived
+              ? {
+                  label: "Edit Template",
+                  icon: "edit-document",
+                  onPress: () => {
+                    router.push({
+                      pathname: "/editCollectionTemplate",
+                      params: {
+                        collectionId: collection?.collectionID?.toString(),
+                        templateId: collection?.templateID?.toString(),
+                        title: collection?.page_title,
+                      },
+                    });
                   },
                 }
               : null,
