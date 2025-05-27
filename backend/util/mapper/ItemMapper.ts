@@ -63,7 +63,7 @@ export class ItemMapper {
       | string
       | number
       | string[]
-      | { value: string; displayText: string }
+      | { value: string; displayText: string | null }
       | null
     )[] = entity.values.map((value, index) => {
       const attr = attributes[index];
@@ -104,7 +104,9 @@ export class ItemMapper {
             return {
               value: value.value,
               displayText:
-                typeof value.displayText === "string" ? value.displayText : "",
+                typeof value.displayText === "string"
+                  ? value.displayText
+                  : null,
             };
           }
           return null;
@@ -308,7 +310,7 @@ export class ItemMapper {
                 typeof previewValue.display_text === "string"
                   ? previewValue.display_text
                   : null;
-              return displayText ? { value: raw, displayText } : null;
+              return raw ? { value: raw, displayText } : null;
             default:
               return null;
           }
