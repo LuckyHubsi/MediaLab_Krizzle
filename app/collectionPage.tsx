@@ -65,15 +65,14 @@ export default function CollectionScreen() {
               setListNames(names);
               setSelectedList(names[0]); // ✅ set selected list directly here
             }
-            const retrievedItems: ItemsDTO =
+            const retrievedItemsResult =
               await collectionService.getItemsByPageId(numericID);
-            if (retrievedItems) setItems(retrievedItems);
+            if (retrievedItemsResult.success) {
+              setItems(retrievedItemsResult.value);
+            }
           } else {
             // TODO: show error modal
           }
-          const retrievedItems: ItemsDTO =
-            await collectionService.getItemsByPageId(numericID);
-          if (retrievedItems) setItems(retrievedItems);
           setShouldReload(false);
         }
       })();

@@ -151,6 +151,8 @@ export const CategoryErrorMessages = {
 
 // COLLECTION ITEM
 export const ItemErrorMessages = {
+  loadingAllItems:
+    "Something went wrong while loading your item previews. You might experience missing or incorrect item behavior.",
   loadingItem:
     "Something went wrong while loading the collection item you tried to access. Some item details may be unavailable or outdated.",
   notFound:

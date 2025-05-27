@@ -89,7 +89,7 @@ export class ItemRepositoryImpl
    * @param attributes - An array of Attributes to help with mapping the items to domain entities.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an array of `PreviewItem` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getItemsByID(
     pageId: PageID,
@@ -102,9 +102,10 @@ export class ItemRepositoryImpl
         [pageId],
         txn,
       );
+
       return ItemMapper.toPreviewEntities(items, attributes);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch items.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 

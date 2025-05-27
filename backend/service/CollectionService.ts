@@ -692,7 +692,15 @@ export class CollectionService {
     }
   }
 
-  async getItemsByPageId(pageId: number): Promise<ItemsDTO> {
+  /**
+   * Fetches all items and their preview values.
+   *
+   * @param pageId - A number representing the pageId of the collection they belong to.
+   * @returns A Promise resolving to a `Result` containing either an `ItemsDTO` or `ServiceErrorType`
+   */
+  async getItemsByPageId(
+    pageId: number,
+  ): Promise<Result<ItemsDTO, ServiceErrorType>> {
     try {
       const brandedPageID: PageID = pageID.parse(pageId);
 
@@ -704,9 +712,22 @@ export class CollectionService {
         attributes,
       );
 
-      return ItemMapper.toItemsDTO(previewItems, attributes);
+      return success(ItemMapper.toItemsDTO(previewItems, attributes));
     } catch (error) {
-      throw new ServiceError("Failed to fetch all items.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: ItemErrorMessages.loadingAllItems,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 }

@@ -127,7 +127,7 @@ export class AttributeRepositoryImpl
    * @param pageId - An `PageID` object representing the page ID the attribute belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an array of `Attribute` entities.
-   * @throws RepositoryError if the fetch fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getPreviewAttributes(
     pageId: PageID,
@@ -142,7 +142,7 @@ export class AttributeRepositoryImpl
 
       return attributes.map(AttributeMapper.toEntity);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch preview attributes.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 }
