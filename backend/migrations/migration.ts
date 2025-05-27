@@ -110,10 +110,39 @@ export const migrations: {
             
             -- step 3: restore data (parent_folderID will be NULL for existing records)
             INSERT INTO general_page_data(pageID, page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned, tagID, parent_folderID)
-            SELECT pageID, page_type, page_title, page_icon, "#4599E8", date_created, date_modified, archived, pinned, tagID, NULL FROM old_general_page_data;
+            SELECT pageID, page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned, tagID, NULL FROM old_general_page_data;
             -- step 4: drop old tables
             DROP TABLE IF EXISTS old_general_page_data;
           `);
+        }
+        const pagesWithInvalidHex = [];
+        const pagesWithColorBlue = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = 'blue'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorBlue);
+
+        const pagesWithColorWhite = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '#ffffff'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorWhite);
+
+        const pagesWithColorBlack = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '#111111'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorBlack);
+
+        const pagesWithColorLightGrey = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#ABABAB'`);
+        pagesWithInvalidHex.push(pagesWithColorLightGrey);
+
+        for (const pageGroup of pagesWithInvalidHex) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#4599E8' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
         }
         // _____________________________________________________________________
 
@@ -131,7 +160,7 @@ export const migrations: {
               attributeID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
               item_templateID INTEGER NOT NULL,
               attribute_label TEXT NOT NULL,
-              type TEXT NOT NULL CHECK(type IN ('text', 'rating', 'date', 'multi-select', 'image')),
+              type TEXT NOT NULL CHECK(type IN ('text', 'rating', 'date', 'multi-select', 'image', 'link')),
               preview INTEGER NOT NULL DEFAULT 0 CHECK(preview IN (0, 1)),
               FOREIGN KEY(item_templateID) REFERENCES item_template(item_templateID) ON DELETE CASCADE
             );
@@ -151,9 +180,18 @@ export const migrations: {
           `SELECT name FROM sqlite_master WHERE type='table' AND name='item';`,
         );
         if (itemCheck) {
+          const firstCategory = await txn.getFirstAsync<{
+            collection_categoryID: number;
+            category_name: string;
+          }>(`SELECT * FROM collection_category`);
+          const items = await txn.getAllAsync<{
+            itemID: number;
+            pageID: number;
+            categoryID: number;
+          }>(`SELECT * FROM item`);
+          console.log("items", items);
           await txn.execAsync(`
-            -- step 1: backup old table by renaming
-            ALTER TABLE item RENAME TO old_item;
+            DROP TABLE IF EXISTS item;
 
             -- step 2: create new schema with categoryID NOT NULL
             CREATE TABLE item (
@@ -163,15 +201,27 @@ export const migrations: {
               FOREIGN KEY(categoryID) REFERENCES collection_category(collection_categoryID) ON DELETE CASCADE,
               FOREIGN KEY(pageID) REFERENCES general_page_data(pageID) ON DELETE CASCADE
             );
-            
-            -- step 3: restore data (only items that have a categoryID)
-            -- Items with NULL categoryID will be skipped - you may want to handle this differently
-            INSERT INTO item(itemID, pageID, categoryID)
-            SELECT itemID, pageID, categoryID FROM old_item WHERE categoryID IS NOT NULL;
-
-            -- step 4: drop old tables
-            DROP TABLE IF EXISTS old_item;
           `);
+
+          for (const item of items) {
+            if (item.categoryID !== null) {
+              await txn.runAsync(
+                `INSERT INTO item(itemID, pageID, categoryID) VALUES (?, ?, ?)`,
+                [item.itemID, item.pageID, item.categoryID],
+              );
+            } else {
+              if (firstCategory !== null) {
+                await txn.runAsync(
+                  `INSERT INTO item(itemID, pageID, categoryID) VALUES (?, ?, ?)`,
+                  [
+                    item.itemID,
+                    item.pageID,
+                    firstCategory.collection_categoryID,
+                  ],
+                );
+              }
+            }
+          }
         }
         // _____________________________________________________________________
 
