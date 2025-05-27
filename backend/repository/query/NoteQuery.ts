@@ -7,7 +7,7 @@ const updateNoteContentQuery: string = `
 `;
 
 const selectNoteByPageIDQuery: string = `
-    SELECT p.*, n.*,
+    SELECT p.*, n.*, t.*,
     (
         SELECT COUNT(*)
         FROM general_page_data p
@@ -15,6 +15,7 @@ const selectNoteByPageIDQuery: string = `
     ) AS pin_count
     FROM general_page_data p
     INNER JOIN note n ON p.pageID = n.pageID
+    LEFT JOIN tag t ON p.tagID = t.tagID
     WHERE p.pageID = ?;
 `;
 

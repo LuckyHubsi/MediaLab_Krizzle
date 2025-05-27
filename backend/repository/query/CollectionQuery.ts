@@ -1,6 +1,7 @@
 const collectionSelectByPageIdQuery: string = `
     SELECT
     p.*,
+    t.*,
     c.collectionID,
     (
         SELECT COUNT(*)
@@ -22,6 +23,7 @@ const collectionSelectByPageIdQuery: string = `
     ) AS categories
     FROM general_page_data p
     JOIN collection c ON p.pageID = c.pageID
+    LEFT JOIN tag t ON p.tagID = t.tagID
     WHERE p.pageID = ?
     GROUP BY p.pageID, c.collectionID;
 `;
