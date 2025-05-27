@@ -8,7 +8,7 @@ import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useRouter } from "expo-router";
@@ -19,7 +19,7 @@ import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { useServices } from "@/context/ServiceContext";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
-
+import { useLocalSearchParams } from "expo-router";
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
@@ -41,7 +41,7 @@ export default function FoldersScreen() {
   const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
-
+  const params = useLocalSearchParams();
   const router = useRouter();
 
   interface Folder {
@@ -108,7 +108,6 @@ export default function FoldersScreen() {
       const fetchFolders = async () => {
         try {
           const data = await folderService.getAllFolders();
-
           const shapedFolders = mapToFolderShape(data);
           setFolders(shapedFolders);
         } catch (error) {
@@ -118,8 +117,16 @@ export default function FoldersScreen() {
 
       setShouldReload(false);
       fetchFolders();
-    }, [shouldReload]),
+    }, [shouldReload, params.reload]),
   );
+
+  useEffect(() => {
+    if (params.reload) {
+      // Clear the reload param to allow future reloads to work
+      router.replace("/folders");
+    }
+  }, [params.reload]);
+
   const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
     if (data == null) {
       return [];

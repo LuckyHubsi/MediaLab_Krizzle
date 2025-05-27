@@ -101,6 +101,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
       } else {
         const newFolderObject: FolderDTO = { folderName: trimmedFolder };
         success = await folderService.insertFolder(newFolderObject);
+        if (success) {
+          router.push("/folders?reload=1");
+        }
       }
 
       if (success) setShouldRefetch(true);
