@@ -82,6 +82,136 @@ export const migrations: {
         }
         // _____________________________________________________________________
 
+        // GENERAL PAGE
+        const generalPageDataCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='general_page_data';`,
+        );
+        if (generalPageDataCheck) {
+          await txn.execAsync(`
+            -- step 1: backup old table by renaming
+            ALTER TABLE general_page_data RENAME TO old_general_page_data;
+
+            -- step 2: create new schema
+            CREATE TABLE general_page_data (
+              pageID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              page_type TEXT NOT NULL CHECK(page_type IN ('note', 'collection')),
+              page_title TEXT NOT NULL,
+              page_icon TEXT,
+              page_color TEXT,
+              date_created TEXT NOT NULL,
+              date_modified TEXT NOT NULL,
+              archived INTEGER NOT NULL DEFAULT 0 CHECK(archived IN (0, 1)),
+              pinned INTEGER NOT NULL DEFAULT 0 CHECK(pinned IN (0, 1)),
+              tagID INTEGER,
+              parent_folderID INTEGER,
+              FOREIGN KEY(parent_folderID) REFERENCES folder(folderID) ON DELETE CASCADE,
+              FOREIGN KEY(tagID) REFERENCES tag(tagID) ON DELETE SET NULL
+            );
+            
+            -- step 3: restore data (parent_folderID will be NULL for existing records)
+            INSERT INTO general_page_data(pageID, page_type, page_title, page_icon, page_color, date_created, date_modified, archived, pinned, tagID, parent_folderID)
+            SELECT pageID, page_type, page_title, page_icon, "#4599E8", date_created, date_modified, archived, pinned, tagID, NULL FROM old_general_page_data;
+            -- step 4: drop old tables
+            DROP TABLE IF EXISTS old_general_page_data;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // ATTRIBUTE
+        const attributeCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
+        );
+        if (attributeCheck) {
+          await txn.execAsync(`
+            -- step 1: backup old table by renaming
+            ALTER TABLE attribute RENAME TO old_attribute;
+
+            -- step 2: create new schema with updated type constraint
+            CREATE TABLE attribute (
+              attributeID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              item_templateID INTEGER NOT NULL,
+              attribute_label TEXT NOT NULL,
+              type TEXT NOT NULL CHECK(type IN ('text', 'rating', 'date', 'multi-select', 'image')),
+              preview INTEGER NOT NULL DEFAULT 0 CHECK(preview IN (0, 1)),
+              FOREIGN KEY(item_templateID) REFERENCES item_template(item_templateID) ON DELETE CASCADE
+            );
+            
+            -- step 3: restore data
+            INSERT INTO attribute(attributeID, item_templateID, attribute_label, type, preview)
+            SELECT attributeID, item_templateID, attribute_label, type, preview FROM old_attribute;
+
+            -- step 4: drop old tables
+            DROP TABLE IF EXISTS old_attribute;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // ITEM
+        const itemCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='item';`,
+        );
+        if (itemCheck) {
+          await txn.execAsync(`
+            -- step 1: backup old table by renaming
+            ALTER TABLE item RENAME TO old_item;
+
+            -- step 2: create new schema with categoryID NOT NULL
+            CREATE TABLE item (
+              itemID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              pageID INTEGER NOT NULL,
+              categoryID INTEGER NOT NULL,
+              FOREIGN KEY(categoryID) REFERENCES collection_category(collection_categoryID) ON DELETE CASCADE,
+              FOREIGN KEY(pageID) REFERENCES general_page_data(pageID) ON DELETE CASCADE
+            );
+            
+            -- step 3: restore data (only items that have a categoryID)
+            -- Items with NULL categoryID will be skipped - you may want to handle this differently
+            INSERT INTO item(itemID, pageID, categoryID)
+            SELECT itemID, pageID, categoryID FROM old_item WHERE categoryID IS NOT NULL;
+
+            -- step 4: drop old tables
+            DROP TABLE IF EXISTS old_item;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // IMAGE_VALUE
+        const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
+        );
+        if (!imageValueCheck) {
+          await txn.execAsync(`
+            CREATE TABLE image_value (
+              image_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+          `);
+        }
+        // _____________________________________________________________________
+
+        // LINK_VALUE
+        const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='link_value';`,
+        );
+        if (!linkValueCheck) {
+          await txn.execAsync(`
+            CREATE TABLE link_value (
+              link_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              display_text TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+          `);
+        }
+        // _____________________________________________________________________
+
         // MULTISELECT OPTIONS & VALUES
         // load and put the options in a Record
         const fetchedMultiOptions = await txn.getAllAsync<{
