@@ -209,11 +209,18 @@ export class GeneralPageService {
    * @returns A Promise resolving to true on success.
    * @throws ServiceError if udpate fails.
    */
-  async updateFolderID(pageId: number, folderId: number): Promise<boolean> {
+  async updateFolderID(
+    pageId: number,
+    folderId: number | null,
+  ): Promise<boolean> {
     try {
       const brandedPageID = pageID.parse(pageId);
-      const brandedFolderID = folderID.parse(folderId);
-      await this.generalPageRepo.updateParentID(brandedPageID, brandedFolderID);
+      const brandedFolderIDOrNull =
+        folderId === null ? null : folderID.parse(folderId);
+      await this.generalPageRepo.updateParentID(
+        brandedPageID,
+        brandedFolderIDOrNull,
+      );
       return true;
     } catch (error) {
       throw new ServiceError("Error moving page to folder.");
