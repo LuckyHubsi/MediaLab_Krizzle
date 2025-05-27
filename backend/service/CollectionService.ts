@@ -18,6 +18,9 @@ import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
 import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
+import * as FileSystem from "expo-file-system";
+import { Item } from "@/backend/domain/entity/Item";
+import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
 
 /**
  * CollectionService encapsulates all collection-related application logic.
@@ -228,6 +231,62 @@ export class CollectionService {
   }
 
   /**
+   * Deletes an image file from the file system.
+   *
+   * @param imageUri - URI of the image to delete.
+   * @returns Promise resolving to true on success.
+   */
+  private async deleteImageFile(imageUri: string): Promise<boolean> {
+    if (!imageUri) return false;
+
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(imageUri, { idempotent: true });
+        console.log("Deleted image file:", imageUri);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error deleting image file:", error);
+      return false;
+    }
+  }
+
+  async deleteCollectionImages(pageId: number): Promise<void> {
+    try {
+      const brandedPageID = pageID.parse(pageId);
+
+      const attributes =
+        await this.attributeRepo.getPreviewAttributes(brandedPageID);
+      const imageAttributeIds: number[] = [];
+
+      attributes.forEach((attr) => {
+        if (attr.type === AttributeType.Image) {
+          imageAttributeIds.push(attr.attributeID);
+        }
+      });
+
+      if (imageAttributeIds.length === 0) return;
+
+      const imageValues = await this.baseRepo.fetchAll<{ value: string }>(
+        selectImageValuesByPageIdQuery,
+        [pageId],
+      );
+
+      for (const imgValue of imageValues) {
+        if (imgValue.value) {
+          await this.deleteImageFile(imgValue.value);
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting collection images:", error);
+    }
+  }
+
+  /**
    * Fetches an item and its values.
    *
    * @param itemId - A number representing the itemID.
@@ -292,6 +351,22 @@ export class CollectionService {
                 txn,
               );
               break;
+            case AttributeType.Image:
+              this.itemRepo.insertImageValue(
+                attributeValue,
+                retrievedItemID,
+                txn,
+              );
+              break;
+            case AttributeType.Link:
+              if ("valueString" in attributeValue) {
+                this.itemRepo.insertLinkValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+              }
+              break;
             default:
               break;
           }
@@ -318,6 +393,22 @@ export class CollectionService {
   async deleteItemById(itemId: number): Promise<boolean> {
     try {
       const brandedItemID = itemID.parse(itemId);
+
+      const item = await this.itemRepo.getItemByID(brandedItemID);
+      const imageUris: string[] = [];
+
+      if (item.attributeValues) {
+        for (const attr of item.attributeValues) {
+          if (
+            attr.type === AttributeType.Image &&
+            "valueString" in attr &&
+            attr.valueString
+          ) {
+            imageUris.push(attr.valueString);
+          }
+        }
+      }
+
       const success = await this.baseRepo.executeTransaction<boolean>(
         async (txn) => {
           await this.itemRepo.deleteItemValues(brandedItemID, txn);
@@ -326,8 +417,14 @@ export class CollectionService {
           return true;
         },
       );
+
+      for (const uri of imageUris) {
+        await this.deleteImageFile(uri);
+      }
+
       return true;
     } catch (error) {
+      console.error("Error deleting item:", error);
       throw new ServiceError("Failed to delete collection item.");
     }
   }
@@ -392,6 +489,29 @@ export class CollectionService {
                     itemId,
                     value.attributeID,
                     stringifiedValues,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Image:
+                if ("valueString" in value) {
+                  this.itemRepo.updateImageValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Link:
+                if ("valueString" in value) {
+                  const displayText =
+                    "displayText" in value ? (value.displayText ?? null) : null;
+                  this.itemRepo.updateLinkValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
+                    displayText,
                     txn,
                   );
                 }

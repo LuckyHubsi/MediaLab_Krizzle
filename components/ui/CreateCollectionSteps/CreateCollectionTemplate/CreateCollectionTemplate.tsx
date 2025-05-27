@@ -95,6 +95,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         return "layers";
       case "rating":
         return "star-rate";
+      case "image":
+        return "image";
+      case "link":
+        return "attach-file";
       default:
         return "short-text";
     }

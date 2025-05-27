@@ -66,8 +66,18 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         topOffset={backgroundCardTopOffset}
         style={{ marginTop: 9 }}
       >
-        <ThemedView topPadding={24} style={{ borderRadius: 33 }}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ borderRadius: 33, flexGrow: 0, flexShrink: 0, flex: 0 }}
+          contentContainerStyle={{
+            paddingTop: 0,
+            paddingBottom: 32,
+            flexGrow: 1,
+          }}
+          bounces={false}
+          overScrollMode="never"
+        >
+          <ThemedView>
             {filteredItems.length > 0 ? (
               <View style={{ flex: 1, gap: 12 }}>
                 {filteredItems.map((item) => (
@@ -78,7 +88,10 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                     onPress={() => {
                       router.push({
                         pathname: "/collectionItemPage",
-                        params: { itemId: item.itemID.toString() },
+                        params: {
+                          itemId: item.itemID.toString(),
+                          collectionItemText: item.values[0],
+                        },
                       });
                     }}
                     onLongPress={() => {
@@ -105,8 +118,8 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                 </ThemedText>
               </View>
             )}
-          </ScrollView>
-        </ThemedView>
+          </ThemedView>
+        </ScrollView>
       </BackgroundCard>
     </View>
   );

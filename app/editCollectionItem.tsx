@@ -86,6 +86,24 @@ export default function EditCollectionItem() {
                   : [];
               break;
 
+            case AttributeType.Link:
+              mappedValues[attrID] = {
+                value:
+                  "valueString" in attrValue
+                    ? (attrValue.valueString ?? "")
+                    : "",
+                displayText:
+                  "displayText" in attrValue
+                    ? (attrValue.displayText ?? "")
+                    : "",
+              };
+              break;
+
+            case AttributeType.Image:
+              mappedValues[attrID] =
+                "valueString" in attrValue ? (attrValue.valueString ?? "") : "";
+              break;
+
             case AttributeType.Text:
             default:
               mappedValues[attrID] =
@@ -118,11 +136,26 @@ export default function EditCollectionItem() {
     }
   }, []);
 
-  const handleInputChange = (attributeID: number, value: any) => {
-    setAttributeValues((prev) => ({
-      ...prev,
-      [attributeID]: value,
-    }));
+  const handleInputChange = (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => {
+    setAttributeValues((prevValues) => {
+      const isLink =
+        attributes.find((a) => a.attributeID === attributeID)?.type ===
+        AttributeType.Link;
+
+      return {
+        ...prevValues,
+        [attributeID]: isLink
+          ? {
+              value: value?.trim() || null,
+              displayText: displayText?.trim() || null,
+            }
+          : value,
+      };
+    });
   };
 
   const handleListChange = (categoryID: number | null) => {
@@ -194,7 +227,6 @@ export default function EditCollectionItem() {
                   }
                 });
 
-                // maps attribute values
                 const updatedAttributeValues = attributes
                   .map((attr) => {
                     const attrID = attr.attributeID;
@@ -228,13 +260,21 @@ export default function EditCollectionItem() {
                           ? newValue
                           : [];
                         break;
+                      case AttributeType.Link:
+                        updatedValue.valueString =
+                          newValue?.value?.trim() || null;
+                        updatedValue.displayText =
+                          newValue?.displayText?.trim() || null;
+                        break;
+                      case AttributeType.Image:
+                        updatedValue.valueString = newValue || null;
+                        break;
                     }
 
                     return updatedValue;
                   })
                   .filter(Boolean) as ItemAttributeValueDTO[];
 
-                // directly creates item with explicit conversion
                 const updatedItem: ItemDTO = {
                   itemID: Number(itemId),
                   pageID: Number(currentItem.pageID),

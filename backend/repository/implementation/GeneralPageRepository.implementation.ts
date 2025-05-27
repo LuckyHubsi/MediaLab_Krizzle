@@ -301,10 +301,14 @@ export class GeneralPageRepositoryImpl
    */
   async deletePage(pageID: PageID): Promise<boolean> {
     try {
-      await this.executeQuery(deleteGeneralPageByIDQuery, [pageID]);
-      return true;
+      return await this.executeTransaction(async (txn) => {
+        await this.executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
+
+        return true;
+      });
     } catch (error) {
-      throw new RepositoryError("Failed to delete teh page");
+      console.error("Error in deletePage:", error);
+      throw new RepositoryError("Failed to delete the page");
     }
   }
 

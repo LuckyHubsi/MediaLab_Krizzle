@@ -9,15 +9,21 @@ import {
   useRouter,
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
-import { Platform, ScrollView } from "react-native"; // Use ScrollView from react-native
+import { Platform, ScrollView, View } from "react-native"; // Use ScrollView from react-native
+
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
+import Card from "@/components/ui/Card/Card";
+import CollectionItemContainer from "@/components/ui/CollectionItemContainer/CollectionItemContainer";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { useServices } from "@/context/ServiceContext";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 export default function CollectionItemScreen() {
-  const { itemId } = useLocalSearchParams<{
+  const { itemId, collectionItemText } = useLocalSearchParams<{
     itemId: string;
+    collectionItemText?: string;
   }>();
   const { collectionService } = useServices();
 
@@ -47,23 +53,39 @@ export default function CollectionItemScreen() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <CustomStyledHeader
-          title={item?.page_title || "Collection Item"} //Here should be the title of the collection
-          backBehavior="goCollection" // Go back to home when back button is pressed
-          iconName={undefined} // No icon for the header
-          onIconPress={() => {}} // No action when pressed
-          iconName2="more-horiz" // icon for the pop up menu
-          onIconMenuPress={() => {
-            setShowModal(true);
-          }} // action when icon menu is pressed
-          param={item?.pageID.toString()}
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+        {/* Background layers */}
+        <GradientBackgroundWrapper
+          colors={["#4599E8", "#583FE7"]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 400,
+            zIndex: -1, // Set zIndex lower than other elements
+          }}
         />
+        <View style={{ marginTop: 16 }}>
+          <CustomStyledHeader
+            title={collectionItemText || "Collection Item"} //Here should be the title of the collection
+            subtitle={item?.categoryName || "Collection List"}
+            backBehavior="default" // Go back to home when back button is pressed
+            iconName={undefined} // No icon for the header
+            onIconPress={() => {}} // No action when pressed
+            iconName2="more-horiz" // icon for the pop up menu
+            onIconMenuPress={() => {
+              setShowModal(true);
+            }} // action when icon menu is pressed
+            param={item?.pageID.toString()}
+            borderRadiusTop={33}
+          />
+        </View>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
-          <ThemedView topPadding={0}>
+          <ThemedView topPadding={0} style={{ paddingBottom: 20 }}>
             <CollectionLoadItem
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}
