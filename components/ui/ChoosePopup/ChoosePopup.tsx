@@ -122,7 +122,13 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                           </ItemCircle>
                           {type === "color" && (
                             <ColorLabel>
-                              <ThemedText>{label}</ThemedText>
+                              {isSelected ? (
+                                <ThemedText colorVariant="white">
+                                  {label}
+                                </ThemedText>
+                              ) : (
+                                <ThemedText>{label}</ThemedText>
+                              )}
                             </ColorLabel>
                           )}
                         </ItemWrapper>
@@ -131,9 +137,9 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                   </ItemsGrid>
                 </ScrollView>
                 <DoneButton onPress={() => onDone()}>
-                  <DoneButtonText colorScheme={colorScheme}>
+                  <ThemedText colorVariant="white" fontWeight="semibold">
                     Done
-                  </DoneButtonText>
+                  </ThemedText>
                 </DoneButton>
               </Content>
             </TouchableOpacity>

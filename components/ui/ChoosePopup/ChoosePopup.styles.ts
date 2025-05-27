@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
@@ -77,11 +78,11 @@ export const ColorLabel = styled.Text<{
 export const DoneButton = styled.TouchableOpacity`
   padding: 12px 24px;
   border-radius: 30px;
-  background-color: #4599e8;
+  background-color: ${Colors.primary};
 `;
 
 export const DoneButtonText = styled.Text`
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: ${Colors.white};
 `;
