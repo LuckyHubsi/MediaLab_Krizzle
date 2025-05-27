@@ -385,7 +385,7 @@ export class ItemRepositoryImpl
    * @param categoryId - The `CategoryID` of the category the item was assigned to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the query fails.
    */
   async updateItem(
     itemId: ItemID,
@@ -395,7 +395,7 @@ export class ItemRepositoryImpl
     try {
       await this.executeQuery(updateItemQuery, [categoryId, itemId], txn);
     } catch (error) {
-      throw new RepositoryError("Failed to update collection item.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -407,7 +407,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateTextValue(
     itemId: ItemID,
@@ -422,7 +422,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update text value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -434,7 +434,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null is removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateDateValue(
     itemId: ItemID,
@@ -449,7 +449,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update text value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -461,7 +461,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateRatingValue(
     itemId: ItemID,
@@ -476,7 +476,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update text value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -488,7 +488,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateMultiselectValue(
     itemId: ItemID,
@@ -503,7 +503,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update text value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -515,7 +515,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateImageValue(
     itemId: ItemID,
@@ -530,7 +530,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update image value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -543,7 +543,7 @@ export class ItemRepositoryImpl
    * @param displayText - The display text of the hyperlink.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateLinkValue(
     itemId: ItemID,
@@ -559,7 +559,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update hyperlink value.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }

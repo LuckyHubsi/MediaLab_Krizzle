@@ -165,6 +165,10 @@ export const ItemErrorMessages = {
     "There was a problem validating your input. Consider making changes in your input for the collectionitem.",
   insertNewItem:
     "There was a problem adding your collection item. Please try again. If the error persists, consider changing your input in the form.",
+  validateItemToUpdate:
+    "There was a problem validating your input. Consider making changes in your input for the collectionitem.",
+  updateItem:
+    "There was a problem updating your collection item. Please try again. If the error persists, consider changing your input in the form.",
   unknown:
     "An unexpected error occurred while handling collection item. Some related features may not work as expected.",
 };

@@ -293,10 +293,10 @@ export default function EditCollectionItem() {
                     attributeValues: updatedAttributeValues || [],
                   };
 
-                  const success =
+                  const updateResult =
                     await collectionService.editItemByID(updatedItem);
 
-                  if (success) {
+                  if (updateResult.success) {
                     router.replace({
                       pathname: "/collectionItemPage",
                       params: { itemId: itemId },

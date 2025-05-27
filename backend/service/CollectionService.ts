@@ -613,17 +613,18 @@ export class CollectionService {
    * Updates an item and its values.
    *
    * @param itemDTO - An `ItemDTO` representing the item and values to be updated.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if insert fails.
+   * @returns  A Promise resolving to a `Result` containing either a `true` or `ServiceErrorType`
    */
-  async editItemByID(itemDTO: ItemDTO): Promise<boolean> {
+  async editItemByID(
+    itemDTO: ItemDTO,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const newItem = ItemMapper.toNewEntity(itemDTO);
       const itemId = itemID.parse(itemDTO.itemID);
       const pageId = pageID.parse(itemDTO.pageID);
       const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
 
-      const success = await this.baseRepo.executeTransaction<boolean>(
+      const successful = await this.baseRepo.executeTransaction<boolean>(
         async (txn) => {
           this.itemRepo.updateItem(itemId, categoryId, txn);
 
@@ -706,9 +707,29 @@ export class CollectionService {
         },
       );
 
-      return success;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to update collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateItemToUpdate,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: ItemErrorMessages.updateItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
