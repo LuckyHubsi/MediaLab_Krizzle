@@ -1,5 +1,12 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Linking,
+  Alert,
+} from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   CollectionCardContainer,
@@ -42,6 +49,8 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const multiSelectIndex = attributes.findIndex(
     (attr) => attr.type === "multi-select",
   );
+  const imageIndex = attributes.findIndex((attr) => attr.type === "image");
+  const linkIndex = attributes.findIndex((attr) => attr.type === "link");
 
   // Get values
   const title = titleIndex !== -1 ? item.values[titleIndex] : "";
@@ -50,6 +59,29 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const rating = ratingIndex !== -1 ? item.values[ratingIndex] : null;
   const multiSelect =
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
+  const image = imageIndex !== -1 ? item.values[imageIndex] : null;
+  const link = linkIndex !== -1 ? item.values[linkIndex] : null;
+  const linkPreview =
+    linkIndex !== -1 && "displayText" in item.values[linkIndex]
+      ? item.values[linkIndex].displayText
+      : "";
+
+  const getValidUrl = (url: string): string => {
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return "https://" + url;
+    }
+    return url;
+  };
+  const handlePressLink = async () => {
+    if (!link) return;
+    const validUrl = getValidUrl(link);
+    const supported = await Linking.canOpenURL(validUrl);
+    if (supported) {
+      await Linking.openURL(validUrl);
+    } else {
+      Alert.alert("Can't open this URL:", validUrl);
+    }
+  };
 
   const handleLongPress = () => {
     if (onLongPress) {
@@ -66,77 +98,134 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
       onLongPress={handleLongPress}
     >
       <CollectionCardContainer colorScheme={colorScheme}>
-        {/* Title */}
-        <ThemedText fontWeight="bold" fontSize="regular">
-          {title}
-        </ThemedText>
-
-        {/* Text preview */}
-        {text && (
-          <CollectionText colorScheme={colorScheme}>{text}</CollectionText>
-        )}
-
-        {/* Date and Rating */}
-        {(date !== null && date !== undefined) ||
-        (rating !== null && rating !== undefined) ? (
+        {image && (
           <View
             style={{
+              height: 100,
+              width: 90,
+              borderRadius: 16,
+              overflow: "hidden",
               flexDirection: "row",
-              justifyContent: "space-between",
               alignItems: "center",
-              width: "100%",
-              marginTop: 8,
             }}
           >
-            {/* Date (left) */}
-            {date && (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <MaterialIcons
-                  name="calendar-today"
-                  size={24}
-                  color={colorScheme === "light" ? "#585858" : "#ABABAB"}
-                  style={{ marginRight: 6 }}
-                />
-                <CollectionRating colorScheme={colorScheme}>
-                  {new Date(date).toLocaleDateString()}
-                </CollectionRating>
+            <Image
+              source={{ uri: image }}
+              style={{
+                width: "100%",
+                height: "100%",
+                resizeMode: "cover",
+              }}
+            />
+          </View>
+        )}
+        <View
+          style={{
+            flexDirection: "column",
+            alignItems: "flex-start",
+          }}
+        >
+          {/* Title */}
+          <ThemedText fontWeight="bold" fontSize="regular">
+            {title}
+          </ThemedText>
+
+          {/* Text preview */}
+          {text && (
+            <CollectionText colorScheme={colorScheme}>{text}</CollectionText>
+          )}
+
+          {/* Date and Rating */}
+          {(date !== null && date !== undefined) ||
+          (rating !== null && rating !== undefined) ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                marginTop: 8,
+              }}
+            >
+              {/* Date (left) */}
+              {date && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <MaterialIcons
+                    name="calendar-today"
+                    size={24}
+                    color={colorScheme === "light" ? "#585858" : "#ABABAB"}
+                    style={{ marginRight: 6 }}
+                  />
+                  <CollectionRating colorScheme={colorScheme}>
+                    {new Date(date).toLocaleDateString()}
+                  </CollectionRating>
+                </View>
+              )}
+
+              {/* Rating (right) */}
+              {rating !== null && rating !== undefined ? (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <MaterialIcons
+                    name={
+                      (attributes[ratingIndex]
+                        .symbol as keyof typeof MaterialIcons.glyphMap) ||
+                      "star"
+                    }
+                    size={24}
+                    color="#E7C716"
+                    style={{ marginRight: 6 }}
+                  />
+                  <CollectionRating colorScheme={colorScheme}>
+                    {rating + "/5"}
+                  </CollectionRating>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+
+          {link && (
+            <TouchableOpacity onPress={handlePressLink}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: -8,
+                }}
+              >
+                <MaterialIcons name="attach-file" size={20} color="#2980ff" />
+                <ThemedText
+                  fontWeight="regular"
+                  fontSize="s"
+                  style={{
+                    color: "#2980ff",
+                    textDecorationLine: "underline",
+
+                    height: 48,
+                    textAlignVertical: "center",
+                  }}
+                >
+                  {linkPreview ? linkPreview : link}
+                </ThemedText>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* Multi-Select */}
+          {multiSelect &&
+            Array.isArray(multiSelect) &&
+            multiSelect.length > 0 && (
+              <View
+                style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 8 }}
+              >
+                {multiSelect.map((option: string, index: number) => (
+                  <CollectionSelectable colorScheme={colorScheme} key={index}>
+                    <Text>{option}</Text>
+                  </CollectionSelectable>
+                ))}
               </View>
             )}
-
-            {/* Rating (right) */}
-            {rating !== null && rating !== undefined ? (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <MaterialIcons
-                  name={
-                    (attributes[ratingIndex]
-                      .symbol as keyof typeof MaterialIcons.glyphMap) || "star"
-                  }
-                  size={24}
-                  color="#E7C716"
-                  style={{ marginRight: 6 }}
-                />
-                <CollectionRating colorScheme={colorScheme}>
-                  {rating + "/5"}
-                </CollectionRating>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        {/* Multi-Select */}
-        {multiSelect &&
-          Array.isArray(multiSelect) &&
-          multiSelect.length > 0 && (
-            <View
-              style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 8 }}
-            >
-              {multiSelect.map((option: string, index: number) => (
-                <CollectionSelectable colorScheme={colorScheme} key={index}>
-                  <Text>{option}</Text>
-                </CollectionSelectable>
-              ))}
-            </View>
-          )}
+        </View>
       </CollectionCardContainer>
     </TouchableOpacity>
   );

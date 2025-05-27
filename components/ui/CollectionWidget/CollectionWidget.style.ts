@@ -10,8 +10,8 @@ export const CollectionCardContainer = styled.View<ColorSchemeProps>`
     colorScheme === "light" ? "#FBFBFB" : "#242424"};
   width: 100%;
   padding: 20px;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 10px;
 `;
