@@ -218,7 +218,7 @@ export default function CollectionScreen() {
             collection && !collection.archived
               ? {
                   label: "Edit Template",
-                  icon: "edit",
+                  icon: "edit-document",
                   onPress: () => {
                     router.push({
                       pathname: "/editCollectionTemplate",
