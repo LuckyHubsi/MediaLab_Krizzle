@@ -17,6 +17,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -227,132 +228,156 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
             onClose();
           }}
         >
-          <StyledModalContent
-            colorScheme={colorScheme}
-            modalPadding={modalPadding}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+            }}
           >
-            {folders.length !== 0 ? (
-              <ThemedText>
-                Move{" "}
-                <ThemedText fontWeight="semibold">{widgetTitle}</ThemedText> to
-                {selectedFolder && (
-                  <ThemedText colorVariant="primary" fontWeight="semibold">
-                    {` ${selectedFolder.title}`}
-                  </ThemedText>
-                )}
-              </ThemedText>
-            ) : (
-              <ThemedText>You don't have any Folders yet.</ThemedText>
-            )}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setInternalVisible(false);
+                onClose();
+              }}
+            >
+              <View style={{ flex: 1 }} />
+            </TouchableWithoutFeedback>
 
-            {folders.length !== 0 && (
-              <>
-                <FlatList
-                  data={folderItems}
-                  numColumns={numColumns}
-                  keyExtractor={(item) => item.id}
-                  columnWrapperStyle={{
-                    justifyContent: "flex-start",
-                    marginBottom: itemMargin,
-                  }}
-                  contentContainerStyle={{ paddingHorizontal: itemMargin }}
-                  renderItem={({ item }) => {
-                    if ("isAddButton" in item && item.isAddButton) {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => setFolderModalVisible(true)}
-                          style={{
-                            width: itemSize,
-                            alignItems: "center",
-                            marginBottom: itemMargin,
-                          }}
-                        >
-                          <View
+            <StyledModalContent
+              colorScheme={colorScheme}
+              modalPadding={modalPadding}
+            >
+              {folders.length !== 0 ? (
+                <ThemedText>
+                  Move{" "}
+                  <ThemedText fontWeight="semibold">{widgetTitle}</ThemedText>{" "}
+                  to
+                  {selectedFolder && (
+                    <ThemedText colorVariant="primary" fontWeight="semibold">
+                      {` ${selectedFolder.title}`}
+                    </ThemedText>
+                  )}
+                </ThemedText>
+              ) : (
+                <ThemedText>You don't have any Folders yet.</ThemedText>
+              )}
+
+              {folders.length !== 0 && (
+                <>
+                  <FlatList
+                    data={folderItems}
+                    numColumns={numColumns}
+                    keyExtractor={(item) => item.id}
+                    columnWrapperStyle={{
+                      justifyContent: "flex-start",
+                      marginBottom: itemMargin,
+                    }}
+                    contentContainerStyle={{
+                      paddingHorizontal: itemMargin,
+                    }}
+                    renderItem={({ item }) => {
+                      if ("isAddButton" in item && item.isAddButton) {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => setFolderModalVisible(true)}
                             style={{
-                              backgroundColor: Colors.primary,
-                              borderRadius: itemSize / 2,
-                              width: 50,
-                              height: 50,
-                              justifyContent: "center",
+                              width: itemSize,
                               alignItems: "center",
+                              marginBottom: itemMargin,
                             }}
                           >
-                            <MaterialIcons name="add" size={30} color="white" />
-                          </View>
-                          <ThemedText>Add Folder</ThemedText>
-                        </TouchableOpacity>
+                            <View
+                              style={{
+                                backgroundColor: Colors.primary,
+                                borderRadius: itemSize / 2,
+                                width: 50,
+                                height: 50,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <MaterialIcons
+                                name="add"
+                                size={30}
+                                color="white"
+                              />
+                            </View>
+                            <ThemedText>Add Folder</ThemedText>
+                          </TouchableOpacity>
+                        );
+                      }
+
+                      return (
+                        <SelectFolderComponent
+                          itemSize={itemSize}
+                          key={item.id}
+                          title={item.title}
+                          onPress={() => {
+                            if ("itemCount" in item) {
+                              setSelectedFolder(item);
+                            }
+                          }}
+                          selected={selectedFolder?.id === item.id}
+                        />
                       );
-                    }
+                    }}
+                  />
+                </>
+              )}
 
-                    return (
-                      <SelectFolderComponent
-                        itemSize={itemSize}
-                        key={item.id}
-                        title={item.title}
-                        onPress={() => {
-                          if ("itemCount" in item) {
-                            setSelectedFolder(item);
-                          }
-                        }}
-                        selected={selectedFolder?.id === item.id}
-                      />
-                    );
-                  }}
-                />
-              </>
-            )}
-
-            <ButtonContainer>
-              <CancelButton
-                onPress={() => {
-                  setInternalVisible(false);
-                  setSelectedFolder(null);
-                  onClose();
-                }}
-                colorScheme={colorScheme}
-              >
-                <ThemedText colorVariant="cancel" fontWeight="bold">
-                  Cancel
-                </ThemedText>
-              </CancelButton>
-              {folders.length !== 0 ? (
-                <NextButton
-                  onPress={async () => {
-                    const success = await generalPageService.updateFolderID(
-                      Number(widgetId),
-                      Number(selectedFolder?.id),
-                    );
-
-                    if (success && onMoved) {
-                      onMoved();
-                    }
-
+              <ButtonContainer>
+                <CancelButton
+                  onPress={() => {
                     setInternalVisible(false);
                     setSelectedFolder(null);
                     onClose();
                   }}
                   colorScheme={colorScheme}
-                  selectedFolder={selectedFolder}
                 >
-                  <ThemedText colorVariant="white" fontWeight="bold">
-                    Move
+                  <ThemedText colorVariant="cancel" fontWeight="bold">
+                    Cancel
                   </ThemedText>
-                </NextButton>
-              ) : (
-                <NextButton
-                  onPress={() => {
-                    setFolderModalVisible(true);
-                  }}
-                  colorScheme={colorScheme}
-                  selectedFolder={true}
-                >
-                  <ThemedText colorVariant="white" fontWeight="bold">
-                    Add Folder
-                  </ThemedText>
-                </NextButton>
-              )}
-            </ButtonContainer>
-          </StyledModalContent>
+                </CancelButton>
+                {folders.length !== 0 ? (
+                  <NextButton
+                    onPress={async () => {
+                      const success = await generalPageService.updateFolderID(
+                        Number(widgetId),
+                        Number(selectedFolder?.id),
+                      );
+
+                      if (success && onMoved) {
+                        onMoved();
+                      }
+
+                      setInternalVisible(false);
+                      setSelectedFolder(null);
+                      onClose();
+                    }}
+                    colorScheme={colorScheme}
+                    selectedFolder={selectedFolder}
+                  >
+                    <ThemedText colorVariant="white" fontWeight="bold">
+                      Move
+                    </ThemedText>
+                  </NextButton>
+                ) : (
+                  <NextButton
+                    onPress={() => {
+                      setFolderModalVisible(true);
+                    }}
+                    colorScheme={colorScheme}
+                    selectedFolder={true}
+                  >
+                    <ThemedText colorVariant="white" fontWeight="bold">
+                      Add Folder
+                    </ThemedText>
+                  </NextButton>
+                )}
+              </ButtonContainer>
+            </StyledModalContent>
+          </View>
         </Modal>
       </SafeAreaView>
       <BottomInputModal
