@@ -337,7 +337,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item to be deleted.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to `PageID` (the page it belonged to).
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deleteItem(
     itemId: ItemID,
@@ -351,7 +351,7 @@ export class ItemRepositoryImpl
       );
       return pageID.parse(result?.pageID);
     } catch (error) {
-      throw new RepositoryError("Failed to delete item.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -361,7 +361,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item for which the values should be deleted.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deleteItemValues(
     itemId: ItemID,
@@ -374,7 +374,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to delete item value.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 

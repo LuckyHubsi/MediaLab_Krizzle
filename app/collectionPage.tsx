@@ -338,12 +338,16 @@ export default function CollectionScreen() {
           if (selectedItem) {
             try {
               const itemIdAsNumber = Number(selectedItem.itemID);
-              const successfullyDeleted =
+              const deleteResult =
                 await collectionService.deleteItemById(itemIdAsNumber);
 
-              setShowItemDeleteModal(false);
-              setShouldReload(successfullyDeleted);
-              showSnackbar("Successfully deleted Item.", "bottom", "success");
+              if (deleteResult.success) {
+                setShowItemDeleteModal(false);
+                setShouldReload(true);
+                showSnackbar("Successfully deleted Item.", "bottom", "success");
+              } else {
+                // TODO: show error modal
+              }
             } catch (error) {
               console.error("Error deleting item:", error);
             }

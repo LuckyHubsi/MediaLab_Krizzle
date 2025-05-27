@@ -547,10 +547,11 @@ export class CollectionService {
    * Deletes an item and its values.
    *
    * @param itemId - An number representing the item id.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if insert fails.
+   * @returns A Promise resolving to a `Result` containing either an `ItemDTO` or `ServiceErrorType`
    */
-  async deleteItemById(itemId: number): Promise<boolean> {
+  async deleteItemById(
+    itemId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedItemID = itemID.parse(itemId);
 
@@ -569,7 +570,7 @@ export class CollectionService {
         }
       }
 
-      const success = await this.baseRepo.executeTransaction<boolean>(
+      const successful = await this.baseRepo.executeTransaction<boolean>(
         async (txn) => {
           await this.itemRepo.deleteItemValues(brandedItemID, txn);
           const pageId = await this.itemRepo.deleteItem(brandedItemID, txn);
@@ -582,10 +583,29 @@ export class CollectionService {
         await this.deleteImageFile(uri);
       }
 
-      return true;
+      return success(true);
     } catch (error) {
-      console.error("Error deleting item:", error);
-      throw new ServiceError("Failed to delete collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateItemToDelete,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: ItemErrorMessages.deleteItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
