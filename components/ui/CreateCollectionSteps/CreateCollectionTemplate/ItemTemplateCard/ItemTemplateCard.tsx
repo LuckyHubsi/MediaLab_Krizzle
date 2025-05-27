@@ -39,6 +39,7 @@ interface ItemTemplateCardProps {
   hasNoInputError?: boolean;
   hasNoMultiSelectableError?: boolean;
   previewCount?: number;
+  isExisting?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -58,6 +59,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   hasNoInputError,
   hasNoMultiSelectableError,
   previewCount,
+  isExisting = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -83,6 +85,10 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                 * required
               </ThemedText>
             </>
+          ) : isExisting ? (
+            <ThemedText fontWeight="regular">
+              {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
+            </ThemedText>
           ) : (
             <ThemedText>Type</ThemedText>
           )}
@@ -120,7 +126,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
-      {!isTitleCard && (
+      {!isTitleCard && !isExisting && (
         <AndroidPickerWrapper colorScheme={colorScheme}>
           <CustomPicker
             value={itemType}

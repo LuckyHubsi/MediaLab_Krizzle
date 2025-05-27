@@ -43,7 +43,9 @@ export default function EditCollectionTemplateScreen() {
   }>();
 
   const [title, setTitle] = useState("");
-  const [templates, setTemplates] = useState<AttributeDTO[]>([]);
+  const [templates, setTemplates] = useState<
+    (AttributeDTO & { isExisting?: boolean })[]
+  >([]);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -77,11 +79,12 @@ export default function EditCollectionTemplateScreen() {
       if (collection && template) {
         setTitle(collection.page_title);
 
-        const updated = [...(template.attributes ?? [])];
-        if (updated.length > 0) {
-          updated[0].type = AttributeType.Text;
-          updated[0].preview = true;
-        }
+        const updated = [...(template.attributes ?? [])].map((attr, index) => ({
+          ...attr,
+          isExisting: true,
+          type: index === 0 ? AttributeType.Text : attr.type,
+          preview: index === 0 ? true : attr.preview,
+        }));
 
         setTemplates(updated);
       }
@@ -142,6 +145,7 @@ export default function EditCollectionTemplateScreen() {
         preview: false,
         options: [],
         symbol: "star",
+        isExisting: false,
       } as AttributeDTO,
     ]);
   };
@@ -299,6 +303,7 @@ export default function EditCollectionTemplateScreen() {
                 onPreviewToggle={() =>
                   handlePreviewToggle(card.attributeID ?? 0)
                 }
+                isExisting={card.isExisting}
               />
             ))}
             <View style={{ paddingTop: 10 }}>
