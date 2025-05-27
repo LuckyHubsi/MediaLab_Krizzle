@@ -64,8 +64,6 @@ export default function CollectionScreen() {
               const template = await itemTemplateService.getTemplate(
                 collectionData.templateID,
               );
-
-              console.log("Loaded template attributes:", template.attributes);
             }
 
             if (collectionData.categories) {
