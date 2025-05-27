@@ -175,11 +175,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                   <MaterialIcons name={selectedIcon} size={22} color="black" />
                 ) : undefined
               }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "#4599E8"
-              }
+              color={getWidgetColorKey(selectedColor) ?? "blue"}
               isPreview={true}
             />
           </View>
