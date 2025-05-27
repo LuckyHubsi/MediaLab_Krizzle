@@ -246,6 +246,7 @@ export default function HomeScreen() {
                       fontWeight="regular"
                       style={{ marginBottom: 8 }}
                       accessibilityRole="text"
+                      accessibilityLabel="Pinned widgets"
                     >
                       Pinned
                     </ThemedText>
@@ -291,13 +292,14 @@ export default function HomeScreen() {
                         fontSize="regular"
                         fontWeight="regular"
                         accessibilityRole="text"
+                        accessibilityLabel="Recent widgets"
                       >
                         Recent
                       </ThemedText>
                       <Pressable
                         onPress={() => setShowSortModal(true)}
                         accessibilityRole="button"
-                        accessibilityLabel="Sort items"
+                        accessibilityLabel="Sort widgets"
                         accessibilityHint="Opens a menu to sort widgets"
                       >
                         <View

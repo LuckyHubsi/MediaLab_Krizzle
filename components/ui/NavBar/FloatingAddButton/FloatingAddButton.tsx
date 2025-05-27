@@ -19,8 +19,8 @@ export const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
       onPress={onPress}
       colorScheme={color}
       accessibilityRole="button"
-      accessibilityLabel="Add new item"
-      accessibilityHint="Opens a menu to create a new item"
+      accessibilityLabel="Add new note, collection or folder"
+      accessibilityHint="Opens a menu to create a new note, collection or folder"
     >
       <MaterialIcons name="add" size={40} color={"white"} />
     </StyledButtonContainer>
