@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
-  SafeAreaView,
   View,
   Platform,
-  StatusBar,
   KeyboardAvoidingView,
   ScrollView,
   Keyboard,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useServices } from "@/context/ServiceContext";
-import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
-import { PageType } from "@/shared/enum/PageType";
 import { AttributeType } from "@/shared/enum/AttributeType";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { ThemedText } from "@/components/ThemedText";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import ItemTemplateCard from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/ItemTemplateCard/ItemTemplateCard";
@@ -35,7 +29,6 @@ import {
   ItemCountContainer,
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { Header } from "@/components/ui/Header/Header";
-import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 
 export default function EditCollectionTemplateScreen() {
@@ -83,7 +76,14 @@ export default function EditCollectionTemplateScreen() {
 
       if (collection && template) {
         setTitle(collection.page_title);
-        setTemplates(template.attributes ?? []);
+
+        const updated = [...(template.attributes ?? [])];
+        if (updated.length > 0) {
+          updated[0].type = AttributeType.Text;
+          updated[0].preview = true;
+        }
+
+        setTemplates(updated);
       }
     };
 
@@ -100,8 +100,8 @@ export default function EditCollectionTemplateScreen() {
 
   const handleTypeChange = (id: number, newType: string) => {
     setTemplates((prev) =>
-      prev.map((card) =>
-        card.attributeID === id
+      prev.map((card, index) =>
+        card.attributeID === id && index !== 0
           ? { ...card, type: newType as AttributeType }
           : card,
       ),
@@ -144,6 +144,22 @@ export default function EditCollectionTemplateScreen() {
         symbol: "star",
       } as AttributeDTO,
     ]);
+  };
+
+  const handlePreviewToggle = (id: number) => {
+    setTemplates((prev) => {
+      const currentlySelected = prev.filter((c) => c.preview).length;
+      return prev.map((card, index) => {
+        const isFirst = index === 0;
+        if (card.attributeID === id) {
+          if (isFirst) return card;
+          const togglingOn = !card.preview;
+          if (togglingOn && currentlySelected >= 3) return card;
+          return { ...card, preview: togglingOn };
+        }
+        return card;
+      });
+    });
   };
 
   const handleSave = async () => {
@@ -211,7 +227,7 @@ export default function EditCollectionTemplateScreen() {
                 fontWeight="light"
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                Create a Template for your Collection Items.
+                Edit your Template for your Collection Items.
               </ThemedText>
             </CardText>
           </Card>
@@ -253,10 +269,10 @@ export default function EditCollectionTemplateScreen() {
             contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
             showsVerticalScrollIndicator={false}
           >
-            {templates.map((card) => (
+            {templates.map((card, index) => (
               <ItemTemplateCard
                 key={card.attributeID}
-                isTitleCard={false}
+                isTitleCard={index === 0}
                 itemType={card.type}
                 textfieldIcon="short-text"
                 isPreview={card.preview ?? false}
@@ -283,6 +299,9 @@ export default function EditCollectionTemplateScreen() {
                   (!card.options ||
                     card.options.length === 0 ||
                     card.options.some((o) => o.trim() === ""))
+                }
+                onPreviewToggle={() =>
+                  handlePreviewToggle(card.attributeID ?? 0)
                 }
               />
             ))}
