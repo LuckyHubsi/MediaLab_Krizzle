@@ -61,9 +61,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
   const image = imageIndex !== -1 ? item.values[imageIndex] : null;
   const link = linkIndex !== -1 ? item.values[linkIndex] : null;
+  const linkValue = linkIndex !== -1 ? item.values[linkIndex] : null;
   const linkPreview =
-    linkIndex !== -1 && "displayText" in item.values[linkIndex]
-      ? item.values[linkIndex].displayText
+    linkValue && typeof linkValue === "object" && "displayText" in linkValue
+      ? linkValue.displayText
       : "";
 
   const getValidUrl = (url: string): string => {
