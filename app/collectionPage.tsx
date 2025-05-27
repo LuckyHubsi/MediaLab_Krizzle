@@ -211,6 +211,22 @@ export default function CollectionScreen() {
               : null,
             collection && !collection.archived
               ? {
+                  label: "Edit Template",
+                  icon: "edit",
+                  onPress: () => {
+                    router.push({
+                      pathname: "/editCollectionTemplate",
+                      params: {
+                        collectionId: collection?.collectionID?.toString(),
+                        templateId: collection?.templateID?.toString(),
+                        title: collection?.page_title,
+                      },
+                    });
+                  },
+                }
+              : null,
+            collection && !collection.archived
+              ? {
                   label: "Edit Lists",
                   icon: "edit-note",
                   onPress: () => {
