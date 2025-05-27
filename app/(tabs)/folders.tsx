@@ -131,11 +131,13 @@ export default function FoldersScreen() {
     if (data == null) {
       return [];
     } else {
-      return (data || []).map((folder) => ({
-        id: String(folder.folderID),
-        title: folder.folderName,
-        itemCount: folder.itemCount ?? 0,
-      }));
+      return (data || [])
+        .sort((a, b) => (b.folderID ?? 0) - (a.folderID ?? 0))
+        .map((folder) => ({
+          id: String(folder.folderID),
+          title: folder.folderName,
+          itemCount: folder.itemCount ?? 0,
+        }));
     }
   };
 
