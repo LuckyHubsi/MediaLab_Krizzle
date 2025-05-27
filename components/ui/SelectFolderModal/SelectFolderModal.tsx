@@ -65,7 +65,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
-    if (!trimmedFolder) return;
+    if (!trimmedFolder) {
+      showSnackbar("Please enter a folder name.", "top", "error");
+      return;
+    }
 
     if (trimmedFolder.length > 30) {
       showSnackbar(
@@ -118,6 +121,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       } else if (success && editFolderMode) {
         setShouldRefetch(true);
       }
+      showSnackbar("Folder created successfully.", "top", "success");
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {
