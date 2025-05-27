@@ -22,7 +22,8 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function CollectionScreen() {
-  const { generalPageService, collectionService } = useServices();
+  const { generalPageService, collectionService, itemTemplateService } =
+    useServices();
 
   const router = useRouter();
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
@@ -51,7 +52,7 @@ export default function CollectionScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
+      const fetchData = async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
           const collectionData =
@@ -59,24 +60,29 @@ export default function CollectionScreen() {
           if (collectionData) {
             setCollection(collectionData);
             setCollectionTitle(title || collectionData.page_title);
+            if (collectionData.templateID !== undefined) {
+              const template = await itemTemplateService.getTemplate(
+                collectionData.templateID,
+              );
+
+              console.log("Loaded template attributes:", template.attributes);
+            }
 
             if (collectionData.categories) {
               const names = collectionData.categories.map(
                 (c) => c.category_name,
               );
               setListNames(names);
-              setSelectedList(names[0]); // ✅ set selected list directly here
+              setSelectedList(names[0]);
             }
-            const retrievedItems: ItemsDTO =
+
+            const retrievedItems =
               await collectionService.getItemsByPageId(numericID);
             if (retrievedItems) setItems(retrievedItems);
           }
-          const retrievedItems: ItemsDTO =
-            await collectionService.getItemsByPageId(numericID);
-          if (retrievedItems) setItems(retrievedItems);
-          setShouldReload(false);
         }
-      })();
+      };
+      fetchData();
     }, [pageId, shouldReload]),
   );
 
