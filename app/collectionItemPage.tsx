@@ -18,10 +18,12 @@ import Card from "@/components/ui/Card/Card";
 import CollectionItemContainer from "@/components/ui/CollectionItemContainer/CollectionItemContainer";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { useServices } from "@/context/ServiceContext";
+import { AttributeType } from "@/shared/enum/AttributeType";
 
 export default function CollectionItemScreen() {
-  const { itemId } = useLocalSearchParams<{
+  const { itemId, collectionItemText } = useLocalSearchParams<{
     itemId: string;
+    collectionItemText?: string;
   }>();
   const { collectionService } = useServices();
 
@@ -29,15 +31,6 @@ export default function CollectionItemScreen() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemName, setItemName] = useState<string>("");
-  const multiselectArrray = [
-    "Action",
-    "sci-fi",
-    "fantasy",
-    "romance",
-    "horror",
-    "thriller",
-    "mystery",
-  ];
 
   useFocusEffect(
     useCallback(() => {
@@ -79,7 +72,7 @@ export default function CollectionItemScreen() {
         />
         <View style={{ marginTop: 16 }}>
           <CustomStyledHeader
-            title={item?.page_title || "Collection Item"} //Here should be the title of the collection
+            title={collectionItemText || "Collection Item"} //Here should be the title of the collection
             subtitle={item?.categoryName || "Collection List"}
             backBehavior="default" // Go back to home when back button is pressed
             iconName={undefined} // No icon for the header
@@ -93,10 +86,10 @@ export default function CollectionItemScreen() {
           />
         </View>
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
-          <ThemedView topPadding={0}>
+          <ThemedView topPadding={0} style={{ paddingBottom: 20 }}>
             <CollectionLoadItem
               attributeValues={item?.attributeValues}
               listName={item?.categoryName}

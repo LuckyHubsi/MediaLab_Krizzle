@@ -2,14 +2,21 @@ import { ThemedText } from "@/components/ThemedText";
 import { FC, useState } from "react";
 import { format } from "date-fns";
 import {
-  ContentText,
   ItemContainer,
   SelectableContainer,
-  SelectableText,
-  SubtitleText,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { View, Linking, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  Linking,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 interface CollectionItemContainerProps {
   type?: string | number;
@@ -41,6 +48,11 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
     }
     return url;
   };
+  const themeMode = useActiveColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme();
+  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const screenWidth = Dimensions.get("window").width;
+  const safeAreaWidth = Dimensions.get("screen").width;
 
   const handlePressLink = async () => {
     if (!link) return;
@@ -54,30 +66,49 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   };
   return (
     <ItemContainer>
-      <SubtitleText>{subtitle}</SubtitleText>
+      <ThemedText
+        fontWeight="regular"
+        fontSize="s"
+        style={{ color: greyColor }}
+      >
+        {subtitle}
+      </ThemedText>
+
       {imageUri && (
         <View
           style={{
             height: 400,
-            width: "100%",
+            width: screenWidth - 40,
             borderRadius: 16,
             backgroundColor: "#EAEAEA",
             marginTop: 8,
             overflow: "hidden",
+            gap: 8,
           }}
         >
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
+            }}
+          />
           <Image
             source={{ uri: imageUri }}
             style={{
               width: "100%",
               height: "100%",
-              resizeMode: "cover",
+              resizeMode: "contain",
             }}
           />
         </View>
       )}
+
       {title && (
-        <View style={{ marginTop: -4 }}>
+        <View style={{ marginTop: -8 }}>
           <ThemedText fontWeight="semibold" fontSize="l">
             {title}
           </ThemedText>
@@ -85,7 +116,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: "#EAEAEA",
+              backgroundColor: colorScheme === "dark" ? "#3d3d3d" : "#EAEAEA",
               marginTop: 8,
             }}
           />
@@ -96,19 +127,36 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         {icon && (
           <MaterialIcons name={icon} size={24} color={iconColor || "#585858"} />
         )}
-        {type && <ContentText>{type}</ContentText>}
+        {type && (
+          <ThemedText fontWeight="regular" fontSize="regular">
+            {type}
+          </ThemedText>
+        )}
         {date && (
-          <ContentText>
+          <ThemedText fontWeight="regular" fontSize="regular">
             {date ? format(date, "dd.MM.yyyy") : "dd.mm.yyyy"}
-          </ContentText>
+          </ThemedText>
         )}
       </View>
 
       {multiselectArray && (
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 6,
+            marginTop: -5,
+          }}
+        >
           {multiselectArray.map((multiselectArray, index) => (
-            <SelectableContainer key={`${multiselectArray}-${index}`}>
-              <SelectableText>{multiselectArray}</SelectableText>
+            <SelectableContainer
+              key={`${multiselectArray}-${index}`}
+              themeMode={themeMode}
+              style={{ border: `1px solid ${greyColor}` }}
+            >
+              <ThemedText fontWeight="regular" fontSize="s">
+                {multiselectArray}
+              </ThemedText>
             </SelectableContainer>
           ))}
         </View>
@@ -116,11 +164,19 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
 
       {link && (
         <TouchableOpacity onPress={handlePressLink}>
-          <ContentText
-            style={{ color: "#2980ff", textDecorationLine: "underline" }}
+          <ThemedText
+            fontWeight="semibold"
+            fontSize="regular"
+            style={{
+              color: "#2980ff",
+              textDecorationLine: "underline",
+              marginTop: -8,
+              height: 48,
+              textAlignVertical: "center",
+            }}
           >
             {linkPreview || link}
-          </ContentText>
+          </ThemedText>
         </TouchableOpacity>
       )}
     </ItemContainer>
