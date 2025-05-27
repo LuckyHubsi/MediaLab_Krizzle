@@ -147,7 +147,7 @@ export const previewItemSchema = z.object({
       z
         .object({
           value: common.string750,
-          displayText: common.string30,
+          displayText: common.string30.optional().nullable(),
         })
         .nullable(),
       z.array(common.string30).min(0).max(20),

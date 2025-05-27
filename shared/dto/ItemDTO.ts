@@ -24,7 +24,7 @@ export type PreviewItemDTO = {
     | number
     | null
     | string[]
-    | { value: string; displayText: string }
+    | { value: string; displayText: string | null }
   )[];
   categoryID: number | null;
   categoryName?: string;
