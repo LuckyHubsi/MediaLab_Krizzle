@@ -69,24 +69,28 @@ export default function EditCollectionTemplateScreen() {
 
   useEffect(() => {
     const loadData = async () => {
-      const collection = await collectionService.getCollectionByPageId(
+      const collectionResult = await collectionService.getCollectionByPageId(
         Number(collectionId),
       );
-      const template = await itemTemplateService.getTemplate(
+      const templateResult = await itemTemplateService.getTemplate(
         Number(templateId),
       );
 
-      if (collection && template) {
-        setTitle(collection.page_title);
+      if (collectionResult.success && templateResult.success) {
+        setTitle(collectionResult.value.page_title);
 
-        const updated = [...(template.attributes ?? [])].map((attr, index) => ({
-          ...attr,
-          isExisting: true,
-          type: index === 0 ? AttributeType.Text : attr.type,
-          preview: index === 0 ? true : attr.preview,
-        }));
+        const updated = [...(templateResult.value.attributes ?? [])].map(
+          (attr, index) => ({
+            ...attr,
+            isExisting: true,
+            type: index === 0 ? AttributeType.Text : attr.type,
+            preview: index === 0 ? true : attr.preview,
+          }),
+        );
 
         setTemplates(updated);
+      } else {
+        // TODO: show error modal
       }
     };
 
