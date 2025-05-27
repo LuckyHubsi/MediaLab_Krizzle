@@ -1,8 +1,8 @@
-const tintColorLight = "#4599E8";
+const tintColorLight = "#1A78D1";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
-  primary: "#4599E8",
+  primary: "#1A78D1",
   secondary: "#1D7ED7",
   negative: "#FF4949",
   positive: "#13CE7D",
@@ -12,7 +12,7 @@ export const Colors = {
   grey100: "#585858",
   grey200: "#242424",
   black: "#111111",
-  tintColor: "#4599E8",
+  tintColor: "#1A78D1",
   light: {
     text: "#11181C",
     background: "#FBFBFB",
@@ -62,22 +62,22 @@ export const Colors = {
   },
   widget: {
     grey: "#585858",
-    blueGrey: "#82A9CC",
-    lightBlue: "#7DB5EA",
-    blue: "#4599E8",
-    darkBlue: "#1D7ED7",
+    blueGrey: "#4479A2",
+    lightBlue: "#4479A7",
+    blue: "#1A78D1",
+    darkBlue: "#1A6EBC",
     purple: "#6D2EFF",
     violet: "#8559ED",
     pink: "#D50BBA",
-    rose: "#ED59C8",
-    darkRed: "#E71341",
-    red: "#FF5667",
+    rose: "#D50B77",
+    darkRed: "#D4113B",
+    red: "#EB0017",
     green: "#118845",
-    sage: "#49976B",
-    gradientPink: ["#F46D6F", "#B81CA3"],
-    gradientRed: ["#FA995D", "#E92529"],
-    gradientBlue: ["#583FE7", "#4599E9"],
-    gradientGreen: ["#1CA870", "#4AE7A8"],
+    sage: "#3F835C",
+    gradientPink: ["#B81CA3", "#F46D6F"],
+    gradientRed: ["#E92529", "#F98943"],
+    gradientBlue: ["#583FE7", "#5BA6EC"],
+    gradientGreen: ["#157E54", "#17B576"],
     gradientPurple: ["#664DBD", "#E845D2"],
   },
 };
