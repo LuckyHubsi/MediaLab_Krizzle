@@ -80,7 +80,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
           <ThemedView>
             {filteredItems.length > 0 ? (
               <View style={{ flex: 1, gap: 12 }}>
-                {filteredItems.map((item) => (
+                {[...filteredItems].reverse().map((item) => (
                   <CollectionWidget
                     key={item.itemID}
                     attributes={items?.attributes || []}

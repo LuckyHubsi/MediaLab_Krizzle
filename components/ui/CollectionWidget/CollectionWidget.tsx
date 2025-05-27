@@ -61,12 +61,12 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
   const image = imageIndex !== -1 ? item.values[imageIndex] : null;
   const link = linkIndex !== -1 ? item.values[linkIndex] : null;
-  const linkValue = linkIndex !== -1 ? item.values[linkIndex] : null;
+  const linkValue =
+    link && typeof link === "object" && link.value ? link.value : null;
   const linkPreview =
-    linkValue && typeof linkValue === "object" && "displayText" in linkValue
-      ? linkValue.displayText
-      : "";
-
+    link && typeof link === "object" && link.displayText
+      ? link.displayText
+      : null;
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       return "https://" + url;
@@ -88,7 +88,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     if (onLongPress) {
       onLongPress();
     } else {
-      console.log("Long press detected on widget:", title);
     }
   };
 
@@ -131,12 +130,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
           <ThemedText fontWeight="bold" fontSize="regular">
             {title}
           </ThemedText>
-
           {/* Text preview */}
           {text && (
             <CollectionText colorScheme={colorScheme}>{text}</CollectionText>
           )}
-
           {/* Date and Rating */}
           {(date !== null && date !== undefined) ||
           (rating !== null && rating !== undefined) ? (
@@ -184,7 +181,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
               ) : null}
             </View>
           ) : null}
-
           {link && (
             <TouchableOpacity onPress={handlePressLink}>
               <View
@@ -202,17 +198,15 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   style={{
                     color: "#2980ff",
                     textDecorationLine: "underline",
-
                     height: 48,
                     textAlignVertical: "center",
                   }}
                 >
-                  {linkPreview ? linkPreview : link}
+                  {linkPreview || linkValue}
                 </ThemedText>
               </View>
             </TouchableOpacity>
           )}
-
           {/* Multi-Select */}
           {multiSelect &&
             Array.isArray(multiSelect) &&
@@ -220,8 +214,8 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
               <View
                 style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 8 }}
               >
-                {multiSelect.map((option: string, index: number) => (
-                  <CollectionSelectable colorScheme={colorScheme} key={index}>
+                {multiSelect.map((option: string) => (
+                  <CollectionSelectable colorScheme={colorScheme} key={option}>
                     <Text>{option}</Text>
                   </CollectionSelectable>
                 ))}

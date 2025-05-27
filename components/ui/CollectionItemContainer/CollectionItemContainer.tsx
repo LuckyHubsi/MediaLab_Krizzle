@@ -52,7 +52,6 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   const colorScheme = useActiveColorScheme();
   const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
   const screenWidth = Dimensions.get("window").width;
-  const safeAreaWidth = Dimensions.get("screen").width;
 
   const handlePressLink = async () => {
     if (!link) return;
