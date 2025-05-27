@@ -31,6 +31,8 @@ import { AddButton } from "@/components/ui/AddButton/AddButton";
 import {
   CardHeader,
   CardText,
+  ItemCount,
+  ItemCountContainer,
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { Header } from "@/components/ui/Header/Header";
 import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
@@ -52,7 +54,9 @@ export default function EditCollectionTemplateScreen() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-
+  const cards = templates;
+  const otherCards = cards.slice(1);
+  const previewCount = templates.filter((card) => card.preview).length;
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -211,13 +215,44 @@ export default function EditCollectionTemplateScreen() {
               </ThemedText>
             </CardText>
           </Card>
+          <View style={{ paddingTop: 10 }}>
+            <ItemCountContainer>
+              <ItemCount colorScheme={colorScheme}>
+                <ThemedText
+                  colorVariant={cards.length < 10 ? "primary" : "red"}
+                >
+                  {otherCards.length + 1}
+                </ThemedText>
+                <ThemedText
+                  colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+                >
+                  /10 Item Types
+                </ThemedText>
+              </ItemCount>
+              <ItemCount colorScheme={colorScheme}>
+                <ThemedText
+                  colorVariant={previewCount <= 2 ? "primary" : "red"}
+                >
+                  {Math.min(previewCount, 3)}
+                </ThemedText>
+                <ThemedText
+                  colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+                >
+                  /3 Preview
+                </ThemedText>
+              </ItemCount>
+            </ItemCountContainer>
+          </View>
         </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
         >
-          <ScrollView contentContainerStyle={{ paddingBottom: 80, gap: 10 }}>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
+            showsVerticalScrollIndicator={false}
+          >
             {templates.map((card) => (
               <ItemTemplateCard
                 key={card.attributeID}
