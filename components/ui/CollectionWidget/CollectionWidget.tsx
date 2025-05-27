@@ -123,6 +123,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
           style={{
             flexDirection: "column",
             alignItems: "flex-start",
+            width: "100%",
           }}
         >
           {/* Title */}
