@@ -4,10 +4,7 @@ import { CollectionModel } from "../model/CollectionModel";
 import { PageType } from "@/shared/enum/PageType";
 import { CollectionMapper } from "@/backend/util/mapper/CollectionMapper";
 import { Collection } from "@/backend/domain/entity/Collection";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   collectionSelectByPageIdQuery,
   insertCollectionQuery,

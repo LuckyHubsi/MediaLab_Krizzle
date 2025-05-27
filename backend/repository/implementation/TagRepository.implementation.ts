@@ -9,10 +9,7 @@ import {
 } from "../query/TagQuery";
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagModel } from "../model/TagModel";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import { TagID } from "@/backend/domain/common/IDs";
 import * as SQLite from "expo-sqlite";
 

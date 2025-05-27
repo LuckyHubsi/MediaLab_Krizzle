@@ -10,10 +10,7 @@ import {
   selectNoteByPageIDQuery,
   updateNoteContentQuery,
 } from "../query/NoteQuery";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import * as common from "../../domain/common/types";
 import { PageID } from "@/backend/domain/common/IDs";
 import * as SQLite from "expo-sqlite";

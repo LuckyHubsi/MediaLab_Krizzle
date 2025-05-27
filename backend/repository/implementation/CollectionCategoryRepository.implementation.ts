@@ -6,10 +6,7 @@ import {
 import { SQLiteDatabase } from "expo-sqlite";
 import { CollectionCategoryRepository } from "../interfaces/CollectionCategoryRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteCategoryQuery,
   insertCollectionCategoryQuery,
@@ -79,7 +76,19 @@ export class CollectionCategoryRepositoryImpl
         selectCategoriesByCollectionIdQuery,
         [collectionId],
       );
-      return categories.map(CollectionCategoryMapper.toEntity);
+      const validCategories: CollectionCategory[] = [];
+
+      for (const model of categories) {
+        try {
+          const category = CollectionCategoryMapper.toEntity(model);
+          validCategories.push(category);
+        } catch (err) {
+          // skipping invalid categories (categories that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+
+      return validCategories;
     } catch (error) {
       throw new RepositoryErrorNew("Fetch Failed");
     }

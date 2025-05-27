@@ -1,6 +1,5 @@
 import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateRepository } from "../repository/interfaces/ItemTemplateRepository.interface";
-import { ServiceError } from "../util/error/ServiceError";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { ItemTemplateID, itemTemplateID } from "../domain/common/IDs";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
@@ -24,7 +23,6 @@ export class ItemTemplateService {
    *
    * @param templateId - A number representing the template ID
    * @returns A Promise resolving to a `Result` containing either `ItemTemplateDTO` or `ServiceErrorType.
-   * @throws ServiceError if retrieval fails.
    */
   async getTemplate(
     templateId: number,

@@ -6,7 +6,6 @@ import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { folderID, PageID, pageID } from "../domain/common/IDs";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
 import { ZodError } from "zod";
-import { ServiceError } from "../util/error/ServiceError";
 import { FolderState } from "@/shared/enum/FolderState";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";

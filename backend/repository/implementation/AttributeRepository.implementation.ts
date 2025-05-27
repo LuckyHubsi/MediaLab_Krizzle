@@ -9,10 +9,7 @@ import {
   selectPreviewAttributesQuery,
 } from "../query/AttributeQuery";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   attributeID,
   AttributeID,

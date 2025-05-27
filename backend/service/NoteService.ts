@@ -1,7 +1,6 @@
 import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { NoteRepository } from "../repository/interfaces/NoteRepository.interface";
 import { NoteMapper } from "../util/mapper/NoteMapper";
-import { ServiceError } from "../util/error/ServiceError";
 import * as common from "../domain/common/types";
 import { pageID } from "../domain/common/IDs";
 import { ServiceErrorType } from "@/shared/error/ServiceError";

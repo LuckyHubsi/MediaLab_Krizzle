@@ -1,5 +1,4 @@
 import {
-  RepositoryError,
   RepositoryErrorNew,
 } from "@/backend/util/error/RepositoryError";
 import { ItemRepository } from "../interfaces/ItemRepository.interface";
@@ -351,7 +350,7 @@ export class ItemRepositoryImpl
       );
       return pageID.parse(result?.pageID);
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 
@@ -385,7 +384,7 @@ export class ItemRepositoryImpl
    * @param categoryId - The `CategoryID` of the category the item was assigned to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateItem(
     itemId: ItemID,

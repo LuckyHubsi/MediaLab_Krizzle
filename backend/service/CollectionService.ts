@@ -1,7 +1,6 @@
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { CollectionRepository } from "../repository/interfaces/CollectionRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
-import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
@@ -198,7 +197,7 @@ export class CollectionService {
    * Fetch categories by collectionID.
    *
    * @param collectionId - A number representing the collection the categories belong to.
-   * @returns Promise resolving to a `Result` containing either a `CollectionCategoryDTO` or `ServiceErrorType`
+   * @returns Promise resolving to a `Result` containing either a `CollectionCategoryDTO[]` or `ServiceErrorType`
    */
   async getCollectionCategories(
     collectionId: number,
@@ -232,8 +231,7 @@ export class CollectionService {
    * Insert new category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
-   * @returns A Promise resolving to true on success.
-   * @throws A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
@@ -349,6 +347,7 @@ export class CollectionService {
    *
    * @param imageUri - URI of the image to delete.
    * @returns Promise resolving to true on success.
+   * @throws Rethrows error
    */
   private async deleteImageFile(imageUri: string): Promise<boolean> {
     if (!imageUri) return false;
@@ -364,11 +363,17 @@ export class CollectionService {
 
       return false;
     } catch (error) {
-      console.error("Error deleting image file:", error);
-      return false;
+      throw error;
     }
   }
 
+  /**
+   * Deletes all image files from the file system tied to a collection.
+   *
+   * @param pageId - the collection pageID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
   async deleteCollectionImages(pageId: number): Promise<void> {
     try {
       const brandedPageID = pageID.parse(pageId);
@@ -396,7 +401,7 @@ export class CollectionService {
         }
       }
     } catch (error) {
-      console.error("Error deleting collection images:", error);
+      throw error;
     }
   }
 
@@ -443,8 +448,7 @@ export class CollectionService {
    * Inserts an item and its values.
    *
    * @param itemDTO - An `ItemDTO` representing the item and values to be inserted.
-   * @returns A Promise resolving to a number reresenting the itemID on success.
-   * @throws ServiceError if insert fails.
+   * @returns A Promise resolving to a `Result` containing either a `number` (new itemID) or `ServiceErrorType`
    */
   async insertItemAndReturnID(
     itemDTO: ItemDTO,

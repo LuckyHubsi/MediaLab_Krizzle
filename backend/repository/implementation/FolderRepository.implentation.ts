@@ -2,10 +2,7 @@ import { Folder, NewFolder } from "@/backend/domain/entity/Folder";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
-import {
-  RepositoryError,
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteFolderByIDQuery,
   insertFolderQuery,
@@ -61,8 +58,8 @@ export class FolderRepositoryImpl
 
       for (const model of result) {
         try {
-          const tag = FolderMapper.toEntity(model);
-          validFolders.push(tag);
+          const folder = FolderMapper.toEntity(model);
+          validFolders.push(folder);
         } catch (err) {
           // skipping invalide folders (folders that failed to be mapped to the domain entity)
           continue;

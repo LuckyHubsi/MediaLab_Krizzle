@@ -2,7 +2,6 @@ import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { FolderRepository } from "../repository/interfaces/FolderRepository.interface";
 import { NewFolder } from "../domain/entity/Folder";
 import { FolderMapper } from "../util/mapper/FolderMapper";
-import { ServiceError } from "../util/error/ServiceError";
 import { folderID } from "../domain/common/IDs";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";

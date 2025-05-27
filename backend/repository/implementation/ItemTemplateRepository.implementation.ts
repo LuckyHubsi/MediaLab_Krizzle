@@ -12,7 +12,6 @@ import {
 } from "../query/ItemTemplateQuery";
 import { ItemTemplateMapper } from "@/backend/util/mapper/ItemTemplateMapper";
 import {
-  RepositoryError,
   RepositoryErrorNew,
 } from "@/backend/util/error/RepositoryError";
 import { itemTemplateID, ItemTemplateID } from "@/backend/domain/common/IDs";

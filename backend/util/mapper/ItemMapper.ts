@@ -314,13 +314,17 @@ export class ItemMapper {
           }
         });
 
-        // push the PreviewItem to the array
-        items.push({
-          itemID: itemID as ItemID,
-          categoryID: first.categoryID as CategoryID,
-          categoryName: first.category_name,
-          values: values,
-        });
+        try {
+          // push the PreviewItem to the array
+          items.push({
+            itemID: itemID as ItemID,
+            categoryID: first.categoryID as CategoryID,
+            categoryName: first.category_name,
+            values: values,
+          });
+        } catch (error) {
+          continue;
+        }
       }
 
       return items;

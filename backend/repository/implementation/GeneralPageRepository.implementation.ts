@@ -65,7 +65,7 @@ export class GeneralPageRepositoryImpl
           const page = GeneralPageMapper.toEntity(model);
           validPages.push(page);
         } catch (err) {
-          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          // skipping invalid pages (pages that failed to be mapped to the domain entity)
           continue;
         }
       }
