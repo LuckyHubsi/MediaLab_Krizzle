@@ -458,6 +458,12 @@ export default function HomeScreen() {
         widgetId={selectedWidget?.id}
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
+        onMoved={(success) => {
+          if (success) {
+            setShouldReload(true);
+          }
+          setShowFolderSelectionModal(false);
+        }}
       />
 
       <DeleteModal

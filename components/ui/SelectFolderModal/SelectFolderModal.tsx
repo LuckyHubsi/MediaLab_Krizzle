@@ -39,7 +39,7 @@ interface SelectFolderModalProps {
   widgetId?: string;
   onClose: () => void;
   initialSelectedFolderId?: number;
-  onMoved?: () => void;
+  onMoved?: (success: boolean) => void;
 }
 
 const SelectFolderModal: FC<SelectFolderModalProps> = ({
@@ -76,7 +76,6 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       return;
     }
 
-    //TODO: use folderId instead of tagID
     const isDuplicate = folders.some(
       (folder) =>
         folder.folderName === trimmedFolder &&
@@ -347,10 +346,9 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                         Number(selectedFolder?.id),
                       );
 
-                      if (success && onMoved) {
-                        onMoved();
+                      if (onMoved) {
+                        onMoved(success);
                       }
-
                       setInternalVisible(false);
                       setSelectedFolder(null);
                       onClose();
