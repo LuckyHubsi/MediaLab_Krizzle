@@ -205,61 +205,57 @@ export default function EditCollectionTemplateScreen() {
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
       topPadding={Platform.select({ ios: 0, android: 15 })}
     >
-      <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 }}>
-          <Card>
-            <IconTopRight onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={Colors.primary}
+      <View style={{ marginBottom: 10 }}>
+        <Card>
+          <IconTopRight onPress={() => setShowHelp(true)}>
+            <MaterialIcons
+              name="help-outline"
+              size={26}
+              color={Colors.primary}
+            />
+          </IconTopRight>
+          <CardText>
+            <CardHeader>
+              <Header
+                title="Edit Template"
+                onIconPress={() => alert("Popup!")}
               />
-            </IconTopRight>
-            <CardText>
-              <CardHeader>
-                <Header
-                  title="Edit Template"
-                  onIconPress={() => alert("Popup!")}
-                />
-              </CardHeader>
+            </CardHeader>
+            <ThemedText
+              fontSize="s"
+              fontWeight="light"
+              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            >
+              Edit your Template for your Collection Items.
+            </ThemedText>
+          </CardText>
+        </Card>
+        <View style={{ paddingTop: 10 }}>
+          <ItemCountContainer>
+            <ItemCount colorScheme={colorScheme}>
+              <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
+                {otherCards.length + 1}
+              </ThemedText>
               <ThemedText
-                fontSize="s"
-                fontWeight="light"
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                Edit your Template for your Collection Items.
+                /10 Item Types
               </ThemedText>
-            </CardText>
-          </Card>
-          <View style={{ paddingTop: 10 }}>
-            <ItemCountContainer>
-              <ItemCount colorScheme={colorScheme}>
-                <ThemedText
-                  colorVariant={cards.length < 10 ? "primary" : "red"}
-                >
-                  {otherCards.length + 1}
-                </ThemedText>
-                <ThemedText
-                  colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-                >
-                  /10 Item Types
-                </ThemedText>
-              </ItemCount>
-              <ItemCount colorScheme={colorScheme}>
-                <ThemedText
-                  colorVariant={previewCount <= 2 ? "primary" : "red"}
-                >
-                  {Math.min(previewCount, 3)}
-                </ThemedText>
-                <ThemedText
-                  colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-                >
-                  /3 Preview
-                </ThemedText>
-              </ItemCount>
-            </ItemCountContainer>
-          </View>
+            </ItemCount>
+            <ItemCount colorScheme={colorScheme}>
+              <ThemedText colorVariant={previewCount <= 2 ? "primary" : "red"}>
+                {Math.min(previewCount, 3)}
+              </ThemedText>
+              <ThemedText
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                /3 Preview
+              </ThemedText>
+            </ItemCount>
+          </ItemCountContainer>
         </View>
+      </View>
+      <View style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
@@ -313,20 +309,27 @@ export default function EditCollectionTemplateScreen() {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-
         {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
+          <View
+            style={{
+              paddingBottom: Platform.OS === "android" ? 8 : 24,
+            }}
+          >
             <BottomButtons
-              variant="back"
-              titleLeftButton="Back"
+              titleLeftButton="Cancel"
               titleRightButton="Save"
-              onDiscard={() => router.back()}
-              onNext={handleSave}
+              onDiscard={() => {
+                router.back();
+              }}
+              onNext={() => {
+                console.log("Saving template...");
+              }}
+              variant="back"
               hasProgressIndicator={false}
+              progressStep={2}
             />
           </View>
         )}
-
         {showHelp && (
           <InfoPopup
             visible={showHelp}
