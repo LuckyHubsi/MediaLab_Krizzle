@@ -420,7 +420,7 @@ export default function HomeScreen() {
                 );
                 if (result.success) {
                   showSnackbar(
-                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
                     "bottom",
                     "success",
                   );
@@ -428,7 +428,7 @@ export default function HomeScreen() {
                 } else {
                   // TODO: show error modal
                   showSnackbar(
-                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
                     "bottom",
                     "error",
                   );

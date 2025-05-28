@@ -253,7 +253,7 @@ export default function CollectionScreen() {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
-                        : "Successfully archived Collection.",
+                        : "Successfully moved Collection to Archive in Settings.",
                       "bottom",
                       "success",
                     );
@@ -263,7 +263,7 @@ export default function CollectionScreen() {
                     showSnackbar(
                       collection.archived
                         ? "Failed to restore Collection."
-                        : "Failed to archive Collection.",
+                        : "Failed to move Collection to Archive in Settings.",
                       "bottom",
                       "error",
                     );

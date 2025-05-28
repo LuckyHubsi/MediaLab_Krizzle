@@ -58,6 +58,11 @@ const FAQSection = () => {
             faqTitle="Archive"
             faqContent="Move Widgets to the Archive to declutter your home page. This is an easy way to have an organized home page without commiting to deleting old Widgets."
           />
+          <CollapsibleCard
+            faqQuestion="What is a "
+            faqTitle="Folder"
+            faqContent="Folders in Krizzle help you keep your workspace tidy by grouping related widgets, such as Notes or Collections, into one organized place"
+          />
         </CardsContainer>
       </View>
     </ScrollView>
