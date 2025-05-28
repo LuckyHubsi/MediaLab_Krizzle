@@ -241,13 +241,22 @@ export default function HomeScreen() {
               >
                 {filteredPinnedWidgets.length > 0 && (
                   <>
-                    <ThemedText
-                      fontSize="regular"
-                      fontWeight="regular"
-                      style={{ marginBottom: 8 }}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 8,
+                      }}
                     >
-                      Pinned
-                    </ThemedText>
+                      <ThemedText fontSize="regular" fontWeight="regular">
+                        Pinned
+                      </ThemedText>
+                      <ThemedText fontSize="regular" fontWeight="regular">
+                        {pinnedWidgets.length} out of 4
+                      </ThemedText>
+                    </View>
+
                     <View
                       style={{
                         flexDirection: "row",
