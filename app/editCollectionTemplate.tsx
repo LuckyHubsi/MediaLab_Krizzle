@@ -37,8 +37,8 @@ export default function EditCollectionTemplateScreen() {
   const colorScheme = useActiveColorScheme();
   const { showSnackbar } = useSnackbar();
 
-  const { collectionId, templateId } = useLocalSearchParams<{
-    collectionId: string;
+  const { pageId, templateId } = useLocalSearchParams<{
+    pageId: string;
     templateId: string;
   }>();
 
@@ -70,7 +70,7 @@ export default function EditCollectionTemplateScreen() {
   useEffect(() => {
     const loadData = async () => {
       const collectionResult = await collectionService.getCollectionByPageId(
-        Number(collectionId),
+        Number(pageId),
       );
       const templateResult = await itemTemplateService.getTemplate(
         Number(templateId),
@@ -193,18 +193,26 @@ export default function EditCollectionTemplateScreen() {
       return;
     }
 
-    const updatedTemplate: ItemTemplateDTO = {
-      template_name: `${title} template`,
-      attributes: templates,
-    };
+    const existingAttributes: AttributeDTO[] = templates.filter(
+      (template) => template.isExisting === true,
+    );
+    const newAttributes: AttributeDTO[] = templates.filter(
+      (template) => template.isExisting === false,
+    );
 
-    console.log("Simulated updateTemplate call. TemplateDTO:", updatedTemplate);
-    const success = true;
-    if (success) {
+    const updateResult = await itemTemplateService.updateTemplate(
+      Number(templateId),
+      existingAttributes,
+      newAttributes,
+      Number(pageId),
+    );
+
+    if (updateResult.success) {
       showSnackbar("Template updated successfully.", "bottom", "success");
       router.back();
     } else {
       showSnackbar("Failed to update template.", "bottom", "error");
+      // TODO: show error modal
     }
   };
 
@@ -331,7 +339,7 @@ export default function EditCollectionTemplateScreen() {
                 router.back();
               }}
               onNext={() => {
-                console.log("Saving template...");
+                handleSave();
               }}
               variant="back"
               hasProgressIndicator={false}

@@ -222,7 +222,7 @@ export default function CollectionScreen() {
                     router.push({
                       pathname: "/editCollectionTemplate",
                       params: {
-                        collectionId: collection?.collectionID?.toString(),
+                        pageId: pageId,
                         templateId: collection?.templateID?.toString(),
                         title: collection?.page_title,
                       },
