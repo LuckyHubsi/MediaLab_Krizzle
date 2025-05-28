@@ -1,6 +1,4 @@
-import {
-  RepositoryErrorNew,
-} from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import { ItemRepository } from "../interfaces/ItemRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import {
@@ -11,6 +9,7 @@ import {
 import {
   deleteItemAttributeValuesQuery,
   deleteItemQuery,
+  getItemIDsForPageQuery,
   insertDateValueQuery,
   insertImageValueQuery,
   insertItemQuery,
@@ -559,6 +558,31 @@ export class ItemRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryErrorNew("Update Failed");
+    }
+  }
+
+  /**
+   * Fetches all itemIDs for a page.
+   *
+   * @param pageId - The ID of the page.
+   * @returns A Promise resolving to an array of `ItemIDs`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryErrorNew if the fetch fails.
+   */
+  async getItemIDs(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<ItemID[]> {
+    try {
+      const itemIDs = await this.fetchAll<{ itemID: number }>(
+        getItemIDsForPageQuery,
+        [pageId],
+        txn,
+      );
+
+      return itemIDs.map((id) => itemID.parse(id.itemID));
+    } catch (error) {
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 }

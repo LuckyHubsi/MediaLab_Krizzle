@@ -7,6 +7,9 @@ import {
   insertMultiselectOptionsQuery,
   insertRatingSymbolQuery,
   selectPreviewAttributesQuery,
+  updateAttributeQuery,
+  updateMultiselectOptionsQuery,
+  updateRatingSymbolQuery,
 } from "../query/AttributeQuery";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
 import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
@@ -115,6 +118,86 @@ export class AttributeRepositoryImpl
       );
     } catch (error) {
       throw new RepositoryErrorNew("Insert Failed");
+    }
+  }
+
+  /**
+   * Updates an attribute.
+   *
+   * @param attribute - An `Attribute` object.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryErrorNew if the update fails.
+   */
+  async updateAttribute(
+    attribute: Attribute,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await this.executeQuery(
+        updateAttributeQuery,
+        [
+          attribute.attributeLabel,
+          attribute.preview ? 1 : 0,
+          attribute.attributeID,
+        ],
+        txn,
+      );
+    } catch (error) {
+      console.log(error);
+      throw new RepositoryErrorNew("Update Failed");
+    }
+  }
+
+  /**
+   * Updates a multiselect attribute's options.
+   *
+   * @param options - An array of strings (options).
+   * @param attributeID - An `AttributeID` object representing the attribute ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryErrorNew if the update fails.
+   */
+  async updateMultiselectOptions(
+    options: string[],
+    attributeId: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await this.executeQuery(
+        updateMultiselectOptionsQuery,
+        [JSON.stringify(options), attributeId],
+        txn,
+      );
+    } catch (error) {
+      console.log(error);
+      throw new RepositoryErrorNew("Update Failed");
+    }
+  }
+
+  /**
+   * Updates a multiselect attribute's options.
+   *
+   * @param symbol - A string representing the rating symbol.
+   * @param attributeID - An `AttributeID` object representing the attribute ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @returns A Promise resolving to void.
+   * @throws RepositoryErrorNew if the update fails.
+   */
+  async updateRatingSymbol(
+    symbol: string,
+    attributeId: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void> {
+    try {
+      await this.executeQuery(
+        updateRatingSymbolQuery,
+        [symbol, attributeId],
+        txn,
+      );
+    } catch (error) {
+      console.log(error);
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 

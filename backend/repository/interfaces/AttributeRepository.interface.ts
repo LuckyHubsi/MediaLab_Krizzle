@@ -31,6 +31,23 @@ export interface AttributeRepository extends BaseRepository {
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
 
+  updateAttribute(
+    attribute: Attribute,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+
+  updateMultiselectOptions(
+    options: string[],
+    attributeID: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+
+  updateRatingSymbol(
+    symbol: string,
+    attributeID: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<void>;
+
   getPreviewAttributes(
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,

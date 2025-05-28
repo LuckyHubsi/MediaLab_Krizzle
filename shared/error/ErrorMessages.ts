@@ -111,6 +111,8 @@ export const TemplateErrorMessages = {
     "Something went wrong while loading the item template for the input form. Some template details may be unavailable or outdated.",
   notFound:
     "The system does not recognize the item template you tried to access or had trouble reading its data. Some template details and functionalities may be unavailable or outdated.",
+  editTemplate:
+    "There was a problem editing your item template. Consider trying again with different input.",
   unknown:
     "An unexpected error occurred while handling item templates. Some related features may not work as expected.",
 };

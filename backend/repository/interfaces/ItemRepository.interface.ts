@@ -99,4 +99,5 @@ export interface ItemRepository extends BaseRepository {
     displayText: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
+  getItemIDs(pageId: PageID): Promise<ItemID[]>;
 }

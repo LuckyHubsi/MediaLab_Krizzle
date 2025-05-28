@@ -225,6 +225,10 @@ const deleteItemAttributeValuesQuery: string = `
     DELETE FROM link_value WHERE itemID = ?;
 `;
 
+const getItemIDsForPageQuery: string = `
+    SELECT itemID FROM item WHERE pageID = ?;
+`;
+
 export {
   itemSelectByIdQuery,
   itemSelectByPageIdQuery,
@@ -246,4 +250,5 @@ export {
   updateLinkValueQuery,
   deleteItemQuery,
   deleteItemAttributeValuesQuery,
+  getItemIDsForPageQuery,
 };

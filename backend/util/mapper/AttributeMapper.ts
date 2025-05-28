@@ -61,6 +61,29 @@ export class AttributeMapper {
   }
 
   /**
+   * Maps an AttributeDTO to a fully defined Attribute entity.
+   *
+   * @param dto - The DTO containing all attribute fields.
+   * @returns A validated `Attribute` domain entity.
+   * @throws Rethrows if validation fails.
+   */
+  static toUpdatedEntity(dto: AttributeDTO): Attribute {
+    try {
+      return attributeSchema.parse({
+        attributeID: attributeID.parse(dto.attributeID),
+        attributeLabel: dto.attributeLabel,
+        type: dto.type as AttributeType,
+        preview: dto.preview,
+        options: dto.options,
+        symbol: dto.symbol ?? null,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  /**
    * Maps a AttributeModel from the db to a Attribute domain entity.
    *
    * @param model - The raw AttributeModel from the DB.
