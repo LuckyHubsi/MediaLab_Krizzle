@@ -50,7 +50,10 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
     );
     if (imageAttribute.length > 0) {
       elements.push(
-        <View style={{ height: 450 }}>
+        <View
+          key={`img-wrapper-${imageAttribute.map((i) => i.attributeID).join("-")}`}
+          style={{ height: 450 }}
+        >
           <ScrollView
             contentContainerStyle={{ height: 400, gap: 16 }}
             horizontal
@@ -86,9 +89,9 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
                 marginTop: 8,
               }}
             >
-              {imageAttribute.map((_, idx) => (
+              {imageAttribute.map((img, idx) => (
                 <View
-                  key={idx}
+                  key={`img-dot-${img.attributeID}`}
                   style={{
                     width: 8,
                     height: 8,
@@ -156,7 +159,10 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
 
     if (dateAttr || ratingAttr) {
       elements.push(
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}>
+        <View
+          key="date-rating-container"
+          style={{ flexDirection: "row", flexWrap: "wrap", gap: 16 }}
+        >
           {dateAttr &&
             dateAttr.map((date) => (
               <CollectionItemContainer
