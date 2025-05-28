@@ -10,7 +10,7 @@ interface TagProps {
 export const TagButton = styled(TouchableOpacity)<TagProps>`
   background-color: ${({ active, themeMode }: TagProps) =>
     active
-      ? Colors.widget.blue
+      ? Colors.light.tint
       : themeMode === "dark"
         ? Colors.dark.pillBackground
         : Colors.light.pillBackground};

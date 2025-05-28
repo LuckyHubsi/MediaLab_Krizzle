@@ -1,11 +1,11 @@
 import { blue } from "react-native-reanimated/lib/typescript/Colors";
 
-const tintColorLight = "#1A78D1";
+const tintColorLight = "#176BBA";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
-  primary: "#1A78D1",
-  secondary: "#0B4F8E",
+  primary: "#176BBA",
+  secondary: "#4599E8",
   negative: "#FF4949",
   positive: "#13CE7D",
   white: "#ffffff",

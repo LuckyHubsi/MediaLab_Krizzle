@@ -48,7 +48,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
             <MaterialIcons
               name="check-circle"
               size={16}
-              color="#FBFBFB"
+              color="#FFFFFF"
               style={{ marginRight: 10 }}
             />
           )}
