@@ -36,7 +36,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         </ThemedText>
         <EditTextContainer onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
-            Edit Tags
+            All Tags
             <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
           </ThemedText>
         </EditTextContainer>
@@ -86,12 +86,12 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           <TouchableOpacity onPress={() => onViewAllPress()}>
             <TagPill onPress={onViewAllPress} colorScheme={themeMode}>
               <MaterialIcons
-                name="add"
+                name="edit"
                 size={16}
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
                 style={{ marginRight: 5 }}
               />
-              <ThemedText>Add a tag</ThemedText>
+              <ThemedText>Edit Tags</ThemedText>
             </TagPill>
           </TouchableOpacity>
         )}
