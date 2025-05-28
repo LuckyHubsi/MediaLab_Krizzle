@@ -49,6 +49,7 @@ export default function EditWidgetScreen() {
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
   >(null);
+  const pageType = pageData?.page_type ?? PageType.Note;
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -124,6 +125,7 @@ export default function EditWidgetScreen() {
       page_type: pageData?.page_type ?? PageType.Note,
       archived: pageData?.archived ?? false,
       pinned: pageData?.pinned ?? false,
+      parentID: pageData?.parentID ?? null,
     };
     await generalPageService.updateGeneralPageData(newPageDTO);
 
@@ -227,7 +229,7 @@ export default function EditWidgetScreen() {
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}
-              pageType={PageType.Note}
+              pageType={pageType}
               icon={
                 selectedIcon ? (
                   <MaterialIcons name={selectedIcon} size={22} color="black" />
