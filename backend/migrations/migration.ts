@@ -638,7 +638,7 @@ export const migrations: {
               rating_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
               itemID INTEGER NOT NULL,
               attributeID INTEGER NOT NULL,
-              value TEXT,
+              value INTEGER,
               FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
               FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
             );
