@@ -12,9 +12,11 @@ export const CollectionListContainer = styled(
   background-color: ${({ active, themeMode }: CollectionListProps) =>
     active
       ? themeMode === "light"
-        ? Colors.white
-        : Colors.black
-      : "transparent"};
+        ? Colors.light.background
+        : Colors.dark.background
+      : themeMode === "light"
+        ? Colors.light.semiTransparentBackground
+        : Colors.dark.semiTransparentBackground};
   display: flex;
   border-top-width: 1px;
   border-left-width: 1px;
@@ -35,16 +37,18 @@ export const CollectionListContainer = styled(
 export const CollectionListText = styled(Text)<CollectionListProps>`
   color: ${({ active, themeMode }: CollectionListProps) =>
     active
-      ? Colors.widget.blue
+      ? themeMode === "light"
+        ? Colors.primary
+        : Colors.secondary
       : themeMode === "light"
-        ? Colors.white
-        : Colors.black};
+        ? Colors.light.text
+        : Colors.dark.text};
   font-family: Lexend_400Regular;
   height: 24px;
   font-size: 16px;
   font-style: normal;
-  font-weight: ${({ active }: CollectionListProps) => (active ? 900 : 400)};
-  line-height: 24px; /* 150% */
+  font-weight: 700;
+  line-height: 24px;
   letter-spacing: -0.4px;
   text-align: center;
 `;

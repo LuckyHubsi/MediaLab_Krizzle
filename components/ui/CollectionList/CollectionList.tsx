@@ -7,6 +7,7 @@ import {
 import { View } from "react-native";
 import { ScrollView } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 type CollectionListProps = {
   collectionLists: string[];
@@ -63,7 +64,11 @@ const CollectionList: React.FC<CollectionListProps> = ({
                     <MaterialIcons
                       name="bookmark-added"
                       size={16}
-                      color="#4599E8"
+                      color={
+                        themeMode === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
                       style={{ marginRight: 10 }}
                     />
                   )}

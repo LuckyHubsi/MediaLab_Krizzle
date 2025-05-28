@@ -18,6 +18,7 @@ export const Colors = {
   light: {
     text: "#11181C",
     background: "#FBFBFB",
+    semiTransparentBackground: "#FBFBFB52",
     tint: tintColorLight,
     buttonPressed: "#234D74",
     icon: "#687076",
@@ -43,6 +44,7 @@ export const Colors = {
   dark: {
     text: "#ECEDEE",
     background: "#111111",
+    semiTransparentBackground: "#11111152",
     tint: tintColorDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
