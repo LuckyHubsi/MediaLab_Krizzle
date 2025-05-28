@@ -65,7 +65,7 @@ export default function CollectionTemplateScreen() {
     );
 
     const template: ItemTemplateDTO = {
-      template_name: `${collectionData.title} template`,
+      template_name: `${collectionData.title}`,
       attributes: attributes,
     };
 
