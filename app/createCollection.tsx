@@ -16,6 +16,7 @@ import { Platform } from "react-native";
 import { PageType } from "@/shared/enum/PageType";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
+import { Colors } from "@/constants/Colors";
 
 export default function CollectionTemplateScreen() {
   const { collectionService } = useServices();
@@ -25,7 +26,7 @@ export default function CollectionTemplateScreen() {
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
     selectedTag: null,
-    selectedColor: "#4599E8",
+    selectedColor: Colors.primary,
     selectedIcon: undefined,
     lists: [],
     templates: [],

@@ -249,7 +249,7 @@ export default function EditWidgetScreen() {
               color={
                 (getWidgetColorKey(
                   selectedColor,
-                ) as keyof typeof Colors.widget) || "#4599E8"
+                ) as keyof typeof Colors.widget) || Colors.primary
               }
               isPreview={true}
             />
