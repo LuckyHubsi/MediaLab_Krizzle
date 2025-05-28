@@ -15,7 +15,7 @@ export const DividerLine = styled.View<ColorSchemeProps>`
   background-color: transparent;
   border-style: ${Platform.OS === "ios" ? "solid" : "dashed"};
   border-color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
+    colorScheme === "dark" ? Colors.grey100 : Colors.grey100};
 `;
 
 export const LabelWrapper = styled.View`
