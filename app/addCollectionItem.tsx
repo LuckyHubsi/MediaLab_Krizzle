@@ -159,11 +159,25 @@ export default function AddCollectionItem() {
     }
     const itemDTO = mapToItemDTO(attributes);
     const itemIdResult = await collectionService.insertItemAndReturnID(itemDTO);
+
+    const firstKey = Object.keys(attributeValues)[0];
+    const firstValueRaw = firstKey
+      ? attributeValues[Number(firstKey)]
+      : undefined;
+    const collectionItemText =
+      typeof firstValueRaw === "object" && firstValueRaw?.displayText
+        ? firstValueRaw.displayText
+        : (firstValueRaw ?? "");
+
     if (itemIdResult.success) {
       router.replace({
         pathname: "/collectionItemPage",
-        params: { itemId: itemIdResult.value },
+        params: {
+          itemId: itemIdResult.value,
+          collectionItemText,
+        },
       });
+      console.log();
     } else {
       // TODO: show error modal
     }
