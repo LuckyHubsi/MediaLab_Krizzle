@@ -57,10 +57,37 @@ export function ThemedText({
   isTransparent,
   ...rest
 }: ThemedTextProps) {
-  const color =
-    colorVariant && colorVariant !== "default"
-      ? colorVariants[colorVariant]()
-      : colorVariants.default(lightColor, darkColor);
+  const theme = useActiveColorScheme();
+  const themeColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "text",
+  ); // ✅ Always called
+
+  const color = (() => {
+    switch (colorVariant) {
+      case "red":
+        return Colors.negative;
+      case "grey":
+        return Colors.grey100;
+      case "lightGrey":
+        return Colors.grey50;
+      case "white":
+        return Colors.white;
+      case "primary":
+        return Colors.primary;
+      case "black":
+        return Colors.black;
+      case "viewAll":
+        return theme === "dark" ? Colors.grey50 : Colors.grey100;
+      case "disabled":
+        return theme === "dark" ? Colors.grey100 : Colors.grey50;
+      case "cancel":
+        return theme === "dark" ? Colors.grey50 : Colors.grey100;
+      case "default":
+      default:
+        return themeColor; // ✅ Use the hook result
+    }
+  })();
 
   return (
     <Text

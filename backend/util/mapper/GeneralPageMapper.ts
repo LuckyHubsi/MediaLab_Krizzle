@@ -43,11 +43,36 @@ export class GeneralPageMapper {
   }
 
   /**
+   * Maps a GeneralPageDTO to a NewGeneralPage, used when creating a new note or collection.
+   *
+   * @param dto - The incoming DTO.
+   * @returns A validated `NewGeneralPage` object.
+   * @throws Rethrows error if validation fails.
+   */
+  static toNewEntity(dto: GeneralPageDTO): NewGeneralPage {
+    try {
+      return createNewGeneralPage.parse({
+        pageType: dto.page_type,
+        pageTitle: dto.page_title,
+        pageIcon: dto.page_icon,
+        pageColor: dto.page_color,
+        archived: dto.archived,
+        pinned: dto.pinned,
+        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
+        parentID: dto.parentID ? dto.parentID : null,
+      });
+    } catch (error: any) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  /**
    * Maps a GeneralPageDTO from the frontend to a GeneralPage domain entity.
    *
    * @param dto - The updated GeneralPageDTO from the frontend.
    * @returns A validated `GeneralPage` domain entity.
-   * @throws Error if validation fails.
+   * @throws Rethrows error if validation fails.
    */
   static toUpdatedEntity(dto: GeneralPageDTO): GeneralPage {
     try {
@@ -66,32 +91,9 @@ export class GeneralPageMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping GeneralPageDTO to Updated Entity:", error);
-      throw new Error("Failed to map GeneralPageDTO to Updated Entity");
+      console.error(error);
+      throw error;
     }
-  }
-
-  /**
-   * Maps a NewGeneralPage domain entity to a GeneralPageModel for persistence.
-   *
-   * @param entity - The `NewGeneralPage` domain entity.
-   * @returns A corresponding `GeneralPageModel` (ommited pageID) object.
-   */
-  static toInsertModel(
-    entity: NewGeneralPage,
-  ): Omit<GeneralPageModel, "pageID"> {
-    return {
-      page_type: entity.pageType,
-      page_title: entity.pageTitle,
-      page_icon: entity.pageIcon,
-      page_color: entity.pageColor,
-      date_created: entity.createdAt.toISOString(),
-      date_modified: entity.updatedAt.toISOString(),
-      archived: entity.archived ? 1 : 0,
-      pinned: entity.pinned ? 1 : 0,
-      tagID: entity.tag?.tagID ?? null,
-      parentID: entity.parentID,
-    };
   }
 
   /**
@@ -99,7 +101,7 @@ export class GeneralPageMapper {
    *
    * @param model - The raw GeneralPageModel from the DB.
    * @returns A validated `GeneralPage` domain entity.
-   * @throws Error if validation fails.
+   * @throws Rethrows error if validation fails.
    */
   static toEntity(model: GeneralPageModel): GeneralPage {
     try {
@@ -123,8 +125,8 @@ export class GeneralPageMapper {
         parentID: model.parentID,
       });
     } catch (error) {
-      console.error("Error mapping GeneralPageModel to Entity:", error);
-      throw new Error("Failed to map GeneralPageModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

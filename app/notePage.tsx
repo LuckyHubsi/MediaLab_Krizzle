@@ -47,15 +47,18 @@ export default function NotesScreen() {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const noteDataByID: NoteDTO | null =
-            await noteService.getNoteDataByPageID(numericID);
+          const result = await noteService.getNoteDataByPageID(numericID);
           let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
-          setNoteContent(noteContent);
-          setNoteData(noteDataByID);
-          setShouldReload(false);
+          if (result.success) {
+            setNoteContent(noteContent);
+            setNoteData(result.value);
+            setShouldReload(false);
+          } else {
+            // TODO: show error modal
+          }
         })();
       } else {
         console.error("Error fetching note data");
@@ -65,7 +68,10 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const success = await noteService.updateNoteContent(Number(pageId), html);
+    const result = await noteService.updateNoteContent(Number(pageId), html);
+    if (!result.success) {
+      // TODO: show error modal
+    }
   };
 
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
@@ -142,11 +148,15 @@ export default function NotesScreen() {
                         noteData.pin_count < 4) ||
                       (noteData && noteData?.pinned)
                     ) {
-                      const success = await generalPageService.togglePagePin(
+                      const result = await generalPageService.togglePagePin(
                         Number(pageId),
                         noteData.pinned,
                       );
-                      setShouldReload(success);
+                      if (result.success) {
+                        setShouldReload(true);
+                      } else {
+                        // TODO: show error modal
+                      }
                     }
                   },
                 }
@@ -165,28 +175,29 @@ export default function NotesScreen() {
               icon: noteData?.archived ? "restore" : "archive",
               onPress: async () => {
                 if (noteData) {
-                  const success = await generalPageService.togglePageArchive(
+                  const result = await generalPageService.togglePageArchive(
                     Number(pageId),
                     noteData.archived,
                   );
-                  if (success) {
+                  if (result.success) {
                     showSnackbar(
                       noteData.archived
                         ? "Successfully restored Note."
-                        : "Successfully archived Note.",
+                        : "Successfully moved Note to Archive in Settings.",
                       "bottom",
                       "success",
                     );
+                    setShouldReload(true);
                   } else {
+                    // TODO: show error modal
                     showSnackbar(
                       noteData.archived
                         ? "Failed to restore Note."
-                        : "Failed to archive Note.",
+                        : "Failed to move Note to Archive in Settings.",
                       "bottom",
                       "error",
                     );
                   }
-                  setShouldReload(success);
                 }
               },
             },
@@ -218,10 +229,15 @@ export default function NotesScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
-              setShowDeleteModal(false);
-              router.replace("/");
+              if (result.success) {
+                setShowDeleteModal(false);
+
+                router.replace("/");
+              } else {
+                // TODO: show error modal
+              }
             } catch (error) {
               console.error("Error deleting note:", error);
             }

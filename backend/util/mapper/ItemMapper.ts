@@ -59,42 +59,68 @@ export class ItemMapper {
     entity: PreviewItem,
     attributes: Attribute[],
   ): PreviewItemDTO {
-    const dtoAttributes: (string | number | string[] | null)[] =
-      entity.values.map((value, index) => {
-        const attr = attributes[index];
+    const dtoValues: (
+      | string
+      | number
+      | string[]
+      | { value: string; displayText: string | null }
+      | null
+    )[] = entity.values.map((value, index) => {
+      const attr = attributes[index];
 
-        // return null if value is null or attribute is missing
-        if (value === null || !attr) {
+      // return null if value is null or attribute is missing
+      if (value === null || !attr) {
+        return null;
+      }
+
+      // conversion based on the attribute type
+      switch (attr.type) {
+        case "text":
+          // text values are expected to be strings
+          return typeof value === "string" ? value : null;
+        case "date":
+          // date values are expected to be an instance of Date and to be converted to strings
+          return value instanceof Date ? value.toISOString() : null;
+        case "rating":
+          // rating values are expected to be numbers
+          return typeof value === "number" ? value : null;
+        case "multi-select":
+          // multiselect values are expected to be arrays of strings
+          return Array.isArray(value) &&
+            value.every((v) => typeof v === "string")
+            ? value
+            : null;
+        case "image":
+          // image values are expected to be strings
+          return typeof value === "string" ? value : null;
+        case "link":
+          if (
+            typeof value === "object" &&
+            value !== null &&
+            !Array.isArray(value) &&
+            "value" in value &&
+            typeof (value as any).value === "string"
+          ) {
+            return {
+              value: value.value,
+              displayText:
+                typeof value.displayText === "string"
+                  ? value.displayText
+                  : null,
+            };
+          }
           return null;
-        }
 
-        // conversion based on the attribute type
-        switch (attr.type) {
-          case "text":
-            // text values are expected to be strings
-            return typeof value === "string" ? value : null;
-          case "date":
-            // date values are expected to be an instance of Date and to be converted to strings
-            return value instanceof Date ? value.toISOString() : null;
-          case "rating":
-            // rating values are expected to be numbers
-            return typeof value === "number" ? value : null;
-          case "multi-select":
-            // multiselect values are expected to be arrays of strings
-            return Array.isArray(value) &&
-              value.every((v) => typeof v === "string")
-              ? value
-              : null;
-          default:
-            return null;
-        }
-      });
+        default:
+          return null;
+      }
+    });
 
     return {
       itemID: entity.itemID,
       categoryID: entity.categoryID ?? null,
       categoryName: entity.categoryName ?? undefined,
-      values: dtoAttributes,
+      values: dtoValues,
     };
   }
 
@@ -129,8 +155,8 @@ export class ItemMapper {
         attributeValues: dto.attributeValues ?? [],
       });
     } catch (error) {
-      console.error("Error mapping ItemDTO to NewItem:", error);
-      throw new Error("Invalid ItemDTO for new item entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -192,6 +218,17 @@ export class ItemMapper {
                 }
               })(),
             };
+          case "image":
+            return {
+              ...base,
+              valueString: attr.value ?? null,
+            };
+          case "link":
+            return {
+              ...base,
+              valueString: attr.value ?? null,
+              displayText: attr.display_text ?? null,
+            };
           default:
             return base;
         }
@@ -209,8 +246,8 @@ export class ItemMapper {
         attributeValues: parsedAttributes,
       });
     } catch (error) {
-      console.error("Error mapping ItemModel to Item:", error);
-      throw new Error("Failed to map ItemModel to domain Item");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -265,25 +302,37 @@ export class ItemMapper {
               if (typeof raw !== "string") return null;
               const parsed = JSON.parse(raw);
               return Array.isArray(parsed) ? parsed : null;
-
+            case "image":
+              return typeof raw === "string" ? raw : null;
+            case "link":
+              if (typeof raw !== "string") return null;
+              const displayText =
+                typeof previewValue.display_text === "string"
+                  ? previewValue.display_text
+                  : null;
+              return raw ? { value: raw, displayText } : null;
             default:
               return null;
           }
         });
 
-        // push the PreviewItem to the array
-        items.push({
-          itemID: itemID as ItemID,
-          categoryID: first.categoryID as CategoryID,
-          categoryName: first.category_name,
-          values,
-        });
+        try {
+          // push the PreviewItem to the array
+          items.push({
+            itemID: itemID as ItemID,
+            categoryID: first.categoryID as CategoryID,
+            categoryName: first.category_name,
+            values: values,
+          });
+        } catch (error) {
+          continue;
+        }
       }
 
       return items;
     } catch (error) {
-      console.error("Error mapping PreviewItems[]:", error);
-      throw new Error("Failed to map to PreviewItems[]");
+      console.error(error);
+      throw error;
     }
   }
 }

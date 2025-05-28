@@ -22,7 +22,8 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 
 export default function CollectionScreen() {
-  const { generalPageService, collectionService } = useServices();
+  const { generalPageService, collectionService, itemTemplateService } =
+    useServices();
 
   const router = useRouter();
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
@@ -51,32 +52,32 @@ export default function CollectionScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
+      const fetchData = async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
-          const collectionData =
+          const result =
             await collectionService.getCollectionByPageId(numericID);
-          if (collectionData) {
-            setCollection(collectionData);
-            setCollectionTitle(title || collectionData.page_title);
+          if (result.success) {
+            setCollection(result.value);
+            setCollectionTitle(title || result.value.page_title);
 
-            if (collectionData.categories) {
-              const names = collectionData.categories.map(
-                (c) => c.category_name,
-              );
+            if (result.value.categories) {
+              const names = result.value.categories.map((c) => c.category_name);
               setListNames(names);
-              setSelectedList(names[0]); // ✅ set selected list directly here
+              setSelectedList(names[0]);
             }
-            const retrievedItems: ItemsDTO =
+            const retrievedItemsResult =
               await collectionService.getItemsByPageId(numericID);
-            if (retrievedItems) setItems(retrievedItems);
+            if (retrievedItemsResult.success) {
+              setItems(retrievedItemsResult.value);
+            }
+          } else {
+            // TODO: show error modal
           }
-          const retrievedItems: ItemsDTO =
-            await collectionService.getItemsByPageId(numericID);
-          if (retrievedItems) setItems(retrievedItems);
           setShouldReload(false);
         }
-      })();
+      };
+      fetchData();
     }, [pageId, shouldReload]),
   );
 
@@ -191,11 +192,15 @@ export default function CollectionScreen() {
                         collection.pin_count < 4) ||
                       (collection && collection?.pinned)
                     ) {
-                      const success = await generalPageService.togglePagePin(
+                      const result = await generalPageService.togglePagePin(
                         Number(collection.pageID),
                         collection.pinned,
                       );
-                      setShouldReload(success);
+                      if (result.success) {
+                        setShouldReload(true);
+                      } else {
+                        // TODO: show error modal
+                      }
                     }
                   },
                 }
@@ -206,6 +211,22 @@ export default function CollectionScreen() {
                   icon: "edit",
                   onPress: () => {
                     goToEditPage();
+                  },
+                }
+              : null,
+            collection && !collection.archived
+              ? {
+                  label: "Edit Template",
+                  icon: "edit-document",
+                  onPress: () => {
+                    router.push({
+                      pathname: "/editCollectionTemplate",
+                      params: {
+                        pageId: pageId,
+                        templateId: collection?.templateID?.toString(),
+                        title: collection?.page_title,
+                      },
+                    });
                   },
                 }
               : null,
@@ -224,28 +245,29 @@ export default function CollectionScreen() {
 
               onPress: async () => {
                 if (collection) {
-                  const success = await generalPageService.togglePageArchive(
+                  const result = await generalPageService.togglePageArchive(
                     Number(pageId),
                     collection.archived,
                   );
-                  if (success) {
+                  if (result.success) {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
-                        : "Successfully archived Collection.",
+                        : "Successfully moved Collection to Archive in Settings.",
                       "bottom",
                       "success",
                     );
+                    setShouldReload(true);
                   } else {
+                    // TODO: show error modal
                     showSnackbar(
                       collection.archived
                         ? "Failed to restore Collection."
-                        : "Failed to archive Collection.",
+                        : "Failed to move Collection to Archive in Settings.",
                       "bottom",
                       "error",
                     );
                   }
-                  setShouldReload(success);
                 }
               },
             },
@@ -310,9 +332,14 @@ export default function CollectionScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
-              setShowDeleteModal(false);
+
+              if (result.success) {
+                setShowDeleteModal(false);
+              } else {
+                // TODO: show error modal
+              }
               router.replace("/");
             } catch (error) {
               console.error("Error deleting collection:", error);
@@ -329,12 +356,16 @@ export default function CollectionScreen() {
           if (selectedItem) {
             try {
               const itemIdAsNumber = Number(selectedItem.itemID);
-              const successfullyDeleted =
+              const deleteResult =
                 await collectionService.deleteItemById(itemIdAsNumber);
 
-              setShowItemDeleteModal(false);
-              setShouldReload(successfullyDeleted);
-              showSnackbar("Successfully deleted Item.", "bottom", "success");
+              if (deleteResult.success) {
+                setShowItemDeleteModal(false);
+                setShouldReload(true);
+                showSnackbar("Successfully deleted Item.", "bottom", "success");
+              } else {
+                // TODO: show error modal
+              }
             } catch (error) {
               console.error("Error deleting item:", error);
             }

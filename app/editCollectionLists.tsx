@@ -72,14 +72,18 @@ export default function EditCollectionListsScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const collectionLists =
+        const listResult =
           await collectionService.getCollectionCategories(numericId);
-        const mapped = collectionLists.map((l) => ({
-          id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
-          title: l.category_name ?? "",
-        }));
-        setLists(mapped);
-        setInitialIds(new Set(mapped.map((l) => l.id)));
+        if (listResult.success) {
+          const mapped = listResult.value.map((l) => ({
+            id: l.collectionCategoryID?.toString() ?? Date.now().toString(),
+            title: l.category_name ?? "",
+          }));
+          setLists(mapped);
+          setInitialIds(new Set(mapped.map((l) => l.id)));
+        } else {
+          // TODO: show error modal
+        }
       } catch (err) {
         console.error("Failed to load lists:", err);
         showSnackbar("Failed to load lists.", "top", "error");
@@ -147,14 +151,22 @@ export default function EditCollectionListsScreen() {
       };
 
       if (!isPersisted(l.id)) {
-        await collectionService.insertCollectionCategory({
-          category_name: l.title,
-          collectionID: numericId,
-        });
-
-        setInitialIds((prev) => new Set(prev).add(l.id));
+        const insertListResult =
+          await collectionService.insertCollectionCategory({
+            category_name: l.title,
+            collectionID: numericId,
+          });
+        if (insertListResult.success) {
+          setInitialIds((prev) => new Set(prev).add(l.id));
+        } else {
+          // TODO: show error modal
+        }
       } else {
-        await collectionService.updateCollectionCategory(updateDto);
+        const updateListResult =
+          await collectionService.updateCollectionCategory(updateDto);
+        if (!updateListResult.success) {
+          // TODO: Show error modal
+        }
       }
     });
 
@@ -169,14 +181,19 @@ export default function EditCollectionListsScreen() {
 
     if (!isNaN(Number(id))) {
       try {
-        await collectionService.deleteCollectionCategoryByID(Number(id));
+        const deleteListResult =
+          await collectionService.deleteCollectionCategoryByID(Number(id));
 
-        setLists((prev) => prev.filter((l) => l.id !== id));
-        setInitialIds((prev) => {
-          const updated = new Set(prev);
-          updated.delete(id);
-          return updated;
-        });
+        if (deleteListResult.success) {
+          setLists((prev) => prev.filter((l) => l.id !== id));
+          setInitialIds((prev) => {
+            const updated = new Set(prev);
+            updated.delete(id);
+            return updated;
+          });
+        } else {
+          // TODO: show error modal
+        }
       } catch (error) {
         console.error("Error deleting list:", error);
       }

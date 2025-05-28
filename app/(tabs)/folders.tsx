@@ -77,15 +77,19 @@ export default function FoldersScreen() {
     }
 
     try {
-      const success = await folderService.updateFolder({
+      const result = await folderService.updateFolder({
         folderID: Number(editingFolder.id),
         folderName: trimmedName,
         itemCount: editingFolder.itemCount,
       });
 
-      if (success) {
+      if (result.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
+      } else {
+        // TODO: show error modal
+        console.log(result.error.type);
+        console.log(result.error.message);
       }
     } catch (error) {
       console.error("Error updating folder:", error);
@@ -107,9 +111,13 @@ export default function FoldersScreen() {
     useCallback(() => {
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-          const shapedFolders = mapToFolderShape(data);
-          setFolders(shapedFolders);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            const shapedFolders = mapToFolderShape(result.value);
+            setFolders(shapedFolders);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         }
@@ -245,10 +253,15 @@ export default function FoldersScreen() {
           if (selectedFolder) {
             try {
               const folderIdAsNumber = Number(selectedFolder.id);
-              const successfullyDeleted =
-                await folderService.deleteFolder(folderIdAsNumber);
+              const result = await folderService.deleteFolder(folderIdAsNumber);
 
-              setShouldReload(successfullyDeleted);
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+                console.log(result.error.type);
+                console.log(result.error.message);
+              }
 
               setSelectedFolder(null);
               setShowDeleteModal(false);

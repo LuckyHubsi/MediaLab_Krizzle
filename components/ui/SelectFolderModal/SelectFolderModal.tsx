@@ -65,7 +65,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
-    if (!trimmedFolder) return;
+    if (!trimmedFolder) {
+      showSnackbar("Please enter a folder name.", "top", "error");
+      return;
+    }
 
     if (trimmedFolder.length > 30) {
       showSnackbar(
@@ -91,33 +94,50 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       let success = false;
 
       if (editFolderMode && editingFolder) {
-        success = await tagService.updateTag({
+        const result = await folderService.updateFolder({
           ...editingFolder,
-          //use folder_label instead of tag_label
-          tag_label: trimmedFolder,
+          folderName: trimmedFolder,
         });
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+          success = false;
+        }
       } else {
         const newFolderObject: FolderDTO = { folderName: trimmedFolder };
-        success = await folderService.insertFolder(newFolderObject);
+        const result = await folderService.insertFolder(newFolderObject);
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+        }
       }
 
       if (success && !editFolderMode) {
-        const updatedFolders = await folderService.getAllFolders();
-        setFolders(updatedFolders ?? []);
-
-        const newFolder = updatedFolders.find(
-          (f) => f.folderName === trimmedFolder,
-        );
-        if (newFolder) {
-          setSelectedFolder({
-            id: String(newFolder.folderID),
-            title: newFolder.folderName,
-            itemCount: newFolder.itemCount ?? 0,
-          });
+        const result = await folderService.getAllFolders();
+        if (result.success) {
+          const updatedFolders = result.value;
+          setFolders(updatedFolders ?? []);
+          const newFolder = updatedFolders.find(
+            (f) => f.folderName === trimmedFolder,
+          );
+          if (newFolder) {
+            setSelectedFolder({
+              id: String(newFolder.folderID),
+              title: newFolder.folderName,
+              itemCount: newFolder.itemCount ?? 0,
+            });
+          }
+        } else {
+          // TODO: show error modal
+          console.log(result.error.type);
+          console.log(result.error.message);
         }
       } else if (success && editFolderMode) {
         setShouldRefetch(true);
       }
+      showSnackbar("Folder created successfully.", "top", "success");
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {
@@ -141,20 +161,24 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       setInternalVisible(true);
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-          setFolders(data ?? []);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            setFolders(result.value ?? []);
 
-          if (initialSelectedFolderId) {
-            const matching = data?.find(
-              (f) => f.folderID === initialSelectedFolderId,
-            );
-            if (matching) {
-              setSelectedFolder({
-                id: String(matching.folderID),
-                title: matching.folderName,
-                itemCount: matching.itemCount ?? 0,
-              });
+            if (initialSelectedFolderId) {
+              const matching = result.value?.find(
+                (f) => f.folderID === initialSelectedFolderId,
+              );
+              if (matching) {
+                setSelectedFolder({
+                  id: String(matching.folderID),
+                  title: matching.folderName,
+                  itemCount: matching.itemCount ?? 0,
+                });
+              }
             }
+          } else {
+            // TODO: show error modal
           }
         } catch (error) {
           console.error("Error loading folders:", error);
@@ -183,8 +207,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
 
       const fetchFolders = async () => {
         try {
-          const data = await folderService.getAllFolders();
-          setFolders(data ?? []);
+          const result = await folderService.getAllFolders();
+          if (result.success) {
+            setFolders(result.value);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folders:", error);
         } finally {
@@ -341,16 +369,19 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                 {folders.length !== 0 ? (
                   <NextButton
                     onPress={async () => {
-                      const success = await generalPageService.updateFolderID(
-                        Number(widgetId),
-                        Number(selectedFolder?.id),
-                      );
+                      const moveResult =
+                        await generalPageService.updateFolderID(
+                          Number(widgetId),
+                          Number(selectedFolder?.id),
+                        );
 
-                      if (onMoved) {
-                        onMoved(success);
+                      if (moveResult.success) {
+                        if (onMoved) {
+                          onMoved(true);
+                        }
+                        setInternalVisible(false);
+                        setSelectedFolder(null);
                       }
-                      setInternalVisible(false);
-                      setSelectedFolder(null);
                       onClose();
                     }}
                     colorScheme={colorScheme}

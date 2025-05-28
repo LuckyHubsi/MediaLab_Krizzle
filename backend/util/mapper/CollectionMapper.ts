@@ -13,6 +13,7 @@ import {
   itemTemplateID,
   pageID,
 } from "@/backend/domain/common/IDs";
+import { GeneralPageMapper } from "./GeneralPageMapper";
 
 /**
  * Mapper class for converting between Collection domain entities, DTOs, and database models:
@@ -47,6 +48,7 @@ export class CollectionMapper {
         ? entity.categories.map(CollectionCategoryMapper.toDTO)
         : [],
       pin_count: entity.pinCount,
+      parentID: entity.parentID,
     };
   }
 
@@ -59,25 +61,17 @@ export class CollectionMapper {
    */
   static toNewEntity(dto: CollectionDTO): NewCollection {
     try {
+      const generalPage = GeneralPageMapper.toNewEntity(dto);
       const parsedDTO = createNewCollectionSchema.parse({
-        pageType: dto.page_type,
-        pageTitle: dto.page_title,
-        pageIcon: dto.page_icon,
-        pageColor: dto.page_color,
-        archived: dto.archived,
-        pinned: dto.pinned,
-        tag:
-          dto.tag && dto.tag.tagID && dto.tag.tag_label
-            ? TagMapper.toUpdatedEntity(dto.tag)
-            : null,
+        ...generalPage,
         categories: dto.categories
           ? dto.categories.map(CollectionCategoryMapper.toNewEntity)
           : [],
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping CollectionDTO to New Entity");
-      throw new Error("Failed to map CollectionDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -90,24 +84,9 @@ export class CollectionMapper {
    */
   static toEntity(model: CollectionModel): Collection {
     try {
+      const generalPage = GeneralPageMapper.toEntity(model);
       return collectionSchema.parse({
-        pageID: pageID.parse(model.pageID),
-        pageType: model.page_type,
-        pageTitle: model.page_title,
-        pageIcon: model.page_icon,
-        pageColor: model.page_color,
-        archived: model.archived === 1,
-        pinned: model.pinned === 1,
-        tag:
-          model.tagID && model.tag_label
-            ? TagMapper.toEntity({
-                tagID: model.tagID,
-                tag_label: model.tag_label ?? "123",
-                usage_count: 0, // placeholder since this value is not used for persistence
-              })
-            : null,
-        createdAt: new Date(model.date_created),
-        updatedAt: new Date(model.date_modified),
+        ...generalPage,
         collectionID: collectionID.parse(model.collectionID),
         templateID: itemTemplateID.parse(model.templateID),
         categories: model.categories
@@ -116,8 +95,8 @@ export class CollectionMapper {
         pinCount: model.pin_count,
       });
     } catch (error) {
-      console.error("Error mapping CollectionModel to Entity:", error);
-      throw new Error("Failed to map CollectionModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

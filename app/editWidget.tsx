@@ -35,6 +35,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function EditWidgetScreen() {
   const { generalPageService, tagService } = useServices();
@@ -49,6 +50,7 @@ export default function EditWidgetScreen() {
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
   >(null);
+  const pageType = pageData?.page_type ?? PageType.Note;
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
@@ -124,30 +126,39 @@ export default function EditWidgetScreen() {
       page_type: pageData?.page_type ?? PageType.Note,
       archived: pageData?.archived ?? false,
       pinned: pageData?.pinned ?? false,
+      parentID: pageData?.parentID ?? null,
     };
-    await generalPageService.updateGeneralPageData(newPageDTO);
+    const result = await generalPageService.updateGeneralPageData(newPageDTO);
 
-    // only send snackbar if data has changed
-    const hasChanges =
-      title !== initialValuesRef.current.title ||
-      selectedColor !== initialValuesRef.current.selectedColor ||
-      selectedIcon !== initialValuesRef.current.selectedIcon ||
-      (selectedTag?.tagID || null) !==
-        (initialValuesRef.current.selectedTag?.tagID || null);
+    if (result.success) {
+      // only send snackbar if data has changed
+      const hasChanges =
+        title !== initialValuesRef.current.title ||
+        selectedColor !== initialValuesRef.current.selectedColor ||
+        selectedIcon !== initialValuesRef.current.selectedIcon ||
+        (selectedTag?.tagID || null) !==
+          (initialValuesRef.current.selectedTag?.tagID || null);
 
-    if (hasChanges) {
-      showSnackbar("Successfully updated Widget!", "bottom", "success");
+      if (hasChanges) {
+        showSnackbar("Successfully updated Widget!", "bottom", "success");
+      }
+
+      router.back();
+    } else {
+      // TODO: show error modal
     }
-
-    router.back();
   };
 
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            if (result.value) setTags(result.value);
+          } else {
+            // TODO: show the error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
@@ -155,29 +166,31 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const generalPageData = await generalPageService.getGeneralPageByID(
+          const result = await generalPageService.getGeneralPageByID(
             Number(widgetID),
           );
-          if (generalPageData) {
-            setPageData(generalPageData);
-            setTitle(generalPageData.page_title || "");
-            setSelectedColor(generalPageData.page_color || "");
+          if (result.success) {
+            setPageData(result.value);
+            setTitle(result.value.page_title || "");
+            setSelectedColor(result.value.page_color || "");
             setSelectedIcon(
-              (generalPageData.page_icon as
+              (result.value.page_icon as
                 | keyof typeof MaterialIcons.glyphMap
                 | null) || null,
             );
             //save current data to compare if new data has been entered
             initialValuesRef.current = {
-              title: generalPageData.page_title || "",
-              selectedColor: generalPageData.page_color || "",
+              title: result.value.page_title || "",
+              selectedColor: result.value.page_color || "",
               selectedIcon:
-                (generalPageData.page_icon as keyof typeof MaterialIcons.glyphMap) ||
-                null,
-              selectedTag: generalPageData.tag || null,
+                (result.value
+                  .page_icon as keyof typeof MaterialIcons.glyphMap) || null,
+              selectedTag: result.value.tag || null,
             };
 
-            setSelectedTag(generalPageData.tag || null);
+            setSelectedTag(result.value.tag || null);
+          } else {
+            // TODO: show error modal
           }
         } catch (error) {
           console.error("Failed to load page data:", error);
@@ -227,7 +240,7 @@ export default function EditWidgetScreen() {
             <Widget
               title={title || "Title"}
               label={selectedTag?.tag_label?.trim() || ""}
-              pageType={PageType.Note}
+              pageType={pageType}
               icon={
                 selectedIcon ? (
                   <MaterialIcons name={selectedIcon} size={22} color="black" />

@@ -39,6 +39,7 @@ interface ItemTemplateCardProps {
   hasNoInputError?: boolean;
   hasNoMultiSelectableError?: boolean;
   previewCount?: number;
+  isExisting?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -58,10 +59,19 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   hasNoInputError,
   hasNoMultiSelectableError,
   previewCount,
+  isExisting = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
-  const typeArray = ["item", "text", "date", "multi-select", "rating"];
+  const typeArray = [
+    "item",
+    "text",
+    "date",
+    "multi-select",
+    "rating",
+    "image",
+    "link",
+  ];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
 
   return (
@@ -75,6 +85,10 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                 * required
               </ThemedText>
             </>
+          ) : isExisting ? (
+            <ThemedText fontWeight="regular">
+              {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
+            </ThemedText>
           ) : (
             <ThemedText>Type</ThemedText>
           )}
@@ -112,7 +126,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
-      {!isTitleCard && (
+      {!isTitleCard && !isExisting && (
         <AndroidPickerWrapper colorScheme={colorScheme}>
           <CustomPicker
             value={itemType}
@@ -133,12 +147,16 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
 
       <Textfield
         showTitle={false}
-        textfieldIcon={textfieldIcon}
-        placeholderText={
-          isTitleCard
-            ? "Add a title to your item"
-            : `Add a title to your ${itemType}`
+        textfieldIcon={
+          itemType === "text"
+            ? textfieldIcon
+            : itemType === "image"
+              ? "image"
+              : itemType === "link"
+                ? "link"
+                : textfieldIcon
         }
+        placeholderText={`Add a title to your ${itemType}`}
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}

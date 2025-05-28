@@ -40,18 +40,26 @@ export default function AddCollectionItem() {
       const numericTemplateID = Number(templateId);
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
-        const template =
-          await itemTemplateService.getTemplate(numericTemplateID);
+        const result = await itemTemplateService.getTemplate(numericTemplateID);
 
-        if (template && template.attributes) {
-          setAttributes(template.attributes);
+        if (result.success) {
+          if (result.value && result.value.attributes) {
+            setAttributes(result.value.attributes);
+          }
+        } else {
+          // TODO: show error modal
+
+          console.log(result.error.type);
+          console.log(result.error.message);
         }
       }
       if (!isNaN(numericCollectionID)) {
-        const lists =
+        const listResult =
           await collectionService.getCollectionCategories(numericCollectionID);
-        if (lists) {
-          setLists(lists);
+        if (listResult.success) {
+          setLists(listResult.value);
+        } else {
+          // TODO: show error modal
         }
       }
     })();
@@ -72,11 +80,26 @@ export default function AddCollectionItem() {
     }
   }, []);
 
-  const handleInputChange = (attributeID: number, value: any) => {
-    setAttributeValues((prevValues) => ({
-      ...prevValues,
-      [attributeID]: value,
-    }));
+  const handleInputChange = (
+    attributeID: number,
+    value: any,
+    displayText?: string,
+  ) => {
+    setAttributeValues((prevValues) => {
+      const isLink =
+        attributes.find((a) => a.attributeID === attributeID)?.type ===
+        AttributeType.Link;
+
+      return {
+        ...prevValues,
+        [attributeID]: isLink
+          ? {
+              value: value?.trim() || null,
+              displayText: displayText?.trim() || null,
+            }
+          : value,
+      };
+    });
   };
 
   const handleListChange = (categoryID: number | null) => {
@@ -106,6 +129,14 @@ export default function AddCollectionItem() {
             return { ...attribute, valueNumber: value };
           case AttributeType.Multiselect:
             return { ...attribute, valueMultiselect: value };
+          case AttributeType.Link:
+            return {
+              ...attribute,
+              valueString: value?.value?.trim() || null,
+              displayText: value?.displayText?.trim() || null,
+            };
+          case AttributeType.Image:
+            return { ...attribute, valueString: value };
           default:
             return { ...attribute };
         }
@@ -127,11 +158,29 @@ export default function AddCollectionItem() {
       return;
     }
     const itemDTO = mapToItemDTO(attributes);
-    const itemId = await collectionService.insertItemAndReturnID(itemDTO);
-    router.replace({
-      pathname: "/collectionItemPage",
-      params: { itemId: itemId },
-    });
+    const itemIdResult = await collectionService.insertItemAndReturnID(itemDTO);
+
+    const firstKey = Object.keys(attributeValues)[0];
+    const firstValueRaw = firstKey
+      ? attributeValues[Number(firstKey)]
+      : undefined;
+    const collectionItemText =
+      typeof firstValueRaw === "object" && firstValueRaw?.displayText
+        ? firstValueRaw.displayText
+        : (firstValueRaw ?? "");
+
+    if (itemIdResult.success) {
+      router.replace({
+        pathname: "/collectionItemPage",
+        params: {
+          itemId: itemIdResult.value,
+          collectionItemText,
+        },
+      });
+      console.log();
+    } else {
+      // TODO: show error modal
+    }
   };
 
   const { showSnackbar } = useSnackbar();

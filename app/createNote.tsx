@@ -31,6 +31,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function CreateNoteScreen() {
   const { noteService, tagService } = useServices();
@@ -112,27 +113,36 @@ export default function CreateNoteScreen() {
       note_content: null,
       tag: tagDTO,
       pin_count: 0,
+      parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
-    const id = await noteService.insertNote(noteDTO);
-    router.replace({
-      pathname: "/notePage",
-      params: { pageId: id, title: title },
-    });
+    const result = await noteService.insertNote(noteDTO);
+    if (result.success) {
+      router.replace({
+        pathname: "/notePage",
+        params: { pageId: result.value, title: title },
+      });
 
-    showSnackbar(
-      `Successfully created Note: "${title}". `,
-      "bottom",
-      "success",
-    );
+      showSnackbar(
+        `Successfully created Note: "${title}". `,
+        "bottom",
+        "success",
+      );
+    } else {
+      // TODO: show error modal
+    }
   };
 
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            if (result.value) setTags(result.value);
+          } else {
+            // TODO: show the error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }

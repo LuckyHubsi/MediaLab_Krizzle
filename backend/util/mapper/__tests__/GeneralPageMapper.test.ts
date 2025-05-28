@@ -1,191 +1,165 @@
+import { pageID } from "@/backend/domain/common/IDs";
 import {
   GeneralPage,
   NewGeneralPage,
-  pageID,
 } from "@/backend/domain/entity/GeneralPage";
+import { GeneralPageModel } from "@/backend/repository/model/GeneralPageModel";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { GeneralPageModel } from "@/models/GeneralPageModel";
-import { PageType } from "@/utils/enums/PageType";
-import { TagMapper } from "../TagMapper";
+import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageMapper } from "../GeneralPageMapper";
-
-jest.mock("@/backend/util/mapper/TagMapper", () => ({
-  TagMapper: {
-    toDTO: jest.fn(),
-    toNewEntity: jest.fn(),
-    toEntity: jest.fn(),
-  },
-}));
+import { ZodError } from "zod";
 
 describe("GeneralPageMapper", () => {
-  const mockPageID = pageID.parse(1);
-  const mockTagID: any = 1;
+  const brandedPageID = pageID.parse(1);
   const date: Date = new Date();
   const dateString: string = date.toISOString();
 
-  const mockGeneralPage: GeneralPage = {
-    pageID: mockPageID,
+  const generalPageEntity: GeneralPage = {
+    pageID: brandedPageID,
     pageType: PageType.Note,
-    pageTitle: "test page",
-    pageIcon: "test icon",
-    pageColor: "test color",
+    pageTitle: "Test Page",
+    pageIcon: "icon",
+    pageColor: "#FFFFFF",
     archived: false,
-    pinned: true,
-    tag: {
-      tagID: mockTagID,
-      tagLabel: "test tag",
-    },
+    pinned: false,
+    tag: null,
+    createdAt: date,
+    updatedAt: date,
+    parentID: null,
+  };
+
+  const newGeneralPageEntity: NewGeneralPage = {
+    pageType: PageType.Note,
+    pageTitle: "Test Page",
+    pageIcon: "icon",
+    pageColor: "#FFFFFF",
+    archived: false,
+    pinned: false,
+    tag: null,
+    parentID: null,
     createdAt: date,
     updatedAt: date,
   };
 
-  const mockGeneralPageDTO: GeneralPageDTO = {
+  const generalPageDTO: GeneralPageDTO = {
     pageID: 1,
     page_type: PageType.Note,
-    page_title: "test page",
-    page_icon: "test icon",
-    page_color: "test color",
+    page_title: "Test Page",
+    page_icon: "icon",
+    page_color: "#FFFFFF",
     archived: false,
-    pinned: true,
-    tag: {
-      tagID: mockTagID,
-      tag_label: "test tag",
-    },
+    pinned: false,
+    tag: null,
+    parentID: null,
   };
+  let invalidDTO: GeneralPageDTO;
 
-  const mockGeneralPageModel: GeneralPageModel = {
+  const generalPageModel: GeneralPageModel = {
     pageID: 1,
     page_type: PageType.Note,
-    page_title: "test page",
-    page_icon: "test icon",
-    page_color: "test color",
+    page_title: "Test Page",
+    page_icon: "icon",
+    page_color: "#FFFFFF",
+    archived: 0,
+    pinned: 0,
+    tagID: null,
     date_created: dateString,
     date_modified: dateString,
-    archived: 0,
-    pinned: 1,
-    tagID: mockTagID,
-    tag_label: "test tag",
+    parentID: null,
   };
-
-  const mockNewGeneralPage: NewGeneralPage = {
-    pageType: PageType.Note,
-    pageTitle: "test page",
-    pageIcon: "test icon",
-    pageColor: "test color",
-    archived: false,
-    pinned: true,
-    tag: {
-      tagID: mockTagID,
-      tagLabel: "test tag",
-    },
-    createdAt: date,
-    updatedAt: date,
-  };
+  let invalidModel: GeneralPageModel;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    invalidDTO = { ...generalPageDTO };
+    invalidModel = { ...generalPageModel };
   });
 
   describe("toDTO", () => {
     it("should map a GeneralPage entity to a GeneralPageDTO", () => {
-      (TagMapper.toDTO as jest.Mock).mockReturnValue(mockGeneralPageDTO.tag);
-
-      const result = GeneralPageMapper.toDTO(mockGeneralPage);
-
-      expect(result).toEqual(mockGeneralPageDTO);
-      expect(TagMapper.toDTO).toHaveBeenCalledWith(mockGeneralPage.tag);
-    });
-  });
-
-  describe("toModel", () => {
-    it("should map a GeneralPage entity to a GeneralPageModel", () => {
-      const result = GeneralPageMapper.toModel(mockGeneralPage);
-
-      expect(result).toEqual({
-        ...mockGeneralPageModel,
-        date_created: mockGeneralPage.createdAt.toISOString(),
-        date_modified: mockGeneralPage.updatedAt.toISOString(),
-      });
-    });
-  });
-
-  describe("toInsertModel", () => {
-    it("should map a NewGeneralPage entity to a GeneralPageModel", () => {
-      const result = GeneralPageMapper.toInsertModel(mockNewGeneralPage);
-
-      expect(result).toEqual({
-        ...mockGeneralPageModel,
-        pageID: 0,
-        date_created: mockNewGeneralPage.createdAt.toISOString(),
-        date_modified: mockNewGeneralPage.updatedAt.toISOString(),
-      });
+      const result = GeneralPageMapper.toDTO(generalPageEntity);
+      expect(result).toEqual(generalPageDTO);
     });
   });
 
   describe("toNewEntity", () => {
     it("should map a GeneralPageDTO to a NewGeneralPage entity", () => {
-      (TagMapper.toNewEntity as jest.Mock).mockReturnValue(
-        mockNewGeneralPage.tag,
-      );
-
-      const result = GeneralPageMapper.toNewEntity(mockGeneralPageDTO);
-
+      const result = GeneralPageMapper.toNewEntity(generalPageDTO);
       expect(result).toEqual(
         expect.objectContaining({
-          pageType: mockNewGeneralPage.pageType,
-          pageTitle: mockNewGeneralPage.pageTitle,
-          pageIcon: mockNewGeneralPage.pageIcon,
-          pageColor: mockNewGeneralPage.pageColor,
-          archived: false,
-          pinned: true,
-          tag: mockNewGeneralPage.tag,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
+          pageType: newGeneralPageEntity.pageType,
+          pageTitle: newGeneralPageEntity.pageTitle,
+          pageIcon: newGeneralPageEntity.pageIcon,
+          pageColor: newGeneralPageEntity.pageColor,
+          archived: newGeneralPageEntity.archived,
+          pinned: newGeneralPageEntity.pinned,
+          tag: newGeneralPageEntity.tag,
         }),
       );
-      expect(TagMapper.toNewEntity).toHaveBeenCalledWith(
-        mockGeneralPageDTO.tag,
-      );
     });
 
-    it("should throw an error if GeneralPageDTO is invalid", () => {
-      const invalidGeneralPageDTO: GeneralPageDTO = {
-        ...mockGeneralPageDTO,
-        page_title: "",
-      };
-
-      expect(() =>
-        GeneralPageMapper.toNewEntity(invalidGeneralPageDTO),
-      ).toThrow("Failed to map GeneralPageDTO to New Entity");
+    it("should throw an error if GeneralPageDTO page title is invalid", () => {
+      invalidDTO.page_title = "";
+      expect(() => GeneralPageMapper.toNewEntity(invalidDTO)).toThrow(ZodError);
     });
+
+    // Other cases of validation in schema failing - either due to constraints, types or similar
+    // are covered in unit tests in @/backend/domain/entity/__tests__/GeneralPage.test.ts
   });
 
   describe("toEntity", () => {
     it("should map a GeneralPageModel to a GeneralPage entity", () => {
-      (TagMapper.toEntity as jest.Mock).mockReturnValue(mockGeneralPage.tag);
-
-      const result = GeneralPageMapper.toEntity(mockGeneralPageModel);
-
-      expect(result).toEqual({
-        ...mockGeneralPage,
-        createdAt: new Date(mockGeneralPageModel.date_created),
-        updatedAt: new Date(mockGeneralPageModel.date_modified),
-      });
-      expect(TagMapper.toEntity).toHaveBeenCalledWith({
-        tagID: mockGeneralPageModel.tagID,
-        tag_label: mockGeneralPageModel.tag_label!,
-      });
-    });
-
-    it("should throw an error if GeneralPageModel is invalid", () => {
-      const invalidGeneralPageModel: GeneralPageModel = {
-        ...mockGeneralPageModel,
-        pageID: -1,
-      };
-
-      expect(() => GeneralPageMapper.toEntity(invalidGeneralPageModel)).toThrow(
-        "Failed to map GeneralPageModel to Entity",
+      const result = GeneralPageMapper.toEntity(generalPageModel);
+      expect(result).toEqual(
+        expect.objectContaining({
+          pageID: brandedPageID,
+          pageType: generalPageEntity.pageType,
+          pageTitle: generalPageEntity.pageTitle,
+          pageIcon: generalPageEntity.pageIcon,
+          pageColor: generalPageEntity.pageColor,
+          archived: generalPageEntity.archived,
+          pinned: generalPageEntity.pinned,
+          tag: generalPageEntity.tag,
+          parentID: generalPageEntity.parentID,
+        }),
       );
     });
+
+    it("should throw an error if GeneralPageModel page title is invalid", () => {
+      invalidModel.page_title = "";
+      expect(() => GeneralPageMapper.toEntity(invalidModel)).toThrow(ZodError);
+    });
+
+    // Other cases of validation in schema failing - either due to constraints, types or similar
+    // are covered in unit tests in @/backend/domain/entity/__tests__/GeneralPage.test.ts
+  });
+
+  describe("toUpdatedEntity", () => {
+    it("should map a GeneralPageDTO to a GeneralPage entity", () => {
+      const result = GeneralPageMapper.toUpdatedEntity(generalPageDTO);
+      expect(result).toEqual(
+        expect.objectContaining({
+          pageID: brandedPageID,
+          pageType: generalPageEntity.pageType,
+          pageTitle: generalPageEntity.pageTitle,
+          pageIcon: generalPageEntity.pageIcon,
+          pageColor: generalPageEntity.pageColor,
+          archived: generalPageEntity.archived,
+          pinned: generalPageEntity.pinned,
+          tag: generalPageEntity.tag,
+          parentID: generalPageEntity.parentID,
+        }),
+      );
+    });
+
+    it("should throw an error if GeneralPageDTO page title is invalid", () => {
+      invalidDTO.page_title = "";
+      expect(() => GeneralPageMapper.toUpdatedEntity(invalidDTO)).toThrow(
+        ZodError,
+      );
+    });
+
+    // Other cases of validation in schema failing - either due to constraints, types or similar
+    // are covered in unit tests in @/backend/domain/entity/__tests__/GeneralPage.test.ts
   });
 });

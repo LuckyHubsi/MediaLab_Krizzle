@@ -13,6 +13,7 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function TagManagementScreen() {
   const { tagService } = useServices();
@@ -60,13 +61,23 @@ export default function TagManagementScreen() {
       let success = false;
 
       if (editMode && editingTag) {
-        success = await tagService.updateTag({
+        const result = await tagService.updateTag({
           ...editingTag,
           tag_label: trimmedTag,
         });
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+        }
       } else {
         const newTagObject: TagDTO = { tag_label: trimmedTag };
-        success = await tagService.insertTag(newTagObject);
+        const result = await tagService.insertTag(newTagObject);
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+        }
       }
 
       if (success) setShouldRefetch(true);
@@ -83,8 +94,12 @@ export default function TagManagementScreen() {
 
   const deleteTag = async (tagID: number) => {
     try {
-      const success = await tagService.deleteTagByID(tagID);
-      if (success) setShouldRefetch(true);
+      const result = await tagService.deleteTagByID(tagID);
+      if (result.success) {
+        setShouldRefetch(true);
+      } else {
+        // TODO: show error modal
+      }
     } catch (error) {
       console.error("Failed to delete tag:", error);
     }
@@ -100,8 +115,12 @@ export default function TagManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const tagData = await tagService.getAllTags();
-        if (tagData) setTags(tagData);
+        const result = await tagService.getAllTags();
+        if (result.success) {
+          if (result.value) setTags(result.value);
+        } else {
+          // TODO: show the error modal
+        }
       } catch (error) {
         console.error("Failed to load tags:", error);
       }
@@ -115,8 +134,12 @@ export default function TagManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const tagData = await tagService.getAllTags();
-        if (tagData) setTags(tagData);
+        const result = await tagService.getAllTags();
+        if (result.success) {
+          if (result.value) setTags(result.value);
+        } else {
+          // TODO: show the error modal
+        }
       } catch (error) {
         console.error("Failed to refresh tags:", error);
       } finally {

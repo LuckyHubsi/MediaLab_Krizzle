@@ -150,22 +150,34 @@ export default function FolderScreen() {
         if (!folderId) return;
 
         try {
-          const folderData = await folderService.getFolder(Number(folderId));
-          setFolder(folderData);
-          const fetchedWidgets =
+          const result = await folderService.getFolder(Number(folderId));
+          if (result.success) {
+            setFolder(result.value);
+          } else {
+            // TODO: show error modal
+          }
+          const resultFolder =
             await generalPageService.getAllFolderGeneralPageData(
               sortingMode,
               Number(folderId),
             );
-          const enrichedWidgets = mapToEnrichedWidgets(fetchedWidgets);
-          setWidgets(enrichedWidgets);
+          if (resultFolder.success) {
+            const enrichedWidgets = mapToEnrichedWidgets(resultFolder.value);
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading folder:", error);
         }
 
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            setTags(result.value);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
@@ -539,11 +551,15 @@ export default function FolderScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(
-                  Number(selectedWidget.id),
-                );
-              setShouldReload(successfullyDeleted);
+              const result = await generalPageService.deleteGeneralPage(
+                Number(selectedWidget.id),
+              );
+
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+              }
               setSelectedWidget(null);
               showSnackbar("Widget deleted", "bottom", "success");
             } catch (error) {

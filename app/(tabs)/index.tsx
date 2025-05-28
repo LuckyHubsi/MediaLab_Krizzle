@@ -33,6 +33,7 @@ import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -120,16 +121,26 @@ export default function HomeScreen() {
     useCallback(() => {
       (async () => {
         try {
-          const pinnedData = await generalPageService.getAllGeneralPageData(
+          const pinnedResult = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
-          const pinnedEnrichedWidgets = mapToEnrichedWidgets(pinnedData);
-          setPinnedWidgets(pinnedEnrichedWidgets);
+          if (pinnedResult.success) {
+            const pinnedEnrichedWidgets = mapToEnrichedWidgets(
+              pinnedResult.value,
+            );
+            setPinnedWidgets(pinnedEnrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
 
-          const data =
+          const result =
             await generalPageService.getAllGeneralPageData(sortingMode);
-          const enrichedWidgets = mapToEnrichedWidgets(data);
-          setWidgets(enrichedWidgets);
+          if (result.success) {
+            const enrichedWidgets = mapToEnrichedWidgets(result.value);
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
@@ -137,8 +148,12 @@ export default function HomeScreen() {
 
       (async () => {
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            if (result.value) setTags(result.value);
+          } else {
+            // TODO: show the error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
@@ -377,11 +392,15 @@ export default function HomeScreen() {
                   pinnedWidgets.length < 4) ||
                 (selectedWidget && selectedWidget?.pinned)
               ) {
-                const success = await generalPageService.togglePagePin(
+                const result = await generalPageService.togglePagePin(
                   Number(selectedWidget.id),
                   selectedWidget.pinned,
                 );
-                setShouldReload(success);
+                if (result.success) {
+                  setShouldReload(true);
+                } else {
+                  // TODO: show error modal
+                }
               }
             },
           },
@@ -395,24 +414,25 @@ export default function HomeScreen() {
             icon: "archive",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
+                const result = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
-                if (success) {
+                if (result.success) {
                   showSnackbar(
-                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
                     "bottom",
                     "success",
                   );
+                  setShouldReload(true);
                 } else {
+                  // TODO: show error modal
                   showSnackbar(
-                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
                     "bottom",
                     "error",
                   );
                 }
-                setShouldReload(success);
               }
             },
           },
@@ -465,11 +485,17 @@ export default function HomeScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const successfullyDeleted =
-                await generalPageService.deleteGeneralPage(
-                  Number(selectedWidget.id),
-                );
-              setShouldReload(successfullyDeleted);
+              const result = await generalPageService.deleteGeneralPage(
+                Number(selectedWidget.id),
+              );
+
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+                console.log(result.error.type);
+                console.log(result.error.message);
+              }
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

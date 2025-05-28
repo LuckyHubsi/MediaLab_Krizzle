@@ -56,8 +56,13 @@ export default function ResetDatabaseScreen() {
         title={"all your Data"}
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
-          resetDatabase();
-          setShowDeleteModal(false);
+          const result = await resetDatabase();
+
+          if (!result.success) {
+            // TODO: show error modal
+          }
+
+          setShowDeleteModal(false); // ✅ only close modal on success
         }}
         onclose={() => setShowDeleteModal(false)}
       />

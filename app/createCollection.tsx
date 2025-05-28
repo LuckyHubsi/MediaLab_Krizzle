@@ -49,6 +49,7 @@ export default function CollectionTemplateScreen() {
       categories: lists,
       tag: collectionData.selectedTag,
       pin_count: 0,
+      parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
     const attributes: AttributeDTO[] = collectionData.templates.map(
@@ -64,7 +65,7 @@ export default function CollectionTemplateScreen() {
     );
 
     const template: ItemTemplateDTO = {
-      template_name: `${collectionData.title} template`,
+      template_name: `${collectionData.title}`,
       attributes: attributes,
     };
 
@@ -74,14 +75,18 @@ export default function CollectionTemplateScreen() {
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
-    const pageId = await collectionService.saveCollection(
+    const result = await collectionService.saveCollection(
       dtos.collection,
       dtos.template,
     );
-    router.replace({
-      pathname: "/collectionPage",
-      params: { pageId: pageId, title: collectionData.title },
-    });
+    if (result.success) {
+      router.replace({
+        pathname: "/collectionPage",
+        params: { pageId: result.value, title: collectionData.title },
+      });
+    } else {
+      // TODO: show error modal
+    }
   };
 
   return (

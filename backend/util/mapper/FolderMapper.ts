@@ -45,8 +45,8 @@ export class FolderMapper {
         folderName: dto.folderName,
       });
     } catch (error: any) {
-      console.error("Error mapping FolderDTO to New Entity:", error.issues);
-      throw new Error("Failed to map FolderDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -62,11 +62,10 @@ export class FolderMapper {
       return folderSchema.parse({
         folderID: dto.folderID,
         folderName: dto.folderName,
-        itemCount: dto.itemCount || 0,
       });
     } catch (error: any) {
-      console.error("Error mapping FolderDTO to Updated Entity:", error.issues);
-      throw new Error("Failed to map FolderDTO to Updated Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -85,8 +84,8 @@ export class FolderMapper {
         itemCount: model.item_count,
       });
     } catch (error: any) {
-      console.error("Error mapping FolderModel to Entity:", error.issues);
-      throw new Error("Failed to map FolderModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

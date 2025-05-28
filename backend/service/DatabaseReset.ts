@@ -1,6 +1,9 @@
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import { reloadAsync } from "expo-updates";
+import { failure, Result, success } from "@/shared/result/Result";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { ResetErrorMessages } from "@/shared/error/ErrorMessages";
 
 const DB_NAME = "krizzle_local.db";
 const DB_PATH = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
@@ -8,9 +11,12 @@ const DB_PATH = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
 /**
  * Resets the local SQLite database by deleting the database file and reloading the app. For development purposes only.
  *
- * @returns {Promise<void>} A promise that resolves when the database reset process is complete.
+ * @returns {Promise<Result<boolean, ServiceErrorType>>} A promise that resolves to a result either containing true if the
+ * database reset process is complete or a ServiceTypeError if it fails.
  */
-export async function resetDatabase() {
+export async function resetDatabase(): Promise<
+  Result<boolean, ServiceErrorType>
+> {
   try {
     // check if database file exists
     const dbInfo = await FileSystem.getInfoAsync(DB_PATH);
@@ -21,10 +27,18 @@ export async function resetDatabase() {
       // reload app to reinitialize database
       await reloadAsync();
     } else {
-      Alert.alert("Database Not Found", "The database file does not exist.");
+      return failure({
+        type: "Data Error",
+        message: ResetErrorMessages.fail,
+      });
     }
+
+    return success(true);
   } catch (error) {
     console.error("Error resetting database:", error);
-    Alert.alert("Error", "Failed to reset the database.");
+    return failure({
+      type: "Data Error",
+      message: ResetErrorMessages.fail,
+    });
   }
 }

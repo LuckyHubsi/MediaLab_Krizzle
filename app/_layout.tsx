@@ -23,6 +23,7 @@ import { UserThemeProvider } from "@/context/ThemeContext";
 import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
 import { RepositoryProvider } from "@/context/RepositoryContext";
 import { ServiceProvider } from "@/context/ServiceContext";
+import * as ImagePicker from "expo-image-picker";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,9 +43,12 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  useEffect(() => {
+    (async () => {
+      await ImagePicker.requestCameraPermissionsAsync();
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    })();
+  }, []);
 
   return (
     <UserThemeProvider>
@@ -121,6 +125,10 @@ export default function RootLayout() {
                   />
                   <Stack.Screen
                     name="folderPage"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="editCollectionTemplate"
                     options={{ headerShown: false }}
                   />
                 </Stack>

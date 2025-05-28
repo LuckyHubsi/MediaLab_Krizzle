@@ -38,15 +38,13 @@ export const TagScrollView = styled.ScrollView`
 
 export const TagPill = styled.View<{
   isSelected: boolean;
-  colorScheme: ColorSchemeProps;
+  colorScheme: string;
 }>`
   flex-direction: row;
-  margin-top: 3px;
   align-items: center;
-  min-width: 50px;
-  padding: 5px 15px;
-  margin-right: 4px;
-  border-radius: 33px;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 20px;
   background-color: ${({
     isSelected,
     colorScheme,

@@ -7,4 +7,15 @@ export type ItemAttributeValueDTO =
       valueID?: number;
       itemID?: number;
       valueMultiselect?: string[];
+    })
+  | (AttributeDTO & {
+      valueID?: number;
+      itemID?: number;
+      valueString?: string;
+    })
+  | (AttributeDTO & {
+      valueID?: number;
+      itemID?: number;
+      valueString?: string;
+      displayText?: string;
     });

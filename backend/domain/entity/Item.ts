@@ -64,6 +64,23 @@ const multiselectValue = itemAttributeBase.extend({
 });
 
 /**
+ * Schema for image attribute values.
+ */
+const imageValue = itemAttributeBase.extend({
+  type: z.literal(AttributeType.Image),
+  valueString: common.string750.optional().nullable(),
+});
+
+/**
+ * Schema for link attribute values.
+ */
+const linkValue = itemAttributeBase.extend({
+  type: z.literal(AttributeType.Link),
+  valueString: common.string750.optional().nullable(),
+  displayText: common.string30.optional().nullable(),
+});
+
+/**
  * Schema for attribute values - can be of either type.
  */
 export const itemAttributeValueSchema = z.discriminatedUnion("type", [
@@ -71,6 +88,8 @@ export const itemAttributeValueSchema = z.discriminatedUnion("type", [
   dateValue,
   ratingValue,
   multiselectValue,
+  imageValue,
+  linkValue,
 ]);
 
 /**
@@ -125,6 +144,12 @@ export const previewItemSchema = z.object({
       common.string750,
       z.number().int().min(0).max(5),
       z.date(),
+      z
+        .object({
+          value: common.string750,
+          displayText: common.string30.optional().nullable(),
+        })
+        .nullable(),
       z.array(common.string30).min(0).max(20),
       z.null(),
     ]),

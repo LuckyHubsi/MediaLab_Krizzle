@@ -8,6 +8,7 @@ import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { TagMapper } from "./TagMapper";
 import { NoteModel } from "@/backend/repository/model/NoteModel";
 import { pageID } from "@/backend/domain/common/IDs";
+import { GeneralPageMapper } from "./GeneralPageMapper";
 
 /**
  * Mapper class for converting between Note domain entities, DTOs, and database models:
@@ -38,6 +39,7 @@ export class NoteMapper {
       noteID: entity.noteID,
       note_content: entity.noteContent,
       pin_count: entity.pinCount,
+      parentID: entity.parentID,
     };
   }
 
@@ -50,20 +52,15 @@ export class NoteMapper {
    */
   static toNewEntity(dto: NoteDTO): NewNote {
     try {
+      const generalPage = GeneralPageMapper.toNewEntity(dto);
       const parsedDTO = createNewNote.parse({
-        pageType: dto.page_type,
-        pageTitle: dto.page_title,
-        pageIcon: dto.page_icon,
-        pageColor: dto.page_color,
-        archived: dto.archived,
-        pinned: dto.pinned,
-        tag: dto.tag ? TagMapper.toUpdatedEntity(dto.tag) : null,
+        ...generalPage,
         noteContent: dto.note_content,
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping NoteDTO to New Entity:", error);
-      throw new Error("Failed to map NoteDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -76,31 +73,16 @@ export class NoteMapper {
    */
   static toEntity(model: NoteModel): Note {
     try {
+      const generalPage = GeneralPageMapper.toEntity(model);
       return noteSchema.parse({
-        pageID: pageID.parse(model.pageID),
-        pageType: model.page_type,
-        pageTitle: model.page_title,
-        pageIcon: model.page_icon,
-        pageColor: model.page_color,
-        archived: model.archived === 1,
-        pinned: model.pinned === 1,
-        tag:
-          model.tagID && model.tag_label
-            ? TagMapper.toEntity({
-                tagID: model.tagID,
-                tag_label: model.tag_label,
-                usage_count: 0,
-              })
-            : null,
-        createdAt: new Date(model.date_created),
-        updatedAt: new Date(model.date_modified),
+        ...generalPage,
         noteID: model.noteID,
         noteContent: model.note_content,
         pinCount: model.pin_count,
       });
     } catch (error) {
-      console.error("Error mapping NoteModel to Entity:", error);
-      throw new Error("Failed to map NoteModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

@@ -16,7 +16,7 @@ import { TagDTO } from "@/shared/dto/TagDTO";
 interface TagPickerProps {
   tags: TagDTO[];
   selectedTag: TagDTO | null;
-  onSelectTag: (tag: TagDTO) => void;
+  onSelectTag: (tag: TagDTO | null) => void;
   onViewAllPress: () => void;
 }
 
@@ -34,7 +34,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         <ThemedText fontSize="regular" fontWeight="regular">
           Choose a Tag
         </ThemedText>
-        <EditTextContainer>
+        <EditTextContainer onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
             Edit Tags
             <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
@@ -48,7 +48,13 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           return (
             <TouchableOpacity
               key={tag.tagID}
-              onPress={() => onSelectTag(tag)}
+              onPress={() => {
+                if (isSelected) {
+                  onSelectTag(null); // Deselect
+                } else {
+                  onSelectTag(tag); // Select
+                }
+              }}
               style={{
                 height: 48,
                 alignItems: "center",

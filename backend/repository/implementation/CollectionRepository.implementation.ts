@@ -4,7 +4,7 @@ import { CollectionModel } from "../model/CollectionModel";
 import { PageType } from "@/shared/enum/PageType";
 import { CollectionMapper } from "@/backend/util/mapper/CollectionMapper";
 import { Collection } from "@/backend/domain/entity/Collection";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   collectionSelectByPageIdQuery,
   insertCollectionQuery,
@@ -38,7 +38,7 @@ export class CollectionRepositoryImpl
    *
    * @param pageID - A `PageID` representing the page ID the collection belongs to.
    * @returns A Promise resolving to `Collection`.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails or if result is null.
    */
   async getCollection(pageID: PageID): Promise<Collection> {
     try {
@@ -47,11 +47,11 @@ export class CollectionRepositoryImpl
         [pageID],
       );
       if (!collectionData || collectionData.page_type !== PageType.Collection) {
-        throw new RepositoryError("Failed to fetch page.");
+        throw new RepositoryErrorNew("Not Found");
       }
       return CollectionMapper.toEntity(collectionData);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -62,7 +62,7 @@ export class CollectionRepositoryImpl
    * @param templateId - A `ItemTemplateID` representing the template ID the collection uses.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the transaction fails.
    */
   async insertCollection(
     pageId: PageID,
@@ -84,7 +84,7 @@ export class CollectionRepositoryImpl
       );
       return collectionID.parse(collectionId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert collection.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 }

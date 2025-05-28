@@ -6,7 +6,7 @@ import {
 import { SQLiteDatabase } from "expo-sqlite";
 import { CollectionCategoryRepository } from "../interfaces/CollectionCategoryRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteCategoryQuery,
   insertCollectionCategoryQuery,
@@ -43,7 +43,7 @@ export class CollectionCategoryRepositoryImpl
    * @param collectionId - A `CollectionID` representing the collection it belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertCategory(
     category: NewCollectionCategory,
@@ -57,7 +57,7 @@ export class CollectionCategoryRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to insert category.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -66,7 +66,7 @@ export class CollectionCategoryRepositoryImpl
    *
    * @param collectionId - A `CollectionID` representing the collection it belongs to.
    * @returns A Promise resolving to an array of `CollectionCategory`.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getCategoriesByCollectionID(
     collectionId: CollectionID,
@@ -76,9 +76,21 @@ export class CollectionCategoryRepositoryImpl
         selectCategoriesByCollectionIdQuery,
         [collectionId],
       );
-      return categories.map(CollectionCategoryMapper.toEntity);
+      const validCategories: CollectionCategory[] = [];
+
+      for (const model of categories) {
+        try {
+          const category = CollectionCategoryMapper.toEntity(model);
+          validCategories.push(category);
+        } catch (err) {
+          // skipping invalid categories (categories that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+
+      return validCategories;
     } catch (error) {
-      throw new RepositoryError("Failed to retrieve categories.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -88,7 +100,7 @@ export class CollectionCategoryRepositoryImpl
    * @param category - A `NewCollectionCategory` with a label to save.
    * @param categoryId - A `CollectionCategoryID` representing the category ID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateCategory(
     category: NewCollectionCategory,
@@ -101,7 +113,7 @@ export class CollectionCategoryRepositoryImpl
       ]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update category.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -110,14 +122,14 @@ export class CollectionCategoryRepositoryImpl
    *
    * @param categoryId - A `CollectionCategoryID` representing the category ID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deleteCategory(categoryId: CategoryID): Promise<boolean> {
     try {
       await this.executeQuery(deleteCategoryQuery, [categoryId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to delete category.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 }

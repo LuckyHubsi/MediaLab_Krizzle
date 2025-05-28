@@ -36,6 +36,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { PageType } from "@/shared/enum/PageType";
 import { useServices } from "@/context/ServiceContext";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 interface CreateCollectionProps {
   data: {
@@ -114,8 +115,12 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const tagData = await tagService.getAllTags();
-          if (tagData) setTags(tagData);
+          const result = await tagService.getAllTags();
+          if (result.success) {
+            if (result.value) setTags(result.value);
+          } else {
+            // TODO: show the error modal
+          }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }

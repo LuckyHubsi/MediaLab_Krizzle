@@ -2,7 +2,7 @@ import { Folder, NewFolder } from "@/backend/domain/entity/Folder";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { folderID, FolderID } from "@/backend/domain/common/IDs";
 import { FolderRepository } from "../interfaces/FolderRepository.interface";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteFolderByIDQuery,
   insertFolderQuery,
@@ -34,19 +34,14 @@ export class FolderRepositoryImpl
    *
    * @param folder - A `NewFolder` object containing the tag label.
    * @returns A Promise resolving to `true` if insertion succeeded.
-   * @throws RepositoryError if the insertion fails.
+   * @throws RepositoryErrorNew if the insertion fails.
    */
   async insertFolder(folder: NewFolder): Promise<boolean> {
     try {
-      const folderId = await this.executeTransaction(async (txn) => {
-        await this.executeQuery(insertFolderQuery, [folder.folderName], txn);
-
-        const lastInsertedID = await this.getLastInsertId(txn);
-        return lastInsertedID;
-      });
+      await this.executeQuery(insertFolderQuery, [folder.folderName]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to insert folder.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -54,14 +49,26 @@ export class FolderRepositoryImpl
    * Retrieves all folders from the database.
    *
    * @returns A Promise resolving to an array of `Folder` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolders(): Promise<Folder[]> {
     try {
       const result = await this.fetchAll<FolderModel>(selectAllFoldersQuery);
-      return result.map(FolderMapper.toEntity);
+      const validFolders: Folder[] = [];
+
+      for (const model of result) {
+        try {
+          const folder = FolderMapper.toEntity(model);
+          validFolders.push(folder);
+        } catch (err) {
+          // skipping invalide folders (folders that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+
+      return validFolders;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all folders.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -69,7 +76,7 @@ export class FolderRepositoryImpl
    * Retrieves a folder from the database by its ID.
    *
    * @returns A Promise resolving to a `Folder` domain entity.
-   * @throws RepositoryError if the fetch fails.
+   * @throws RepositoryErrorNew if the fetch fails or if the folder was not found.
    */
   async getFolderByID(folderId: FolderID): Promise<Folder> {
     try {
@@ -79,9 +86,9 @@ export class FolderRepositoryImpl
       if (result !== null) {
         return FolderMapper.toEntity(result);
       }
-      throw new RepositoryError("Folder not found.");
+      throw new RepositoryErrorNew("Not Found");
     } catch (error) {
-      throw new RepositoryError("Failed to fetch the folder.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -91,7 +98,7 @@ export class FolderRepositoryImpl
    * @param folderId - The ID of the folder to update.
    * @param folderName - The new name for the folder.
    * @returns A Promise resolving to `true` if update succeeded.
-   * @throws RepositoryError if the update fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateFolderByID(
     folderId: FolderID,
@@ -101,7 +108,7 @@ export class FolderRepositoryImpl
       await this.executeQuery(updateFolderByIDQuery, [folderName, folderId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update folder.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -110,14 +117,14 @@ export class FolderRepositoryImpl
    *
    * @param folderId - The ID of the folder to delete.
    * @returns A Promise resolving to `true` if deletion is successful.
-   * @throws RepositoryError if the deletion fails.
+   * @throws RepositoryErrorNew if the deletion fails.
    */
   async deleteFolderByID(folderId: FolderID): Promise<boolean> {
     try {
       await this.executeQuery(deleteFolderByIDQuery, [folderId]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to delete folder.");
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 }

@@ -50,8 +50,8 @@ export class ItemTemplateMapper {
       });
       return parsedDTO;
     } catch (error) {
-      console.error("Error mapping ItemTemplateDTO to New Entity");
-      throw new Error("Failed to map ItemTemplateDTO to New Entity");
+      console.error(error);
+      throw error;
     }
   }
 
@@ -74,8 +74,8 @@ export class ItemTemplateMapper {
         attributes: parsedAttributes,
       });
     } catch (error) {
-      console.error("Error mapping ItemTemplateModel to Entity:", error);
-      throw new Error("Failed to map ItemTemplateModel to Entity");
+      console.error(error);
+      throw error;
     }
   }
 }

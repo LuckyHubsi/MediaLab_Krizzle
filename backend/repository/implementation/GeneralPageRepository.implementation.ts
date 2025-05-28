@@ -5,7 +5,7 @@ import {
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
@@ -51,18 +51,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their last modified date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByModified(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByLastModifiedQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalid pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError(
-        "Failed to fetch all pages sorted by last modified.",
-      );
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -70,16 +79,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by alphabet (ascending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByAlphabet(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByAlphabetQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -87,16 +107,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their creation date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPagesSortedByCreated(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPagesByCreatedQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -105,7 +136,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByModified(
     folderId: FolderID,
@@ -115,11 +146,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByLastModifiedAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError(
-        "Failed to fetch all pages sorted by last modified.",
-      );
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -128,7 +168,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByAlphabet(
     folderId: FolderID,
@@ -138,9 +178,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByAlphabetAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -149,7 +200,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllFolderPagesSortedByCreated(
     folderId: FolderID,
@@ -159,9 +210,20 @@ export class GeneralPageRepositoryImpl
         selectAllPagesByCreatedAndParentIDQuery,
         [folderId],
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -169,16 +231,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all pinned general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllPinnedPages(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllPinnedPagesQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -186,16 +259,27 @@ export class GeneralPageRepositoryImpl
    * Fetches all archived general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getAllArchivedPages(): Promise<GeneralPage[]> {
     try {
       const result = await this.fetchAll<GeneralPageModel>(
         selectAllArchivedPagesQuery,
       );
-      return result.map(GeneralPageMapper.toEntity);
+      const validPages: GeneralPage[] = [];
+
+      for (const model of result) {
+        try {
+          const page = GeneralPageMapper.toEntity(model);
+          validPages.push(page);
+        } catch (err) {
+          // skipping invalide pages (pages that failed to be mapped to the domain entity)
+          continue;
+        }
+      }
+      return validPages;
     } catch (error) {
-      throw new RepositoryError("Failed to fetch all pages.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -204,7 +288,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to a `GeneralPage` domain entity.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails or if the page was not found.
    */
   async getByPageID(pageID: PageID): Promise<GeneralPage> {
     try {
@@ -212,13 +296,13 @@ export class GeneralPageRepositoryImpl
         selectGeneralPageByIdQuery,
         [pageID],
       );
-      if (result) {
+      if (result !== null) {
         return GeneralPageMapper.toEntity(result);
       } else {
-        throw new RepositoryError("Failed to fetch page by id.");
+        throw new RepositoryErrorNew("Not Found");
       }
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page by id.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -228,26 +312,24 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param updatedPage - A NewGeneralPage entity.
    * @returns A Promise resolving to a boolean.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateGeneralPageData(
     pageID: PageID,
     updatedPage: NewGeneralPage,
   ): Promise<boolean> {
     try {
-      const pageModel: Omit<GeneralPageModel, "pageID"> =
-        GeneralPageMapper.toInsertModel(updatedPage);
       await this.executeQuery(updatePageByIDQuery, [
-        pageModel.page_title,
-        pageModel.page_icon,
-        pageModel.page_color,
-        pageModel.tagID,
-        pageModel.date_modified,
+        updatedPage.pageTitle,
+        updatedPage.pageIcon,
+        updatedPage.pageColor,
+        updatedPage.tag?.tagID ?? null,
+        updatedPage.updatedAt.toISOString(),
         pageID,
       ]);
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update page.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -257,28 +339,27 @@ export class GeneralPageRepositoryImpl
    * @param page - A `NewGeneralPage` entity.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to a PageID.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertPage(
     page: NewGeneralPage,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<PageID> {
     try {
-      const model = GeneralPageMapper.toInsertModel(page);
       const pageId = await this.executeTransaction(async (transaction) => {
         await this.executeQuery(
           insertNewPageQuery,
           [
-            model.page_type,
-            model.page_title,
-            model.page_icon,
-            model.page_color,
-            model.date_created,
-            model.date_modified,
-            model.archived ? 1 : 0,
-            model.pinned ? 1 : 0,
-            model.tagID,
-            model.parentID,
+            page.pageType,
+            page.pageTitle,
+            page.pageIcon,
+            page.pageColor,
+            page.createdAt.toISOString(),
+            page.updatedAt.toISOString(),
+            page.archived ? 1 : 0,
+            page.pinned ? 1 : 0,
+            page.tag?.tagID ?? null,
+            page.parentID,
           ],
           txn ?? transaction,
         );
@@ -288,7 +369,7 @@ export class GeneralPageRepositoryImpl
       });
       return pageID.parse(pageId);
     } catch (error) {
-      throw new RepositoryError("Failed to insert page.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -297,14 +378,18 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the delete fails.
    */
   async deletePage(pageID: PageID): Promise<boolean> {
     try {
-      await this.executeQuery(deleteGeneralPageByIDQuery, [pageID]);
-      return true;
+      return await this.executeTransaction(async (txn) => {
+        await this.executeQuery(deleteGeneralPageByIDQuery, [pageID], txn);
+
+        return true;
+      });
     } catch (error) {
-      throw new RepositoryError("Failed to delete teh page");
+      console.error("Error in deletePage:", error);
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 
@@ -314,7 +399,7 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param currentPinStatus - A boolean representing the current pin status.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
     try {
@@ -332,7 +417,7 @@ export class GeneralPageRepositoryImpl
 
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update pinned state");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -342,7 +427,7 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param currentArchiveStatus - A boolean representing the current archive status.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateArchive(
     pageID: PageID,
@@ -363,7 +448,7 @@ export class GeneralPageRepositoryImpl
 
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update pinned state");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -373,7 +458,7 @@ export class GeneralPageRepositoryImpl
    * @param pageId - A branded pageID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateDateModified(
     pageId: PageID,
@@ -387,7 +472,7 @@ export class GeneralPageRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryError("Failed to update last modified date");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 
@@ -397,7 +482,7 @@ export class GeneralPageRepositoryImpl
    * @param pageId - A branded pageID.
    * @param parentId - A branded folderID to which the page should be moved.
    * @returns A Promise resolving to true if successful.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateParentID(
     pageId: PageID,
@@ -405,10 +490,9 @@ export class GeneralPageRepositoryImpl
   ): Promise<boolean> {
     try {
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);
-      const allpages = await this.fetchAll("SELECT * FROM general_page_data");
       return true;
     } catch (error) {
-      throw new RepositoryError("Failed to update parent folderID");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }

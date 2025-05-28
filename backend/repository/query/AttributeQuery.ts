@@ -10,6 +10,18 @@ const insertRatingSymbolQuery: string = `
     INSERT INTO rating_symbol (symbol, attributeID) VALUES (?, ?)
 `;
 
+const updateAttributeQuery: string = `
+    UPDATE attribute SET attribute_label = ?, preview = ? WHERE attributeID = ?;
+`;
+
+const updateMultiselectOptionsQuery: string = `
+    UPDATE multiselect_options SET options = ? WHERE attributeID = ?;
+`;
+
+const updateRatingSymbolQuery: string = `
+    UPDATE rating_symbol SET symbol = ? WHERE attributeID = ?;
+`;
+
 const selectPreviewAttributesQuery: string = `
     SELECT
         a.attributeID,
@@ -46,5 +58,8 @@ export {
   insertAttributeQuery,
   insertMultiselectOptionsQuery,
   insertRatingSymbolQuery,
+  updateAttributeQuery,
   selectPreviewAttributesQuery,
+  updateMultiselectOptionsQuery,
+  updateRatingSymbolQuery,
 };

@@ -1,7 +1,6 @@
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
 import { CollectionRepository } from "../repository/interfaces/CollectionRepository.interface";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
-import { ServiceError } from "../util/error/ServiceError";
 import { CollectionMapper } from "../util/mapper/CollectionMapper";
 import { ItemTemplateMapper } from "../util/mapper/ItemTemplateMapper";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
@@ -18,6 +17,18 @@ import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { collectionCategoryID } from "../domain/entity/CollectionCategory";
 import { ItemsDTO } from "@/shared/dto/ItemsDTO";
 import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
+import * as FileSystem from "expo-file-system";
+import { Item } from "@/backend/domain/entity/Item";
+import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
+import { ZodError } from "zod";
+import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import {
+  CategoryErrorMessages,
+  CollectionErrorMessages,
+  ItemErrorMessages,
+} from "@/shared/error/ErrorMessages";
+import { failure, Result, success } from "@/shared/result/Result";
+import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 /**
  * CollectionService encapsulates all collection-related application logic.
@@ -43,19 +54,38 @@ export class CollectionService {
    * Fetch collection by its pageID.
    *
    * @param pageId - A number representing the collection's pageID.
-   * @returns A Promise resolving to a `CollectionDTO` object.
-   * @throws ServiceError if retrieval fails.
+   * @returns  Promise resolving to a `Result` containing either a `CollectionDTO` or `ServiceTypeError`.
    */
-  async getCollectionByPageId(pageId: number): Promise<CollectionDTO> {
+  async getCollectionByPageId(
+    pageId: number,
+  ): Promise<Result<CollectionDTO, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
       const collection = await this.collectionRepo.getCollection(brandedPageID);
-      if (!collection) {
-        throw new ServiceError("Collection not found.");
-      }
-      return CollectionMapper.toDTO(collection);
+      return success(CollectionMapper.toDTO(collection));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: CollectionErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: CollectionErrorMessages.loadingCollection,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CollectionErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -73,73 +103,93 @@ export class CollectionService {
    *
    * @param collectionDTO - The collectionDTO containing all data needed to create the collection.
    * @param templateDTO - The templateDTO containing all data needed to create the template.
-   * @returns A promise that resolves to a pageID if the collection is saved successfully, or rejects with an error.
-   *
-   * @throws ServiceError if insert fails.
+   * @returns Promise resolving to a `Result` containing either a `number` (new pageID) or `ServiceTypeError`.
    */
   async saveCollection(
     collectionDTO: CollectionDTO,
     templateDTO: ItemTemplateDTO,
-  ): Promise<number> {
+  ): Promise<Result<number, ServiceErrorType>> {
     try {
       // validate the user input
       const collection = CollectionMapper.toNewEntity(collectionDTO);
       const template = ItemTemplateMapper.toNewEntity(templateDTO);
 
-      const pageId = this.baseRepo.executeTransaction<number>(async (txn) => {
-        // 1. Insert general page, retrieve ID
-        const retrievedPageId = await this.generalPageRepo.insertPage(
-          collection,
-          txn,
-        );
+      const pageId = await this.baseRepo.executeTransaction<number>(
+        async (txn) => {
+          // 1. Insert general page, retrieve ID
+          const retrievedPageId = await this.generalPageRepo.insertPage(
+            collection,
+            txn,
+          );
 
-        // 2. Insert template, retrieve ID
-        const templateId = await this.templateRepo.insertTemplateAndReturnID(
-          template,
-          txn,
-        );
+          // 2. Insert template, retrieve ID
+          const templateId = await this.templateRepo.insertTemplateAndReturnID(
+            template,
+            txn,
+          );
 
-        // 3. Insert all Attributes
-        for (const attr of template.attributes) {
-          const attributeID = await this.attributeRepo.insertAttribute(
-            attr,
+          // 3. Insert all Attributes
+          for (const attr of template.attributes) {
+            const attributeID = await this.attributeRepo.insertAttribute(
+              attr,
+              templateId,
+              txn,
+            );
+
+            if (attr.type === AttributeType.Multiselect && attr.options) {
+              await this.attributeRepo.insertMultiselectOptions(
+                attr.options,
+                attributeID,
+                txn,
+              );
+            } else if (attr.type === AttributeType.Rating && attr.symbol) {
+              await this.attributeRepo.insertRatingSymbol(
+                attr.symbol,
+                attributeID,
+                txn,
+              );
+            }
+          }
+
+          // 4. Inserts Collection, retrieves ID
+          const collectionId = await this.collectionRepo.insertCollection(
+            retrievedPageId,
             templateId,
             txn,
           );
 
-          if (attr.type === AttributeType.Multiselect && attr.options) {
-            await this.attributeRepo.insertMultiselectOptions(
-              attr.options,
-              attributeID,
-              txn,
-            );
-          } else if (attr.type === AttributeType.Rating && attr.symbol) {
-            await this.attributeRepo.insertRatingSymbol(
-              attr.symbol,
-              attributeID,
-              txn,
-            );
+          // 5. Insert Categories
+          for (const category of collection.categories) {
+            await this.categoryRepo.insertCategory(category, collectionId, txn);
           }
-        }
 
-        // 4. Inserts Collection, retrieves ID
-        const collectionId = await this.collectionRepo.insertCollection(
-          retrievedPageId,
-          templateId,
-          txn,
-        );
+          return retrievedPageId;
+        },
+      );
 
-        // 5. Insert Categories
-        for (const category of collection.categories) {
-          await this.categoryRepo.insertCategory(category, collectionId, txn);
-        }
-
-        return retrievedPageId;
-      });
-
-      return pageId;
+      return success(pageId);
     } catch (error) {
-      throw new ServiceError("Failed to save collection.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CollectionErrorMessages.validateNewCollection,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: CollectionErrorMessages.insertNewCollection,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CollectionErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -147,21 +197,33 @@ export class CollectionService {
    * Fetch categories by collectionID.
    *
    * @param collectionId - A number representing the collection the categories belong to.
-   * @returns A Promise resolving to an array of `CollectionCategoryDTO` objects.
-   * @throws ServiceError if retrieval fails.
+   * @returns Promise resolving to a `Result` containing either a `CollectionCategoryDTO[]` or `ServiceErrorType`
    */
   async getCollectionCategories(
     collectionId: number,
-  ): Promise<CollectionCategoryDTO[]> {
+  ): Promise<Result<CollectionCategoryDTO[], ServiceErrorType>> {
     try {
       const brandedCollectionId = collectionID.parse(collectionId);
       const categories =
         await this.categoryRepo.getCategoriesByCollectionID(
           brandedCollectionId,
         );
-      return categories.map(CollectionCategoryMapper.toDTO);
+      return success(categories.map(CollectionCategoryMapper.toDTO));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: CategoryErrorMessages.loadingAllCategories,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -169,19 +231,36 @@ export class CollectionService {
    * Insert new category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if retrieval fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedCollectionID = collectionID.parse(categoryDTO.collectionID);
       const category = CollectionCategoryMapper.toNewEntity(categoryDTO);
       await this.categoryRepo.insertCategory(category, brandedCollectionID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to insert collection category.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CategoryErrorMessages.validateNewCollectionCat,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Insert Failed"
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: CategoryErrorMessages.insertNewCollectionCat,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -189,12 +268,11 @@ export class CollectionService {
    * Update an existing category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be updated.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if update fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async updateCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const updatedCategory = CollectionCategoryMapper.toNewEntity(categoryDTO);
       const brandedCategoryID = collectionCategoryID.parse(
@@ -204,9 +282,27 @@ export class CollectionService {
         updatedCategory,
         brandedCategoryID,
       );
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to update collection category.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CategoryErrorMessages.validateCategoryToUpdate,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Update Failed"
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: CategoryErrorMessages.updateCategory,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -214,16 +310,98 @@ export class CollectionService {
    * Deleting a category.
    *
    * @param categoryId - A number representing the categoryID.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if update fails.
+   * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
-  async deleteCollectionCategoryByID(categoryId: number): Promise<boolean> {
+  async deleteCollectionCategoryByID(
+    categoryId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedCategoryID = collectionCategoryID.parse(categoryId);
       await this.categoryRepo.deleteCategory(brandedCategoryID);
-      return true;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection categories.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: CategoryErrorMessages.validateCategoryToDelete,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: CategoryErrorMessages.deleteCategory,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: CategoryErrorMessages.unknown,
+        });
+      }
+    }
+  }
+
+  /**
+   * Deletes an image file from the file system.
+   *
+   * @param imageUri - URI of the image to delete.
+   * @returns Promise resolving to true on success.
+   * @throws Rethrows error
+   */
+  private async deleteImageFile(imageUri: string): Promise<boolean> {
+    if (!imageUri) return false;
+
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(imageUri, { idempotent: true });
+        console.log("Deleted image file:", imageUri);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Deletes all image files from the file system tied to a collection.
+   *
+   * @param pageId - the collection pageID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteCollectionImages(pageId: number): Promise<void> {
+    try {
+      const brandedPageID = pageID.parse(pageId);
+
+      const attributes =
+        await this.attributeRepo.getPreviewAttributes(brandedPageID);
+      const imageAttributeIds: number[] = [];
+
+      attributes.forEach((attr) => {
+        if (attr.type === AttributeType.Image) {
+          imageAttributeIds.push(attr.attributeID);
+        }
+      });
+
+      if (imageAttributeIds.length === 0) return;
+
+      const imageValues = await this.baseRepo.fetchAll<{ value: string }>(
+        selectImageValuesByPageIdQuery,
+        [pageId],
+      );
+
+      for (const imgValue of imageValues) {
+        if (imgValue.value) {
+          await this.deleteImageFile(imgValue.value);
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -231,16 +409,38 @@ export class CollectionService {
    * Fetches an item and its values.
    *
    * @param itemId - A number representing the itemID.
-   * @returns A Promise resolving to `ItemDTO` on succes.
-   * @throws ServiceError if fetch fails.
+   * @returns A Promise resolving to a `Result` containing either an `ItemDTO` or `ServiceErrorType`
    */
-  async getItemByID(itemId: number): Promise<ItemDTO> {
+  async getItemByID(
+    itemId: number,
+  ): Promise<Result<ItemDTO, ServiceErrorType>> {
     try {
       const brandedItemID = itemID.parse(itemId);
       const item = await this.itemRepo.getItemByID(brandedItemID);
-      return ItemMapper.toDTO(item);
+      return success(ItemMapper.toDTO(item));
     } catch (error) {
-      throw new ServiceError("Failed to retrieve collection item.");
+      if (
+        error instanceof ZodError ||
+        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+      ) {
+        return failure({
+          type: "Not Found",
+          message: ItemErrorMessages.notFound,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: ItemErrorMessages.loadingItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -248,63 +448,102 @@ export class CollectionService {
    * Inserts an item and its values.
    *
    * @param itemDTO - An `ItemDTO` representing the item and values to be inserted.
-   * @returns A Promise resolving to a number reresenting the itemID on success.
-   * @throws ServiceError if insert fails.
+   * @returns A Promise resolving to a `Result` containing either a `number` (new itemID) or `ServiceErrorType`
    */
-  async insertItemAndReturnID(itemDTO: ItemDTO): Promise<number> {
+  async insertItemAndReturnID(
+    itemDTO: ItemDTO,
+  ): Promise<Result<number, ServiceErrorType>> {
     try {
       const item = ItemMapper.toNewEntity(itemDTO);
       const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
-      const itemId = this.baseRepo.executeTransaction<number>(async (txn) => {
-        const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
-          item.pageID,
-          categoryId,
-        );
+      const itemId = await this.baseRepo.executeTransaction<number>(
+        async (txn) => {
+          const retrievedItemID = await this.itemRepo.insertItemAndReturnID(
+            item.pageID,
+            categoryId,
+          );
 
-        // dependent on the attribute type it calls the appropriate repo method
-        item.attributeValues.forEach((attributeValue) => {
-          switch (attributeValue.type) {
-            case AttributeType.Text:
-              this.itemRepo.insertTextValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Date:
-              this.itemRepo.insertDateValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Rating:
-              this.itemRepo.insertRatingValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            case AttributeType.Multiselect:
-              this.itemRepo.insertMultiselectValue(
-                attributeValue,
-                retrievedItemID,
-                txn,
-              );
-              break;
-            default:
-              break;
-          }
-        });
+          // dependent on the attribute type it calls the appropriate repo method
+          item.attributeValues.forEach((attributeValue) => {
+            switch (attributeValue.type) {
+              case AttributeType.Text:
+                this.itemRepo.insertTextValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Date:
+                this.itemRepo.insertDateValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Rating:
+                this.itemRepo.insertRatingValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Multiselect:
+                this.itemRepo.insertMultiselectValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Image:
+                this.itemRepo.insertImageValue(
+                  attributeValue,
+                  retrievedItemID,
+                  txn,
+                );
+                break;
+              case AttributeType.Link:
+                if ("valueString" in attributeValue) {
+                  this.itemRepo.insertLinkValue(
+                    attributeValue,
+                    retrievedItemID,
+                    txn,
+                  );
+                }
+                break;
+              default:
+                break;
+            }
+          });
 
-        // update the last modified date of the collection
-        await this.generalPageRepo.updateDateModified(item.pageID, txn);
+          // update the last modified date of the collection
+          await this.generalPageRepo.updateDateModified(item.pageID, txn);
 
-        return retrievedItemID;
-      });
-      return itemId;
+          return retrievedItemID;
+        },
+      );
+      return success(itemId);
     } catch (error) {
-      throw new ServiceError("Failed to insert collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateNewItem,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Creation Failed",
+          message: ItemErrorMessages.insertNewItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -312,13 +551,30 @@ export class CollectionService {
    * Deletes an item and its values.
    *
    * @param itemId - An number representing the item id.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if insert fails.
+   * @returns A Promise resolving to a `Result` containing either an `ItemDTO` or `ServiceErrorType`
    */
-  async deleteItemById(itemId: number): Promise<boolean> {
+  async deleteItemById(
+    itemId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedItemID = itemID.parse(itemId);
-      const success = await this.baseRepo.executeTransaction<boolean>(
+
+      const item = await this.itemRepo.getItemByID(brandedItemID);
+      const imageUris: string[] = [];
+
+      if (item.attributeValues) {
+        for (const attr of item.attributeValues) {
+          if (
+            attr.type === AttributeType.Image &&
+            "valueString" in attr &&
+            attr.valueString
+          ) {
+            imageUris.push(attr.valueString);
+          }
+        }
+      }
+
+      const successful = await this.baseRepo.executeTransaction<boolean>(
         async (txn) => {
           await this.itemRepo.deleteItemValues(brandedItemID, txn);
           const pageId = await this.itemRepo.deleteItem(brandedItemID, txn);
@@ -326,9 +582,34 @@ export class CollectionService {
           return true;
         },
       );
-      return true;
+
+      for (const uri of imageUris) {
+        await this.deleteImageFile(uri);
+      }
+
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to delete collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateItemToDelete,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: ItemErrorMessages.deleteItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
@@ -336,17 +617,18 @@ export class CollectionService {
    * Updates an item and its values.
    *
    * @param itemDTO - An `ItemDTO` representing the item and values to be updated.
-   * @returns A Promise resolving to true on success.
-   * @throws ServiceError if insert fails.
+   * @returns  A Promise resolving to a `Result` containing either a `true` or `ServiceErrorType`
    */
-  async editItemByID(itemDTO: ItemDTO): Promise<boolean> {
+  async editItemByID(
+    itemDTO: ItemDTO,
+  ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const newItem = ItemMapper.toNewEntity(itemDTO);
       const itemId = itemID.parse(itemDTO.itemID);
       const pageId = pageID.parse(itemDTO.pageID);
       const categoryId = collectionCategoryID.parse(itemDTO.categoryID);
 
-      const success = await this.baseRepo.executeTransaction<boolean>(
+      const successful = await this.baseRepo.executeTransaction<boolean>(
         async (txn) => {
           this.itemRepo.updateItem(itemId, categoryId, txn);
 
@@ -396,6 +678,29 @@ export class CollectionService {
                   );
                 }
                 break;
+              case AttributeType.Image:
+                if ("valueString" in value) {
+                  this.itemRepo.updateImageValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
+                    txn,
+                  );
+                }
+                break;
+              case AttributeType.Link:
+                if ("valueString" in value) {
+                  const displayText =
+                    "displayText" in value ? (value.displayText ?? null) : null;
+                  this.itemRepo.updateLinkValue(
+                    itemId,
+                    value.attributeID,
+                    value.valueString ?? null,
+                    displayText,
+                    txn,
+                  );
+                }
+                break;
               default:
                 break;
             }
@@ -406,13 +711,41 @@ export class CollectionService {
         },
       );
 
-      return success;
+      return success(true);
     } catch (error) {
-      throw new ServiceError("Failed to update collection item.");
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: ItemErrorMessages.validateItemToUpdate,
+        });
+      } else if (
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
+      ) {
+        return failure({
+          type: "Update Failed",
+          message: ItemErrorMessages.updateItem,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 
-  async getItemsByPageId(pageId: number): Promise<ItemsDTO> {
+  /**
+   * Fetches all items and their preview values.
+   *
+   * @param pageId - A number representing the pageId of the collection they belong to.
+   * @returns A Promise resolving to a `Result` containing either an `ItemsDTO` or `ServiceErrorType`
+   */
+  async getItemsByPageId(
+    pageId: number,
+  ): Promise<Result<ItemsDTO, ServiceErrorType>> {
     try {
       const brandedPageID: PageID = pageID.parse(pageId);
 
@@ -424,9 +757,22 @@ export class CollectionService {
         attributes,
       );
 
-      return ItemMapper.toItemsDTO(previewItems, attributes);
+      return success(ItemMapper.toItemsDTO(previewItems, attributes));
     } catch (error) {
-      throw new ServiceError("Failed to fetch all items.");
+      if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Fetch Failed"
+      ) {
+        return failure({
+          type: "Retrieval Failed",
+          message: ItemErrorMessages.loadingAllItems,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: ItemErrorMessages.unknown,
+        });
+      }
     }
   }
 }

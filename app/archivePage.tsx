@@ -103,13 +103,18 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const data = await generalPageService.getAllGeneralPageData(
+          const result = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Archived,
           );
 
-          const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(data);
-
-          setWidgets(enrichedWidgets);
+          if (result.success) {
+            const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(
+              result.value,
+            );
+            setWidgets(enrichedWidgets);
+          } else {
+            // TODO: show error modal
+          }
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
@@ -212,11 +217,15 @@ export default function ArchiveScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const success = await generalPageService.togglePageArchive(
+                const result = await generalPageService.togglePageArchive(
                   Number(selectedWidget.id),
                   selectedWidget.archived,
                 );
-                setShouldReload(success);
+                if (result.success) {
+                  setShouldReload(true);
+                } else {
+                  // TODO: show error modal
+                }
               }
             },
           },
@@ -245,11 +254,14 @@ export default function ArchiveScreen() {
           if (selectedWidget) {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
-              const successfullyDeleted =
+              const result =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
-              setShouldReload(successfullyDeleted);
-
+              if (result.success) {
+                setShouldReload(true);
+              } else {
+                // TODO: show error modal
+              }
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {

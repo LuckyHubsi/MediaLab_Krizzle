@@ -65,7 +65,10 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
-    if (!trimmedFolder) return;
+    if (!trimmedFolder) {
+      showSnackbar("Please enter a folder name.", "top", "error");
+      return;
+    }
 
     if (trimmedFolder.length > 30) {
       showSnackbar(
@@ -93,20 +96,36 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
 
       if (editMode && editingFolder) {
         //TODO: use updateFolder instead of updateTag
-        success = await tagService.updateTag({
+        const result = await folderService.updateFolder({
           ...editingFolder,
-          //use folder_label instead of tag_label
-          tag_label: trimmedFolder,
+          folderName: trimmedFolder,
         });
+
+        if (result.success) {
+          success = true;
+        } else {
+          // TODO: show error modal
+          success = false;
+        }
       } else {
         const newFolderObject: FolderDTO = { folderName: trimmedFolder };
-        success = await folderService.insertFolder(newFolderObject);
-        if (success) {
+        const result = await folderService.insertFolder(newFolderObject);
+        if (result.success) {
+          success = true;
           router.push("/folders?reload=1");
+        } else {
+          // TODO: show error modal
         }
       }
 
       if (success) setShouldRefetch(true);
+      showSnackbar(
+        editMode
+          ? "Folder updated successfully."
+          : "Folder created successfully.",
+        "top",
+        "success",
+      );
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {

@@ -10,7 +10,7 @@ import {
   selectNoteByPageIDQuery,
   updateNoteContentQuery,
 } from "../query/NoteQuery";
-import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
 import * as common from "../../domain/common/types";
 import { PageID } from "@/backend/domain/common/IDs";
 import * as SQLite from "expo-sqlite";
@@ -38,7 +38,7 @@ export class NoteRepositoryImpl
    *
    * @param pageId - The pageID of the note.
    * @returns A Promise resolving to a `Note` domain entity.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the fetch fails.
    */
   async getByPageId(pageId: PageID): Promise<Note> {
     try {
@@ -47,11 +47,11 @@ export class NoteRepositoryImpl
         [pageId],
       );
       if (!noteData || noteData.page_type !== PageType.Note) {
-        throw new RepositoryError("Failed to fetch page.");
+        throw new RepositoryErrorNew("Not Found");
       }
       return NoteMapper.toEntity(noteData);
     } catch (error) {
-      throw new RepositoryError("Failed to fetch page.");
+      throw new RepositoryErrorNew("Fetch Failed");
     }
   }
 
@@ -61,7 +61,7 @@ export class NoteRepositoryImpl
    * @param note - The note data to be inserted.
    * @param pageId - The pageID of the note.
    * @returns A Promise resolving to void.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the insert fails.
    */
   async insertNote(
     note: NewNote,
@@ -71,8 +71,7 @@ export class NoteRepositoryImpl
     try {
       await this.executeQuery(insertNoteQuery, [note.noteContent, pageId], txn);
     } catch (error) {
-      console.error("Error inserting note:", error);
-      throw new RepositoryError("Failed to isnert note.");
+      throw new RepositoryErrorNew("Insert Failed");
     }
   }
 
@@ -82,7 +81,7 @@ export class NoteRepositoryImpl
    * @param pageId - The pageID of the note.
    * @param newContent - The textual note content to be updated.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryError if the query fails.
+   * @throws RepositoryErrorNew if the update fails.
    */
   async updateContent(
     pageId: PageID,
@@ -99,8 +98,7 @@ export class NoteRepositoryImpl
       });
       return true;
     } catch (error) {
-      console.error("Error updating note content:", error);
-      throw new RepositoryError("Failed to update content.");
+      throw new RepositoryErrorNew("Update Failed");
     }
   }
 }
