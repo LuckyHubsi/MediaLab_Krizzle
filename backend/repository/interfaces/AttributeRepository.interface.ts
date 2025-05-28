@@ -52,4 +52,6 @@ export interface AttributeRepository extends BaseRepository {
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<Attribute[]>;
+
+  deleteAttribute(attributeId: AttributeID): Promise<boolean>;
 }
