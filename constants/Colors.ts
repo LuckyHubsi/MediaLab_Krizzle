@@ -38,6 +38,7 @@ export const Colors = {
     textFieldBorder: "#585858",
     placeholder: "#585858",
     disabled: "#ABABAB",
+    negative: "#E90536",
   },
   dark: {
     text: "#ECEDEE",
@@ -61,6 +62,7 @@ export const Colors = {
     textFieldBorder: "#ffffff",
     placeholder: "#ABABAB",
     disabled: "#585858",
+    negative: "#FF4949",
   },
   widget: {
     grey: "#585858",

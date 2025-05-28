@@ -32,7 +32,10 @@ export type ThemedTextProps = TextProps & {
 const colorVariants = {
   default: (lightColor?: string, darkColor?: string) =>
     useThemeColor({ light: lightColor, dark: darkColor }, "text"),
-  red: () => Colors.negative,
+  red: () =>
+    useActiveColorScheme() === "dark"
+      ? Colors.dark.disabled
+      : Colors.light.disabled,
   grey: () => Colors.grey100,
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
@@ -66,7 +69,7 @@ export function ThemedText({
   const color = (() => {
     switch (colorVariant) {
       case "red":
-        return Colors.negative;
+        return theme === "dark" ? Colors.dark.negative : Colors.light.negative;
       case "grey":
         return Colors.grey100;
       case "lightGrey":
