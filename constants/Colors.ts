@@ -1,9 +1,11 @@
+import { blue } from "react-native-reanimated/lib/typescript/Colors";
+
 const tintColorLight = "#1A78D1";
 const tintColorDark = "#4599E8";
 
 export const Colors = {
   primary: "#1A78D1",
-  secondary: "#1D7ED7",
+  secondary: "#0B4F8E",
   negative: "#FF4949",
   positive: "#13CE7D",
   white: "#ffffff",
@@ -62,17 +64,20 @@ export const Colors = {
   },
   widget: {
     grey: "#585858",
-    blueGrey: "#4479A2",
-    lightBlue: "#1074CB",
     blue: "#176BBA",
-    darkBlue: "#1A6EBC",
+    darkBlue: "#26418F",
+    indigo: "#3F51B5",
     purple: "#6D2EFF",
-    violet: "#8559ED",
+    violet: "#764dd7",
+    plum: "#7B1FA2",
+    lavender: "#B037BD",
+    blueViolet: "#733AB3",
     pink: "#D50BBA",
     rose: "#D50B77",
     darkRed: "#D4113B",
     red: "#E60F24",
     green: "#118845",
+    pineGreen: "#00695C",
     sage: "#3F835C",
     gradientPink: ["#B81CA3", "#F46D6F"],
     gradientRed: ["#E92529", "#F98943"],

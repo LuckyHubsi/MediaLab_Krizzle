@@ -80,7 +80,7 @@ const Widget: React.FC<Props> = ({
           <View
             style={{
               ...StyleSheet.absoluteFillObject,
-              backgroundColor: "rgba(0, 0, 0, 0.19)",
+              backgroundColor: "rgba(0, 0, 0, 0.15)",
               borderRadius: 33,
             }}
             pointerEvents="none"
@@ -106,8 +106,9 @@ const Widget: React.FC<Props> = ({
           </ThemedText>
         )}
 
-        {/* Title */}
-        <Title>{title}</Title>
+        <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
+          {title}
+        </ThemedText>
 
         {/* Tag below */}
         {label &&
