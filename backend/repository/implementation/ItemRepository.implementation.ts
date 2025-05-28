@@ -10,6 +10,7 @@ import {
   deleteItemAttributeValuesQuery,
   deleteItemQuery,
   getItemIDsForPageQuery,
+  getMultiselectValuesQuery,
   insertDateValueQuery,
   insertImageValueQuery,
   insertItemQuery,
@@ -581,6 +582,47 @@ export class ItemRepositoryImpl
       );
 
       return itemIDs.map((id) => itemID.parse(id.itemID));
+    } catch (error) {
+      throw new RepositoryErrorNew("Fetch Failed");
+    }
+  }
+
+  /**
+   * Fetches multiselect values for an item ans attributeID.
+   *
+   * @param pageId - The ID of the page.
+   * @returns A Promise resolving to an array of `ItemIDs`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryErrorNew if the fetch fails.
+   */
+  async getMultiselectValues(
+    itemID: ItemID,
+    attributeID: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[] | null> {
+    try {
+      const values = await this.fetchFirst<{ value: string }>(
+        getMultiselectValuesQuery,
+        [itemID, attributeID],
+        txn,
+      );
+
+      if (values === null) {
+        return null;
+      }
+
+      if (typeof values.value === "string") {
+        try {
+          const parsed = JSON.parse(values.value);
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
+        } catch {
+          return null;
+        }
+        return [values.value];
+      }
+      return null;
     } catch (error) {
       throw new RepositoryErrorNew("Fetch Failed");
     }

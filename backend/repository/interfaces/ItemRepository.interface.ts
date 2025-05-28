@@ -100,4 +100,9 @@ export interface ItemRepository extends BaseRepository {
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   getItemIDs(pageId: PageID): Promise<ItemID[]>;
+  getMultiselectValues(
+    itemID: ItemID,
+    attributeID: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[] | null>;
 }
