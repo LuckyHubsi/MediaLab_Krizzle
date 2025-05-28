@@ -24,7 +24,7 @@ export type ThemedTextProps = TextProps & {
     | "disabled"
     | "black"
     | "cancel"
-    | "viewAll";
+    | "greyScale";
   textIsCentered?: boolean;
   isTransparent?: boolean;
 };
@@ -41,7 +41,7 @@ const colorVariants = {
   white: () => Colors.white,
   primary: () => Colors.primary,
   black: () => Colors.black,
-  viewAll: () =>
+  greyScale: () =>
     useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
   disabled: () =>
     useActiveColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
@@ -80,7 +80,7 @@ export function ThemedText({
         return Colors.primary;
       case "black":
         return Colors.black;
-      case "viewAll":
+      case "greyScale":
         return theme === "dark" ? Colors.grey50 : Colors.grey100;
       case "disabled":
         return theme === "dark" ? Colors.grey100 : Colors.grey50;

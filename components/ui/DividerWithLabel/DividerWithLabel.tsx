@@ -49,7 +49,11 @@ export const DividerWithLabel = ({
           </View>
         )}
         {label && (
-          <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
+          <ThemedText
+            fontSize="s"
+            fontWeight="regular"
+            colorVariant="greyScale"
+          >
             {label}
           </ThemedText>
         )}
