@@ -229,6 +229,10 @@ const getItemIDsForPageQuery: string = `
     SELECT itemID FROM item WHERE pageID = ?;
 `;
 
+const getMultiselectValuesQuery: string = `
+    SELECT value FROM multiselect_values WHERE itemID = ? AND attributeID = ?;
+`;
+
 export {
   itemSelectByIdQuery,
   itemSelectByPageIdQuery,
@@ -251,4 +255,5 @@ export {
   deleteItemQuery,
   deleteItemAttributeValuesQuery,
   getItemIDsForPageQuery,
+  getMultiselectValuesQuery,
 };

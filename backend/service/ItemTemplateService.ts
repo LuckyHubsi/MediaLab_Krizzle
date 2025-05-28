@@ -105,18 +105,58 @@ export class ItemTemplateService {
 
       // starts transaction to update the whole template
       await this.templateRepo.executeTransaction(async (txn) => {
+        // first retrieve all the item IDs of all items in the relevant page - to update or input default values if necessary
+        const itemIDs = await this.itemRepo.getItemIDs(brandedPageID);
+
         // loops through existing attributes and updates them as well as extras (options and symbol)
         for (const existingAttr of existingAttributeEntities) {
           await this.attributeRepo.updateAttribute(existingAttr, txn);
           if (
             existingAttr.type === AttributeType.Multiselect &&
-            existingAttr.options
+            existingAttr.options !== null &&
+            existingAttr.options !== undefined
           ) {
+            const currentOptions = existingAttr.options;
+
             await this.attributeRepo.updateMultiselectOptions(
               existingAttr.options,
               existingAttr.attributeID,
               txn,
             );
+
+            // loop through itemIDs to retrieve all their multiselect values by itemID and attributeID
+            for (const itemId of itemIDs) {
+              const multiselectValues =
+                await this.itemRepo.getMultiselectValues(
+                  itemId,
+                  existingAttr.attributeID,
+                  txn,
+                );
+
+              // filter the item multiselect values to only include the current options
+              if (multiselectValues && multiselectValues?.length > 0) {
+                const filtered = multiselectValues.filter((value) =>
+                  currentOptions.includes(value),
+                );
+
+                // check whether the old values and filtered values differ
+                if (
+                  JSON.stringify(multiselectValues) !== JSON.stringify(filtered)
+                ) {
+                  const stringifiedValues = filtered
+                    ? JSON.stringify(filtered)
+                    : null;
+
+                  // save the new filtered values
+                  await this.itemRepo.updateMultiselectValue(
+                    itemId,
+                    existingAttr.attributeID,
+                    stringifiedValues,
+                    txn,
+                  );
+                }
+              }
+            }
           } else if (
             existingAttr.type === AttributeType.Rating &&
             existingAttr.symbol
@@ -132,9 +172,6 @@ export class ItemTemplateService {
         // if there are new attributes it loops throught them to insert them
         // inserts item attribute default values as well to avoid conflicts later on
         if (newAttributeEntities.length >= 1) {
-          // first retrieve all the item IDs of all items in the relevant page
-          const itemIDs = await this.itemRepo.getItemIDs(brandedPageID);
-
           // loop through new attributes to insert
           for (const newAttr of newAttributeEntities) {
             // insert new attribute

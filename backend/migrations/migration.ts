@@ -1,6 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
 
-export const SCHEMA_VERSION = 1; // add 1 to this when adding new migrations
+export const SCHEMA_VERSION = 2; // add 1 to this when adding new migrations
 
 // migration functions to go from version n to n+1
 export const migrations: {
@@ -390,6 +390,396 @@ export const migrations: {
             `INSERT INTO multiselect_values (itemID, attributeID, value) VALUES (?, ?, ?)`,
             [itemID, attributeID, newVal],
           );
+        }
+        // _____________________________________________________________________
+
+        // reenable FKs
+        await txn.execAsync(`
+          PRAGMA foreign_keys = ON;
+          `);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+  },
+  2: async (db) => {
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // disable FKs temporarily
+        await txn.execAsync(`
+          -- disable foreign key constraints temporarily
+          PRAGMA foreign_keys = OFF;
+        `);
+        // _____________________________________________________________________
+
+        // NOTE
+        // check if table 'note' exists - create new one if not/migrate if it does
+        const noteCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='note';`,
+        );
+        if (noteCheck) {
+          await txn.execAsync(`
+            ALTER TABLE note RENAME TO old_note;
+        
+            CREATE TABLE "note" (
+              "noteID"	INTEGER NOT NULL,
+              "note_content"	TEXT,
+              "pageID"	INTEGER NOT NULL,
+              PRIMARY KEY("noteID" AUTOINCREMENT),
+              FOREIGN KEY("pageID") REFERENCES "general_page_data"("pageID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO note (noteID, note_content, pageID)
+            SELECT noteID, note_content, pageID FROM old_note;
+        
+            DROP TABLE IF EXISTS old_note;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // ITEM TEMPLATE
+        // check if table 'item_template' exists - create new one if not/migrate if it does
+        const item_templateCheck = await txn.getFirstAsync<{
+          name: string;
+        }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='item_template';`,
+        );
+        if (item_templateCheck) {
+          await txn.execAsync(`
+            ALTER TABLE item_template RENAME TO old_item_template;
+        
+            CREATE TABLE "item_template" (
+              "item_templateID"	INTEGER NOT NULL,
+              "title"	TEXT NOT NULL,
+              PRIMARY KEY("item_templateID" AUTOINCREMENT)
+            );
+        
+            INSERT INTO item_template (item_templateID, title)
+            SELECT item_templateID, title FROM old_item_template;
+        
+            DROP TABLE IF EXISTS old_item_template;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // COLLECTION
+        // check if table 'collection' exists - create new one if not/migrate if it does
+        const collectionCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='collection';`,
+        );
+        if (collectionCheck) {
+          await txn.execAsync(`
+            ALTER TABLE collection RENAME TO old_collection;
+        
+            CREATE TABLE "collection" (
+              "collectionID"	INTEGER NOT NULL,
+              "item_templateID"	INTEGER NOT NULL,
+              "pageID"	INTEGER NOT NULL,
+              PRIMARY KEY("collectionID" AUTOINCREMENT),
+              FOREIGN KEY("item_templateID") REFERENCES "item_template"("item_templateID") ON DELETE CASCADE,
+              FOREIGN KEY("pageID") REFERENCES "general_page_data"("pageID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO collection (collectionID, item_templateID, pageID)
+            SELECT collectionID, item_templateID, pageID FROM old_collection;
+        
+            DROP TABLE IF EXISTS old_collection;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // COLLECTION CATEGORY
+        // check if table 'collection_category' exists - create new one if not/migrate if it does
+        const collection_categoryCheck = await txn.getFirstAsync<{
+          name: string;
+        }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='collection_category';`,
+        );
+        if (collection_categoryCheck) {
+          await txn.execAsync(`
+            ALTER TABLE collection_category RENAME TO old_collection_category;
+        
+            CREATE TABLE "collection_category" (
+              "collection_categoryID"	INTEGER NOT NULL,
+              "collectionID"	INTEGER NOT NULL,
+              "category_name"	TEXT,
+              PRIMARY KEY("collection_categoryID" AUTOINCREMENT),
+              FOREIGN KEY("collectionID") REFERENCES "collection"("collectionID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO collection_category (collection_categoryID, collectionID, category_name)
+            SELECT collection_categoryID, collectionID, category_name FROM old_collection_category;
+        
+            DROP TABLE IF EXISTS old_collection_category;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // ATTRIBUTE
+        const attributeCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
+        );
+        if (attributeCheck) {
+          await txn.execAsync(`
+            -- step 1: backup old table by renaming
+            ALTER TABLE attribute RENAME TO old_attribute;
+
+            -- step 2: create new schema with updated type constraint
+            CREATE TABLE attribute (
+              attributeID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              item_templateID INTEGER NOT NULL,
+              attribute_label TEXT NOT NULL,
+              type TEXT NOT NULL CHECK(type IN ('text', 'rating', 'date', 'multi-select', 'image', 'link')),
+              preview INTEGER NOT NULL DEFAULT 0 CHECK(preview IN (0, 1)),
+              FOREIGN KEY(item_templateID) REFERENCES item_template(item_templateID) ON DELETE CASCADE
+            );
+            
+            -- step 3: restore data
+            INSERT INTO attribute(attributeID, item_templateID, attribute_label, type, preview)
+            SELECT attributeID, item_templateID, attribute_label, type, preview FROM old_attribute;
+
+            -- step 4: drop old tables
+            DROP TABLE IF EXISTS old_attribute;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // ITEM
+        // check if table 'item' exists - create new one if not/migrate if it does
+        const itemCheck = await txn.getFirstAsync<{
+          name: string;
+        }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='item';`,
+        );
+        if (itemCheck) {
+          await txn.execAsync(`
+            ALTER TABLE item RENAME TO old_item;
+        
+            CREATE TABLE "item" (
+              "itemID"	INTEGER NOT NULL,
+              "pageID"	INTEGER NOT NULL,
+              "categoryID"	INTEGER,
+              PRIMARY KEY("itemID" AUTOINCREMENT),
+              FOREIGN KEY("categoryID") REFERENCES "collection_category"("collection_categoryID") ON DELETE CASCADE,
+              FOREIGN KEY("pageID") REFERENCES "general_page_data"("pageID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO item (itemID, pageID, categoryID)
+            SELECT itemID, pageID, categoryID FROM old_item;
+        
+            DROP TABLE IF EXISTS old_item;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // TEXT VALUE
+        // check if table 'text_value' exists - create new one if not/migrate if it does
+        const textValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='text_value';`,
+        );
+        if (textValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE text_value RENAME TO old_text_value;
+        
+            CREATE TABLE text_value (
+              text_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+        
+            INSERT INTO text_value (text_valueID, itemID, attributeID, value)
+            SELECT text_valueID, itemID, attributeID, value FROM old_text_value;
+        
+            DROP TABLE IF EXISTS old_text_value;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // DATE VALUE
+        // check if table 'date_value' exists - create new one if not/migrate if it does
+        const dateValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='date_value';`,
+        );
+        if (dateValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE date_value RENAME TO old_date_value;
+        
+            CREATE TABLE date_value (
+              date_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+        
+            INSERT INTO date_value (date_valueID, itemID, attributeID, value)
+            SELECT date_valueID, itemID, attributeID, value FROM old_date_value;
+        
+            DROP TABLE IF EXISTS old_date_value;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // RATING VALUE
+        // check if table 'rating_value' exists - create new one if not/migrate if it does
+        const ratingValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='rating_value';`,
+        );
+        if (ratingValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE rating_value RENAME TO old_rating_value;
+        
+            CREATE TABLE rating_value (
+              rating_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+        
+            INSERT INTO rating_value (rating_valueID, itemID, attributeID, value)
+            SELECT rating_valueID, itemID, attributeID, value FROM old_rating_value;
+        
+            DROP TABLE IF EXISTS old_rating_value;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // RATING SYMBOL
+        // check if table 'rating_symbol' exists - create new one if not/migrate if it does
+        const ratingSymbolCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='rating_symbol';`,
+        );
+        if (ratingSymbolCheck) {
+          await txn.execAsync(`
+            ALTER TABLE rating_symbol RENAME TO old_rating_symbol;
+        
+            CREATE TABLE "rating_symbol" (
+              "rating_symbolID"	INTEGER NOT NULL,
+              "attributeID"	INTEGER NOT NULL,
+              "symbol"	TEXT,
+              PRIMARY KEY("rating_symbolID" AUTOINCREMENT),
+              FOREIGN KEY("attributeID") REFERENCES "attribute"("attributeID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO rating_symbol (rating_symbolID, attributeID, symbol)
+            SELECT rating_symbolID, attributeID, symbol FROM old_rating_symbol;
+        
+            DROP TABLE IF EXISTS old_rating_symbol;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // IMAGE VALUE
+        // check if table 'image_value' exists - create new one if not/migrate if it does
+        const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
+        );
+        if (imageValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE image_value RENAME TO old_image_value;
+        
+            CREATE TABLE image_value (
+              image_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+        
+            INSERT INTO image_value (image_valueID, itemID, attributeID, value)
+            SELECT image_valueID, itemID, attributeID, value FROM old_image_value;
+        
+            DROP TABLE IF EXISTS old_image_value;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // LINK VALUE
+        // check if table 'link_value' exists - create new one if not/migrate if it does
+        const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='link_value';`,
+        );
+        if (linkValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE link_value RENAME TO old_link_value;
+        
+            CREATE TABLE link_value (
+              link_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              display_text TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+        
+            INSERT INTO link_value (link_valueID, itemID, attributeID, value, display_text)
+            SELECT link_valueID, itemID, attributeID, value, display_text FROM old_link_value;
+        
+            DROP TABLE IF EXISTS old_link_value;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // MULTISELECT VALUES
+        // check if table 'multiselect_values' exists - create new one if not/migrate if it does
+        const multiselectValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='multiselect_values';`,
+        );
+        if (multiselectValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE multiselect_values RENAME TO old_multiselect_values;
+        
+            CREATE TABLE "multiselect_values" (
+              "multiselect_valueID"	INTEGER NOT NULL,
+              "itemID"	INTEGER NOT NULL,
+              "attributeID"	INTEGER NOT NULL,
+              "value"	TEXT,
+              PRIMARY KEY("multiselect_valueID" AUTOINCREMENT),
+              FOREIGN KEY("attributeID") REFERENCES "attribute"("attributeID") ON DELETE CASCADE,
+              FOREIGN KEY("itemID") REFERENCES "item"("itemID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO multiselect_values (multiselect_valueID, itemID, attributeID, value)
+            SELECT multiselect_valueID, itemID, attributeID, value FROM old_multiselect_values;
+        
+            DROP TABLE IF EXISTS old_multiselect_values;
+          `);
+        }
+        // _____________________________________________________________________
+
+        // MULTISELECT OPTION
+        // check if table 'multiselect_options' exists - create new one if not/migrate if it does
+        const multiselectOptionCheck = await txn.getFirstAsync<{
+          name: string;
+        }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='multiselect_options';`,
+        );
+        if (multiselectOptionCheck) {
+          await txn.execAsync(`
+            ALTER TABLE multiselect_options RENAME TO old_multiselect_options;
+        
+            CREATE TABLE "multiselect_options" (
+              "multiselectID"	INTEGER NOT NULL,
+              "attributeID"	INTEGER NOT NULL,
+              "options"	TEXT NOT NULL,
+              PRIMARY KEY("multiselectID" AUTOINCREMENT),
+              FOREIGN KEY("attributeID") REFERENCES "attribute"("attributeID") ON DELETE CASCADE
+            );
+        
+            INSERT INTO multiselect_options (multiselectID, attributeID, options)
+            SELECT multiselectID, attributeID, options FROM old_multiselect_options;
+        
+            DROP TABLE IF EXISTS old_multiselect_options;
+          `);
         }
         // _____________________________________________________________________
 
