@@ -39,7 +39,8 @@ const colorVariants = {
   grey: () => Colors.grey100,
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
-  primary: () => Colors.primary,
+  primary: () =>
+    useActiveColorScheme() === "dark" ? Colors.primary : Colors.secondary,
   black: () => Colors.black,
   greyScale: () =>
     useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
@@ -77,7 +78,7 @@ export function ThemedText({
       case "white":
         return Colors.white;
       case "primary":
-        return Colors.primary;
+        return theme === "dark" ? Colors.secondary : Colors.primary;
       case "black":
         return Colors.black;
       case "greyScale":

@@ -38,8 +38,8 @@ export const DividerWithLabel = ({
               size={iconSize}
               color={
                 useActiveColorScheme() === "dark"
-                  ? Colors.grey50
-                  : Colors.grey100
+                  ? "#ABABAB" // light grey for dark mode
+                  : "#585858" // darker grey for light mode
               }
               style={{
                 marginBottom: label ? 10 : 0,

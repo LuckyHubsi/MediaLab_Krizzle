@@ -219,7 +219,9 @@ export default function EditCollectionListsScreen() {
                 <MaterialIcons
                   name="help-outline"
                   size={26}
-                  color={Colors.primary}
+                  color={
+                    colorScheme === "light" ? Colors.primary : Colors.secondary
+                  }
                 />
               </TouchableOpacity>
             </CardHeader>

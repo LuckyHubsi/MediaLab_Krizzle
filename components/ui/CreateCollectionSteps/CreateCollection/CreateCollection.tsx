@@ -155,7 +155,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <MaterialIcons
               name="help-outline"
               size={26}
-              color={Colors.primary}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
             />
           </IconTopRight>
           <View style={{ alignItems: "center", gap: 20 }}>
