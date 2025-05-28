@@ -121,6 +121,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
         )}
         <View
           style={{
+            flex: 1,
             flexDirection: "column",
             alignItems: "flex-start",
             width: "100%",
@@ -132,7 +133,9 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
           </ThemedText>
           {/* Text preview */}
           {text && (
-            <CollectionText colorScheme={colorScheme}>{text}</CollectionText>
+            <CollectionText colorScheme={colorScheme} numberOfLines={3}>
+              {text}
+            </CollectionText>
           )}
           {/* Date and Rating */}
           {(date !== null && date !== undefined) ||

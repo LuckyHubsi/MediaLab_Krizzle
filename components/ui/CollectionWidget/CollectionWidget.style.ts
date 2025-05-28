@@ -17,16 +17,15 @@ export const CollectionCardContainer = styled.View<ColorSchemeProps>`
 `;
 
 export const CollectionText = styled.Text<ColorSchemeProps>`
-  width: 100%;
-  height: 48px; /* Set a fixed height */
-  max-height: 48px; /* Limit the height to 48px */
+  margin-top: 6px;
+
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#585858" : "#ABABAB"};
   font-family: Lexend_400Regular;
   font-size: 14px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 171.429% */
+  font-weight: 300;
+  line-height: 16.8px; /* 171.429% */
   letter-spacing: -0.35px;
   overflow: hidden; /* Hide any overflowing text */
 `;
