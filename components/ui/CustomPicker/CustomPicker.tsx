@@ -81,7 +81,13 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         items={items}
         style={getPickerStyles({ colorScheme })}
         placeholder={{}}
-        Icon={() => <MaterialIcons name="arrow-drop-down" size={24} />}
+        Icon={() => (
+          <MaterialIcons
+            name="arrow-drop-down"
+            size={30}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+          />
+        )}
       />
     );
   }
@@ -95,7 +101,11 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         <ThemedText fontSize="regular" fontWeight="regular">
           {selectedLabel ?? "Select"}
         </ThemedText>
-        <MaterialIcons name="arrow-drop-down" size={24} color="#888" />
+        <MaterialIcons
+          name="arrow-drop-down"
+          size={24}
+          color={colorScheme === "dark" ? "#fff" : "#000"}
+        />
       </AndroidPickerTouchable>
 
       <Modal transparent visible={isModalVisible} animationType="fade">
