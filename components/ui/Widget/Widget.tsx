@@ -1,5 +1,10 @@
 import React from "react";
-import { TouchableOpacity, useWindowDimensions } from "react-native";
+import {
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+  StyleSheet,
+} from "react-native";
 import { Colors } from "@/constants/Colors";
 import {
   IconsContainer,
@@ -71,6 +76,17 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
     >
       <CardWrapper {...cardProps}>
+        {isGradient && (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: "rgba(0, 0, 0, 0.15)",
+              borderRadius: 33,
+            }}
+            pointerEvents="none"
+          />
+        )}
+
         {isPreview && (
           <PreviewWrapper>
             <ThemedText
@@ -90,8 +106,9 @@ const Widget: React.FC<Props> = ({
           </ThemedText>
         )}
 
-        {/* Title */}
-        <Title>{title}</Title>
+        <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
+          {title}
+        </ThemedText>
 
         {/* Tag below */}
         {label &&

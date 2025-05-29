@@ -109,7 +109,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             <MaterialIcons
               name="check-circle"
               size={20}
-              color={Colors.primary}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
             />
           ) : (
             <MaterialIcons

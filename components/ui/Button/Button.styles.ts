@@ -1,7 +1,11 @@
 // Button.styles.ts
 import { Colors } from "@/constants/Colors";
 import styled from "styled-components/native";
-import { ButtonProps } from "./Button";
+
+interface ButtonProps {
+  isRed?: boolean;
+  colorScheme: "light" | "dark";
+}
 
 export const StyledButton = styled.TouchableOpacity<ButtonProps>`
   align-items: center;
@@ -11,6 +15,6 @@ export const StyledButton = styled.TouchableOpacity<ButtonProps>`
   width: 100%;
   padding-vertical: 18px;
   margin-bottom: 10px;
-  background-color: ${({ isRed }: ButtonProps) =>
-    isRed ? Colors.negative : Colors.tintColor};
+  background-color: ${({ isRed, colorScheme }: ButtonProps) =>
+    isRed ? Colors[colorScheme].negative : Colors.tintColor};
 `;

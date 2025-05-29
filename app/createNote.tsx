@@ -40,7 +40,7 @@ export default function CreateNoteScreen() {
   const colorScheme = useActiveColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("#4599E8");
+  const [selectedColor, setSelectedColor] = useState<string>(Colors.primary);
   const [selectedIcon, setSelectedIcon] = useState<
     keyof typeof MaterialIcons.glyphMap | null
   >(null);
@@ -107,7 +107,8 @@ export default function CreateNoteScreen() {
       page_type: PageType.Note,
       page_title: title,
       page_icon: selectedIcon ?? undefined,
-      page_color: (selectedColor as keyof typeof Colors.widget) || "#4599E8",
+      page_color:
+        (selectedColor as keyof typeof Colors.widget) || Colors.primary,
       archived: false,
       pinned: false,
       note_content: null,
@@ -196,11 +197,7 @@ export default function CreateNoteScreen() {
                   <MaterialIcons name={selectedIcon} size={22} color="black" />
                 ) : undefined
               }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "#4599E8"
-              }
+              color={getWidgetColorKey(selectedColor) ?? "blue"}
               isPreview={true}
             />
           </View>

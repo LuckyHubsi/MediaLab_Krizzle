@@ -46,8 +46,9 @@ export const CameraButton = styled.TouchableOpacity`
   margin-top: 5px;
 `;
 
-export const DeleteButton = styled.TouchableOpacity`
-  border: 1px solid ${Colors.negative};
+export const DeleteButton = styled.TouchableOpacity<ColorSchemeProps>`
+  border: 1px solid
+    ${({ colorScheme }: ColorSchemeProps) => Colors[colorScheme].negative};
   border-radius: 30px;
   padding-vertical: 12px;
   margin-top: 5px;

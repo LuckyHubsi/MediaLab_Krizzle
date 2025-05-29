@@ -35,7 +35,11 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           Choose a Tag
         </ThemedText>
         <EditTextContainer onPress={onViewAllPress}>
-          <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
+          <ThemedText
+            fontSize="s"
+            fontWeight="regular"
+            colorVariant="greyScale"
+          >
             Edit Tags
             <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
           </ThemedText>
