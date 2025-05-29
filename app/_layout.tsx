@@ -131,6 +131,10 @@ export default function RootLayout() {
                     name="editCollectionTemplate"
                     options={{ headerShown: false }}
                   />
+                  <Stack.Screen
+                    name="Onboarding"
+                    options={{ headerShown: false }}
+                  />
                 </Stack>
                 <StatusBar style="auto" />
               </SnackbarProvider>
