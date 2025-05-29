@@ -39,7 +39,7 @@ export const Colors = {
     textFieldBorder: "#585858",
     placeholder: "#585858",
     disabled: "#ABABAB",
-    negative: "#E90536",
+    negative: "#DF0534",
   },
   dark: {
     text: "#ECEDEE",
