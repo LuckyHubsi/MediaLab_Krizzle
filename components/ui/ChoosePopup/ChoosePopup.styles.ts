@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { ColorSchemeProps } from "@/context/ThemeContext";
 import styled from "styled-components/native";
 
@@ -44,10 +45,21 @@ export const ItemWrapper = styled.TouchableOpacity<{
     isSelected: boolean;
     colorScheme: "light" | "dark";
   }) =>
-    isSelected ? "#4599E8" : colorScheme === "light" ? "#EAEAEA" : "#3D3D3D"};
+    isSelected
+      ? colorScheme === "light"
+        ? "#176BBA"
+        : "#4599E8"
+      : colorScheme === "light"
+        ? "#EAEAEA"
+        : "#3D3D3D"};
 `;
 
-export const ItemCircle = styled.View<{ backgroundColor: string }>`
+export const ItemCircle = styled.View<{
+  backgroundColor: string;
+  isSelected: boolean;
+  colorScheme: "light" | "dark";
+  showBorder: boolean;
+}>`
   width: 24px;
   height: 24px;
   border-radius: 16px;
@@ -55,6 +67,18 @@ export const ItemCircle = styled.View<{ backgroundColor: string }>`
   align-items: center;
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
     backgroundColor};
+  border: ${({
+    showBorder,
+    isSelected,
+    colorScheme,
+  }: {
+    showBorder: boolean;
+    isSelected: boolean;
+    colorScheme: "light" | "dark";
+  }) =>
+    showBorder && isSelected
+      ? `1px solid ${colorScheme === "light" ? "#fff" : "#000"}`
+      : "1px solid transparent"};
 `;
 
 export const ColorLabel = styled.Text<{
@@ -77,11 +101,11 @@ export const ColorLabel = styled.Text<{
 export const DoneButton = styled.TouchableOpacity`
   padding: 12px 24px;
   border-radius: 30px;
-  background-color: #4599e8;
+  background-color: ${Colors.primary};
 `;
 
 export const DoneButtonText = styled.Text`
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
+  color: ${Colors.white};
 `;

@@ -76,6 +76,17 @@ export default function FoldersScreen() {
       return;
     }
 
+    const isDuplicate = folders.some(
+      (folder) =>
+        folder.title.trim().toLowerCase() === trimmedName.toLowerCase() &&
+        folder.id !== editingFolder.id,
+    );
+
+    if (isDuplicate) {
+      showSnackbar("A folder with this name already exists.", "top", "error");
+      return;
+    }
+
     try {
       const result = await folderService.updateFolder({
         folderID: Number(editingFolder.id),
@@ -87,7 +98,6 @@ export default function FoldersScreen() {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
       } else {
-        // TODO: show error modal
         console.log(result.error.type);
         console.log(result.error.message);
       }

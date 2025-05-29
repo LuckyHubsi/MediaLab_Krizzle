@@ -222,9 +222,7 @@ export default function TagManagementScreen() {
                 paddingTop: 35,
               }}
             >
-              <Button onPress={() => setModalVisible(true)}>
-                <ThemedText colorVariant="white">Add</ThemedText>
-              </Button>
+              <Button onPress={() => setModalVisible(true)}>Add</Button>
             </LinearGradient>
           </View>
         )}

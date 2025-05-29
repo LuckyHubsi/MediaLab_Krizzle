@@ -17,7 +17,7 @@ export const ListContent = {
   gap: 20,
 };
 
-export const RemoveButton = styled(TouchableOpacity)`
+export const RemoveButtonContainer = styled(TouchableOpacity)`
   margin-top: 15px;
   align-self: flex-start;
 `;

@@ -24,7 +24,7 @@ export type ThemedTextProps = TextProps & {
     | "disabled"
     | "black"
     | "cancel"
-    | "viewAll";
+    | "greyScale";
   textIsCentered?: boolean;
   isTransparent?: boolean;
 };
@@ -32,13 +32,17 @@ export type ThemedTextProps = TextProps & {
 const colorVariants = {
   default: (lightColor?: string, darkColor?: string) =>
     useThemeColor({ light: lightColor, dark: darkColor }, "text"),
-  red: () => Colors.negative,
+  red: () =>
+    useActiveColorScheme() === "dark"
+      ? Colors.dark.negative
+      : Colors.light.negative,
   grey: () => Colors.grey100,
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
-  primary: () => Colors.primary,
+  primary: () =>
+    useActiveColorScheme() === "dark" ? Colors.primary : Colors.secondary,
   black: () => Colors.black,
-  viewAll: () =>
+  greyScale: () =>
     useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
   disabled: () =>
     useActiveColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
@@ -66,7 +70,7 @@ export function ThemedText({
   const color = (() => {
     switch (colorVariant) {
       case "red":
-        return Colors.negative;
+        return theme === "dark" ? Colors.dark.negative : Colors.light.negative;
       case "grey":
         return Colors.grey100;
       case "lightGrey":
@@ -74,10 +78,10 @@ export function ThemedText({
       case "white":
         return Colors.white;
       case "primary":
-        return Colors.primary;
+        return theme === "dark" ? Colors.secondary : Colors.primary;
       case "black":
         return Colors.black;
-      case "viewAll":
+      case "greyScale":
         return theme === "dark" ? Colors.grey50 : Colors.grey100;
       case "disabled":
         return theme === "dark" ? Colors.grey100 : Colors.grey50;
