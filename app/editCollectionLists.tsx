@@ -17,7 +17,7 @@ import {
   ItemCount,
   ItemCountContainer,
   ListContent,
-  RemoveButton,
+  RemoveButtonContainer,
   RemoveButtonContent,
   HorizontalTitleRow,
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList.styles";
@@ -33,6 +33,7 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
+import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 
 export default function EditCollectionListsScreen() {
   const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
@@ -285,23 +286,9 @@ export default function EditCollectionListsScreen() {
                   }
                   maxLength={30}
                 />
-                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                  <RemoveButtonContent>
-                    <MaterialIcons
-                      name="delete"
-                      size={16}
-                      color="#ff4d4d"
-                      style={{ marginRight: 6, marginTop: 2 }}
-                    />
-                    <ThemedText
-                      fontSize="s"
-                      fontWeight="bold"
-                      style={{ color: "#ff4d4d" }}
-                    >
-                      remove
-                    </ThemedText>
-                  </RemoveButtonContent>
-                </RemoveButton>
+                <RemoveButtonContainer>
+                  <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                </RemoveButtonContainer>
               </Card>
             ))}
 
