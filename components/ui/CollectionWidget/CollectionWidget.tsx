@@ -195,12 +195,16 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   marginTop: -8,
                 }}
               >
-                <MaterialIcons name="attach-file" size={20} color="#2980ff" />
+                <MaterialIcons
+                  name="attach-file"
+                  size={20}
+                  color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+                />
                 <ThemedText
                   fontWeight="regular"
                   fontSize="s"
                   style={{
-                    color: "#2980ff",
+                    color: colorScheme === "light" ? "#176BBA" : "#4599E8",
                     textDecorationLine: "underline",
                     height: 48,
                     textAlignVertical: "center",
