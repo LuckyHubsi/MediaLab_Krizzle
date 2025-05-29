@@ -124,7 +124,11 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
         {icon && (
-          <MaterialIcons name={icon} size={24} color={iconColor || "#585858"} />
+          <MaterialIcons
+            name={icon}
+            size={24}
+            color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+          />
         )}
         {type && (
           <ThemedText fontWeight="regular" fontSize="regular">
@@ -167,7 +171,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             fontWeight="semibold"
             fontSize="regular"
             style={{
-              color: "#2980ff",
+              color: colorScheme === "light" ? "#176BBA" : "#4599E8",
               textDecorationLine: "underline",
               marginTop: -8,
               height: 48,

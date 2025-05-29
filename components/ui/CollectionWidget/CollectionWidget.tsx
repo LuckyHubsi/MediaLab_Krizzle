@@ -18,6 +18,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 type Item = {
   itemID: number;
@@ -174,7 +175,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                       "star"
                     }
                     size={24}
-                    color="#E7C716"
+                    color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
                     style={{ marginRight: 6 }}
                   />
                   <CollectionRating colorScheme={colorScheme}>
