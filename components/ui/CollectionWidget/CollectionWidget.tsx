@@ -192,12 +192,15 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   alignItems: "center",
                   gap: 6,
                   marginTop: -8,
+                  width: "100%",
                 }}
               >
                 <MaterialIcons name="attach-file" size={20} color="#2980ff" />
                 <ThemedText
                   fontWeight="regular"
                   fontSize="s"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                   style={{
                     color: "#2980ff",
                     textDecorationLine: "underline",
