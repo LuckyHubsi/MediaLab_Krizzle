@@ -97,6 +97,9 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                         >
                           <ItemCircle
                             backgroundColor={type === "color" ? item.value : ""}
+                            isSelected={isSelected}
+                            colorScheme={colorScheme}
+                            showBorder={type === "color"}
                           >
                             {Array.isArray(item.value) ? (
                               <LinearGradient
@@ -116,7 +119,9 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                               <MaterialIcons
                                 name={item.value as any}
                                 size={24}
-                                color={Colors[colorScheme].text}
+                                color={
+                                  isSelected ? "#fff" : Colors[colorScheme].text
+                                }
                               />
                             )}
                           </ItemCircle>
