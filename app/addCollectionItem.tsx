@@ -17,10 +17,11 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
 
 export default function AddCollectionItem() {
-  const { templateId, collectionId, pageId } = useLocalSearchParams<{
+  const { templateId, collectionId, pageId, routing } = useLocalSearchParams<{
     templateId?: string;
     collectionId?: string;
     pageId?: string;
+    routing?: string;
   }>();
   const { collectionService, itemTemplateService } = useServices();
 
@@ -175,9 +176,9 @@ export default function AddCollectionItem() {
         params: {
           itemId: itemIdResult.value,
           collectionItemText,
+          routing: routing,
         },
       });
-      console.log();
     } else {
       // TODO: show error modal
     }

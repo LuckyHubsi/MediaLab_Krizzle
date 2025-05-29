@@ -21,9 +21,10 @@ import { useServices } from "@/context/ServiceContext";
 import { AttributeType } from "@/shared/enum/AttributeType";
 
 export default function CollectionItemScreen() {
-  const { itemId, collectionItemText } = useLocalSearchParams<{
+  const { itemId, collectionItemText, routing } = useLocalSearchParams<{
     itemId: string;
     collectionItemText?: string;
+    routing?: string;
   }>();
   const { collectionService } = useServices();
 
@@ -77,12 +78,13 @@ export default function CollectionItemScreen() {
             backBehavior="goCollection" // Go back to home when back button is pressed
             iconName={undefined} // No icon for the header
             onIconPress={() => {}} // No action when pressed
-            iconName2="more-horiz" // icon for the pop up menu
+            iconName2={routing ? undefined : "more-horiz"} // icon for the pop up menu
             onIconMenuPress={() => {
               setShowModal(true);
             }} // action when icon menu is pressed
             param={item?.pageID.toString()}
             borderRadiusTop={33}
+            routing={routing}
           />
         </View>
         <ScrollView
@@ -107,7 +109,7 @@ export default function CollectionItemScreen() {
             onPress: () => {
               router.push({
                 pathname: "/editCollectionItem",
-                params: { itemId },
+                params: { itemId, routing: routing },
               });
             },
           },
@@ -142,7 +144,7 @@ export default function CollectionItemScreen() {
               setShowDeleteModal(false);
               router.replace({
                 pathname: "/collectionPage",
-                params: { pageId: item.pageID },
+                params: { pageId: item.pageID, routing: routing },
               });
             } catch (error) {
               console.error("Error deleting item:", error);

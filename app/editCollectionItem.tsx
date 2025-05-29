@@ -14,7 +14,10 @@ import { useServices } from "@/context/ServiceContext";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function EditCollectionItem() {
-  const { itemId } = useLocalSearchParams<{ itemId: string }>();
+  const { itemId, routing } = useLocalSearchParams<{
+    itemId: string;
+    routing?: string;
+  }>();
 
   const { collectionService, itemTemplateService } = useServices();
 
@@ -199,6 +202,7 @@ export default function EditCollectionItem() {
       params: {
         itemId: itemId,
         collectionItemText,
+        routing: routing,
       },
     });
   };
