@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 
 interface TagProps {
@@ -7,22 +7,32 @@ interface TagProps {
   themeMode?: "light" | "dark";
 }
 
-export const TagButton = styled(TouchableOpacity)<TagProps>`
+// Outer touch target wrapper
+export const TagContainer = styled(TouchableOpacity).attrs({
+  hitSlop: { top: 10, bottom: 10, left: 10, right: 10 },
+})`
+  margin-right: 10px;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  min-width: 48px;
+`;
+
+// Visual pill button inside
+export const TagButton = styled(View)<TagProps>`
   background-color: ${({ active, themeMode }: TagProps) =>
     active
       ? Colors.light.tint
       : themeMode === "dark"
         ? Colors.dark.pillBackground
         : Colors.light.pillBackground};
-  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   border-radius: 33px;
-  margin-right: 10px;
-  padding: 6px 16px;
-  justify-content: center;
-  align-items: center;
+  padding-horizontal: 16px;
+  padding-vertical: 6px;
+  height: 32px;
 `;
 
 export const TagText = styled(Text)<TagProps>`
