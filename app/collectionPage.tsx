@@ -170,6 +170,7 @@ export default function CollectionScreen() {
           setSelectedItem={setSelectedItem}
           setShowItemModal={setShowItemModal}
           searchQuery={searchQuery}
+          collectionId={collection?.collectionID?.toString()}
         />
       </SafeAreaView>
 
