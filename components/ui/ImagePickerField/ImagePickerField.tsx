@@ -14,6 +14,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { DividerWithLabel } from "../DividerWithLabel/DividerWithLabel";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface ImagePickerFieldProps {
   title: string;
@@ -26,6 +27,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   value,
   onChange,
 }) => {
+  const colorScheme = useActiveColorScheme();
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -87,8 +89,12 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
         <>
           <ImagePreview source={{ uri: value }} resizeMode="cover" />
 
-          <DeleteButton onPress={() => onChange("")}>
-            <MaterialIcons name="delete" size={20} color={Colors.negative} />
+          <DeleteButton onPress={() => onChange("")} colorScheme={colorScheme}>
+            <MaterialIcons
+              name="delete"
+              size={20}
+              color={Colors[colorScheme].negative}
+            />
             <ThemedText fontWeight="bold" fontSize="s" colorVariant="red">
               Clear Image
             </ThemedText>

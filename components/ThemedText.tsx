@@ -34,8 +34,8 @@ const colorVariants = {
     useThemeColor({ light: lightColor, dark: darkColor }, "text"),
   red: () =>
     useActiveColorScheme() === "dark"
-      ? Colors.dark.disabled
-      : Colors.light.disabled,
+      ? Colors.dark.negative
+      : Colors.light.negative,
   grey: () => Colors.grey100,
   lightGrey: () => Colors.grey50,
   white: () => Colors.white,
