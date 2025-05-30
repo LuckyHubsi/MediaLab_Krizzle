@@ -4,22 +4,26 @@ import {
   CollectionListContainer,
   CollectionListText,
 } from "./CollectionList.style";
-import { View } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 
 type CollectionListProps = {
   collectionLists: string[];
   onSelect?: (selected: string) => void;
+  collectionId?: string;
 };
 
 const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onSelect,
+  collectionId,
 }) => {
   const [activeList, setActiveList] = useState<string | null>(null);
   const themeMode = useActiveColorScheme() ?? "light";
+  const router = useRouter();
 
   useEffect(() => {
     if (collectionLists.length > 0) {
@@ -29,12 +33,12 @@ const CollectionList: React.FC<CollectionListProps> = ({
   }, [collectionLists]);
 
   const handlePress = (collectionList: string) => {
-    if (collectionList === activeList) {
-      return;
-    }
+    if (collectionList === activeList) return;
     setActiveList(collectionList);
     onSelect?.(collectionList);
   };
+
+  const shouldShowEditIcon = collectionLists.length <= 9;
 
   return (
     <View style={{ marginLeft: 20, marginRight: 20 }}>
@@ -53,9 +57,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
                 active={isActive}
                 themeMode={themeMode}
                 onPress={() => {
-                  if (!isActive) {
-                    handlePress(collectionList);
-                  }
+                  if (!isActive) handlePress(collectionList);
                 }}
                 activeOpacity={isActive ? 1 : 0.7}
               >
@@ -79,6 +81,24 @@ const CollectionList: React.FC<CollectionListProps> = ({
               </CollectionListContainer>
             );
           })}
+
+          {shouldShowEditIcon && (
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/editCollectionLists",
+                  params: { collectionId: collectionId },
+                })
+              }
+              style={{ marginLeft: 8, justifyContent: "center" }}
+            >
+              <MaterialIcons
+                name="edit"
+                size={24}
+                color={themeMode === "dark" ? "white" : "white"}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>

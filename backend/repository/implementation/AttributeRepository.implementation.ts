@@ -3,6 +3,7 @@ import * as SQLite from "expo-sqlite";
 import { AttributeRepository } from "../interfaces/AttributeRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import {
+  deleteAttributeQuery,
   insertAttributeQuery,
   insertMultiselectOptionsQuery,
   insertRatingSymbolQuery,
@@ -223,6 +224,22 @@ export class AttributeRepositoryImpl
       return attributes.map(AttributeMapper.toEntity);
     } catch (error) {
       throw new RepositoryErrorNew("Fetch Failed");
+    }
+  }
+
+  /**
+   * Deletes an attribute by its ID.
+   *
+   * @param attributeId - An `AttributeID` object representing theattribute to be deleted.
+   * @returns A Promise resolving to an true on success.
+   * @throws RepositoryErrorNew if the fetch fails.
+   */
+  async deleteAttribute(attributeId: AttributeID): Promise<boolean> {
+    try {
+      await this.executeQuery(deleteAttributeQuery, [attributeId]);
+      return true;
+    } catch (error) {
+      throw new RepositoryErrorNew("Delete Failed");
     }
   }
 }

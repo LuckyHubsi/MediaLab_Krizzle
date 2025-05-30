@@ -285,4 +285,40 @@ export class ItemTemplateService {
       }
     }
   }
+
+  /**
+   * Deletes an attribute by its ID.
+   *
+   * @param attributeId - Number representing the attribute to be deleted.
+   * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
+   */
+  async deleteAttribute(
+    attributeId: number,
+  ): Promise<Result<boolean, ServiceErrorType>> {
+    try {
+      const brandedAttributeID = attributeID.parse(attributeId);
+      await this.attributeRepo.deleteAttribute(brandedAttributeID);
+      return success(true);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return failure({
+          type: "Validation Error",
+          message: TemplateErrorMessages.validateAttributeToDelete,
+        });
+      } else if (
+        error instanceof RepositoryErrorNew &&
+        error.type === "Delete Failed"
+      ) {
+        return failure({
+          type: "Delete Failed",
+          message: TemplateErrorMessages.deleteAttribute,
+        });
+      } else {
+        return failure({
+          type: "Unknown Error",
+          message: TemplateErrorMessages.unknown,
+        });
+      }
+    }
+  }
 }

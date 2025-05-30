@@ -4,7 +4,6 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import CreateCollection, {
   CollectionData,
 } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection";
-import CreateCollectionList from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList";
 import CreateCollectionTemplate from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate";
 import { router } from "expo-router";
 import { CollectionDTO } from "@/shared/dto/CollectionDTO";
@@ -21,7 +20,7 @@ import { Colors } from "@/constants/Colors";
 export default function CollectionTemplateScreen() {
   const { collectionService } = useServices();
 
-  const [step, setStep] = useState<"create" | "list" | "template">("create");
+  const [step, setStep] = useState<"create" | "template">("create");
 
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
@@ -36,10 +35,6 @@ export default function CollectionTemplateScreen() {
     collection: CollectionDTO;
     template: ItemTemplateDTO;
   } => {
-    const lists: CollectionCategoryDTO[] = collectionData.lists.map((list) => {
-      return { category_name: list.title };
-    });
-
     const collection: CollectionDTO = {
       page_title: collectionData.title,
       page_type: PageType.Collection,
@@ -47,7 +42,7 @@ export default function CollectionTemplateScreen() {
       page_color: collectionData.selectedColor,
       archived: false,
       pinned: false,
-      categories: lists,
+      categories: [],
       tag: collectionData.selectedTag,
       pin_count: 0,
       parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
@@ -99,14 +94,6 @@ export default function CollectionTemplateScreen() {
         <CreateCollection
           data={collectionData}
           setData={setCollectionData}
-          onNext={() => setStep("list")}
-        />
-      )}
-      {step === "list" && (
-        <CreateCollectionList
-          data={collectionData}
-          setData={setCollectionData}
-          onBack={() => setStep("create")}
           onNext={() => setStep("template")}
         />
       )}
@@ -114,7 +101,7 @@ export default function CollectionTemplateScreen() {
         <CreateCollectionTemplate
           data={collectionData}
           setData={setCollectionData}
-          onBack={() => setStep("list")}
+          onBack={() => setStep("create")}
           onNext={createCollection}
         />
       )}
