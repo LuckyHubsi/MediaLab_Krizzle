@@ -62,11 +62,18 @@ export class CollectionMapper {
   static toNewEntity(dto: CollectionDTO): NewCollection {
     try {
       const generalPage = GeneralPageMapper.toNewEntity(dto);
+      const categories =
+        dto.categories?.length >= 1
+          ? dto.categories.map(CollectionCategoryMapper.toNewEntity)
+          : [
+              CollectionCategoryMapper.toNewEntity({
+                category_name: "General",
+              }),
+            ];
+
       const parsedDTO = createNewCollectionSchema.parse({
         ...generalPage,
-        categories: dto.categories
-          ? dto.categories.map(CollectionCategoryMapper.toNewEntity)
-          : [],
+        categories,
       });
       return parsedDTO;
     } catch (error) {
