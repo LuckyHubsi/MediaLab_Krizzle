@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
 
 export default function Step1() {
-  const backgroundHeight = 92;
+  const backgroundHeight = 87;
   return (
     <ThemedView>
       <OnboardingBackground

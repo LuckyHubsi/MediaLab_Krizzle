@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
 
 export default function Step2() {
-  const backgroundHeight = 65;
+  const backgroundHeight = 61;
   return (
     <ThemedView>
       <OnboardingBackground
@@ -12,7 +12,7 @@ export default function Step2() {
         imageSourceDark={require("@/assets/images/onboardingDark2.png")}
         heightPercent={backgroundHeight}
       />
-      <View style={{ gap: 8, top: "65%" }}>
+      <View style={{ gap: 8, top: "60%" }}>
         <ThemedText fontWeight="bold" fontSize="l">
           Customize your Home Screen with Widgets
         </ThemedText>
