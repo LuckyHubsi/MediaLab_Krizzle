@@ -480,12 +480,14 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageId - A branded pageID.
    * @param parentId - A branded folderID to which the page should be moved.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true if successful.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateParentID(
     pageId: PageID,
     parentId: FolderID | null,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);

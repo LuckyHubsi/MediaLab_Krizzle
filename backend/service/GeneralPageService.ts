@@ -398,10 +398,15 @@ export class GeneralPageService {
       const brandedPageID = pageID.parse(pageId);
       const brandedFolderIDOrNull =
         folderId === null ? null : folderID.parse(folderId);
-      await this.generalPageRepo.updateParentID(
-        brandedPageID,
-        brandedFolderIDOrNull,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.generalPageRepo.updateParentID(
+          brandedPageID,
+          brandedFolderIDOrNull,
+          txn,
+        );
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -410,8 +415,10 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
