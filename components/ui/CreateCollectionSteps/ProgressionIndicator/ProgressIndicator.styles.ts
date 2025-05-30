@@ -19,9 +19,8 @@ export const Step = styled.View<StepProps>`
   height: 8px;
   border-radius: 6px;
   background-color: ${({ isActive, colorScheme }: StepProps) =>
-    isActive
-      ? Colors.primary
-      : colorScheme === "light"
-        ? Colors.grey100
-        : Colors.grey50};
+    isActive ? Colors.primary : "transparent"};
+  border-width: ${({ isActive }: StepProps) => (isActive ? "0px" : "1.5px")};
+  border-color: ${({ colorScheme }: StepProps) =>
+    colorScheme === "light" ? Colors.grey100 : Colors.grey50};
 `;
