@@ -10,6 +10,8 @@ import Step5 from "@/components/ui/OnboardingSteps/OnboardingStep5";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 const { width } = Dimensions.get("window");
 
@@ -18,6 +20,7 @@ const steps = [Step1, Step2, Step3, Step4, Step5];
 export default function OnboardingScreen() {
   const [currentStep, setCurrentStep] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const colorSceme = useActiveColorScheme() ?? "light";
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -46,7 +49,15 @@ export default function OnboardingScreen() {
       <View style={{ flex: 1 }}>
         <TouchableOpacity
           onPress={handleSkip}
-          style={{ position: "absolute", top: 20, right: 20, zIndex: 100 }}
+          style={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+            zIndex: 100,
+            height: 48,
+            width: 48,
+            justifyContent: "center",
+          }}
         >
           <ThemedText
             colorVariant="black"
@@ -84,7 +95,12 @@ export default function OnboardingScreen() {
           initialScrollIndex={0}
         />
       </View>
-      <View style={{ padding: 20 }}>
+      <View
+        style={{
+          marginHorizontal: 20,
+          backgroundColor: Colors[colorSceme].background,
+        }}
+      >
         <BottomButtons
           titleLeftButton="Back"
           titleRightButton="Next"
