@@ -193,6 +193,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   alignItems: "center",
                   gap: 6,
                   marginTop: -8,
+                  width: "100%",
                 }}
               >
                 <MaterialIcons
@@ -203,6 +204,8 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                 <ThemedText
                   fontWeight="regular"
                   fontSize="s"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                   style={{
                     color: colorScheme === "light" ? "#176BBA" : "#4599E8",
                     textDecorationLine: "underline",

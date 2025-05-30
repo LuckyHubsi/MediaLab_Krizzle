@@ -26,6 +26,8 @@ export type CollectionListCardPorps = ViewProps & {
   setSelectedItem?: (selectedItem: any) => void;
   setShowItemModal?: (showItemModal: boolean) => void;
   searchQuery?: string;
+  routing?: string;
+  collectionId?: string;
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
@@ -44,6 +46,8 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   setSelectedItem,
   setShowItemModal,
   searchQuery,
+  routing,
+  collectionId,
   ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
@@ -59,6 +63,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
             setSelectedList(collectionList || "All");
           }
         }}
+        collectionId={collectionId}
       />
 
       <BackgroundCard
@@ -91,15 +96,18 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                         params: {
                           itemId: item.itemID.toString(),
                           collectionItemText: item.values[0],
+                          routing: routing,
                         },
                       });
                     }}
                     onLongPress={() => {
-                      if (setSelectedItem) {
-                        setSelectedItem(item);
-                      }
-                      if (setShowItemModal) {
-                        setShowItemModal(true);
+                      if (!routing) {
+                        if (setSelectedItem) {
+                          setSelectedItem(item);
+                        }
+                        if (setShowItemModal) {
+                          setShowItemModal(true);
+                        }
                       }
                     }}
                   />

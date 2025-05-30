@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { Header } from "@/components/ui/Header/Header";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
+import { success } from "@/shared/result/Result";
+import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 
 export default function EditCollectionTemplateScreen() {
   const { collectionService, itemTemplateService } = useServices();
@@ -46,6 +48,10 @@ export default function EditCollectionTemplateScreen() {
   const [templates, setTemplates] = useState<
     (AttributeDTO & { isExisting?: boolean })[]
   >([]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [attributeToDelete, setAttributeToDelete] =
+    useState<AttributeDTO | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -134,8 +140,44 @@ export default function EditCollectionTemplateScreen() {
     );
   };
 
-  const handleRemoveCard = (id: number) => {
-    setTemplates((prev) => prev.filter((card) => card.attributeID !== id));
+  const handleRemoveCard = async (id: number) => {
+    if (templates.length <= 1) {
+      showSnackbar("You must have at least one property.", "top", "error");
+      return;
+    }
+
+    const item = templates.find((l) => l.attributeID === id);
+    if (item) {
+      setAttributeToDelete(item);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!attributeToDelete) return;
+
+    const id = attributeToDelete.attributeID;
+
+    if (!isNaN(Number(id))) {
+      try {
+        const deleteResult = await itemTemplateService.deleteAttribute(
+          Number(id),
+        );
+
+        if (deleteResult.success) {
+          setTemplates((prev) =>
+            prev.filter((card) => card.attributeID !== id),
+          );
+        } else {
+          // TODO: show error modal
+        }
+      } catch (error) {
+        console.error("Error deleting list:", error);
+      }
+    }
+
+    setAttributeToDelete(null);
+    setShowDeleteModal(false);
   };
 
   const handleAddCard = () => {
@@ -305,7 +347,9 @@ export default function EditCollectionTemplateScreen() {
                 onOptionsChange={(val) =>
                   handleOptionsChange(card.attributeID ?? 0, val)
                 }
-                onRemove={() => handleRemoveCard(card.attributeID ?? 0)}
+                onRemove={() => {
+                  handleRemoveCard(card.attributeID ?? 0);
+                }}
                 hasNoInputError={hasClickedNext && !card.attributeLabel?.trim()}
                 hasNoMultiSelectableError={
                   hasClickedNext &&
@@ -358,6 +402,15 @@ export default function EditCollectionTemplateScreen() {
             description={`Item Templates regulate what kind of fields you can enter for each item of the Collection. For example, inside your Books Collection you could create a Template for each Book you want to put into the Collection — like genres! 📚`}
           />
         )}
+
+        <DeleteModal
+          visible={showDeleteModal}
+          title={attributeToDelete?.attributeLabel ?? "property"}
+          extraInformation="Deleting this property will also remove all its uses in your existing items in the collection."
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          onclose={() => setShowDeleteModal(false)}
+        />
       </View>
     </GradientBackground>
   );

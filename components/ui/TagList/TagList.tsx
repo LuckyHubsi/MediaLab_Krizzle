@@ -23,13 +23,13 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
   }, [tags, onSelect]);
 
   const handlePress = (tag: TagDTO) => {
-    setActiveTag(tag);
-    onSelect?.(tag);
-  };
-
-  const handleAllPress = () => {
-    setActiveTag("All");
-    onSelect?.("All");
+    if (activeTag !== "All" && activeTag.tagID === tag.tagID) {
+      setActiveTag("All");
+      onSelect?.("All");
+    } else {
+      setActiveTag(tag);
+      onSelect?.(tag);
+    }
   };
 
   const isActive = (tag: TagDTO) =>
@@ -38,29 +38,11 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {/* "All" Button */}
-        <TagContainer onPress={handleAllPress} key="all" activeOpacity={0.7}>
-          <TagButton active={activeTag === "All"} themeMode={themeMode}>
-            {activeTag === "All" && (
-              <MaterialIcons
-                name="check-circle"
-                size={16}
-                color="#FBFBFB"
-                style={{ marginRight: 5 }}
-              />
-            )}
-            <TagText active={activeTag === "All"} themeMode={themeMode}>
-              All
-            </TagText>
-          </TagButton>
-        </TagContainer>
-
-        {/* "+ Add" Button */}
         {tags.length !== 0 && (
-          <TagContainer onPress={onPress} key="add" activeOpacity={0.7}>
+          <TagContainer onPress={onPress}>
             <TagButton themeMode={themeMode}>
               <MaterialIcons
-                name="add"
+                name="edit"
                 size={16}
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
               />
@@ -93,15 +75,15 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
 
         {/* Fallback when empty */}
         {tags.length === 0 && (
-          <TagContainer onPress={onPress} key="empty" activeOpacity={0.7}>
+          <TagContainer onPress={onPress}>
             <TagButton themeMode={themeMode}>
               <MaterialIcons
-                name="add"
+                name="edit"
                 size={16}
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
                 style={{ marginRight: 5 }}
               />
-              <TagText themeMode={themeMode}>Add a tag</TagText>
+              <TagText themeMode={themeMode}>Edit Tags</TagText>
             </TagButton>
           </TagContainer>
         )}

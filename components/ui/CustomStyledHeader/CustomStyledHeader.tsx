@@ -23,6 +23,7 @@ interface HeaderProps {
   backBehavior?: string;
   otherBackBehavior?: () => void;
   param?: string;
+  routing?: string;
   leftIconName?: keyof typeof MaterialIcons.glyphMap;
   isTransparent?: boolean;
   borderRadiusTop?: number;
@@ -38,6 +39,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   backBehavior,
   otherBackBehavior,
   param,
+  routing,
   leftIconName,
   isTransparent,
   borderRadiusTop,
@@ -64,7 +66,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       case "goCollection":
         router.replace({
           pathname: "/collectionPage",
-          params: { pageId: param },
+          params: { pageId: param, routing: routing },
         });
         break;
       default:

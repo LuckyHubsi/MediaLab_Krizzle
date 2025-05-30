@@ -54,6 +54,10 @@ const selectPreviewAttributesQuery: string = `
     ORDER BY a.attributeID ASC;
 `;
 
+const deleteAttributeQuery: string = `
+    DELETE FROM attribute WHERE attributeID = ?;
+`;
+
 export {
   insertAttributeQuery,
   insertMultiselectOptionsQuery,
@@ -62,4 +66,5 @@ export {
   selectPreviewAttributesQuery,
   updateMultiselectOptionsQuery,
   updateRatingSymbolQuery,
+  deleteAttributeQuery,
 };
