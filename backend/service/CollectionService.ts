@@ -258,8 +258,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateNewCollectionCat,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Insert Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Creation Failed",
@@ -307,8 +309,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
@@ -349,8 +353,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Delete Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Delete Failed",

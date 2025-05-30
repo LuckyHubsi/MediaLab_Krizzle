@@ -316,8 +316,10 @@ export class ItemTemplateService {
           message: TemplateErrorMessages.validateAttributeToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Delete Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Delete Failed",
