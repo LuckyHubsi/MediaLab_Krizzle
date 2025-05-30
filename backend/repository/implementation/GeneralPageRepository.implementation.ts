@@ -398,22 +398,23 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @param currentPinStatus - A boolean representing the current pin status.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
-  async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
+  async updatePin(
+    pageID: PageID,
+    currentPinStatus: boolean,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean> {
     try {
       const newPinStatus = currentPinStatus ? 0 : 1;
 
-      await this.executeTransaction(async (txn) => {
-        await this.executeQuery(
-          updatePinnedByPageIDQuery,
-          [newPinStatus, pageID],
-          txn,
-        );
-
-        await this.updateDateModified(pageID, txn);
-      });
+      await this.executeQuery(
+        updatePinnedByPageIDQuery,
+        [newPinStatus, pageID],
+        txn,
+      );
 
       return true;
     } catch (error) {
