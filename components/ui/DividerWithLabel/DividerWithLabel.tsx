@@ -7,6 +7,8 @@ import {
 } from "./DividerWithLabel.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 interface DividerProps {
   label?: string;
@@ -19,7 +21,6 @@ export const DividerWithLabel = ({
   label = "optional",
   iconName,
   iconSize = 16,
-  iconColor = "#888",
 }: DividerProps) => {
   return (
     <DividerContainer>
@@ -35,7 +36,11 @@ export const DividerWithLabel = ({
             <MaterialIcons
               name={iconName}
               size={iconSize}
-              color={iconColor}
+              color={
+                useActiveColorScheme() === "dark"
+                  ? "#ABABAB" // light grey for dark mode
+                  : "#585858" // darker grey for light mode
+              }
               style={{
                 marginBottom: label ? 10 : 0,
                 marginTop: label ? 4 : 0,
@@ -47,7 +52,7 @@ export const DividerWithLabel = ({
           <ThemedText
             fontSize="s"
             fontWeight="regular"
-            style={{ color: iconColor }}
+            colorVariant="greyScale"
           >
             {label}
           </ThemedText>

@@ -97,6 +97,9 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                         >
                           <ItemCircle
                             backgroundColor={type === "color" ? item.value : ""}
+                            isSelected={isSelected}
+                            colorScheme={colorScheme}
+                            showBorder={type === "color"}
                           >
                             {Array.isArray(item.value) ? (
                               <LinearGradient
@@ -116,13 +119,21 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                               <MaterialIcons
                                 name={item.value as any}
                                 size={24}
-                                color={Colors[colorScheme].text}
+                                color={
+                                  isSelected ? "#fff" : Colors[colorScheme].text
+                                }
                               />
                             )}
                           </ItemCircle>
                           {type === "color" && (
                             <ColorLabel>
-                              <ThemedText>{label}</ThemedText>
+                              {isSelected ? (
+                                <ThemedText colorVariant="white">
+                                  {label}
+                                </ThemedText>
+                              ) : (
+                                <ThemedText>{label}</ThemedText>
+                              )}
                             </ColorLabel>
                           )}
                         </ItemWrapper>
@@ -131,9 +142,9 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                   </ItemsGrid>
                 </ScrollView>
                 <DoneButton onPress={() => onDone()}>
-                  <DoneButtonText colorScheme={colorScheme}>
+                  <ThemedText colorVariant="white" fontWeight="semibold">
                     Done
-                  </DoneButtonText>
+                  </ThemedText>
                 </DoneButton>
               </Content>
             </TouchableOpacity>

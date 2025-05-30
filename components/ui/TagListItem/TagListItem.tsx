@@ -37,10 +37,10 @@ export const TagListItem: React.FC<Props> = ({
           <ThemedText
             fontSize="s"
             fontWeight="light"
-            colorVariant="disabled"
+            colorVariant="greyScale"
           >{`Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`}</ThemedText>
         ) : !tagCountLoading ? null : (
-          <ThemedText fontSize="s" fontWeight="light" colorVariant="disabled">
+          <ThemedText fontSize="s" fontWeight="light" colorVariant="greyScale">
             Unused
           </ThemedText>
         )}

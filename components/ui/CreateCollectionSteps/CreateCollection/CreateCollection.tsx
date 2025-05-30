@@ -155,7 +155,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <MaterialIcons
               name="help-outline"
               size={26}
-              color={Colors.primary}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
             />
           </IconTopRight>
           <View style={{ alignItems: "center", gap: 20 }}>
@@ -180,11 +182,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                   <MaterialIcons name={selectedIcon} size={22} color="black" />
                 ) : undefined
               }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || "#4599E8"
-              }
+              color={getWidgetColorKey(selectedColor) ?? "blue"}
               isPreview={true}
             />
           </View>

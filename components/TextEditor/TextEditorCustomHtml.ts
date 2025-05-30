@@ -291,8 +291,8 @@ img.ProseMirror-separator {
     }
 
     input[type="checkbox"]:checked {
-      background-color: #4599E8;
-      border: 1px solid #4599E8;
+      background-color: #176BBA;
+      border: 1px solid #176BBA;
     }
 
 input[type="checkbox"]:checked::after {

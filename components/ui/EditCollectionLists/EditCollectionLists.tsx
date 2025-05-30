@@ -19,9 +19,10 @@ import { CollectionData } from "../CreateCollectionSteps/CreateCollection/Create
 import {
   AddButtonWrapper,
   ListContent,
-  RemoveButton,
+  RemoveButtonContainer,
   RemoveButtonContent,
 } from "./EditCollectionLists.styles.";
+import RemoveButton from "../RemoveButton/RemoveButton";
 
 interface EditCollectionListProps {
   data: CollectionData;
@@ -129,23 +130,9 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
               />
 
               {index > 0 && (
-                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                  <RemoveButtonContent>
-                    <MaterialIcons
-                      name="delete"
-                      size={16}
-                      color="#ff4d4d"
-                      style={{ marginRight: 6, marginTop: 2 }}
-                    />
-                    <ThemedText
-                      fontSize="s"
-                      fontWeight="bold"
-                      style={{ color: "#ff4d4d" }}
-                    >
-                      remove
-                    </ThemedText>
-                  </RemoveButtonContent>
-                </RemoveButton>
+                <RemoveButtonContainer>
+                  <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                </RemoveButtonContainer>
               )}
             </Card>
           );
