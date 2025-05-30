@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, View } from "react-native";
-import { TagButton, TagText } from "./TagList.styles";
+import { TagButton, TagText, TagContainer } from "./TagList.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TagDTO } from "@/shared/dto/TagDTO";
+import { Button } from "../Button/Button";
+import { ButtonContainer } from "../SelectFolderModal/SelectFolderModal.styles";
 
 type TagListProps = {
   tags: TagDTO[];
@@ -63,46 +65,53 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
         </TagButton> */}
 
         {tags.length !== 0 && (
-          <TagButton themeMode={themeMode} onPress={onPress}>
-            <MaterialIcons
-              name="edit"
-              size={16}
-              color={themeMode === "dark" ? "#FBFBFB" : "#000"}
-            />
-          </TagButton>
+          <ButtonContainer onPress={onPress}>
+            <TagButton themeMode={themeMode}>
+              <MaterialIcons
+                name="edit"
+                size={16}
+                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+              />
+            </TagButton>
+          </ButtonContainer>
         )}
 
+        {/* Mapped Tags */}
         {tags.map((tag) => (
-          <TagButton
-            key={tag.tagID}
-            active={isActive(tag)}
-            themeMode={themeMode}
+          <TagContainer
             onPress={() => handlePress(tag)}
+            key={tag.tagID}
+            activeOpacity={0.7}
           >
-            {isActive(tag) && (
-              <MaterialIcons
-                name="check-circle"
-                size={16}
-                color="#FBFBFB"
-                style={{ marginRight: 5 }}
-              />
-            )}
-            <TagText active={isActive(tag)} themeMode={themeMode}>
-              {tag.tag_label}
-            </TagText>
-          </TagButton>
+            <TagButton active={isActive(tag)} themeMode={themeMode}>
+              {isActive(tag) && (
+                <MaterialIcons
+                  name="check-circle"
+                  size={16}
+                  color="#FBFBFB"
+                  style={{ marginRight: 5 }}
+                />
+              )}
+              <TagText active={isActive(tag)} themeMode={themeMode}>
+                {tag.tag_label}
+              </TagText>
+            </TagButton>
+          </TagContainer>
         ))}
 
+        {/* Fallback when empty */}
         {tags.length === 0 && (
-          <TagButton themeMode={themeMode} onPress={onPress}>
-            <MaterialIcons
-              name="edit"
-              size={16}
-              color={themeMode === "dark" ? "#FBFBFB" : "#000"}
-              style={{ marginRight: 5 }}
-            />
-            <TagText themeMode={themeMode}>Edit Tags</TagText>
-          </TagButton>
+          <ButtonContainer onPress={onPress}>
+            <TagButton themeMode={themeMode}>
+              <MaterialIcons
+                name="edit"
+                size={16}
+                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+                style={{ marginRight: 5 }}
+              />
+              <TagText themeMode={themeMode}>Edit Tags</TagText>
+            </TagButton>
+          </ButtonContainer>
         )}
       </ScrollView>
     </View>

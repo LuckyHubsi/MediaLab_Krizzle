@@ -18,6 +18,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 type Item = {
   itemID: number;
@@ -174,7 +175,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                       "star"
                     }
                     size={24}
-                    color="#E7C716"
+                    color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
                     style={{ marginRight: 6 }}
                   />
                   <CollectionRating colorScheme={colorScheme}>
@@ -195,14 +196,18 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                   width: "100%",
                 }}
               >
-                <MaterialIcons name="attach-file" size={20} color="#2980ff" />
+                <MaterialIcons
+                  name="attach-file"
+                  size={20}
+                  color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+                />
                 <ThemedText
                   fontWeight="regular"
                   fontSize="s"
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
-                    color: "#2980ff",
+                    color: colorScheme === "light" ? "#176BBA" : "#4599E8",
                     textDecorationLine: "underline",
                     height: 48,
                     textAlignVertical: "center",

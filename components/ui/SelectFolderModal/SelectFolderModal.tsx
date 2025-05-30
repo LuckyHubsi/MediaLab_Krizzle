@@ -81,10 +81,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
 
     const isDuplicate = folders.some(
       (folder) =>
-        folder.folderName === trimmedFolder &&
+        folder.folderName.trim().toLowerCase() ===
+          trimmedFolder.toLowerCase() &&
         (!editFolderMode || folder.folderID !== editingFolder?.folderID),
     );
-
     if (isDuplicate) {
       showSnackbar("A folder with this name already exists.", "top", "error");
       return;

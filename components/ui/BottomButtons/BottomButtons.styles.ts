@@ -40,8 +40,8 @@ export const DiscardButton = styled(
       ? Colors[colorScheme].background
       : Colors[colorScheme].background};
   border: 1px solid
-    ${({ variant }: DiscardButtonProps) =>
-      variant === "back" ? Colors.grey50 : Colors.negative};
+    ${({ variant, colorScheme }: DiscardButtonProps) =>
+      variant === "back" ? Colors.grey50 : Colors[colorScheme].negative};
 `;
 
 export const NextButton = styled(BottomButtonBaseStyling)`

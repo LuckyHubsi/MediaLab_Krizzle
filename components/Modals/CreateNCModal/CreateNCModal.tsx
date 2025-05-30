@@ -82,7 +82,8 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
     //TODO: use folderId instead of tagID
     const isDuplicate = folders.some(
       (folder) =>
-        folder.folderName === trimmedFolder &&
+        folder.folderName.trim().toLowerCase() ===
+          trimmedFolder.toLowerCase() &&
         (!editMode || folder.folderID !== editingFolder?.folderID),
     );
 
@@ -138,7 +139,23 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   };
 
   useEffect(() => {
+    const fetchFolders = async () => {
+      try {
+        const result = await folderService.getAllFolders();
+        if (result.success) {
+          setFolders(result.value ?? []);
+        } else {
+          console.error("Error fetching folders:", result.error.message);
+          showSnackbar("Failed to fetch folders.", "top", "error");
+        }
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+      }
+    };
+
     if (isVisible) {
+      fetchFolders();
+
       setIsModalVisible(true);
       setShouldRenderSheet(true);
       slideAnim.setValue(Dimensions.get("window").height);

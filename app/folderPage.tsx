@@ -104,7 +104,9 @@ export default function FolderScreen() {
       id: String(widget.pageID),
       title: widget.page_title,
       tag: widget.tag || { tag_label: "Uncategorized" },
-      color: getColorKeyFromValue(widget.page_color || "#4599E8") ?? "#4599E8",
+      color:
+        getColorKeyFromValue(widget.page_color || Colors.primary) ??
+        Colors.primary,
       page_type: widget.page_type,
       icon: widget.page_icon ? getMaterialIcon(widget.page_icon) : undefined,
       archived: widget.archived,

@@ -53,7 +53,7 @@ export const TagPill = styled.View<{
     colorScheme: "light" | "dark";
   }) =>
     isSelected
-      ? Colors[colorScheme].tint
+      ? Colors.primary
       : colorScheme === "light"
         ? Colors[colorScheme].pillBackground
         : Colors[colorScheme].pillBackground};

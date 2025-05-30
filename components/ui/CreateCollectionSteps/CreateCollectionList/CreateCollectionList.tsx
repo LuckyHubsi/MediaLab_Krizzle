@@ -22,7 +22,7 @@ import {
   ItemCount,
   ItemCountContainer,
   ListContent,
-  RemoveButton,
+  RemoveButtonContainer,
   RemoveButtonContent,
   HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
@@ -35,6 +35,7 @@ import {
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
+import RemoveButton from "../../RemoveButton/RemoveButton";
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -134,7 +135,9 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
             <MaterialIcons
               name="help-outline"
               size={26}
-              color={Colors.primary}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
             />
           </IconTopRight>
           <CardText>
@@ -197,23 +200,9 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
                 maxLength={30}
               />
               {index > 0 && (
-                <RemoveButton onPress={() => handleRemoveCard(item.id)}>
-                  <RemoveButtonContent>
-                    <MaterialIcons
-                      name="delete"
-                      size={16}
-                      color="#ff4d4d"
-                      style={{ marginRight: 6, marginTop: 2 }}
-                    />
-                    <ThemedText
-                      fontSize="s"
-                      fontWeight="bold"
-                      style={{ color: "#ff4d4d" }}
-                    >
-                      remove
-                    </ThemedText>
-                  </RemoveButtonContent>
-                </RemoveButton>
+                <RemoveButtonContainer>
+                  <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                </RemoveButtonContainer>
               )}
             </Card>
           ))}

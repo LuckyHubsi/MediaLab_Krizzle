@@ -65,7 +65,7 @@ const DateField: FC<DateFieldProps> = ({
             <MaterialIcons
               name="close"
               size={18}
-              color={Colors.negative}
+              color={Colors[colorScheme].negative}
               onPress={() => onChange?.(null)}
               style={{ marginLeft: 8 }}
             />

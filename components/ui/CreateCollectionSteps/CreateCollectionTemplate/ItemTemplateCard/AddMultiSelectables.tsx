@@ -62,7 +62,11 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
           </TextfieldWrapper>
 
           <TouchableOpacity onPress={() => handleRemoveTextfield(index)}>
-            <MaterialIcons name="delete" size={24} color={Colors.negative} />
+            <MaterialIcons
+              name="delete"
+              size={24}
+              color={Colors[colorScheme].negative}
+            />
           </TouchableOpacity>
         </SelectablesContainer>
       ))}

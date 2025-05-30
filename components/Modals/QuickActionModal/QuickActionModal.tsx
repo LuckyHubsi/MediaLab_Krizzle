@@ -88,7 +88,7 @@ export default function QuickActionModal({
                   const iconColor = item.disabled
                     ? Colors[colorScheme].disabled
                     : item.danger
-                      ? Colors.negative
+                      ? Colors[colorScheme].negative
                       : Colors[colorScheme].text;
 
                   return (

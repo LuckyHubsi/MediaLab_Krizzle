@@ -7,11 +7,11 @@ export const FolderContainer = styled.View<CardProps>`
   width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
   height: 110px;
   border-radius: 25px;
-  background-color: ${Colors.primary};
+  background-color: ${Colors.secondary};
 `;
 
 export const FolderShape = styled.View`
-  background-color: ${Colors.secondary};
+  background-color: ${Colors.primary};
   height: 75%;
   width: 100%;
   border-radius: 0px 16px 25px 25px;
@@ -29,7 +29,7 @@ export const FolderContent = styled.View`
 `;
 
 export const FolderTab = styled.View`
-  background-color: ${Colors.secondary};
+  background-color: ${Colors.primary};
   height: 10%;
   width: 40%;
   position: absolute;

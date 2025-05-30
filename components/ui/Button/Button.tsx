@@ -17,7 +17,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   return (
-    <StyledButton onPress={onPress} isRed={isRed}>
+    <StyledButton onPress={onPress} isRed={isRed} colorScheme={colorScheme}>
       <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
         {children}
       </ThemedText>

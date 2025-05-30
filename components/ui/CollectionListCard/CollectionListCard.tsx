@@ -27,6 +27,7 @@ export type CollectionListCardPorps = ViewProps & {
   setShowItemModal?: (showItemModal: boolean) => void;
   searchQuery?: string;
   routing?: string;
+  collectionId?: string;
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
@@ -46,6 +47,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   setShowItemModal,
   searchQuery,
   routing,
+  collectionId,
   ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
@@ -61,6 +63,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
             setSelectedList(collectionList || "All");
           }
         }}
+        collectionId={collectionId}
       />
 
       <BackgroundCard
