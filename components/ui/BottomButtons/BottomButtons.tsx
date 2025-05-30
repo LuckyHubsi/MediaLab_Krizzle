@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import {
   BottomButtonContainer,
   DiscardButton,
@@ -7,11 +7,10 @@ import {
 } from "./BottomButtons.styles";
 import { ThemedText } from "@/components/ThemedText";
 import ProgressIndicator from "../CreateCollectionSteps/ProgressionIndicator/ProgressionIndicator";
-import { Button } from "../Button/Button";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
-import { useWindowDimensions } from "react-native";
+import { useWindowDimensions, Animated, Easing, View } from "react-native";
 
 interface BottomButtonsProps {
   titleLeftButton?: string;
@@ -39,6 +38,39 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   const buttonTextVariants =
     variant === "discard" ? "red" : colorScheme === "dark" ? "white" : "grey";
 
+  const singleButtonOpacity = useRef(new Animated.Value(1)).current;
+  const dualButtonsOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (progressStep === 1) {
+      Animated.parallel([
+        Animated.timing(singleButtonOpacity, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dualButtonsOpacity, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(singleButtonOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dualButtonsOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [progressStep]);
+
   return (
     <LinearGradient
       colors={[
@@ -59,33 +91,46 @@ const BottomButtons: FC<BottomButtonsProps> = ({
           <ProgressIndicator progressStep={progressStep || 0} />
         )}
 
-        {progressStep && progressStep === 1 && (
-          <NextButton onPress={onNext}>
-            <ThemedText colorVariant="white" fontWeight="bold">
-              {singleButtonText || "Next"}
-            </ThemedText>
-          </NextButton>
-        )}
-
-        {progressStep && progressStep > 1 && (
-          <BottomButtonContainer>
-            <DiscardButton
-              onPress={onDiscard}
-              colorScheme={colorScheme}
-              variant={variant ?? "discard"}
-            >
-              <ThemedText colorVariant={buttonTextVariants} fontWeight="bold">
-                {titleLeftButton}
-              </ThemedText>
-            </DiscardButton>
-
+        <View style={{ position: "relative", height: 64 }}>
+          <Animated.View
+            style={{
+              position: "absolute",
+              width: "100%",
+              opacity: singleButtonOpacity,
+            }}
+          >
             <NextButton onPress={onNext}>
               <ThemedText colorVariant="white" fontWeight="bold">
-                {titleRightButton}
+                {singleButtonText || "Next"}
               </ThemedText>
             </NextButton>
-          </BottomButtonContainer>
-        )}
+          </Animated.View>
+          <Animated.View
+            style={{
+              position: "absolute",
+              width: "100%",
+              opacity: dualButtonsOpacity,
+            }}
+          >
+            <BottomButtonContainer>
+              <DiscardButton
+                onPress={onDiscard}
+                colorScheme={colorScheme}
+                variant={variant ?? "discard"}
+              >
+                <ThemedText colorVariant={buttonTextVariants} fontWeight="bold">
+                  {titleLeftButton}
+                </ThemedText>
+              </DiscardButton>
+
+              <NextButton onPress={onNext}>
+                <ThemedText colorVariant="white" fontWeight="bold">
+                  {titleRightButton}
+                </ThemedText>
+              </NextButton>
+            </BottomButtonContainer>
+          </Animated.View>
+        </View>
       </StyledBottomButtons>
     </LinearGradient>
   );
