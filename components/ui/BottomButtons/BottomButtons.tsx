@@ -60,7 +60,11 @@ const BottomButtons: FC<BottomButtonsProps> = ({
         )}
 
         {progressStep && progressStep === 1 && (
-          <Button onPress={onNext} children={singleButtonText} />
+          <NextButton onPress={onNext}>
+            <ThemedText colorVariant="white" fontWeight="bold">
+              {singleButtonText || "Next"}
+            </ThemedText>
+          </NextButton>
         )}
 
         {progressStep && progressStep > 1 && (
