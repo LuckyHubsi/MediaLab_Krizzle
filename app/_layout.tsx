@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack, useNavigation } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import {
@@ -24,6 +24,7 @@ import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
 import { RepositoryProvider } from "@/context/RepositoryContext";
 import { ServiceProvider } from "@/context/ServiceContext";
 import * as ImagePicker from "expo-image-picker";
+import { View } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -49,6 +50,9 @@ export default function RootLayout() {
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     })();
   }, []);
+
+  // Ensure the app is ready to render before showing the UI and prevent flashing
+  if (!loaded) return null;
 
   return (
     <UserThemeProvider>
@@ -132,9 +136,10 @@ export default function RootLayout() {
                     options={{ headerShown: false }}
                   />
                   <Stack.Screen
-                    name="Onboarding"
+                    name="onboardingScreen"
                     options={{ headerShown: false }}
                   />
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
                 </Stack>
                 <StatusBar style="auto" />
               </SnackbarProvider>
