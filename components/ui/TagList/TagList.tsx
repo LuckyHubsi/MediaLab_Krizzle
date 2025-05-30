@@ -32,23 +32,33 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
     }
   };
 
+  const handleAllPress = () => {
+    setActiveTag("All");
+    onSelect?.("All");
+  };
+
   const isActive = (tag: TagDTO) =>
     activeTag !== "All" && activeTag?.tagID === tag.tagID;
 
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {tags.length !== 0 && (
-          <TagContainer onPress={onPress}>
-            <TagButton themeMode={themeMode}>
+        {/* "All" Button */}
+        <TagContainer onPress={handleAllPress} key="all" activeOpacity={0.7}>
+          <TagButton active={activeTag === "All"} themeMode={themeMode}>
+            {activeTag === "All" && (
               <MaterialIcons
-                name="edit"
+                name="check-circle"
                 size={16}
-                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+                color="#FBFBFB"
+                style={{ marginRight: 5 }}
               />
-            </TagButton>
-          </TagContainer>
-        )}
+            )}
+            <TagText active={activeTag === "All"} themeMode={themeMode}>
+              All
+            </TagText>
+          </TagButton>
+        </TagContainer>
 
         {/* Mapped Tags */}
         {tags.map((tag) => (
@@ -75,15 +85,17 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
 
         {/* Fallback when empty */}
         {tags.length === 0 && (
-          <TagContainer onPress={onPress}>
+          <TagContainer onPress={onPress} key="empty" activeOpacity={0.7}>
             <TagButton themeMode={themeMode}>
               <MaterialIcons
-                name="edit"
+                name={tags.length === 0 ? "add" : "edit"}
                 size={16}
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
                 style={{ marginRight: 5 }}
               />
-              <TagText themeMode={themeMode}>Edit Tags</TagText>
+              {tags.length === 0 && (
+                <TagText themeMode={themeMode}>Add a tag</TagText>
+              )}
             </TagButton>
           </TagContainer>
         )}
