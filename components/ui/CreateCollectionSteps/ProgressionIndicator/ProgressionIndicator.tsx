@@ -13,7 +13,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 
   return (
     <Container>
-      {[1, 2, 3].map((step) => (
+      {[1, 2, 3, 4, 5].map((step) => (
         <Step
           key={step}
           isActive={progressStep === step}
