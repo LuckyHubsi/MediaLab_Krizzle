@@ -4,8 +4,6 @@ import { TagButton, TagText, TagContainer } from "./TagList.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TagDTO } from "@/shared/dto/TagDTO";
-import { Button } from "../Button/Button";
-import { ButtonContainer } from "../SelectFolderModal/SelectFolderModal.styles";
 
 type TagListProps = {
   tags: TagDTO[];
@@ -34,38 +32,14 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
     }
   };
 
-  const handleAllPress = () => {
-    setActiveTag("All");
-    onSelect?.("All");
-  };
-
   const isActive = (tag: TagDTO) =>
     activeTag !== "All" && activeTag?.tagID === tag.tagID;
 
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {/* <TagButton
-          key="all"
-          active={activeTag === "All"}
-          themeMode={themeMode}
-          onPress={handleAllPress}
-        >
-          {activeTag === "All" && (
-            <MaterialIcons
-              name="check-circle"
-              size={16}
-              color="#FBFBFB"
-              style={{ marginRight: 10 }}
-            />
-          )}
-          <TagText active={activeTag === "All"} themeMode={themeMode}>
-            All
-          </TagText>
-        </TagButton> */}
-
         {tags.length !== 0 && (
-          <ButtonContainer onPress={onPress}>
+          <TagContainer onPress={onPress}>
             <TagButton themeMode={themeMode}>
               <MaterialIcons
                 name="edit"
@@ -73,7 +47,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
               />
             </TagButton>
-          </ButtonContainer>
+          </TagContainer>
         )}
 
         {/* Mapped Tags */}
@@ -101,7 +75,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
 
         {/* Fallback when empty */}
         {tags.length === 0 && (
-          <ButtonContainer onPress={onPress}>
+          <TagContainer onPress={onPress}>
             <TagButton themeMode={themeMode}>
               <MaterialIcons
                 name="edit"
@@ -111,7 +85,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
               />
               <TagText themeMode={themeMode}>Edit Tags</TagText>
             </TagButton>
-          </ButtonContainer>
+          </TagContainer>
         )}
       </ScrollView>
     </View>
