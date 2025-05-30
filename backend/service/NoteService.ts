@@ -118,7 +118,10 @@ export class NoteService {
     try {
       const parsedContent = common.string50000.parse(newContent);
       const brandedPageID = pageID.parse(pageId);
-      await this.noteRepo.updateContent(brandedPageID, parsedContent);
+      await this.noteRepo.executeTransaction(async (txn) => {
+        await this.noteRepo.updateContent(brandedPageID, parsedContent, txn);
+        await this.noteRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(undefined);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -127,8 +130,10 @@ export class NoteService {
           message: NoteErrorMessages.validateNoteToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
