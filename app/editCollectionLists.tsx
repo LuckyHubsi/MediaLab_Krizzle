@@ -170,7 +170,10 @@ export default function EditCollectionListsScreen() {
         }
       } else {
         const updateListResult =
-          await collectionService.updateCollectionCategory(updateDto);
+          await collectionService.updateCollectionCategory(
+            updateDto,
+            Number(pageId),
+          );
         if (!updateListResult.success) {
           // TODO: Show error modal
         }

@@ -278,20 +278,27 @@ export class CollectionService {
    * Update an existing category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be updated.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async updateCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const updatedCategory = CollectionCategoryMapper.toNewEntity(categoryDTO);
       const brandedCategoryID = collectionCategoryID.parse(
         categoryDTO.collectionCategoryID,
       );
-      await this.categoryRepo.updateCategory(
-        updatedCategory,
-        brandedCategoryID,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.updateCategory(
+          updatedCategory,
+          brandedCategoryID,
+          txn,
+        );
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {

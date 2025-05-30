@@ -99,18 +99,21 @@ export class CollectionCategoryRepositoryImpl
    *
    * @param category - A `NewCollectionCategory` with a label to save.
    * @param categoryId - A `CollectionCategoryID` representing the category ID.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateCategory(
     category: NewCollectionCategory,
     categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
-      await this.executeQuery(updateCategoryQuery, [
-        category.categoryName,
-        categoryId,
-      ]);
+      await this.executeQuery(
+        updateCategoryQuery,
+        [category.categoryName, categoryId],
+        txn,
+      );
       return true;
     } catch (error) {
       throw new RepositoryErrorNew("Update Failed");
