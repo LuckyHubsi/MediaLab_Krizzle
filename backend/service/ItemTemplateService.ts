@@ -294,14 +294,20 @@ export class ItemTemplateService {
    * Deletes an attribute by its ID.
    *
    * @param attributeId - Number representing the attribute to be deleted.
+   * @param pageId - Number representing the page the attribute belongs to.
    * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
   async deleteAttribute(
     attributeId: number,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedAttributeID = attributeID.parse(attributeId);
-      await this.attributeRepo.deleteAttribute(brandedAttributeID);
+      const brandedPageID = pageID.parse(pageId);
+      await this.templateRepo.executeTransaction(async (txn) => {
+        await this.attributeRepo.deleteAttribute(brandedAttributeID, txn);
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
