@@ -327,14 +327,20 @@ export class CollectionService {
    * Deleting a category.
    *
    * @param categoryId - A number representing the categoryID.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async deleteCollectionCategoryByID(
     categoryId: number,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const brandedCategoryID = collectionCategoryID.parse(categoryId);
-      await this.categoryRepo.deleteCategory(brandedCategoryID);
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.deleteCategory(brandedCategoryID, txn);
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {

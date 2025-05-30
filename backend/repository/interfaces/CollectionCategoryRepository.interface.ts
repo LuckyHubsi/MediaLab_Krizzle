@@ -26,5 +26,8 @@ export interface CollectionCategoryRepository extends BaseRepository {
     categoryId: CategoryID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean>;
-  deleteCategory(categoryId: CategoryID): Promise<boolean>;
+  deleteCategory(
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean>;
 }

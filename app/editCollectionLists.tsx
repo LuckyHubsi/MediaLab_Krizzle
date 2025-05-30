@@ -192,7 +192,10 @@ export default function EditCollectionListsScreen() {
     if (!isNaN(Number(id))) {
       try {
         const deleteListResult =
-          await collectionService.deleteCollectionCategoryByID(Number(id));
+          await collectionService.deleteCollectionCategoryByID(
+            Number(id),
+            Number(pageId),
+          );
 
         if (deleteListResult.success) {
           setLists((prev) => prev.filter((l) => l.id !== id));
