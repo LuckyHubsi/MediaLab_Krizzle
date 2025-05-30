@@ -312,10 +312,15 @@ export class GeneralPageService {
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
-      await this.generalPageRepo.updateArchive(
-        brandedPageID,
-        currentArchiveStatus,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.generalPageRepo.updateArchive(
+          brandedPageID,
+          currentArchiveStatus,
+          txn,
+        );
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -324,8 +329,10 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",

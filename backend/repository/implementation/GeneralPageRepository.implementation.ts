@@ -427,25 +427,23 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @param currentArchiveStatus - A boolean representing the current archive status.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateArchive(
     pageID: PageID,
     currentArchiveStatus: boolean,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
       const newArchiveStatus = currentArchiveStatus ? 0 : 1;
 
-      await this.executeTransaction(async (txn) => {
-        await this.executeQuery(
-          updateArchivedByPageIDQuery,
-          [newArchiveStatus, 0, pageID], // set pin status to false
-          txn,
-        );
-
-        await this.updateDateModified(pageID, txn);
-      });
+      await this.executeQuery(
+        updateArchivedByPageIDQuery,
+        [newArchiveStatus, 0, pageID],
+        txn,
+      );
 
       return true;
     } catch (error) {
