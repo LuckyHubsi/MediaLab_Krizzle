@@ -163,7 +163,7 @@ export default function NotesScreen() {
               : null,
             noteData && !noteData.archived
               ? {
-                  label: "Edit",
+                  label: "Edit Widget",
                   icon: "edit",
                   onPress: () => {
                     goToEditPage();

@@ -86,7 +86,7 @@ export default function CollectionScreen() {
 
     router.push({
       pathname: path,
-      params: { widgetID: pageId },
+      params: { widgetID: pageId, routing: routing },
     });
   };
 
@@ -95,7 +95,7 @@ export default function CollectionScreen() {
 
     router.push({
       pathname: path,
-      params: { collectionId: collection?.collectionID },
+      params: { collectionId: collection?.collectionID, routing: routing },
     });
   };
 
@@ -136,7 +136,7 @@ export default function CollectionScreen() {
         />
         <CustomStyledHeader
           title={collectionTitle || "Collection"}
-          backBehavior="goHome"
+          backBehavior={routing === "goArchive" ? "goArchive" : "goHome"}
           iconName={selectedIcon || undefined}
           onIconPress={() => {}}
           iconName2="more-horiz"
@@ -171,6 +171,7 @@ export default function CollectionScreen() {
           setShowItemModal={setShowItemModal}
           searchQuery={searchQuery}
           collectionId={collection?.collectionID?.toString()}
+          routing={routing}
         />
       </SafeAreaView>
 
@@ -226,6 +227,7 @@ export default function CollectionScreen() {
                         pageId: pageId,
                         templateId: collection?.templateID?.toString(),
                         title: collection?.page_title,
+                        routing: routing,
                       },
                     });
                   },
@@ -302,7 +304,7 @@ export default function CollectionScreen() {
             onPress: () => {
               router.push({
                 pathname: "/editCollectionItem",
-                params: { itemId: selectedItem?.itemID },
+                params: { itemId: selectedItem?.itemID, routing: routing },
               });
             },
           },
@@ -375,26 +377,29 @@ export default function CollectionScreen() {
         onclose={() => setShowItemDeleteModal(false)}
       />
 
-      <View
-        style={{
-          position: "absolute",
-          right: 20,
-          bottom: 30,
-        }}
-      >
-        <FloatingAddButton
-          onPress={() => {
-            router.push({
-              pathname: "/addCollectionItem",
-              params: {
-                templateId: collection?.templateID?.toString(),
-                collectionId: collection?.collectionID?.toString(),
-                pageId: pageId,
-              },
-            });
+      {!routing && (
+        <View
+          style={{
+            position: "absolute",
+            right: 20,
+            bottom: 30,
           }}
-        />
-      </View>
+        >
+          <FloatingAddButton
+            onPress={() => {
+              router.push({
+                pathname: "/addCollectionItem",
+                params: {
+                  templateId: collection?.templateID?.toString(),
+                  collectionId: collection?.collectionID?.toString(),
+                  pageId: pageId,
+                  routing: routing,
+                },
+              });
+            }}
+          />
+        </View>
+      )}
       <SelectFolderModal
         widgetTitle={title}
         onClose={() => setShowFolderSelectionModal(false)}

@@ -14,7 +14,10 @@ import { useServices } from "@/context/ServiceContext";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function EditCollectionItem() {
-  const { itemId } = useLocalSearchParams<{ itemId: string }>();
+  const { itemId, routing } = useLocalSearchParams<{
+    itemId: string;
+    routing?: string;
+  }>();
 
   const { collectionService, itemTemplateService } = useServices();
 
@@ -184,6 +187,26 @@ export default function EditCollectionItem() {
     return typeof val === "string" && val.trim().length > 0;
   };
 
+  const handleSaveItem = async (itemId: string) => {
+    const firstKey = Object.keys(attributeValues)[0];
+    const firstValueRaw = firstKey
+      ? attributeValues[Number(firstKey)]
+      : undefined;
+    const collectionItemText =
+      typeof firstValueRaw === "object" && firstValueRaw?.displayText
+        ? firstValueRaw.displayText
+        : (firstValueRaw ?? "");
+
+    router.replace({
+      pathname: "/collectionItemPage",
+      params: {
+        itemId: itemId,
+        collectionItemText,
+        routing: routing,
+      },
+    });
+  };
+
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
@@ -297,10 +320,7 @@ export default function EditCollectionItem() {
                     await collectionService.editItemByID(updatedItem);
 
                   if (updateResult.success) {
-                    router.replace({
-                      pathname: "/collectionItemPage",
-                      params: { itemId: itemId },
-                    });
+                    handleSaveItem(itemId);
                   }
                 } else {
                   // TODO: show error modal

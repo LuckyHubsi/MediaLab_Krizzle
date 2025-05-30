@@ -17,10 +17,11 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
 
 export default function AddCollectionItem() {
-  const { templateId, collectionId, pageId } = useLocalSearchParams<{
+  const { templateId, collectionId, pageId, routing } = useLocalSearchParams<{
     templateId?: string;
     collectionId?: string;
     pageId?: string;
+    routing?: string;
   }>();
   const { collectionService, itemTemplateService } = useServices();
 
@@ -159,10 +160,24 @@ export default function AddCollectionItem() {
     }
     const itemDTO = mapToItemDTO(attributes);
     const itemIdResult = await collectionService.insertItemAndReturnID(itemDTO);
+
+    const firstKey = Object.keys(attributeValues)[0];
+    const firstValueRaw = firstKey
+      ? attributeValues[Number(firstKey)]
+      : undefined;
+    const collectionItemText =
+      typeof firstValueRaw === "object" && firstValueRaw?.displayText
+        ? firstValueRaw.displayText
+        : (firstValueRaw ?? "");
+
     if (itemIdResult.success) {
       router.replace({
         pathname: "/collectionItemPage",
-        params: { itemId: itemIdResult.value },
+        params: {
+          itemId: itemIdResult.value,
+          collectionItemText,
+          routing: routing,
+        },
       });
     } else {
       // TODO: show error modal

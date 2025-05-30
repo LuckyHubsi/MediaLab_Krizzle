@@ -16,7 +16,7 @@ import { TagDTO } from "@/shared/dto/TagDTO";
 interface TagPickerProps {
   tags: TagDTO[];
   selectedTag: TagDTO | null;
-  onSelectTag: (tag: TagDTO) => void;
+  onSelectTag: (tag: TagDTO | null) => void;
   onViewAllPress: () => void;
 }
 
@@ -34,9 +34,9 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         <ThemedText fontSize="regular" fontWeight="regular">
           Choose a Tag
         </ThemedText>
-        <EditTextContainer>
+        <EditTextContainer onPress={onViewAllPress}>
           <ThemedText fontSize="s" fontWeight="regular" colorVariant="viewAll">
-            Edit Tags
+            All Tags
             <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
           </ThemedText>
         </EditTextContainer>
@@ -48,7 +48,13 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           return (
             <TouchableOpacity
               key={tag.tagID}
-              onPress={() => onSelectTag(tag)}
+              onPress={() => {
+                if (isSelected) {
+                  onSelectTag(null); // Deselect
+                } else {
+                  onSelectTag(tag); // Select
+                }
+              }}
               style={{
                 height: 48,
                 alignItems: "center",
@@ -80,12 +86,12 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           <TouchableOpacity onPress={() => onViewAllPress()}>
             <TagPill onPress={onViewAllPress} colorScheme={themeMode}>
               <MaterialIcons
-                name="add"
+                name="edit"
                 size={16}
                 color={themeMode === "dark" ? "#FBFBFB" : "#000"}
                 style={{ marginRight: 5 }}
               />
-              <ThemedText>Add a tag</ThemedText>
+              <ThemedText>Edit Tags</ThemedText>
             </TagPill>
           </TouchableOpacity>
         )}

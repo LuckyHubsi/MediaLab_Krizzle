@@ -23,8 +23,13 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
   }, [tags, onSelect]);
 
   const handlePress = (tag: TagDTO) => {
-    setActiveTag(tag);
-    onSelect?.(tag);
+    if (activeTag !== "All" && activeTag.tagID === tag.tagID) {
+      setActiveTag("All");
+      onSelect?.("All");
+    } else {
+      setActiveTag(tag);
+      onSelect?.(tag);
+    }
   };
 
   const handleAllPress = () => {
@@ -38,7 +43,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
   return (
     <View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <TagButton
+        {/* <TagButton
           key="all"
           active={activeTag === "All"}
           themeMode={themeMode}
@@ -55,12 +60,12 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           <TagText active={activeTag === "All"} themeMode={themeMode}>
             All
           </TagText>
-        </TagButton>
+        </TagButton> */}
 
         {tags.length !== 0 && (
           <TagButton themeMode={themeMode} onPress={onPress}>
             <MaterialIcons
-              name="add"
+              name="edit"
               size={16}
               color={themeMode === "dark" ? "#FBFBFB" : "#000"}
             />
@@ -91,12 +96,12 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
         {tags.length === 0 && (
           <TagButton themeMode={themeMode} onPress={onPress}>
             <MaterialIcons
-              name="add"
+              name="edit"
               size={16}
               color={themeMode === "dark" ? "#FBFBFB" : "#000"}
               style={{ marginRight: 5 }}
             />
-            <TagText themeMode={themeMode}>Add a tag</TagText>
+            <TagText themeMode={themeMode}>Edit Tags</TagText>
           </TagButton>
         )}
       </ScrollView>
