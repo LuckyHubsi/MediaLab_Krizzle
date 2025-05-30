@@ -36,7 +36,10 @@ import { useServices } from "@/context/ServiceContext";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 
 export default function EditCollectionListsScreen() {
-  const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
+  const { collectionId, pageId } = useLocalSearchParams<{
+    collectionId: string;
+    pageId: string;
+  }>();
   const { collectionService } = useServices();
 
   const numericId = Number(collectionId);
@@ -153,10 +156,13 @@ export default function EditCollectionListsScreen() {
 
       if (!isPersisted(l.id)) {
         const insertListResult =
-          await collectionService.insertCollectionCategory({
-            category_name: l.title,
-            collectionID: numericId,
-          });
+          await collectionService.insertCollectionCategory(
+            {
+              category_name: l.title,
+              collectionID: numericId,
+            },
+            Number(pageId),
+          );
         if (insertListResult.success) {
           setInitialIds((prev) => new Set(prev).add(l.id));
         } else {

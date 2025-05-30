@@ -231,15 +231,25 @@ export class CollectionService {
    * Insert new category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const brandedCollectionID = collectionID.parse(categoryDTO.collectionID);
       const category = CollectionCategoryMapper.toNewEntity(categoryDTO);
-      await this.categoryRepo.insertCategory(category, brandedCollectionID);
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.insertCategory(
+          category,
+          brandedCollectionID,
+          txn,
+        );
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
