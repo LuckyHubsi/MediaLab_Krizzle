@@ -60,6 +60,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     itemTemplateRepository,
     attributeRepository,
     itemRepository,
+    generalPageRepository,
   );
   const collectionService = new CollectionService(
     baseRepository,

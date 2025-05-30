@@ -20,6 +20,7 @@ import { AttributeRepository } from "../repository/interfaces/AttributeRepositor
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { ItemAttributeValue } from "../domain/entity/Item";
+import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 
 /**
  * ItemTemplateService encapsulates item-template-related application logic.
@@ -33,6 +34,7 @@ export class ItemTemplateService {
     private templateRepo: ItemTemplateRepository,
     private attributeRepo: AttributeRepository,
     private itemRepo: ItemRepository,
+    private generalPageRepo: GeneralPageRepository,
   ) {}
 
   /**
@@ -259,6 +261,8 @@ export class ItemTemplateService {
             }
           }
         }
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
 
       // returns true on success
