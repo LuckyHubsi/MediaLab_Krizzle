@@ -41,7 +41,7 @@ export default function OnboardingBackground({
       ]}
     >
       <LinearGradient
-        colors={["rgba(255,255,255,0.75)", "#4599E8"]}
+        colors={["#D9ECFF", "#DCD4FC"]}
         style={{ height: "100%" }}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
