@@ -1,11 +1,6 @@
-import {
-  useColorScheme,
-  View,
-  Image,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { View, Image, StyleProp, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type OnboardingBackgroundProps = {
   imageSourceLight: any;
@@ -20,7 +15,7 @@ export default function OnboardingBackground({
   heightPercent = 65,
   style,
 }: OnboardingBackgroundProps) {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const selectedImage =
     colorScheme === "dark" ? imageSourceDark : imageSourceLight;
 
