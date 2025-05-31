@@ -32,6 +32,7 @@ import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useServices } from "@/context/ServiceContext";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface SelectFolderModalProps {
   visible: boolean;
@@ -255,11 +256,11 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
             onClose();
           }}
         >
-          <View
+          <LinearGradient
+            colors={["rgba(0,0,0,0.0)", "rgb(0, 0, 0)"]}
             style={{
               flex: 1,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              justifyContent: "center",
+              justifyContent: "flex-end",
             }}
           >
             <TouchableWithoutFeedback
@@ -406,7 +407,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                 )}
               </ButtonContainer>
             </StyledModalContent>
-          </View>
+          </LinearGradient>
         </Modal>
       </SafeAreaView>
       <BottomInputModal
