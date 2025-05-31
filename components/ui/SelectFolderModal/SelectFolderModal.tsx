@@ -228,7 +228,9 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   }, [visible, shouldRefetch]);
 
   const folderItems = [
-    ...mapToFolderShape(folders),
+    ...mapToFolderShape(
+      [...folders].sort((a, b) => (b.folderID ?? 0) - (a.folderID ?? 0)),
+    ),
     {
       id: "add-folder-button",
       title: "Add Folder",
