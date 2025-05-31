@@ -359,13 +359,28 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
               const allOtherTitlesFilled = otherCards.every((card) => {
                 const titleFilled = !!card.title?.trim();
+
                 if (card.itemType === "multi-select") {
                   const hasValidOptions =
                     (card?.options ?? []).length > 0 &&
                     (card.options ?? []).every((o) => o.trim() !== "");
                   return titleFilled && hasValidOptions;
                 }
+
                 return titleFilled;
+              });
+
+              // 🔍 Check for duplicate multi-select values
+              const hasMultiSelectDuplicates = otherCards.some((card) => {
+                if (card.itemType !== "multi-select" || !card.options)
+                  return false;
+
+                const lowerTrimmed = card.options
+                  .map((o) => o.trim().toLowerCase())
+                  .filter((o) => o !== "");
+
+                const unique = new Set(lowerTrimmed);
+                return unique.size !== lowerTrimmed.length;
               });
 
               if (!isMainTitleFilled || !allOtherTitlesFilled) {
@@ -377,9 +392,19 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 return;
               }
 
+              if (hasMultiSelectDuplicates) {
+                showSnackbar(
+                  "Each multi-select must have only unique values.",
+                  "bottom",
+                  "error",
+                );
+                return;
+              }
+
               onNext?.();
+
               showSnackbar(
-                `Successfully created Collection: "${data.title}". `,
+                `Successfully created Collection: "${data.title}".`,
                 "bottom",
                 "success",
               );

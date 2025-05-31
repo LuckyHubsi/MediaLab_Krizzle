@@ -248,6 +248,25 @@ export default function EditCollectionTemplateScreen() {
       newAttributes,
       Number(pageId),
     );
+    const hasMultiSelectDuplicates = templates.some((card) => {
+      if (card.type !== "multi-select" || !card.options) return false;
+
+      const trimmedLowercase = card.options
+        .map((o) => o.trim().toLowerCase())
+        .filter((o) => o !== "");
+
+      const unique = new Set(trimmedLowercase);
+      return unique.size !== trimmedLowercase.length;
+    });
+
+    if (hasMultiSelectDuplicates) {
+      showSnackbar(
+        "Each multi-select must have only unique values.",
+        "bottom",
+        "error",
+      );
+      return;
+    }
 
     if (updateResult.success) {
       showSnackbar("Template updated successfully.", "bottom", "success");
