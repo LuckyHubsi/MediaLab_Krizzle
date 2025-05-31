@@ -471,13 +471,13 @@ export default function FolderScreen() {
 
                 if (updateFolderSuccess && archiveSuccess) {
                   showSnackbar(
-                    `Successfully archived ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
                     "success",
                   );
                 } else {
                   showSnackbar(
-                    `Failed to archive ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
                     "error",
                   );

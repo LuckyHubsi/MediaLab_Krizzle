@@ -256,7 +256,7 @@ export default function CollectionScreen() {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
-                        : "Successfully moved Collection to Archive in Settings.",
+                        : "Successfully moved Collection to Archive in Menu.",
                       "bottom",
                       "success",
                     );
@@ -266,7 +266,7 @@ export default function CollectionScreen() {
                     showSnackbar(
                       collection.archived
                         ? "Failed to restore Collection."
-                        : "Failed to move Collection to Archive in Settings.",
+                        : "Failed to move Collection to Archive in Menu.",
                       "bottom",
                       "error",
                     );

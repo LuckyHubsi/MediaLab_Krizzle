@@ -183,7 +183,7 @@ export default function NotesScreen() {
                     showSnackbar(
                       noteData.archived
                         ? "Successfully restored Note."
-                        : "Successfully moved Note to Archive in Settings.",
+                        : "Successfully moved Note to Archive in Menu.",
                       "bottom",
                       "success",
                     );
@@ -193,7 +193,7 @@ export default function NotesScreen() {
                     showSnackbar(
                       noteData.archived
                         ? "Failed to restore Note."
-                        : "Failed to move Note to Archive in Settings.",
+                        : "Failed to move Note to Archive in Menu.",
                       "bottom",
                       "error",
                     );
