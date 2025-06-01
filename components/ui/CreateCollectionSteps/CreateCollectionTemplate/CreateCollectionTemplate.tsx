@@ -283,7 +283,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                /10 Item Types
+                /10 Item Fields
               </ThemedText>
             </ItemCount>
             <ItemCount colorScheme={colorScheme}>
