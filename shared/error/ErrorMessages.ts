@@ -71,9 +71,9 @@ export const PageErrorMessages = {
   updatePage:
     "There was a problem updating your widget. Please try again. If the error persists, consider trying again after changing your input or reopening the application.",
   updatePagePin:
-    "There was a problem chnaging the pin status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem changing the pin status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
   updatePageArchive:
-    "There was a problem chnaging the archive status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem changing the archive status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
   updatePageParent:
     "There was a problem moving your widget to or from a folder. Please try again. If the error persists, consider trying again after reopening the application.",
   deletePage:

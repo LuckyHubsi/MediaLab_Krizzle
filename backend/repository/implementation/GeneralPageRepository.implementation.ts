@@ -439,7 +439,7 @@ export class GeneralPageRepositoryImpl
       await this.executeTransaction(async (txn) => {
         await this.executeQuery(
           updateArchivedByPageIDQuery,
-          [newArchiveStatus, 0, pageID], // set pin status to false
+          [newArchiveStatus, pageID], // set pin status to false
           txn,
         );
 
