@@ -21,5 +21,8 @@ export type EnrichedError = ServiceErrorType & {
     | "archiving"
     | "folder:update"
     | "folder:retrieval"
-    | "folder:delete";
+    | "folder:delete"
+    | "template:retrieval"
+    | "item:insert"
+    | "list:retrieval";
 };

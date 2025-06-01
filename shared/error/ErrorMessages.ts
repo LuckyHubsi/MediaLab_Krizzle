@@ -168,7 +168,7 @@ export const ItemErrorMessages = {
   deleteItem:
     "There was a problem deleting your collection item. Please try again. If the error persists, consider trying again after reopening the application.",
   validateNewItem:
-    "There was a problem validating your input. Consider making changes in your input for the collectionitem.",
+    "There was a problem validating your input. Consider making changes in your input for the collection item.",
   insertNewItem:
     "There was a problem adding your collection item. Please try again. If the error persists, consider changing your input in the form.",
   validateItemToUpdate:
