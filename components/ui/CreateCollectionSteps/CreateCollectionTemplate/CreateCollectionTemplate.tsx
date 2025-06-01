@@ -262,7 +262,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             <CardText>
               <CardHeader>
                 <ThemedText fontSize="l" fontWeight="bold">
-                  Adding Template
+                  Add Template
                 </ThemedText>
               </CardHeader>
               <ThemedText
@@ -321,10 +321,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             colorVariant="grey"
             style={{ marginLeft: 10, marginTop: 10 }}
           >
-            Your Templates:
+            Your Additional Fields:
           </ThemedText>
 
-          {otherCards.map((card) => (
+          {otherCards.map((card, index) => (
             <ItemTemplateCard
               key={card.id}
               isTitleCard={false}
@@ -355,6 +355,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                   card.options.some((o) => o.trim() === ""))
               }
               previewCount={previewCount}
+              fieldCount={index + 2}
             />
           ))}
           <View style={{ paddingTop: 10 }}>

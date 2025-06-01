@@ -40,6 +40,7 @@ interface ItemTemplateCardProps {
   hasNoMultiSelectableError?: boolean;
   previewCount?: number;
   isExisting?: boolean;
+  fieldCount?: number;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -60,6 +61,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   hasNoMultiSelectableError,
   previewCount,
   isExisting = false,
+  fieldCount,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -80,7 +82,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         <CardTitle>
           {isTitleCard ? (
             <>
-              <ThemedText>Title</ThemedText>
+              <ThemedText>Field 1 </ThemedText>
               <ThemedText fontSize="s" colorVariant="red">
                 * required
               </ThemedText>
@@ -90,7 +92,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
             </ThemedText>
           ) : (
-            <ThemedText>Type</ThemedText>
+            <ThemedText>Field {fieldCount}</ThemedText>
           )}
         </CardTitle>
         <CardPreview onPress={onPreviewToggle}>
@@ -158,7 +160,11 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                 ? "link"
                 : textfieldIcon
         }
-        placeholderText={`Add a title to your ${itemType}`}
+        placeholderText={
+          isTitleCard
+            ? `E.g. "Title" or "Name"`
+            : `Add a label to your ${itemType}`
+        }
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
