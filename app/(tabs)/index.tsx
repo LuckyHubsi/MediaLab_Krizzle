@@ -287,63 +287,61 @@ export default function HomeScreen() {
                   </>
                 )}
 
-                {filteredWidgets.length > 0 && (
-                  <>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 8,
-                      }}
-                    >
-                      <ThemedText fontSize="regular" fontWeight="regular">
-                        Recent
-                      </ThemedText>
-                      <Pressable onPress={() => setShowSortModal(true)}>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            gap: 6,
-                          }}
-                        >
-                          <ThemedText fontSize="s" fontWeight="regular">
-                            Sort by
-                          </ThemedText>
-                          <MaterialIcons
-                            name="filter-list"
-                            size={20}
-                            color={Colors[colorScheme || "light"].text}
-                          />
-                        </View>
-                      </Pressable>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        flexWrap: "wrap",
-                        justifyContent: "space-between",
-                        rowGap: 16,
-                      }}
-                    >
-                      {filteredWidgets.map((item) => (
-                        <Widget
-                          key={item.id}
-                          title={item.title}
-                          label={item.tag.tag_label}
-                          icon={item.icon}
-                          color={item.color as keyof typeof Colors.widget}
-                          pageType={item.page_type}
-                          onPress={() => goToPage(item)}
-                          onLongPress={() => {
-                            setSelectedWidget(item);
-                            setShowModal(true);
-                          }}
+                <>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <ThemedText fontSize="regular" fontWeight="regular">
+                      Recent
+                    </ThemedText>
+                    <Pressable onPress={() => setShowSortModal(true)}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: 6,
+                        }}
+                      >
+                        <ThemedText fontSize="s" fontWeight="regular">
+                          Sort by
+                        </ThemedText>
+                        <MaterialIcons
+                          name="filter-list"
+                          size={20}
+                          color={Colors[colorScheme || "light"].text}
                         />
-                      ))}
-                    </View>
-                  </>
-                )}
+                      </View>
+                    </Pressable>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      justifyContent: "space-between",
+                      rowGap: 16,
+                    }}
+                  >
+                    {filteredWidgets.map((item) => (
+                      <Widget
+                        key={item.id}
+                        title={item.title}
+                        label={item.tag.tag_label}
+                        icon={item.icon}
+                        color={item.color as keyof typeof Colors.widget}
+                        pageType={item.page_type}
+                        onPress={() => goToPage(item)}
+                        onLongPress={() => {
+                          setSelectedWidget(item);
+                          setShowModal(true);
+                        }}
+                      />
+                    ))}
+                  </View>
+                </>
 
                 {filteredPinnedWidgets.length <= 0 &&
                   filteredWidgets.length <= 0 && (
