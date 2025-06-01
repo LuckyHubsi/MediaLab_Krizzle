@@ -9,3 +9,14 @@ export type ServiceErrorType =
   | { type: "Delete Failed"; message: string }
   | { type: "Data Error"; message: string }
   | { type: "Unknown Error"; message: string };
+
+export type EnrichedError = ServiceErrorType & {
+  hasBeenRead: boolean;
+  id: string;
+  source?:
+    | "widgets:general"
+    | "widgets:pinned"
+    | "tags:retrieval"
+    | "pinning"
+    | "archiving";
+};

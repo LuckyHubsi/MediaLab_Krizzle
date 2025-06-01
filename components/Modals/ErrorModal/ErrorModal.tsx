@@ -17,11 +17,9 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
 import { HeaderRow } from "@/components/ui/TagPicker/TagPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
-
-type EnrichedError = ServiceErrorType & { hasBeenRead: boolean; id: string };
 
 interface ErrorPopupProps {
   visible: boolean;

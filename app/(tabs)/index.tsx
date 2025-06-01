@@ -33,7 +33,8 @@ import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -85,6 +86,8 @@ export default function HomeScreen() {
   const [sortingMode, setSortingMode] = useState<GeneralPageState>(
     GeneralPageState.GeneralModfied,
   );
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
@@ -121,48 +124,90 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      (async () => {
+      const fetchWidgets = async () => {
         try {
           const pinnedResult = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Pinned,
           );
+
           if (pinnedResult.success) {
-            const pinnedEnrichedWidgets = mapToEnrichedWidgets(
-              pinnedResult.value,
+            setPinnedWidgets(mapToEnrichedWidgets(pinnedResult.value));
+
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "widgets:pinned"),
             );
-            setPinnedWidgets(pinnedEnrichedWidgets);
           } else {
-            // TODO: show error modal
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...pinnedResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "widgets:pinned",
+              },
+            ]);
+            setShowError(true);
           }
 
-          const result =
+          const widgetResult =
             await generalPageService.getAllGeneralPageData(sortingMode);
-          if (result.success) {
-            const enrichedWidgets = mapToEnrichedWidgets(result.value);
-            setWidgets(enrichedWidgets);
+          if (widgetResult.success) {
+            setWidgets(mapToEnrichedWidgets(widgetResult.value));
+
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "widgets:general"),
+            );
           } else {
-            // TODO: show error modal
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...widgetResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "widgets:general",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Error loading widgets:", error);
         }
-      })();
+      };
 
-      (async () => {
+      fetchWidgets();
+      setShouldReload(false);
+    }, [shouldReload, sortingMode]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTags = async () => {
         try {
-          const result = await tagService.getAllTags();
-          if (result.success) {
-            if (result.value) setTags(result.value);
+          const tagResult = await tagService.getAllTags();
+          if (tagResult.success) {
+            setTags(tagResult.value);
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "tags:retrieval"),
+            );
           } else {
-            // TODO: show the error modal
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...tagResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "tags:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Failed to load tags:", error);
         }
-      })();
+      };
 
-      setShouldReload(false);
-    }, [shouldReload, sortingMode]),
+      fetchTags();
+    }, []),
   );
 
   const filter = (widgets: Widget[]) => {
@@ -410,7 +455,16 @@ export default function HomeScreen() {
                 if (result.success) {
                   setShouldReload(true);
                 } else {
-                  // TODO: show error modal
+                  setErrors((prev) => [
+                    ...prev,
+                    {
+                      ...result.error,
+                      hasBeenRead: false,
+                      id: `${Date.now()}-${Math.random()}`,
+                      source: "pinning",
+                    },
+                  ]);
+                  setShowError(true);
                 }
               }
             },
@@ -437,9 +491,18 @@ export default function HomeScreen() {
                   );
                   setShouldReload(true);
                 } else {
-                  // TODO: show error modal
+                  setErrors((prev) => [
+                    ...prev,
+                    {
+                      ...result.error,
+                      hasBeenRead: false,
+                      id: `${Date.now()}-${Math.random()}`,
+                      source: "archiving",
+                    },
+                  ]);
+                  setShowError(true);
                   showSnackbar(
-                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
+                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
                     "error",
                   );
@@ -503,9 +566,15 @@ export default function HomeScreen() {
               if (result.success) {
                 setShouldReload(true);
               } else {
-                // TODO: show error modal
-                console.log(result.error.type);
-                console.log(result.error.message);
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...result.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                  },
+                ]);
+                setShowError(true);
               }
               setSelectedWidget(null);
               setShowDeleteModal(false);
@@ -515,6 +584,19 @@ export default function HomeScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );
