@@ -13,7 +13,8 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { useServices } from "@/context/ServiceContext";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function TagManagementScreen() {
   const { tagService } = useServices();
@@ -30,6 +31,9 @@ export default function TagManagementScreen() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const { showSnackbar } = useSnackbar();
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
@@ -61,22 +65,46 @@ export default function TagManagementScreen() {
       let success = false;
 
       if (editMode && editingTag) {
-        const result = await tagService.updateTag({
+        const updateResult = await tagService.updateTag({
           ...editingTag,
           tag_label: trimmedTag,
         });
-        if (result.success) {
+        if (updateResult.success) {
           success = true;
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "tag:update"),
+          );
         } else {
-          // TODO: show error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...updateResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "tag:update",
+            },
+          ]);
+          setShowError(true);
         }
       } else {
         const newTagObject: TagDTO = { tag_label: trimmedTag };
-        const result = await tagService.insertTag(newTagObject);
-        if (result.success) {
+        const insertResult = await tagService.insertTag(newTagObject);
+        if (insertResult.success) {
           success = true;
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "tag:insert"),
+          );
         } else {
-          // TODO: show error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...insertResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "tag:insert",
+            },
+          ]);
+          setShowError(true);
         }
       }
 
@@ -94,11 +122,23 @@ export default function TagManagementScreen() {
 
   const deleteTag = async (tagID: number) => {
     try {
-      const result = await tagService.deleteTagByID(tagID);
-      if (result.success) {
+      const deleteResult = await tagService.deleteTagByID(tagID);
+      if (deleteResult.success) {
         setShouldRefetch(true);
+        setErrors((prev) =>
+          prev.filter((error) => error.source !== "tag:delete"),
+        );
       } else {
-        // TODO: show error modal
+        setErrors((prev) => [
+          ...prev,
+          {
+            ...deleteResult.error,
+            hasBeenRead: false,
+            id: `${Date.now()}-${Math.random()}`,
+            source: "tag:delete",
+          },
+        ]);
+        setShowError(true);
       }
     } catch (error) {
       console.error("Failed to delete tag:", error);
@@ -115,11 +155,23 @@ export default function TagManagementScreen() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const result = await tagService.getAllTags();
-        if (result.success) {
-          if (result.value) setTags(result.value);
+        const tagResult = await tagService.getAllTags();
+        if (tagResult.success) {
+          if (tagResult.value) setTags(tagResult.value);
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "tags:retrieval"),
+          );
         } else {
-          // TODO: show the error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...tagResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "tags:retrieval",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (error) {
         console.error("Failed to load tags:", error);
@@ -134,11 +186,23 @@ export default function TagManagementScreen() {
 
     const fetchUpdatedTags = async () => {
       try {
-        const result = await tagService.getAllTags();
-        if (result.success) {
-          if (result.value) setTags(result.value);
+        const tagResult = await tagService.getAllTags();
+        if (tagResult.success) {
+          if (tagResult.value) setTags(tagResult.value);
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "tags:retrieval"),
+          );
         } else {
-          // TODO: show the error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...tagResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "tags:retrieval",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (error) {
         console.error("Failed to refresh tags:", error);
@@ -257,6 +321,19 @@ export default function TagManagementScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </SafeAreaView>
   );
