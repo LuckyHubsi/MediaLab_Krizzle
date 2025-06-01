@@ -31,5 +31,6 @@ export type EnrichedError = ServiceErrorType & {
     | "items:retrieval"
     | "collection:retrieval"
     | "collection:insert"
+    | "note:insert"
     | "list:retrieval";
 };
