@@ -142,11 +142,11 @@ export const CategoryErrorMessages = {
   validateNewCollectionCat:
     "There was a problem validating your input for one of your new lists. Consider renaming them if the error persists.",
   insertNewCollectionCat:
-    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names.",
+    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names. Creation or other updates may have succeeded.",
   validateCategoryToUpdate:
-    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application.",
+    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application. Creation or other updates may have succeeded.",
   updateCategory:
-    "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application.",
+    "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application. Creation or other updates may have succeeded.",
   validateCategoryToDelete:
     "The system does not seem to recognize the collection list you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
   deleteCategory:
