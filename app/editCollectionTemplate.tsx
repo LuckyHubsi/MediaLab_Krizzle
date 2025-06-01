@@ -432,6 +432,7 @@ export default function EditCollectionTemplateScreen() {
                   handlePreviewToggle(card.attributeID ?? 0)
                 }
                 isExisting={card.isExisting}
+                fieldCount={index + 1}
               />
             ))}
             <View style={{ paddingTop: 10 }}>
