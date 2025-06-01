@@ -18,6 +18,8 @@ export type EnrichedError = ServiceErrorType & {
     | "widgets:pinned"
     | "widgets:archived"
     | "widget:delete"
+    | "widget:update"
+    | "widget:retrieval"
     | "tags:retrieval"
     | "pinning"
     | "archiving"
