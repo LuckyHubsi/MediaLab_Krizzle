@@ -50,10 +50,13 @@ export default function CollectionItemScreen() {
         if (itemResult.success) {
           setItem(itemResult.value);
 
+          // remove all prior errors from the item retrieval source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "item:retrieval"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -164,6 +167,11 @@ export default function CollectionItemScreen() {
 
               if (deleteResult.success) {
                 setShowDeleteModal(true);
+
+                // remove all prior errors from the item delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "item:delete"),
+                );
                 router.replace({
                   pathname: "/collectionPage",
                   params: { pageId: item.pageID, routing: routing },
@@ -171,13 +179,15 @@ export default function CollectionItemScreen() {
               } else {
                 setShowDeleteModal(false);
 
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
                     ...deleteResult.error,
                     hasBeenRead: false,
                     id: `${Date.now()}-${Math.random()}`,
-                    source: "archiving",
+                    source: "item:delete",
                   },
                 ]);
                 setShowError(true);
@@ -199,6 +209,7 @@ export default function CollectionItemScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

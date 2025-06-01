@@ -53,6 +53,10 @@ export default function EditCollectionItem() {
             await collectionService.getCollectionByPageId(
               itemResult.value.pageID,
             );
+          // remove all prior errors from the item retrieval source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "item:retrieval"),
+          );
           if (collectionResult.success) {
             setLists(collectionResult.value.categories);
             setSelectedCategoryID(itemResult.value.categoryID || null);
@@ -127,7 +131,14 @@ export default function EditCollectionItem() {
               });
 
               setAttributeValues(mappedValues);
+
+              // remove all prior errors from the template retrieval source if service call succeeded
+              setErrors((prev) =>
+                prev.filter((error) => error.source !== "template:retrieval"),
+              );
             } else {
+              // set all errors to the previous errors plus add the new error
+              // define the id and the source and set its read status to false
               setErrors((prev) => [
                 ...prev,
                 {
@@ -141,6 +152,8 @@ export default function EditCollectionItem() {
             }
           }
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -344,6 +357,11 @@ export default function EditCollectionItem() {
 
                   if (updateResult.success) {
                     handleSaveItem(itemId);
+
+                    // remove all prior errors from the item update source if service call succeeded
+                    setErrors((prev) =>
+                      prev.filter((error) => error.source !== "item:update"),
+                    );
                   } else {
                     setErrors((prev) => [
                       ...prev,
@@ -356,7 +374,14 @@ export default function EditCollectionItem() {
                     ]);
                     setShowError(true);
                   }
+
+                  // remove all prior errors from the item retrieval source if service call succeeded
+                  setErrors((prev) =>
+                    prev.filter((error) => error.source !== "item:retrieval"),
+                  );
                 } else {
+                  // set all errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
                   setErrors((prev) => [
                     ...prev,
                     {
@@ -381,6 +406,7 @@ export default function EditCollectionItem() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

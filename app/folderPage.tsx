@@ -141,12 +141,15 @@ export default function FolderScreen() {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
 
+        // remove all prior errors from the folder update source if service call succeeded
         setErrors((prev) =>
           prev.filter((error) => error.source !== "folder:update"),
         );
       } else {
         showSnackbar("Update failed", "top", "error");
 
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
         setErrors((prev) => [
           ...prev,
           {
@@ -177,10 +180,13 @@ export default function FolderScreen() {
           if (folderResult.success) {
             setFolder(folderResult.value);
 
+            // remove all prior errors from the folder retrieval source if service call succeeded
             setErrors((prev) =>
               prev.filter((error) => error.source !== "folder:retrieval"),
             );
           } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -201,12 +207,15 @@ export default function FolderScreen() {
             const enrichedWidgets = mapToEnrichedWidgets(widgetResult.value);
             setWidgets(enrichedWidgets);
 
+            // remove all prior errors from the folder widget retrieval source if service call succeeded
             setErrors((prev) =>
               prev.filter(
                 (error) => error.source !== "folder:widgets:retrieval",
               ),
             );
           } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -475,10 +484,13 @@ export default function FolderScreen() {
                     showSnackbar("Moved back to home", "bottom", "success");
                     setShouldReload(true);
 
+                    // remove all prior errors from the widget move source if service call succeeded
                     setErrors((prev) =>
                       prev.filter((error) => error.source !== "widget:move"),
                     );
                   } else {
+                    // set all errors to the previous errors plus add the new error
+                    // define the id and the source and set its read status to false
                     setErrors((prev) => [
                       ...prev,
                       {
@@ -522,10 +534,14 @@ export default function FolderScreen() {
                     "bottom",
                     "success",
                   );
+
+                  // remove all prior errors from the archiving source if service call succeeded
                   setErrors((prev) =>
                     prev.filter((error) => error.source !== "archiving"),
                   );
                 } else {
+                  // set all errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
                   setErrors((prev) => [
                     ...prev,
                     {
@@ -585,10 +601,13 @@ export default function FolderScreen() {
                 showSnackbar("Folder deleted", "bottom", "success");
                 router.replace("/folders");
 
+                // remove all prior errors from the folder delete source if service call succeeded
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "folder:delete"),
                 );
               } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
@@ -637,10 +656,14 @@ export default function FolderScreen() {
                 setShouldReload(true);
 
                 showSnackbar("Widget deleted", "bottom", "success");
+
+                // remove all prior errors from the widget delete source if service call succeeded
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
               } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
@@ -677,6 +700,7 @@ export default function FolderScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

@@ -102,10 +102,14 @@ export default function FoldersScreen() {
       if (updateResult.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
+
+        // remove all prior errors from the folder update source if service call succeeded
         setErrors((prev) =>
           prev.filter((error) => error.source !== "folder:update"),
         );
       } else {
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
         setErrors((prev) => [
           ...prev,
           {
@@ -139,10 +143,14 @@ export default function FoldersScreen() {
           if (folderResult.success) {
             const shapedFolders = mapToFolderShape(folderResult.value);
             setFolders(shapedFolders);
+
+            // remove all prior errors from the folder retrieval source if service call succeeded
             setErrors((prev) =>
               prev.filter((error) => error.source !== "folder:retrieval"),
             );
           } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -294,10 +302,14 @@ export default function FoldersScreen() {
 
               if (deleteResult.success) {
                 setShouldReload(true);
+
+                // remove all prior errors from the folder delete source if service call succeeded
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "folder:delete"),
                 );
               } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
@@ -337,6 +349,7 @@ export default function FoldersScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

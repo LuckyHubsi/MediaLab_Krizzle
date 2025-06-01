@@ -101,15 +101,17 @@ export default function EditCollectionTemplateScreen() {
 
         setTemplates(updated);
 
+        // remove all errors from both the collection and template retrieval source
         setErrors((prev) =>
-          prev.filter((error) => error.source !== "collection:retrieval"),
-        );
-
-        setErrors((prev) =>
-          prev.filter((error) => error.source !== "template:retrieval"),
+          prev.filter(
+            (error) =>
+              error.source !== "collection:retrieval" || "template:retrieval",
+          ),
         );
       }
       if (!collectionResult.success) {
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
         setErrors((prev) => [
           ...prev,
           {
@@ -204,10 +206,13 @@ export default function EditCollectionTemplateScreen() {
             prev.filter((card) => card.attributeID !== id),
           );
 
+          // remove all prior errors from the attribute delete source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "attribute:delete"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -301,10 +306,13 @@ export default function EditCollectionTemplateScreen() {
       showSnackbar("Template updated successfully.", "bottom", "success");
       router.back();
 
+      // remove all prior errors from the template update source if service call succeeded
       setErrors((prev) =>
         prev.filter((error) => error.source !== "template:update"),
       );
     } else {
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
       setErrors((prev) => [
         ...prev,
         {
@@ -478,6 +486,7 @@ export default function EditCollectionTemplateScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

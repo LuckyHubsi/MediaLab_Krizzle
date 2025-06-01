@@ -64,6 +64,8 @@ export default function ResetDatabaseScreen() {
           const result = await resetDatabase();
 
           if (!result.success) {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -84,6 +86,7 @@ export default function ResetDatabaseScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

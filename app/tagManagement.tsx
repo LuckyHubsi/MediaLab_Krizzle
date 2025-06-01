@@ -71,10 +71,14 @@ export default function TagManagementScreen() {
         });
         if (updateResult.success) {
           success = true;
+
+          // remove all prior errors from the tag update source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "tag:update"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -91,10 +95,14 @@ export default function TagManagementScreen() {
         const insertResult = await tagService.insertTag(newTagObject);
         if (insertResult.success) {
           success = true;
+
+          // remove all prior errors from the tag insert source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "tag:insert"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -125,10 +133,14 @@ export default function TagManagementScreen() {
       const deleteResult = await tagService.deleteTagByID(tagID);
       if (deleteResult.success) {
         setShouldRefetch(true);
+
+        // remove all prior errors from the tag delete source if service call succeeded
         setErrors((prev) =>
           prev.filter((error) => error.source !== "tag:delete"),
         );
       } else {
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
         setErrors((prev) => [
           ...prev,
           {
@@ -158,10 +170,14 @@ export default function TagManagementScreen() {
         const tagResult = await tagService.getAllTags();
         if (tagResult.success) {
           if (tagResult.value) setTags(tagResult.value);
+
+          // remove all prior errors from the tag retrieval source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "tags:retrieval"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -189,10 +205,13 @@ export default function TagManagementScreen() {
         const tagResult = await tagService.getAllTags();
         if (tagResult.success) {
           if (tagResult.value) setTags(tagResult.value);
+          // remove all prior errors from the tag retrieval source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "tags:retrieval"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -327,6 +346,7 @@ export default function TagManagementScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

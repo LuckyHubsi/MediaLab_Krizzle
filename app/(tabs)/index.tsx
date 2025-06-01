@@ -133,10 +133,13 @@ export default function HomeScreen() {
           if (pinnedResult.success) {
             setPinnedWidgets(mapToEnrichedWidgets(pinnedResult.value));
 
+            // remove all prior errors from the pinned widget source
             setErrors((prev) =>
               prev.filter((error) => error.source !== "widgets:pinned"),
             );
           } else {
+            // set the errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -154,10 +157,13 @@ export default function HomeScreen() {
           if (widgetResult.success) {
             setWidgets(mapToEnrichedWidgets(widgetResult.value));
 
+            // remove all prior errors from the general sorting mode source
             setErrors((prev) =>
               prev.filter((error) => error.source !== "widgets:general"),
             );
           } else {
+            // set the errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -186,10 +192,14 @@ export default function HomeScreen() {
           const tagResult = await tagService.getAllTags();
           if (tagResult.success) {
             setTags(tagResult.value);
+
+            // remove all prior errors from the general tag retrieval source
             setErrors((prev) =>
               prev.filter((error) => error.source !== "tags:retrieval"),
             );
           } else {
+            // set the errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -454,7 +464,14 @@ export default function HomeScreen() {
                 );
                 if (result.success) {
                   setShouldReload(true);
+
+                  // remove all prior errors from the pinning source
+                  setErrors((prev) =>
+                    prev.filter((error) => error.source !== "pinning"),
+                  );
                 } else {
+                  // set the errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
                   setErrors((prev) => [
                     ...prev,
                     {
@@ -490,7 +507,14 @@ export default function HomeScreen() {
                     "success",
                   );
                   setShouldReload(true);
+
+                  // remove all prior errors from the archiving source
+                  setErrors((prev) =>
+                    prev.filter((error) => error.source !== "archiving"),
+                  );
                 } else {
+                  // set all errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
                   setErrors((prev) => [
                     ...prev,
                     {
@@ -565,13 +589,21 @@ export default function HomeScreen() {
 
               if (result.success) {
                 setShouldReload(true);
+
+                // remove all prior errors from the widget delete source
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
               } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
                     ...result.error,
                     hasBeenRead: false,
                     id: `${Date.now()}-${Math.random()}`,
+                    source: "widget:delete",
                   },
                 ]);
                 setShowError(true);
@@ -590,6 +622,7 @@ export default function HomeScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

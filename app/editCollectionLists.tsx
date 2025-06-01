@@ -88,10 +88,13 @@ export default function EditCollectionListsScreen() {
           setLists(mapped);
           setInitialIds(new Set(mapped.map((l) => l.id)));
 
+          // remove all prior errors from the list retrieval source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "list:retrieval"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -181,11 +184,15 @@ export default function EditCollectionListsScreen() {
           if (insertListResult.success) {
             setInitialIds((prev) => new Set(prev).add(l.id));
 
+            // remove all prior errors from the list insert source if service call succeeded
             setErrors((prev) =>
               prev.filter((error) => error.source !== "list:insert"),
             );
           } else {
             allSucceeded = false;
+
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -200,8 +207,15 @@ export default function EditCollectionListsScreen() {
         } else {
           const updateListResult =
             await collectionService.updateCollectionCategory(updateDto);
-          if (!updateListResult.success) {
+          if (updateListResult.success) {
+            // remove all prior errors from the list update source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "list:update"),
+            );
+          } else {
             allSucceeded = false;
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -240,10 +254,13 @@ export default function EditCollectionListsScreen() {
             return updated;
           });
 
+          // remove all prior errors from the list delete source if service call succeeded
           setErrors((prev) =>
             prev.filter((error) => error.source !== "list:delete"),
           );
         } else {
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
           setErrors((prev) => [
             ...prev,
             {
@@ -406,6 +423,7 @@ export default function EditCollectionListsScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

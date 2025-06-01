@@ -66,6 +66,7 @@ export default function CollectionScreen() {
             setCollection(collectionResult.value);
             setCollectionTitle(title || collectionResult.value.page_title);
 
+            // remove all prior errors from the collection retrieval source if service call succeeded
             setErrors((prev) =>
               prev.filter((error) => error.source !== "collection:retrieval"),
             );
@@ -81,10 +82,13 @@ export default function CollectionScreen() {
             if (retrievedItemsResult.success) {
               setItems(retrievedItemsResult.value);
 
+              // remove all prior errors from the items retrieval source if service call succeeded
               setErrors((prev) =>
                 prev.filter((error) => error.source !== "items:retrieval"),
               );
             } else {
+              // set all errors to the previous errors plus add the new error
+              // define the id and the source and set its read status to false
               setErrors((prev) => [
                 ...prev,
                 {
@@ -97,6 +101,8 @@ export default function CollectionScreen() {
               setShowError(true);
             }
           } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -234,7 +240,14 @@ export default function CollectionScreen() {
                       );
                       if (pinResult.success) {
                         setShouldReload(true);
+
+                        // remove all prior errors from the pinning source if service call succeeded
+                        setErrors((prev) =>
+                          prev.filter((error) => error.source !== "pinning"),
+                        );
                       } else {
+                        // set all errors to the previous errors plus add the new error
+                        // define the id and the source and set its read status to false
                         setErrors((prev) => [
                           ...prev,
                           {
@@ -312,7 +325,14 @@ export default function CollectionScreen() {
                       "success",
                     );
                     setShouldReload(true);
+
+                    // remove all prior errors from the archiving source if service call succeeded
+                    setErrors((prev) =>
+                      prev.filter((error) => error.source !== "archiving"),
+                    );
                   } else {
+                    // set all errors to the previous errors plus add the new error
+                    // define the id and the source and set its read status to false
                     setErrors((prev) => [
                       ...prev,
                       {
@@ -401,8 +421,15 @@ export default function CollectionScreen() {
               if (deleteResult.success) {
                 setShowDeleteModal(false);
 
+                // remove all prior errors from the widget delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
+
                 router.replace("/");
               } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
                 setErrors((prev) => [
                   ...prev,
                   {
@@ -498,6 +525,7 @@ export default function CollectionScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

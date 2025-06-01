@@ -123,10 +123,13 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           if (tagResult.success) {
             if (tagResult.value) setTags(tagResult.value);
 
+            // remove all prior errors from the tag retrieval source if service call succeeded
             setErrors((prev) =>
               prev.filter((error) => error.source !== "tags:retrieval"),
             );
           } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
             setErrors((prev) => [
               ...prev,
               {
@@ -355,6 +358,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
