@@ -18,5 +18,8 @@ export type EnrichedError = ServiceErrorType & {
     | "widgets:pinned"
     | "tags:retrieval"
     | "pinning"
-    | "archiving";
+    | "archiving"
+    | "folder:update"
+    | "folder:retrieval"
+    | "folder:delete";
 };
