@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   Alert,
   Keyboard,
@@ -73,6 +73,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   onNext,
 }) => {
   const { tagService } = useServices();
+  const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
   const colorScheme = useActiveColorScheme();
   const title = data.title;
@@ -144,6 +145,22 @@ const CreateCollection: FC<CreateCollectionProps> = ({
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
+      try {
+        const tag = JSON.parse(lastCreatedTagParam);
+        if (tag && tag.tagID) {
+          setData((prev: any) => ({
+            ...prev,
+            selectedTag: tag as TagDTO,
+          }));
+        }
+      } catch (err) {
+        console.warn("Invalid tag param:", err);
+      }
+    }
+  }, [lastCreatedTagParam]);
 
   const { showSnackbar } = useSnackbar();
 
@@ -222,7 +239,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 setData((prev: any) => ({
                   ...prev,
                   selectedTag:
-                    prev.selectedTag?.tagID === tag.tagID ? null : tag,
+                    tag && prev.selectedTag?.tagID === tag.tagID ? null : tag,
                 }));
               }}
               onViewAllPress={() => router.navigate("/tagManagement")}

@@ -39,6 +39,7 @@ import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function EditWidgetScreen() {
   const { generalPageService, tagService } = useServices();
+  const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
@@ -216,6 +217,19 @@ export default function EditWidgetScreen() {
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
+      try {
+        const tag = JSON.parse(lastCreatedTagParam);
+        if (tag && tag.tagID) {
+          setSelectedTag(tag as TagDTO);
+        }
+      } catch (err) {
+        console.warn("Invalid tag param:", err);
+      }
+    }
+  }, [lastCreatedTagParam]);
 
   return (
     <GradientBackground

@@ -172,7 +172,11 @@ export default function TagManagementScreen() {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <CustomStyledHeader title="Tags" />
+        <CustomStyledHeader
+          title="Tags"
+          backBehavior="goBackWithParams"
+          param={JSON.stringify(tags.length > 0 ? tags[tags.length - 1] : null)}
+        />
       </View>
 
       <View

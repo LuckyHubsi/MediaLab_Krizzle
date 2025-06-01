@@ -69,6 +69,10 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           params: { pageId: param, routing: routing },
         });
         break;
+      case "goBackWithParams":
+        router.back();
+        router.setParams({ lastCreatedTag: param });
+        break;
       default:
         navigation.goBack();
     }

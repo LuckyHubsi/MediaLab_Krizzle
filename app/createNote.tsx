@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { router, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView, Keyboard } from "react-native";
 import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
@@ -35,6 +35,7 @@ import { ServiceErrorType } from "@/shared/error/ServiceError";
 
 export default function CreateNoteScreen() {
   const { noteService, tagService } = useServices();
+  const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
@@ -167,6 +168,19 @@ export default function CreateNoteScreen() {
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
+      try {
+        const tag = JSON.parse(lastCreatedTagParam);
+        if (tag && tag.tagID) {
+          setSelectedTag(tag as TagDTO);
+        }
+      } catch (err) {
+        console.warn("Invalid tag param:", err);
+      }
+    }
+  }, [lastCreatedTagParam]);
 
   return (
     <GradientBackground
