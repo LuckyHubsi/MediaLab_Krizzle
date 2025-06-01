@@ -88,9 +88,12 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               </ThemedText>
             </>
           ) : isExisting ? (
-            <ThemedText fontWeight="regular">
-              {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
-            </ThemedText>
+            <>
+              <ThemedText>Field {fieldCount} </ThemedText>
+              <ThemedText fontSize="s" fontWeight="light">
+                {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
+              </ThemedText>
+            </>
           ) : (
             <ThemedText>Field {fieldCount}</ThemedText>
           )}
