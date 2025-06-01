@@ -162,6 +162,7 @@ export default function EditCollectionTemplateScreen() {
       try {
         const deleteResult = await itemTemplateService.deleteAttribute(
           Number(id),
+          Number(pageId),
         );
 
         if (deleteResult.success) {

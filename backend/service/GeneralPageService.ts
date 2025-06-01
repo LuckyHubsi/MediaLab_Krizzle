@@ -11,6 +11,7 @@ import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
 import { RepositoryErrorNew } from "../util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
+import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
 // import { collectionService } from "./CollectionService";
 
 /**
@@ -23,7 +24,10 @@ import { PageErrorMessages } from "@/shared/error/ErrorMessages";
  */
 export class GeneralPageService {
   // constructor accepts repo instace
-  constructor(private generalPageRepo: GeneralPageRepository) {}
+  constructor(
+    private generalPageRepo: GeneralPageRepository,
+    private baseRepo: BaseRepository,
+  ) {}
 
   /**
    * Fetch pages by state (sorted, pinned, or archived).
@@ -260,7 +264,15 @@ export class GeneralPageService {
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
-      await this.generalPageRepo.updatePin(brandedPageID, currentPinStatus);
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.generalPageRepo.updatePin(
+          brandedPageID,
+          currentPinStatus,
+          txn,
+        );
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -269,8 +281,10 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
@@ -298,10 +312,15 @@ export class GeneralPageService {
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedPageID = pageID.parse(pageId);
-      await this.generalPageRepo.updateArchive(
-        brandedPageID,
-        currentArchiveStatus,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.generalPageRepo.updateArchive(
+          brandedPageID,
+          currentArchiveStatus,
+          txn,
+        );
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -310,8 +329,10 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
@@ -377,10 +398,15 @@ export class GeneralPageService {
       const brandedPageID = pageID.parse(pageId);
       const brandedFolderIDOrNull =
         folderId === null ? null : folderID.parse(folderId);
-      await this.generalPageRepo.updateParentID(
-        brandedPageID,
-        brandedFolderIDOrNull,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.generalPageRepo.updateParentID(
+          brandedPageID,
+          brandedFolderIDOrNull,
+          txn,
+        );
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -389,8 +415,10 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
