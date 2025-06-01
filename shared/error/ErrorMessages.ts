@@ -114,9 +114,9 @@ export const TemplateErrorMessages = {
   editTemplate:
     "There was a problem editing your item template. Consider trying again with different input.",
   validateAttributeToDelete:
-    "The system does not seem to recognize the property you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
+    "The system does not seem to recognize the field you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
   deleteAttribute:
-    "There was a problem deleting your property. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem deleting your field. Please try again. If the error persists, consider trying again after reopening the application.",
   unknown:
     "An unexpected error occurred while handling item templates. Some related features may not work as expected.",
 };
