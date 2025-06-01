@@ -439,11 +439,15 @@ export class GeneralPageRepositoryImpl
     try {
       const newArchiveStatus = currentArchiveStatus ? 0 : 1;
 
-      await this.executeQuery(
-        updateArchivedByPageIDQuery,
-        [newArchiveStatus, 0, pageID],
-        txn,
-      );
+      await this.executeTransaction(async (txn) => {
+        await this.executeQuery(
+          updateArchivedByPageIDQuery,
+          [newArchiveStatus, pageID], // set pin status to false
+          txn,
+        );
+
+        await this.updateDateModified(pageID, txn);
+      });
 
       return true;
     } catch (error) {

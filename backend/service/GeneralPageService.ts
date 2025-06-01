@@ -42,6 +42,7 @@ export class GeneralPageService {
       let pages: GeneralPage[] = [];
       switch (pageState) {
         case GeneralPageState.GeneralModfied:
+          // throw new RepositoryErrorNew("Fetch Failed");
           pages = await this.generalPageRepo.getAllPagesSortedByModified();
           break;
         case GeneralPageState.GeneralCreated:

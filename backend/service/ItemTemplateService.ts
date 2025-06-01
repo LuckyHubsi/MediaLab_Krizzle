@@ -278,7 +278,7 @@ export class ItemTemplateService {
           error.type === "Transaction Failed")
       ) {
         return failure({
-          type: "Retrieval Failed",
+          type: "Update Failed",
           message: TemplateErrorMessages.editTemplate,
         });
       } else {

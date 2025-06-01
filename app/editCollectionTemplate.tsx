@@ -32,6 +32,8 @@ import { Header } from "@/components/ui/Header/Header";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { success } from "@/shared/result/Result";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function EditCollectionTemplateScreen() {
   const { collectionService, itemTemplateService } = useServices();
@@ -73,6 +75,9 @@ export default function EditCollectionTemplateScreen() {
     }
   }, []);
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
     const loadData = async () => {
       const collectionResult = await collectionService.getCollectionByPageId(
@@ -95,8 +100,40 @@ export default function EditCollectionTemplateScreen() {
         );
 
         setTemplates(updated);
-      } else {
-        // TODO: show error modal
+
+        // remove all errors from both the collection and template retrieval source
+        setErrors((prev) =>
+          prev.filter(
+            (error) =>
+              error.source !== "collection:retrieval" || "template:retrieval",
+          ),
+        );
+      }
+      if (!collectionResult.success) {
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
+        setErrors((prev) => [
+          ...prev,
+          {
+            ...collectionResult.error,
+            hasBeenRead: false,
+            id: `${Date.now()}-${Math.random()}`,
+            source: "collection:retrieval",
+          },
+        ]);
+        setShowError(true);
+      }
+      if (!templateResult.success) {
+        setErrors((prev) => [
+          ...prev,
+          {
+            ...templateResult.error,
+            hasBeenRead: false,
+            id: `${Date.now()}-${Math.random()}`,
+            source: "template:retrieval",
+          },
+        ]);
+        setShowError(true);
       }
     };
 
@@ -142,7 +179,7 @@ export default function EditCollectionTemplateScreen() {
 
   const handleRemoveCard = async (id: number) => {
     if (templates.length <= 1) {
-      showSnackbar("You must have at least one property.", "top", "error");
+      showSnackbar("You must have at least one field.", "top", "error");
       return;
     }
 
@@ -169,8 +206,24 @@ export default function EditCollectionTemplateScreen() {
           setTemplates((prev) =>
             prev.filter((card) => card.attributeID !== id),
           );
+
+          // remove all prior errors from the attribute delete source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "attribute:delete"),
+          );
         } else {
-          // TODO: show error modal
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...deleteResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "attribute:delete",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (error) {
         console.error("Error deleting list:", error);
@@ -253,9 +306,25 @@ export default function EditCollectionTemplateScreen() {
     if (updateResult.success) {
       showSnackbar("Template updated successfully.", "bottom", "success");
       router.back();
+
+      // remove all prior errors from the template update source if service call succeeded
+      setErrors((prev) =>
+        prev.filter((error) => error.source !== "template:update"),
+      );
     } else {
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
+      setErrors((prev) => [
+        ...prev,
+        {
+          ...updateResult.error,
+          hasBeenRead: false,
+          id: `${Date.now()}-${Math.random()}`,
+          source: "template:update",
+        },
+      ]);
+      setShowError(true);
       showSnackbar("Failed to update template.", "bottom", "error");
-      // TODO: show error modal
     }
   };
 
@@ -406,13 +475,27 @@ export default function EditCollectionTemplateScreen() {
 
         <DeleteModal
           visible={showDeleteModal}
-          title={attributeToDelete?.attributeLabel ?? "property"}
-          extraInformation="Deleting this property will also remove all its uses in your existing items in the collection."
+          title={attributeToDelete?.attributeLabel ?? "field"}
+          extraInformation="Deleting this field will also remove all its uses in your existing items in the collection."
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={confirmDelete}
           onclose={() => setShowDeleteModal(false)}
         />
       </View>
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
+      />
     </GradientBackground>
   );
 }

@@ -15,7 +15,13 @@ export const migrations: {
           PRAGMA foreign_keys = OFF;
         `);
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // FOLDER
         // check if table 'folder' exists - create new one if not/migrate if it does
         const folderCheck = await txn.getFirstAsync<{ name: string }>(
@@ -48,7 +54,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // TAG
         // check if table 'tag' exists - create new one if not/migrate if it does
         const tagTableCheck = await txn.getFirstAsync<{ name: string }>(
@@ -81,7 +93,13 @@ export const migrations: {
             `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // GENERAL PAGE
         const generalPageDataCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='general_page_data';`,
@@ -145,7 +163,13 @@ export const migrations: {
           }
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ATTRIBUTE
         const attributeCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
@@ -174,7 +198,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM
         const itemCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='item';`,
@@ -224,7 +254,13 @@ export const migrations: {
           }
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // IMAGE_VALUE
         const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
@@ -242,7 +278,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // LINK_VALUE
         const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='link_value';`,
@@ -261,7 +303,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT OPTIONS & VALUES
         // load and put the options in a Record
         const fetchedMultiOptions = await txn.getAllAsync<{
@@ -392,7 +440,13 @@ export const migrations: {
           );
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // reenable FKs
         await txn.execAsync(`
           PRAGMA foreign_keys = ON;
@@ -412,7 +466,13 @@ export const migrations: {
           PRAGMA foreign_keys = OFF;
         `);
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // NOTE
         // check if table 'note' exists - create new one if not/migrate if it does
         const noteCheck = await txn.getFirstAsync<{ name: string }>(
@@ -437,7 +497,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM TEMPLATE
         // check if table 'item_template' exists - create new one if not/migrate if it does
         const item_templateCheck = await txn.getFirstAsync<{
@@ -462,7 +528,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // COLLECTION
         // check if table 'collection' exists - create new one if not/migrate if it does
         const collectionCheck = await txn.getFirstAsync<{ name: string }>(
@@ -488,7 +560,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // COLLECTION CATEGORY
         // check if table 'collection_category' exists - create new one if not/migrate if it does
         const collection_categoryCheck = await txn.getFirstAsync<{
@@ -515,7 +593,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ATTRIBUTE
         const attributeCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
@@ -544,7 +628,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM
         // check if table 'item' exists - create new one if not/migrate if it does
         const itemCheck = await txn.getFirstAsync<{
@@ -572,7 +662,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // TEXT VALUE
         // check if table 'text_value' exists - create new one if not/migrate if it does
         const textValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -598,7 +694,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // DATE VALUE
         // check if table 'date_value' exists - create new one if not/migrate if it does
         const dateValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -624,7 +726,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // RATING VALUE
         // check if table 'rating_value' exists - create new one if not/migrate if it does
         const ratingValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -650,7 +758,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // RATING SYMBOL
         // check if table 'rating_symbol' exists - create new one if not/migrate if it does
         const ratingSymbolCheck = await txn.getFirstAsync<{ name: string }>(
@@ -675,7 +789,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // IMAGE VALUE
         // check if table 'image_value' exists - create new one if not/migrate if it does
         const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -701,7 +821,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // LINK VALUE
         // check if table 'link_value' exists - create new one if not/migrate if it does
         const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -728,7 +854,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT VALUES
         // check if table 'multiselect_values' exists - create new one if not/migrate if it does
         const multiselectValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -755,7 +887,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT OPTION
         // check if table 'multiselect_options' exists - create new one if not/migrate if it does
         const multiselectOptionCheck = await txn.getFirstAsync<{
@@ -782,7 +920,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // reenable FKs
         await txn.execAsync(`
           PRAGMA foreign_keys = ON;
@@ -802,7 +946,13 @@ export const migrations: {
           PRAGMA foreign_keys = OFF;
         `);
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // GENERAL PAGE
         // color changes
         const pagesWithInvalidHex = [];
@@ -1001,7 +1151,13 @@ export const migrations: {
           );
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // IMAGE VALUE
         // check if table 'image_value' exists - create new one if not/migrate if it does
         const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -1028,7 +1184,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // reenable FKs
         await txn.execAsync(`
           PRAGMA foreign_keys = ON;
