@@ -1,6 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
 
-export const SCHEMA_VERSION = 2; // add 1 to this when adding new migrations
+export const SCHEMA_VERSION = 3; // add 1 to this when adding new migrations
 
 // migration functions to go from version n to n+1
 export const migrations: {
@@ -15,7 +15,13 @@ export const migrations: {
           PRAGMA foreign_keys = OFF;
         `);
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // FOLDER
         // check if table 'folder' exists - create new one if not/migrate if it does
         const folderCheck = await txn.getFirstAsync<{ name: string }>(
@@ -48,7 +54,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // TAG
         // check if table 'tag' exists - create new one if not/migrate if it does
         const tagTableCheck = await txn.getFirstAsync<{ name: string }>(
@@ -81,7 +93,13 @@ export const migrations: {
             `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // GENERAL PAGE
         const generalPageDataCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='general_page_data';`,
@@ -145,7 +163,13 @@ export const migrations: {
           }
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ATTRIBUTE
         const attributeCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
@@ -174,7 +198,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM
         const itemCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='item';`,
@@ -224,7 +254,13 @@ export const migrations: {
           }
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // IMAGE_VALUE
         const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
@@ -242,7 +278,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // LINK_VALUE
         const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='link_value';`,
@@ -261,7 +303,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT OPTIONS & VALUES
         // load and put the options in a Record
         const fetchedMultiOptions = await txn.getAllAsync<{
@@ -392,7 +440,13 @@ export const migrations: {
           );
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // reenable FKs
         await txn.execAsync(`
           PRAGMA foreign_keys = ON;
@@ -412,7 +466,13 @@ export const migrations: {
           PRAGMA foreign_keys = OFF;
         `);
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // NOTE
         // check if table 'note' exists - create new one if not/migrate if it does
         const noteCheck = await txn.getFirstAsync<{ name: string }>(
@@ -437,7 +497,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM TEMPLATE
         // check if table 'item_template' exists - create new one if not/migrate if it does
         const item_templateCheck = await txn.getFirstAsync<{
@@ -462,7 +528,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // COLLECTION
         // check if table 'collection' exists - create new one if not/migrate if it does
         const collectionCheck = await txn.getFirstAsync<{ name: string }>(
@@ -488,7 +560,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // COLLECTION CATEGORY
         // check if table 'collection_category' exists - create new one if not/migrate if it does
         const collection_categoryCheck = await txn.getFirstAsync<{
@@ -515,7 +593,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ATTRIBUTE
         const attributeCheck = await txn.getFirstAsync<{ name: string }>(
           `SELECT name FROM sqlite_master WHERE type='table' AND name='attribute';`,
@@ -544,7 +628,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // ITEM
         // check if table 'item' exists - create new one if not/migrate if it does
         const itemCheck = await txn.getFirstAsync<{
@@ -572,7 +662,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // TEXT VALUE
         // check if table 'text_value' exists - create new one if not/migrate if it does
         const textValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -598,7 +694,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // DATE VALUE
         // check if table 'date_value' exists - create new one if not/migrate if it does
         const dateValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -624,7 +726,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // RATING VALUE
         // check if table 'rating_value' exists - create new one if not/migrate if it does
         const ratingValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -650,7 +758,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // RATING SYMBOL
         // check if table 'rating_symbol' exists - create new one if not/migrate if it does
         const ratingSymbolCheck = await txn.getFirstAsync<{ name: string }>(
@@ -675,7 +789,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // IMAGE VALUE
         // check if table 'image_value' exists - create new one if not/migrate if it does
         const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -701,7 +821,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // LINK VALUE
         // check if table 'link_value' exists - create new one if not/migrate if it does
         const linkValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -728,7 +854,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT VALUES
         // check if table 'multiselect_values' exists - create new one if not/migrate if it does
         const multiselectValueCheck = await txn.getFirstAsync<{ name: string }>(
@@ -755,7 +887,13 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // MULTISELECT OPTION
         // check if table 'multiselect_options' exists - create new one if not/migrate if it does
         const multiselectOptionCheck = await txn.getFirstAsync<{
@@ -782,11 +920,281 @@ export const migrations: {
           `);
         }
         // _____________________________________________________________________
-
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
         // reenable FKs
         await txn.execAsync(`
           PRAGMA foreign_keys = ON;
           `);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+  },
+  3: async (db) => {
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // disable FKs temporarily
+        await txn.execAsync(`
+          -- disable foreign key constraints temporarily
+          PRAGMA foreign_keys = OFF;
+        `);
+        // _____________________________________________________________________
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // GENERAL PAGE
+        // color changes
+        const pagesWithInvalidHex = [];
+        const pagesWithColorBlue = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = 'blue'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorBlue);
+
+        const pagesWithColorWhite = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '#ffffff'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorWhite);
+
+        const pagesWithColorBlack = await txn.getAllAsync<{ pageID: number }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '#111111'`,
+        );
+        pagesWithInvalidHex.push(pagesWithColorBlack);
+
+        const pagesWithColorLightGrey = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#ABABAB'`);
+        pagesWithInvalidHex.push(pagesWithColorLightGrey);
+
+        const pagesWithColorLightBlue = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#7DB5EA'`);
+        pagesWithInvalidHex.push(pagesWithColorLightBlue);
+
+        const pagesWithColorBlueGrey = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#82A9CC'`);
+        pagesWithInvalidHex.push(pagesWithColorBlueGrey);
+
+        const pagesWithColorDefaultBlue = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#4599E8'`);
+        pagesWithInvalidHex.push(pagesWithColorDefaultBlue);
+
+        for (const pageGroup of pagesWithInvalidHex) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#176BBA' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorDarkBlue = [];
+        const pagesWithColorDarkBlue = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#1D7ED7'`);
+        pagesWithInvalidColorDarkBlue.push(pagesWithColorDarkBlue);
+
+        for (const pageGroup of pagesWithInvalidColorDarkBlue) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#26418F' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorViolet = [];
+        const pagesWithColorViolet = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#8559ED'`);
+        pagesWithInvalidColorViolet.push(pagesWithColorViolet);
+
+        for (const pageGroup of pagesWithInvalidColorViolet) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#764dd7' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorRose = [];
+        const pagesWithColorRose = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#ED59C8'`);
+        pagesWithInvalidColorRose.push(pagesWithColorRose);
+
+        for (const pageGroup of pagesWithInvalidColorRose) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#D50B77' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorDarkRed = [];
+        const pagesWithColorDarkRed = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#E71341'`);
+        pagesWithInvalidColorDarkRed.push(pagesWithColorDarkRed);
+
+        for (const pageGroup of pagesWithInvalidColorDarkRed) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#D4113B' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorRed = [];
+        const pagesWithColorRed = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#FF5667'`);
+        pagesWithInvalidColorRed.push(pagesWithColorRed);
+
+        for (const pageGroup of pagesWithInvalidColorRed) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#E60F24' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorSage = [];
+        const pagesWithColorSage = await txn.getAllAsync<{
+          pageID: number;
+        }>(`SELECT pageID FROM general_page_data WHERE page_color = '#49976B'`);
+        pagesWithInvalidColorSage.push(pagesWithColorSage);
+
+        for (const pageGroup of pagesWithInvalidColorSage) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '#3F835C' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorGradientPink = [];
+        const pagesWithColorGradientPink = await txn.getAllAsync<{
+          pageID: number;
+        }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '["#F46D6F", "#B81CA3"]'`,
+        );
+        pagesWithInvalidColorGradientPink.push(pagesWithColorGradientPink);
+
+        for (const pageGroup of pagesWithInvalidColorGradientPink) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '["#B81CA3", "#F46D6F"]' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const pagesWithInvalidColorGradientBlue = [];
+        const pagesWithColorGradientBlue = await txn.getAllAsync<{
+          pageID: number;
+        }>(
+          `SELECT pageID FROM general_page_data WHERE page_color = '"#583FE7"'`,
+        );
+        pagesWithInvalidColorGradientBlue.push(pagesWithColorGradientBlue);
+
+        for (const pageGroup of pagesWithInvalidColorGradientBlue) {
+          for (const page of pageGroup) {
+            await txn.runAsync(
+              `UPDATE general_page_data SET page_color = '["#583FE7", "#5BA6EC"]' WHERE pageID = ?`,
+              [page.pageID],
+            );
+          }
+        }
+
+        const allPages = await txn.getAllAsync<{
+          pageID: number;
+          page_color: string;
+        }>(`SELECT pageID, page_color FROM general_page_data`);
+
+        const gradientRedPages = allPages.filter((page) =>
+          page.page_color.includes("#FA995D"),
+        );
+
+        for (const page of gradientRedPages) {
+          await txn.runAsync(
+            `UPDATE general_page_data SET page_color = ? WHERE pageID = ?`,
+            ["#E92529", page.pageID],
+          );
+        }
+
+        const gradientGreenPages = allPages.filter((page) =>
+          page.page_color.includes("#1CA870"),
+        );
+
+        for (const page of gradientGreenPages) {
+          await txn.runAsync(
+            `UPDATE general_page_data SET page_color = ? WHERE pageID = ?`,
+            ["#157E54", page.pageID],
+          );
+        }
+        // _____________________________________________________________________
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // IMAGE VALUE
+        // check if table 'image_value' exists - create new one if not/migrate if it does
+        const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
+        );
+        if (imageValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE image_value RENAME TO old_image_value;
+
+            CREATE TABLE image_value (
+              image_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              alt_text TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+
+            INSERT INTO image_value (image_valueID, itemID, attributeID, value, alt_text)
+            SELECT image_valueID, itemID, attributeID, value, NULL FROM old_image_value;
+
+            DROP TABLE IF EXISTS old_image_value;
+          `);
+        }
+        // _____________________________________________________________________
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // reenable FKs
+        await txn.execAsync(`
+          PRAGMA foreign_keys = ON;
+        `);
       } catch (error) {
         console.log(error);
         throw error;

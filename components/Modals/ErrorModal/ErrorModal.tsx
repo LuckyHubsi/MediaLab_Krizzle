@@ -1,48 +1,54 @@
-import React from "react";
-import { Modal, TouchableWithoutFeedback } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Modal, ScrollView, TouchableWithoutFeedback } from "react-native";
 import {
   PopupBackdrop,
   PopupContainer,
   PopupText,
   CTAButton,
   CTAButtonText,
+  ChevronButton,
+  NavigationContainer,
+  IndicatorText,
+  RightChevronButton,
+  LeftChevronButton,
+  BottomContentContainer,
+  TopContentContainer,
 } from "./ErrorModal.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { HeaderRow } from "@/components/ui/TagPicker/TagPicker.styles";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface ErrorPopupProps {
   visible: boolean;
-  onClose: () => void;
-  type: string;
-  description?: string;
+  onClose: (updatedErrors: EnrichedError[]) => void;
+  errors: EnrichedError[];
   ctaText?: string;
-  onConfirm?: () => void;
 }
 
 export const ErrorPopup: React.FC<ErrorPopupProps> = ({
   visible,
   onClose,
-  type,
-  description,
+  errors,
   ctaText = "Got it",
-  onConfirm,
 }) => {
   const colorScheme = useActiveColorScheme();
+  const [index, setIndex] = useState(0);
 
-  type ServiceError =
-    | { type: "Validation Error"; message?: string }
-    | { type: "No Connection"; message?: string }
-    | { type: "Retrieval Failed"; message?: string }
-    | { type: "Not Found"; message?: string }
-    | { type: "Creation Failed"; message?: string }
-    | { type: "Update Failed"; message?: string }
-    | { type: "Delete Failed"; message?: string }
-    | { type: "Data Error"; message?: string }
-    | { type: "Unknown Error"; message?: string };
+  useEffect(() => {
+    if (index >= errors.length) {
+      setIndex(0);
+    }
+  }, [errors]);
 
-  // WONT BE NEEDED LATER ON
-  const getDefaultMessage = (type: ServiceError["type"]) => {
+  if (!visible || !errors || errors.length === 0) return null;
+
+  const current = errors[index];
+  if (!current) return null;
+
+  const getDefaultMessage = (type: ServiceErrorType["type"]) => {
     switch (type) {
       case "Validation Error":
         return "There was a problem with your input. Please check and try again.";
@@ -66,51 +72,74 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
     }
   };
 
-  // TEST FUNCTIONS, IGNORE FOR NOW
-  const handleValidationConfirm = () => {
-    onClose();
-  };
-  const handleNoConnectionConfirm = () => {
-    onClose();
-  };
-  const handleDefaultConfirm = () => {
-    onClose();
-  };
-
-  const getAction = (type: ServiceError["type"], onClose: () => void) => {
-    switch (type) {
-      case "Validation Error":
-        return handleValidationConfirm || onClose;
-      case "No Connection":
-        return handleNoConnectionConfirm || onClose;
-      default:
-        return handleDefaultConfirm || onClose;
-    }
-  };
-
   const resolvedDescription =
-    description || getDefaultMessage(type as ServiceError["type"]);
-  const resolvedAction = getAction(type as ServiceError["type"], onClose);
+    current.message || getDefaultMessage(current.type);
+
+  const handleConfirm = () => {
+    const updated = errors.map((err, i) =>
+      i === index ? { ...err, hasBeenRead: true } : err,
+    );
+    onClose(updated); // Send updated errors back to HomeScreen
+  };
+
+  const goBack = () => setIndex((prev) => Math.max(0, prev - 1));
+  const goNext = () =>
+    setIndex((prev) => Math.min(errors.length - 1, prev + 1));
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={handleConfirm}>
         <PopupBackdrop>
-          <PopupContainer colorScheme={colorScheme}>
-            <View style={{ marginBottom: 10 }}>
-              <ThemedText fontSize="regular" fontWeight="bold">
-                {type}
-              </ThemedText>
-            </View>
-            <PopupText style={{ lineHeight: 20 }}>
-              <ThemedText fontSize="s" fontWeight="regular">
-                {resolvedDescription}
-              </ThemedText>
-            </PopupText>
-            <CTAButton onPress={resolvedAction}>
-              <CTAButtonText>{ctaText}</CTAButtonText>
-            </CTAButton>
-          </PopupContainer>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <PopupContainer colorScheme={colorScheme}>
+              <TopContentContainer>
+                <HeaderRow>
+                  <ThemedText fontSize="regular" fontWeight="bold">
+                    {current.type}
+                  </ThemedText>
+                </HeaderRow>
+
+                <PopupText>
+                  <ThemedText fontSize="s" fontWeight="regular">
+                    {resolvedDescription}
+                  </ThemedText>
+                </PopupText>
+              </TopContentContainer>
+
+              <BottomContentContainer>
+                <NavigationContainer>
+                  {index > 0 && (
+                    <LeftChevronButton onPress={goBack}>
+                      <MaterialIcons
+                        name="chevron-left"
+                        size={30}
+                        color={colorScheme === "dark" ? "white" : "black"}
+                      />
+                    </LeftChevronButton>
+                  )}
+                  <IndicatorText colorScheme={colorScheme}>
+                    {index + 1} of {errors.length}
+                  </IndicatorText>
+                  {index < errors.length - 1 && (
+                    <RightChevronButton onPress={goNext}>
+                      <MaterialIcons
+                        name="chevron-right"
+                        size={30}
+                        color={colorScheme === "dark" ? "white" : "black"}
+                      />
+                    </RightChevronButton>
+                  )}
+                </NavigationContainer>
+                <CTAButton
+                  isRed
+                  colorScheme={colorScheme}
+                  onPress={handleConfirm}
+                >
+                  <CTAButtonText>Dismiss</CTAButtonText>
+                </CTAButton>
+              </BottomContentContainer>
+            </PopupContainer>
+          </TouchableWithoutFeedback>
         </PopupBackdrop>
       </TouchableWithoutFeedback>
     </Modal>

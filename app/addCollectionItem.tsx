@@ -15,6 +15,8 @@ import { GradientBackground } from "@/components/ui/GradientBackground/GradientB
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function AddCollectionItem() {
   const { templateId, collectionId, pageId, routing } = useLocalSearchParams<{
@@ -36,31 +38,66 @@ export default function AddCollectionItem() {
   );
   const [hasClickedNext, setHasClickedNext] = useState(false);
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
     (async () => {
       const numericTemplateID = Number(templateId);
       const numericCollectionID = Number(collectionId);
       if (!isNaN(numericTemplateID)) {
-        const result = await itemTemplateService.getTemplate(numericTemplateID);
+        const templateResult =
+          await itemTemplateService.getTemplate(numericTemplateID);
 
-        if (result.success) {
-          if (result.value && result.value.attributes) {
-            setAttributes(result.value.attributes);
+        if (templateResult.success) {
+          if (templateResult.value && templateResult.value.attributes) {
+            setAttributes(templateResult.value.attributes);
           }
-        } else {
-          // TODO: show error modal
 
-          console.log(result.error.type);
-          console.log(result.error.message);
-        }
-      }
-      if (!isNaN(numericCollectionID)) {
-        const listResult =
-          await collectionService.getCollectionCategories(numericCollectionID);
-        if (listResult.success) {
-          setLists(listResult.value);
+          // remove all prior errors from the template retrieval source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "template:retrieval"),
+          );
         } else {
-          // TODO: show error modal
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...templateResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "template:retrieval",
+            },
+          ]);
+          setShowError(true);
+        }
+        if (!isNaN(numericCollectionID)) {
+          const listResult =
+            await collectionService.getCollectionCategories(
+              numericCollectionID,
+            );
+          if (listResult.success) {
+            setLists(listResult.value);
+
+            // remove all prior errors from the list retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "list:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...listResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "list:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
         }
       }
     })();
@@ -171,6 +208,12 @@ export default function AddCollectionItem() {
         : (firstValueRaw ?? "");
 
     if (itemIdResult.success) {
+      showSnackbar("Collection item successfully added.", "bottom", "success");
+
+      // remove all prior errors from the item insert source if service call succeeded
+      setErrors((prev) =>
+        prev.filter((error) => error.source !== "item:insert"),
+      );
       router.replace({
         pathname: "/collectionItemPage",
         params: {
@@ -180,7 +223,18 @@ export default function AddCollectionItem() {
         },
       });
     } else {
-      // TODO: show error modal
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
+      setErrors((prev) => [
+        ...prev,
+        {
+          ...itemIdResult.error,
+          hasBeenRead: false,
+          id: `${Date.now()}-${Math.random()}`,
+          source: "item:insert",
+        },
+      ]);
+      setShowError(true);
     }
   };
 
@@ -228,6 +282,20 @@ export default function AddCollectionItem() {
           </View>
         )}
       </View>
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
+      />
     </GradientBackground>
   );
 }

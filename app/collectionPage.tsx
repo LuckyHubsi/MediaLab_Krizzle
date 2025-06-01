@@ -20,6 +20,8 @@ import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/Gr
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function CollectionScreen() {
   const { generalPageService, collectionService, itemTemplateService } =
@@ -50,19 +52,28 @@ export default function CollectionScreen() {
     useState(false);
   const [collectionTitle, setCollectionTitle] = useState<string>(title || "");
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
-          const result =
+          const collectionResult =
             await collectionService.getCollectionByPageId(numericID);
-          if (result.success) {
-            setCollection(result.value);
-            setCollectionTitle(title || result.value.page_title);
+          if (collectionResult.success) {
+            setCollection(collectionResult.value);
+            setCollectionTitle(title || collectionResult.value.page_title);
 
-            if (result.value.categories) {
-              const names = result.value.categories.map((c) => c.category_name);
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+            if (collectionResult.value.categories) {
+              const names = collectionResult.value.categories.map(
+                (c) => c.category_name,
+              );
               setListNames(names);
               setSelectedList(names[0]);
             }
@@ -70,9 +81,38 @@ export default function CollectionScreen() {
               await collectionService.getItemsByPageId(numericID);
             if (retrievedItemsResult.success) {
               setItems(retrievedItemsResult.value);
+
+              // remove all prior errors from the items retrieval source if service call succeeded
+              setErrors((prev) =>
+                prev.filter((error) => error.source !== "items:retrieval"),
+              );
+            } else {
+              // set all errors to the previous errors plus add the new error
+              // define the id and the source and set its read status to false
+              setErrors((prev) => [
+                ...prev,
+                {
+                  ...retrievedItemsResult.error,
+                  hasBeenRead: false,
+                  id: `${Date.now()}-${Math.random()}`,
+                  source: "items:retrieval",
+                },
+              ]);
+              setShowError(true);
             }
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
           setShouldReload(false);
         }
@@ -95,7 +135,11 @@ export default function CollectionScreen() {
 
     router.push({
       pathname: path,
-      params: { collectionId: collection?.collectionID, routing: routing },
+      params: {
+        collectionId: collection?.collectionID,
+        routing: routing,
+        pageId: pageId,
+      },
     });
   };
 
@@ -194,14 +238,37 @@ export default function CollectionScreen() {
                         collection.pin_count < 4) ||
                       (collection && collection?.pinned)
                     ) {
-                      const result = await generalPageService.togglePagePin(
+                      const pinResult = await generalPageService.togglePagePin(
                         Number(collection.pageID),
                         collection.pinned,
                       );
-                      if (result.success) {
+                      if (pinResult.success) {
                         setShouldReload(true);
+
+                        // remove all prior errors from the pinning source if service call succeeded
+                        setErrors((prev) =>
+                          prev.filter((error) => error.source !== "pinning"),
+                        );
                       } else {
-                        // TODO: show error modal
+                        // set all errors to the previous errors plus add the new error
+                        // define the id and the source and set its read status to false
+                        setErrors((prev) => [
+                          ...prev,
+                          {
+                            ...pinResult.error,
+                            hasBeenRead: false,
+                            id: `${Date.now()}-${Math.random()}`,
+                            source: "pinning",
+                          },
+                        ]);
+                        setShowError(true);
+                        showSnackbar(
+                          collection.pinned
+                            ? "Failed to unpin Collection."
+                            : "Failed to pin Collection.",
+                          "bottom",
+                          "error",
+                        );
                       }
                     }
                   },
@@ -248,11 +315,12 @@ export default function CollectionScreen() {
 
               onPress: async () => {
                 if (collection) {
-                  const result = await generalPageService.togglePageArchive(
-                    Number(pageId),
-                    collection.archived,
-                  );
-                  if (result.success) {
+                  const archiveResult =
+                    await generalPageService.togglePageArchive(
+                      Number(pageId),
+                      collection.archived,
+                    );
+                  if (archiveResult.success) {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
@@ -261,12 +329,28 @@ export default function CollectionScreen() {
                       "success",
                     );
                     setShouldReload(true);
+
+                    // remove all prior errors from the archiving source if service call succeeded
+                    setErrors((prev) =>
+                      prev.filter((error) => error.source !== "archiving"),
+                    );
                   } else {
-                    // TODO: show error modal
+                    // set all errors to the previous errors plus add the new error
+                    // define the id and the source and set its read status to false
+                    setErrors((prev) => [
+                      ...prev,
+                      {
+                        ...archiveResult.error,
+                        hasBeenRead: false,
+                        id: `${Date.now()}-${Math.random()}`,
+                        source: "archiving",
+                      },
+                    ]);
+                    setShowError(true);
                     showSnackbar(
                       collection.archived
                         ? "Failed to restore Collection."
-                        : "Failed to move Collection to Archive in Settings.",
+                        : "Failed to move Collection to Archive in Menu.",
                       "bottom",
                       "error",
                     );
@@ -335,15 +419,34 @@ export default function CollectionScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const result =
+              const deleteResult =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
-              if (result.success) {
+              if (deleteResult.success) {
                 setShowDeleteModal(false);
+
+                // remove all prior errors from the widget delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
+
+                router.replace("/");
               } else {
-                // TODO: show error modal
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "widget:delete",
+                  },
+                ]);
+                setShowError(true);
+                showSnackbar("Failed to delete Collection", "bottom", "error");
+                setShowDeleteModal(false);
               }
-              router.replace("/");
             } catch (error) {
               console.error("Error deleting collection:", error);
             }
@@ -367,7 +470,23 @@ export default function CollectionScreen() {
                 setShouldReload(true);
                 showSnackbar("Successfully deleted Item.", "bottom", "success");
               } else {
-                // TODO: show error modal
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "item:delete",
+                  },
+                ]);
+                showSnackbar(
+                  "Failed to delete collection item.",
+                  "bottom",
+                  "error",
+                );
+                setShowItemDeleteModal(false);
+
+                setShowError(true);
               }
             } catch (error) {
               console.error("Error deleting item:", error);
@@ -404,6 +523,20 @@ export default function CollectionScreen() {
         widgetTitle={title}
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );
