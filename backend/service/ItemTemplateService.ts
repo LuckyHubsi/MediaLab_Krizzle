@@ -20,6 +20,7 @@ import { AttributeRepository } from "../repository/interfaces/AttributeRepositor
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { ItemAttributeValue } from "../domain/entity/Item";
+import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
 
 /**
  * ItemTemplateService encapsulates item-template-related application logic.
@@ -33,6 +34,7 @@ export class ItemTemplateService {
     private templateRepo: ItemTemplateRepository,
     private attributeRepo: AttributeRepository,
     private itemRepo: ItemRepository,
+    private generalPageRepo: GeneralPageRepository,
   ) {}
 
   /**
@@ -259,6 +261,8 @@ export class ItemTemplateService {
             }
           }
         }
+
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
 
       // returns true on success
@@ -290,14 +294,20 @@ export class ItemTemplateService {
    * Deletes an attribute by its ID.
    *
    * @param attributeId - Number representing the attribute to be deleted.
+   * @param pageId - Number representing the page the attribute belongs to.
    * @returns A Promise resolving to a `Result` containing either `true` or a `ServiceErrorType`.
    */
   async deleteAttribute(
     attributeId: number,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
       const brandedAttributeID = attributeID.parse(attributeId);
-      await this.attributeRepo.deleteAttribute(brandedAttributeID);
+      const brandedPageID = pageID.parse(pageId);
+      await this.templateRepo.executeTransaction(async (txn) => {
+        await this.attributeRepo.deleteAttribute(brandedAttributeID, txn);
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -306,8 +316,10 @@ export class ItemTemplateService {
           message: TemplateErrorMessages.validateAttributeToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Delete Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Delete Failed",

@@ -36,7 +36,10 @@ import { useServices } from "@/context/ServiceContext";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 
 export default function EditCollectionListsScreen() {
-  const { collectionId } = useLocalSearchParams<{ collectionId: string }>();
+  const { collectionId, pageId } = useLocalSearchParams<{
+    collectionId: string;
+    pageId: string;
+  }>();
   const { collectionService } = useServices();
 
   const numericId = Number(collectionId);
@@ -153,10 +156,13 @@ export default function EditCollectionListsScreen() {
 
       if (!isPersisted(l.id)) {
         const insertListResult =
-          await collectionService.insertCollectionCategory({
-            category_name: l.title,
-            collectionID: numericId,
-          });
+          await collectionService.insertCollectionCategory(
+            {
+              category_name: l.title,
+              collectionID: numericId,
+            },
+            Number(pageId),
+          );
         if (insertListResult.success) {
           setInitialIds((prev) => new Set(prev).add(l.id));
         } else {
@@ -164,7 +170,10 @@ export default function EditCollectionListsScreen() {
         }
       } else {
         const updateListResult =
-          await collectionService.updateCollectionCategory(updateDto);
+          await collectionService.updateCollectionCategory(
+            updateDto,
+            Number(pageId),
+          );
         if (!updateListResult.success) {
           // TODO: Show error modal
         }
@@ -183,7 +192,10 @@ export default function EditCollectionListsScreen() {
     if (!isNaN(Number(id))) {
       try {
         const deleteListResult =
-          await collectionService.deleteCollectionCategoryByID(Number(id));
+          await collectionService.deleteCollectionCategoryByID(
+            Number(id),
+            Number(pageId),
+          );
 
         if (deleteListResult.success) {
           setLists((prev) => prev.filter((l) => l.id !== id));

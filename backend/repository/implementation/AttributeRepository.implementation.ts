@@ -231,12 +231,16 @@ export class AttributeRepositoryImpl
    * Deletes an attribute by its ID.
    *
    * @param attributeId - An `AttributeID` object representing theattribute to be deleted.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an true on success.
    * @throws RepositoryErrorNew if the fetch fails.
    */
-  async deleteAttribute(attributeId: AttributeID): Promise<boolean> {
+  async deleteAttribute(
+    attributeId: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean> {
     try {
-      await this.executeQuery(deleteAttributeQuery, [attributeId]);
+      await this.executeQuery(deleteAttributeQuery, [attributeId], txn);
       return true;
     } catch (error) {
       throw new RepositoryErrorNew("Delete Failed");

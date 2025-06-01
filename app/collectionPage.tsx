@@ -95,7 +95,11 @@ export default function CollectionScreen() {
 
     router.push({
       pathname: path,
-      params: { collectionId: collection?.collectionID, routing: routing },
+      params: {
+        collectionId: collection?.collectionID,
+        routing: routing,
+        pageId: pageId,
+      },
     });
   };
 

@@ -20,5 +20,6 @@ export interface NoteRepository extends GeneralPageRepository {
   updateContent(
     pageId: PageID,
     newContent: common.String50000,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean>;
 }
