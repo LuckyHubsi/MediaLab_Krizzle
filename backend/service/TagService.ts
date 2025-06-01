@@ -28,6 +28,7 @@ export class TagService {
    */
   async getAllTags(): Promise<Result<TagDTO[], ServiceErrorType>> {
     try {
+      // throw new RepositoryErrorNew("Fetch Failed");
       const tags = await this.tagRepo.getAllTags();
       return success(tags.map(TagMapper.toDTO));
     } catch (error) {
@@ -56,6 +57,8 @@ export class TagService {
    */
   async insertTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      // throw new RepositoryErrorNew("Insert Failed");
+
       const tag: NewTag = TagMapper.toNewEntity(tagDTO);
       await this.tagRepo.insertTag(tag);
       return success(true);
@@ -94,6 +97,8 @@ export class TagService {
     tagId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      // throw new RepositoryErrorNew("Delete Failed");
+
       const brandedId: TagID = tagID.parse(tagId);
       await this.tagRepo.deleteTag(brandedId);
       return success(true);
@@ -128,6 +133,8 @@ export class TagService {
    */
   async updateTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      // throw new RepositoryErrorNew("Update Failed");
+
       const tag: Tag = TagMapper.toUpdatedEntity(tagDTO);
 
       await this.tagRepo.updateTag(tag);
