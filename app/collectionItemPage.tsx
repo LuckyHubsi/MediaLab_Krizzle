@@ -19,6 +19,9 @@ import CollectionItemContainer from "@/components/ui/CollectionItemContainer/Col
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { useServices } from "@/context/ServiceContext";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionItemScreen() {
   const { itemId, collectionItemText, routing } = useLocalSearchParams<{
@@ -33,6 +36,11 @@ export default function CollectionItemScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemName, setItemName] = useState<string>("");
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
+  const { showSnackbar } = useSnackbar();
+
   useFocusEffect(
     useCallback(() => {
       (async () => {
@@ -41,8 +49,21 @@ export default function CollectionItemScreen() {
 
         if (itemResult.success) {
           setItem(itemResult.value);
+
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "item:retrieval"),
+          );
         } else {
-          // TODO: show error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...itemResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "item:retrieval",
+            },
+          ]);
+          setShowError(true);
         }
 
         if (
@@ -138,20 +159,53 @@ export default function CollectionItemScreen() {
           if (item) {
             try {
               const itemIdAsNumber = Number(item.itemID);
-              const successfullyDeleted =
+              const deleteResult =
                 await collectionService.deleteItemById(itemIdAsNumber);
 
-              setShowDeleteModal(false);
-              router.replace({
-                pathname: "/collectionPage",
-                params: { pageId: item.pageID, routing: routing },
-              });
+              if (deleteResult.success) {
+                setShowDeleteModal(true);
+                router.replace({
+                  pathname: "/collectionPage",
+                  params: { pageId: item.pageID, routing: routing },
+                });
+              } else {
+                setShowDeleteModal(false);
+
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "archiving",
+                  },
+                ]);
+                setShowError(true);
+                showSnackbar(
+                  `Failed to delete the collection item.`,
+                  "bottom",
+                  "error",
+                );
+              }
             } catch (error) {
               console.error("Error deleting item:", error);
             }
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );
