@@ -31,6 +31,7 @@ export type EnrichedError = ServiceErrorType & {
     | "folder:retrieval"
     | "folder:widgets:retrieval"
     | "folder:delete"
+    | "folder:insert"
     | "template:retrieval"
     | "template:update"
     | "item:insert"

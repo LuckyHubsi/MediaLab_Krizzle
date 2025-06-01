@@ -28,6 +28,8 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
+import { ErrorPopup } from "../ErrorModal/ErrorModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -57,11 +59,12 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   const [newFolderName, setNewFolderName] = useState("");
   const [editMode, setEditMode] = useState(false);
 
-  //TODO: use FolderDTO instead of TagDTO
   const [editingFolder, setEditingFolder] = useState<FolderDTO | null>(null);
   const [folders, setFolders] = useState<FolderDTO[]>([]);
 
-  //TODO: Handle folder submit logic
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
@@ -79,7 +82,6 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
       return;
     }
 
-    //TODO: use folderId instead of tagID
     const isDuplicate = folders.some(
       (folder) =>
         folder.folderName.trim().toLowerCase() ===
@@ -96,37 +98,60 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
       let success = false;
 
       if (editMode && editingFolder) {
-        //TODO: use updateFolder instead of updateTag
-        const result = await folderService.updateFolder({
+        const updateResult = await folderService.updateFolder({
           ...editingFolder,
           folderName: trimmedFolder,
         });
 
-        if (result.success) {
+        if (updateResult.success) {
           success = true;
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "folder:update"),
+          );
         } else {
-          // TODO: show error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...updateResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "folder:update",
+            },
+          ]);
+          setShowError(true);
           success = false;
         }
       } else {
         const newFolderObject: FolderDTO = { folderName: trimmedFolder };
-        const result = await folderService.insertFolder(newFolderObject);
-        if (result.success) {
+        const insertResult = await folderService.insertFolder(newFolderObject);
+        if (insertResult.success) {
           success = true;
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "folder:insert"),
+          );
           router.push("/folders?reload=1");
+
+          if (success) setShouldRefetch(true);
+          showSnackbar(
+            editMode
+              ? "Folder updated successfully."
+              : "Folder created successfully.",
+            "top",
+            "success",
+          );
         } else {
-          // TODO: show error modal
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...insertResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "folder:insert",
+            },
+          ]);
+          setShowError(true);
         }
       }
-
-      if (success) setShouldRefetch(true);
-      showSnackbar(
-        editMode
-          ? "Folder updated successfully."
-          : "Folder created successfully.",
-        "top",
-        "success",
-      );
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {
@@ -145,7 +170,6 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
         if (result.success) {
           setFolders(result.value ?? []);
         } else {
-          console.error("Error fetching folders:", result.error.message);
           showSnackbar("Failed to fetch folders.", "top", "error");
         }
       } catch (error) {
@@ -275,6 +299,19 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
           setFolderModalVisible(false);
         }}
         placeholderText="Enter a new folder name"
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );
