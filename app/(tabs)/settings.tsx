@@ -20,7 +20,7 @@ export default function TabThreeScreen() {
         </IconTopRight>
 
         <ThemedText fontSize="xl" fontWeight="bold">
-          Settings
+          Menu
         </ThemedText>
         <View style={{ gap: 6 }}>
           <SettingsLink label="Appearance" href="/appearance" iconName="tune" />
