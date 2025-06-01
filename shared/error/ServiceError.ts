@@ -27,6 +27,7 @@ export type EnrichedError = ServiceErrorType & {
     | "template:retrieval"
     | "item:insert"
     | "item:delete"
+    | "item:update"
     | "item:retrieval"
     | "items:retrieval"
     | "collection:retrieval"

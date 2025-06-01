@@ -12,6 +12,8 @@ import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function EditCollectionItem() {
   const { itemId, routing } = useLocalSearchParams<{
@@ -35,6 +37,9 @@ export default function EditCollectionItem() {
   const [error, setError] = useState<string | null>(null);
   const [hasClickedSave, setHasClickedSave] = useState(false);
   const { showSnackbar } = useSnackbar();
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -123,11 +128,29 @@ export default function EditCollectionItem() {
 
               setAttributeValues(mappedValues);
             } else {
-              // TODO: show error modal
-              console.log(templateResult.error.type);
-              console.log(templateResult.error.message);
+              setErrors((prev) => [
+                ...prev,
+                {
+                  ...templateResult.error,
+                  hasBeenRead: false,
+                  id: `${Date.now()}-${Math.random()}`,
+                  source: "template:retrieval",
+                },
+              ]);
+              setShowError(true);
             }
           }
+        } else {
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...itemResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "item:retrieval",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (err: any) {
         setError(err.message);
@@ -321,9 +344,29 @@ export default function EditCollectionItem() {
 
                   if (updateResult.success) {
                     handleSaveItem(itemId);
+                  } else {
+                    setErrors((prev) => [
+                      ...prev,
+                      {
+                        ...updateResult.error,
+                        hasBeenRead: false,
+                        id: `${Date.now()}-${Math.random()}`,
+                        source: "item:update",
+                      },
+                    ]);
+                    setShowError(true);
                   }
                 } else {
-                  // TODO: show error modal
+                  setErrors((prev) => [
+                    ...prev,
+                    {
+                      ...currentItemResult.error,
+                      hasBeenRead: false,
+                      id: `${Date.now()}-${Math.random()}`,
+                      source: "item:retrieval",
+                    },
+                  ]);
+                  setShowError(true);
                 }
               } catch (error) {
                 console.error("Error saving item:", error);
@@ -333,6 +376,19 @@ export default function EditCollectionItem() {
           />
         )}
       </View>
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
+      />
     </GradientBackground>
   );
 }
