@@ -378,11 +378,6 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               }
 
               onNext?.();
-              showSnackbar(
-                `Successfully created Collection: "${data.title}". `,
-                "bottom",
-                "success",
-              );
             }}
             hasProgressIndicator={false}
             progressStep={3}

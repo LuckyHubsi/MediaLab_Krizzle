@@ -14,16 +14,22 @@ export const PopupContainer = styled.View<ColorSchemeProps>`
     Colors[colorScheme].background};
   width: 85%;
   max-width: 350px;
-  border-top-left-radius: 28px;
-  border-top-right-radius: 28px;
-  border-bottom-left-radius: 28px;
-  border-bottom-right-radius: 28px;
-  overflow: hidden;
-  align-items: center;
+  border-radius: 28px;
   padding: 20px 15px;
   border: 1px solid
     ${({ colorScheme }: ColorSchemeProps) =>
       colorScheme === "dark" ? Colors.grey100 : Colors.grey50};
+`;
+
+export const TopContentContainer = styled.View`
+  width: 100%;
+  height: 160px;
+  align-items: center;
+`;
+
+export const BottomContentContainer = styled.View`
+  width: 100%;
+  align-items: center;
 `;
 
 export const PopupText = styled.Text`
@@ -32,14 +38,49 @@ export const PopupText = styled.Text`
   margin-bottom: 20px;
 `;
 
-export const CTAButton = styled.TouchableOpacity`
-  background-color: ${Colors.primary};
+interface CTAButtonProps extends ColorSchemeProps {
+  isRed?: boolean;
+}
+
+export const CTAButton = styled.TouchableOpacity<CTAButtonProps>`
+  background-color: ${({ isRed, colorScheme }: CTAButtonProps) =>
+    isRed ? Colors[colorScheme].negative : Colors.tintColor};
   padding: 12px 32px;
   border-radius: 99px;
+  align-self: center;
 `;
 
 export const CTAButtonText = styled.Text`
   color: white;
   font-size: 14px;
   font-weight: 600;
+`;
+
+export const NavigationContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin: 10px 0;
+  position: relative;
+`;
+
+export const ChevronButton = styled.TouchableOpacity`
+  position: absolute;
+  padding: 10px;
+`;
+
+export const LeftChevronButton = styled(ChevronButton)`
+  left: 0;
+`;
+
+export const RightChevronButton = styled(ChevronButton)`
+  right: 0;
+  color:;
+`;
+
+export const IndicatorText = styled.Text<ColorSchemeProps>`
+  font-size: 14px;
+  color: ${({ colorScheme }: ColorSchemeProps) =>
+    colorScheme === "dark" ? "white" : "black"};
 `;

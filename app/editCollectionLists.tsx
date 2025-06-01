@@ -34,6 +34,8 @@ import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function EditCollectionListsScreen() {
   const { collectionId, pageId } = useLocalSearchParams<{
@@ -57,6 +59,9 @@ export default function EditCollectionListsScreen() {
   const isPersisted = (id: string) => !isNaN(Number(id)) && initialIds.has(id);
   const [isLoading, setIsLoading] = useState(true);
   const { showSnackbar } = useSnackbar();
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -85,8 +90,24 @@ export default function EditCollectionListsScreen() {
           }));
           setLists(mapped);
           setInitialIds(new Set(mapped.map((l) => l.id)));
+
+          // remove all prior errors from the list retrieval source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "list:retrieval"),
+          );
         } else {
-          // TODO: show error modal
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...listResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "list:retrieval",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (err) {
         console.error("Failed to load lists:", err);
@@ -147,41 +168,81 @@ export default function EditCollectionListsScreen() {
       return;
     }
 
-    const saveOperations = lists.map(async (l) => {
-      const updateDto = {
-        collectionID: numericId,
-        category_name: l.title,
-        collectionCategoryID: Number(l.id),
-      };
+    let allSucceeded = true;
 
-      if (!isPersisted(l.id)) {
-        const insertListResult =
-          await collectionService.insertCollectionCategory(
-            {
-              category_name: l.title,
-              collectionID: numericId,
-            },
-            Number(pageId),
-          );
-        if (insertListResult.success) {
-          setInitialIds((prev) => new Set(prev).add(l.id));
+    await Promise.all(
+      lists.map(async (l) => {
+        const updateDto = {
+          collectionID: numericId,
+          category_name: l.title,
+          collectionCategoryID: Number(l.id),
+        };
+
+        if (!isPersisted(l.id)) {
+          const insertListResult =
+            await collectionService.insertCollectionCategory(
+              {
+                category_name: l.title,
+                collectionID: numericId,
+              },
+              Number(pageId),
+            );
+          if (insertListResult.success) {
+            setInitialIds((prev) => new Set(prev).add(l.id));
+
+            // remove all prior errors from the list insert source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "list:insert"),
+            );
+          } else {
+            allSucceeded = false;
+
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...insertListResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "list:insert",
+              },
+            ]);
+            setShowError(true);
+          }
         } else {
-          // TODO: show error modal
+          const updateListResult =
+            await collectionService.updateCollectionCategory(
+              updateDto,
+              Number(pageId),
+            );
+          if (updateListResult.success) {
+            // remove all prior errors from the list update source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "list:update"),
+            );
+          } else {
+            allSucceeded = false;
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...updateListResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "list:update",
+              },
+            ]);
+            setShowError(true);
+          }
         }
-      } else {
-        const updateListResult =
-          await collectionService.updateCollectionCategory(
-            updateDto,
-            Number(pageId),
-          );
-        if (!updateListResult.success) {
-          // TODO: Show error modal
-        }
-      }
-    });
+      }),
+    );
 
-    await Promise.all(saveOperations);
-    router.back();
+    if (allSucceeded) {
+      router.back();
+    }
   };
 
   const confirmDelete = async () => {
@@ -204,8 +265,24 @@ export default function EditCollectionListsScreen() {
             updated.delete(id);
             return updated;
           });
+
+          // remove all prior errors from the list delete source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "list:delete"),
+          );
         } else {
-          // TODO: show error modal
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...deleteListResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "list:delete",
+            },
+          ]);
+          setShowError(true);
         }
       } catch (error) {
         console.error("Error deleting list:", error);
@@ -353,6 +430,20 @@ export default function EditCollectionListsScreen() {
           />
         )}
       </View>
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
+      />
     </GradientBackground>
   );
 }

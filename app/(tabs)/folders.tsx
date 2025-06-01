@@ -20,6 +20,8 @@ import { useServices } from "@/context/ServiceContext";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { useLocalSearchParams } from "expo-router";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
@@ -59,6 +61,9 @@ export default function FoldersScreen() {
   const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
   const [folderNameInput, setFolderNameInput] = useState("");
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   const filteredFolders = folders.filter((folder) =>
     folder.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -88,22 +93,35 @@ export default function FoldersScreen() {
     }
 
     try {
-      const result = await folderService.updateFolder({
+      const updateResult = await folderService.updateFolder({
         folderID: Number(editingFolder.id),
         folderName: trimmedName,
         itemCount: editingFolder.itemCount,
       });
 
-      if (result.success) {
+      if (updateResult.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
+
+        // remove all prior errors from the folder update source if service call succeeded
+        setErrors((prev) =>
+          prev.filter((error) => error.source !== "folder:update"),
+        );
       } else {
-        console.log(result.error.type);
-        console.log(result.error.message);
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
+        setErrors((prev) => [
+          ...prev,
+          {
+            ...updateResult.error,
+            hasBeenRead: false,
+            id: `${Date.now()}-${Math.random()}`,
+            source: "folder:update",
+          },
+        ]);
+        setShowError(true);
+        showSnackbar("Update failed", "top", "error");
       }
-    } catch (error) {
-      console.error("Error updating folder:", error);
-      showSnackbar("Update failed", "top", "error");
     } finally {
       setEditMode(false);
       setEditingFolder(null);
@@ -121,12 +139,28 @@ export default function FoldersScreen() {
     useCallback(() => {
       const fetchFolders = async () => {
         try {
-          const result = await folderService.getAllFolders();
-          if (result.success) {
-            const shapedFolders = mapToFolderShape(result.value);
+          const folderResult = await folderService.getAllFolders();
+          if (folderResult.success) {
+            const shapedFolders = mapToFolderShape(folderResult.value);
             setFolders(shapedFolders);
+
+            // remove all prior errors from the folder retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "folder:retrieval"),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...folderResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "folder:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Error loading folders:", error);
@@ -263,14 +297,30 @@ export default function FoldersScreen() {
           if (selectedFolder) {
             try {
               const folderIdAsNumber = Number(selectedFolder.id);
-              const result = await folderService.deleteFolder(folderIdAsNumber);
+              const deleteResult =
+                await folderService.deleteFolder(folderIdAsNumber);
 
-              if (result.success) {
+              if (deleteResult.success) {
                 setShouldReload(true);
+
+                // remove all prior errors from the folder delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "folder:delete"),
+                );
               } else {
-                // TODO: show error modal
-                console.log(result.error.type);
-                console.log(result.error.message);
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "folder:delete",
+                  },
+                ]);
+                setShowError(true);
+                showSnackbar("Failed to delete folder.", "top", "error");
               }
 
               setSelectedFolder(null);
@@ -293,6 +343,20 @@ export default function FoldersScreen() {
           setFolderNameInput("");
         }}
         placeholderText="Enter new folder name"
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );

@@ -13,10 +13,15 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
 
 export default function ResetDatabaseScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -59,12 +64,36 @@ export default function ResetDatabaseScreen() {
           const result = await resetDatabase();
 
           if (!result.success) {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...result.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+              },
+            ]);
+            setShowError(true);
           }
 
           setShowDeleteModal(false); // ✅ only close modal on success
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </SafeAreaView>
   );

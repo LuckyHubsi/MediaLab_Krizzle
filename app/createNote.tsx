@@ -31,7 +31,8 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function CreateNoteScreen() {
   const { noteService, tagService } = useServices();
@@ -53,6 +54,9 @@ export default function CreateNoteScreen() {
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
     : "Choose Icon";
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
@@ -117,11 +121,16 @@ export default function CreateNoteScreen() {
       parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
-    const result = await noteService.insertNote(noteDTO);
-    if (result.success) {
+    const noteIDResult = await noteService.insertNote(noteDTO);
+    if (noteIDResult.success) {
+      // remove all prior errors from the note insert source if service call succeeded
+      setErrors((prev) =>
+        prev.filter((error) => error.source !== "note:insert"),
+      );
+
       router.replace({
         pathname: "/notePage",
-        params: { pageId: result.value, title: title },
+        params: { pageId: noteIDResult.value, title: title },
       });
 
       showSnackbar(
@@ -130,7 +139,18 @@ export default function CreateNoteScreen() {
         "success",
       );
     } else {
-      // TODO: show error modal
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
+      setErrors((prev) => [
+        ...prev,
+        {
+          ...noteIDResult.error,
+          hasBeenRead: false,
+          id: `${Date.now()}-${Math.random()}`,
+          source: "note:insert",
+        },
+      ]);
+      setShowError(true);
     }
   };
 
@@ -138,11 +158,27 @@ export default function CreateNoteScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const result = await tagService.getAllTags();
-          if (result.success) {
-            if (result.value) setTags(result.value);
+          const tagResult = await tagService.getAllTags();
+          if (tagResult.success) {
+            if (tagResult.value) setTags(tagResult.value);
+
+            // remove all prior errors from the tag retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "tags:retrieval"),
+            );
           } else {
-            // TODO: show the error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...tagResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "tags:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -325,6 +361,20 @@ export default function CreateNoteScreen() {
         }}
         onClose={() => setPopupVisible(false)}
         onDone={() => setPopupVisible(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </GradientBackground>
   );

@@ -35,7 +35,8 @@ import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function EditWidgetScreen() {
   const { generalPageService, tagService } = useServices();
@@ -87,6 +88,9 @@ export default function EditWidgetScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   const initialValuesRef = useRef({
     title: "",
     selectedTag: null as TagDTO | null,
@@ -128,9 +132,10 @@ export default function EditWidgetScreen() {
       pinned: pageData?.pinned ?? false,
       parentID: pageData?.parentID ?? null,
     };
-    const result = await generalPageService.updateGeneralPageData(newPageDTO);
+    const updateResult =
+      await generalPageService.updateGeneralPageData(newPageDTO);
 
-    if (result.success) {
+    if (updateResult.success) {
       // only send snackbar if data has changed
       const hasChanges =
         title !== initialValuesRef.current.title ||
@@ -143,9 +148,24 @@ export default function EditWidgetScreen() {
         showSnackbar("Successfully updated Widget!", "bottom", "success");
       }
 
+      // remove all prior errors from the widget update source if service call succeeded
+      setErrors((prev) =>
+        prev.filter((error) => error.source !== "widget:update"),
+      );
       router.back();
     } else {
-      // TODO: show error modal
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
+      setErrors((prev) => [
+        ...prev,
+        {
+          ...updateResult.error,
+          hasBeenRead: false,
+          id: `${Date.now()}-${Math.random()}`,
+          source: "widget:update",
+        },
+      ]);
+      setShowError(true);
     }
   };
 
@@ -153,11 +173,27 @@ export default function EditWidgetScreen() {
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const result = await tagService.getAllTags();
-          if (result.success) {
-            if (result.value) setTags(result.value);
+          const tagResult = await tagService.getAllTags();
+          if (tagResult.success) {
+            if (tagResult.value) setTags(tagResult.value);
+
+            // remove all prior errors from the tag retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "tags:retrieval"),
+            );
           } else {
-            // TODO: show the error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...tagResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "tags:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -166,31 +202,47 @@ export default function EditWidgetScreen() {
 
       const fetchGeneralPage = async () => {
         try {
-          const result = await generalPageService.getGeneralPageByID(
+          const widgetResult = await generalPageService.getGeneralPageByID(
             Number(widgetID),
           );
-          if (result.success) {
-            setPageData(result.value);
-            setTitle(result.value.page_title || "");
-            setSelectedColor(result.value.page_color || "");
+          if (widgetResult.success) {
+            setPageData(widgetResult.value);
+            setTitle(widgetResult.value.page_title || "");
+            setSelectedColor(widgetResult.value.page_color || "");
             setSelectedIcon(
-              (result.value.page_icon as
+              (widgetResult.value.page_icon as
                 | keyof typeof MaterialIcons.glyphMap
                 | null) || null,
             );
             //save current data to compare if new data has been entered
             initialValuesRef.current = {
-              title: result.value.page_title || "",
-              selectedColor: result.value.page_color || "",
+              title: widgetResult.value.page_title || "",
+              selectedColor: widgetResult.value.page_color || "",
               selectedIcon:
-                (result.value
+                (widgetResult.value
                   .page_icon as keyof typeof MaterialIcons.glyphMap) || null,
-              selectedTag: result.value.tag || null,
+              selectedTag: widgetResult.value.tag || null,
             };
 
-            setSelectedTag(result.value.tag || null);
+            setSelectedTag(widgetResult.value.tag || null);
+
+            // remove all prior errors from the widget retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "widget:retrieval"),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...widgetResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "widget:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Failed to load page data:", error);
@@ -377,6 +429,20 @@ export default function EditWidgetScreen() {
         }}
         onClose={() => setPopupVisible(false)}
         onDone={() => setPopupVisible(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </GradientBackground>
   );
