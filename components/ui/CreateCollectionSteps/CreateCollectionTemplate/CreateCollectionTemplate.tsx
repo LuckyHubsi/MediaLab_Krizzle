@@ -262,7 +262,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             <CardText>
               <CardHeader>
                 <ThemedText fontSize="l" fontWeight="bold">
-                  Adding Templates
+                  Adding Template
                 </ThemedText>
               </CardHeader>
               <ThemedText
