@@ -299,7 +299,7 @@ export default function EditCollectionTemplateScreen() {
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                /10 Item Fields
+                /10 Fields
               </ThemedText>
             </ItemCount>
             <ItemCount colorScheme={colorScheme}>
