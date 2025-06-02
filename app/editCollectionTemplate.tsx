@@ -460,7 +460,7 @@ export default function EditCollectionTemplateScreen() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
         >
           <ScrollView
-            contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
+            contentContainerStyle={{ paddingBottom: 100, gap: 10 }}
             showsVerticalScrollIndicator={false}
           >
             {templates.map((card, index) => {
