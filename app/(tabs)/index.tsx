@@ -443,6 +443,15 @@ export default function HomeScreen() {
               setShowSortModal(false);
             },
           },
+          {
+            label: "Created ascending",
+            icon: "sort",
+            disabled: sortingMode === GeneralPageState.GeneralCreated,
+            onPress: () => {
+              setSortingMode(GeneralPageState.GeneralCreated);
+              setShowSortModal(false);
+            },
+          },
         ]}
       />
 

@@ -11,7 +11,7 @@ const selectAllPagesByCreatedQuery: string = `
     FROM general_page_data p
     LEFT JOIN tag t ON p.tagID = t.tagID
     WHERE p.archived = 0 AND p.pinned = 0 AND p.parent_folderID IS NULL
-    ORDER BY p.date_created DESC;
+    ORDER BY p.date_created ASC;
 `;
 
 const selectAllPagesByAlphabetQuery: string = `
