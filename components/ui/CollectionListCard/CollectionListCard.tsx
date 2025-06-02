@@ -101,6 +101,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                           itemId: item.itemID.toString(),
                           collectionItemText: item.values[0],
                           routing: routing,
+                          archived: isArchived?.toString(),
                         },
                       });
                     }}

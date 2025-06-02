@@ -392,7 +392,10 @@ export default function CollectionScreen() {
             onPress: () => {
               router.push({
                 pathname: "/editCollectionItem",
-                params: { itemId: selectedItem?.itemID, routing: routing },
+                params: {
+                  itemId: selectedItem?.itemID,
+                  routing: routing,
+                },
               });
             },
           },
