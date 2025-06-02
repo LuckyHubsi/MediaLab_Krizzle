@@ -9,7 +9,7 @@ const FAQSection = () => {
         <ImageContainer>
           <Image
             source={require("@/assets/images/krizzle_faq.png")}
-            style={{ width: "100%", height: 80 }}
+            style={{ width: "100%", height: 90, resizeMode: "contain" }}
           />
         </ImageContainer>
         <CardsContainer>

@@ -240,7 +240,7 @@ export default function NotesScreen() {
                     showSnackbar(
                       noteData.archived
                         ? "Successfully restored Note."
-                        : "Successfully moved Note to Archive in Settings.",
+                        : "Successfully moved Note to Archive in Menu.",
                       "bottom",
                       "success",
                     );
@@ -266,7 +266,7 @@ export default function NotesScreen() {
                     showSnackbar(
                       noteData.archived
                         ? "Failed to restore Note."
-                        : "Failed to move Note to Archive in Settings.",
+                        : "Failed to move Note to Archive in Menu.",
                       "bottom",
                       "error",
                     );
@@ -337,8 +337,22 @@ export default function NotesScreen() {
 
       <SelectFolderModal
         widgetTitle={title}
+        widgetId={pageId}
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
+        onMoved={(success: boolean) => {
+          if (success) {
+            showSnackbar(
+              "Note moved to folder successfully",
+              "bottom",
+              "success",
+            );
+            setShouldReload(true);
+          } else {
+            showSnackbar("Failed to move note to folder.", "bottom", "error");
+          }
+          setShowFolderSelectionModal(false);
+        }}
       />
 
       <ErrorPopup

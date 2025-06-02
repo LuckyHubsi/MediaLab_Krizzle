@@ -500,7 +500,7 @@ export default function HomeScreen() {
                 );
                 if (result.success) {
                   showSnackbar(
-                    `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Settings.`,
+                    `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
                     "success",
                   );

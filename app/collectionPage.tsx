@@ -324,7 +324,7 @@ export default function CollectionScreen() {
                     showSnackbar(
                       collection.archived
                         ? "Successfully restored Collection."
-                        : "Successfully moved Collection to Archive in Settings.",
+                        : "Successfully moved Collection to Archive in Menu.",
                       "bottom",
                       "success",
                     );
@@ -521,8 +521,22 @@ export default function CollectionScreen() {
       )}
       <SelectFolderModal
         widgetTitle={title}
+        widgetId={pageId}
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
+        onMoved={(success: boolean) => {
+          if (success) {
+            showSnackbar(
+              "Collection moved to folder successfully",
+              "bottom",
+              "success",
+            );
+            setShouldReload(true);
+          } else {
+            showSnackbar("Failed to move note to folder.", "bottom", "error");
+          }
+          setShowFolderSelectionModal(false);
+        }}
       />
 
       <ErrorPopup

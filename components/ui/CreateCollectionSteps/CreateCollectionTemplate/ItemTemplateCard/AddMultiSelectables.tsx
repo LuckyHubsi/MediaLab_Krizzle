@@ -16,14 +16,13 @@ interface AddMultiSelectablesProps {
   title: string;
   options: string[];
   onOptionsChange: (newOptions: string[]) => void;
-  hasNoInputError?: boolean;
+  errorMessage?: string;
 }
 
 const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
-  title,
   options,
   onOptionsChange,
-  hasNoInputError,
+  errorMessage,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -79,13 +78,12 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
           <ThemedText colorVariant="primary">Add a selectable</ThemedText>
         </AddMultiSelectableButton>
       )}
-      {hasNoInputError && (
-        <ThemedText fontSize="s" colorVariant={"red"}>
-          Please enter a text in all fields.
+      {errorMessage && (
+        <ThemedText fontSize="s" colorVariant="red">
+          {errorMessage}
         </ThemedText>
       )}
     </AddMultiSelectablesContainer>
   );
 };
-
 export default AddMultiSelectables;

@@ -73,7 +73,11 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
             {faqExampleImage && (
               <Image
                 source={faqExampleImage as any}
-                style={{ width: "100%", height: imageHeight }}
+                style={{
+                  width: "100%",
+                  height: imageHeight,
+                  resizeMode: "contain",
+                }}
               />
             )}
           </CollapsibleCardContent>

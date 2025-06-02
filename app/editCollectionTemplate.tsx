@@ -252,17 +252,45 @@ export default function EditCollectionTemplateScreen() {
 
   const handlePreviewToggle = (id: number) => {
     setTemplates((prev) => {
+      const toggledCard = prev.find((card) => card.attributeID === id);
+      if (!toggledCard) return prev;
+
       const currentlySelected = prev.filter((c) => c.preview).length;
-      return prev.map((card, index) => {
-        const isFirst = index === 0;
-        if (card.attributeID === id) {
-          if (isFirst) return card;
-          const togglingOn = !card.preview;
-          if (togglingOn && currentlySelected >= 3) return card;
-          return { ...card, preview: togglingOn };
+      const isCurrentlyPreviewed = toggledCard.preview ?? false;
+      const togglingOn = !isCurrentlyPreviewed;
+
+      if (togglingOn) {
+        // Enforce max 3 preview limit
+        if (currentlySelected >= 3) {
+          showSnackbar(
+            "You can only preview up to 3 attributes.",
+            "bottom",
+            "error",
+          );
+          return prev;
         }
-        return card;
-      });
+
+        // Enforce unique type in preview
+        const sameTypeAlreadyPreviewed = prev.some(
+          (card) =>
+            card.attributeID !== id &&
+            card.preview === true &&
+            card.type === toggledCard.type,
+        );
+
+        if (sameTypeAlreadyPreviewed) {
+          showSnackbar(
+            "Only one preview is allowed per attribute type.",
+            "bottom",
+            "error",
+          );
+          return prev;
+        }
+      }
+
+      return prev.map((card) =>
+        card.attributeID === id ? { ...card, preview: togglingOn } : card,
+      );
     });
   };
 
@@ -302,6 +330,25 @@ export default function EditCollectionTemplateScreen() {
       newAttributes,
       Number(pageId),
     );
+    const hasMultiSelectDuplicates = templates.some((card) => {
+      if (card.type !== "multi-select" || !card.options) return false;
+
+      const trimmedLowercase = card.options
+        .map((o) => o.trim().toLowerCase())
+        .filter((o) => o !== "");
+
+      const unique = new Set(trimmedLowercase);
+      return unique.size !== trimmedLowercase.length;
+    });
+
+    if (hasMultiSelectDuplicates) {
+      showSnackbar(
+        "Each multi-select must have only unique values.",
+        "bottom",
+        "error",
+      );
+      return;
+    }
 
     if (updateResult.success) {
       showSnackbar("Template updated successfully.", "bottom", "success");
@@ -395,46 +442,64 @@ export default function EditCollectionTemplateScreen() {
             contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
             showsVerticalScrollIndicator={false}
           >
-            {templates.map((card, index) => (
-              <ItemTemplateCard
-                key={card.attributeID}
-                isTitleCard={index === 0}
-                itemType={card.type}
-                textfieldIcon="short-text"
-                isPreview={card.preview ?? false}
-                title={card.attributeLabel}
-                rating={card.symbol as keyof typeof MaterialIcons.glyphMap}
-                options={card.options ?? undefined}
-                onTypeChange={(val) =>
-                  handleTypeChange(card.attributeID ?? 0, val)
-                }
-                onTitleChange={(text) =>
-                  handleTitleChange(card.attributeID ?? 0, text)
-                }
-                onRatingChange={(val) =>
-                  handleRatingChange(card.attributeID ?? 0, val)
-                }
-                onOptionsChange={(val) =>
-                  handleOptionsChange(card.attributeID ?? 0, val)
-                }
-                onRemove={() => {
-                  handleRemoveCard(card.attributeID ?? 0);
-                }}
-                hasNoInputError={hasClickedNext && !card.attributeLabel?.trim()}
-                hasNoMultiSelectableError={
-                  hasClickedNext &&
-                  card.type === "multi-select" &&
-                  (!card.options ||
-                    card.options.length === 0 ||
-                    card.options.some((o) => o.trim() === ""))
-                }
-                onPreviewToggle={() =>
-                  handlePreviewToggle(card.attributeID ?? 0)
-                }
-                isExisting={card.isExisting}
-                fieldCount={index + 1}
-              />
-            ))}
+            {templates.map((card, index) => {
+              const trimmedOptions = (card.options ?? []).map((o) => o.trim());
+              const lowerTrimmedOptions = trimmedOptions
+                .map((o) => o.toLowerCase())
+                .filter((o) => o !== "");
+
+              const hasEmptyOption =
+                card.type === "multi-select" &&
+                (trimmedOptions.length === 0 ||
+                  trimmedOptions.some((o) => o === ""));
+
+              const noSelectables =
+                card.type === "multi-select" && trimmedOptions.length === 0;
+
+              const hasDuplicates =
+                card.type === "multi-select" &&
+                new Set(lowerTrimmedOptions).size !==
+                  lowerTrimmedOptions.length;
+
+              return (
+                <ItemTemplateCard
+                  key={card.attributeID}
+                  isTitleCard={index === 0}
+                  itemType={card.type}
+                  textfieldIcon="short-text"
+                  isPreview={card.preview ?? false}
+                  title={card.attributeLabel}
+                  rating={card.symbol as keyof typeof MaterialIcons.glyphMap}
+                  options={card.options ?? undefined}
+                  onTypeChange={(val) =>
+                    handleTypeChange(card.attributeID ?? 0, val)
+                  }
+                  onTitleChange={(text) =>
+                    handleTitleChange(card.attributeID ?? 0, text)
+                  }
+                  onRatingChange={(val) =>
+                    handleRatingChange(card.attributeID ?? 0, val)
+                  }
+                  onOptionsChange={(val) =>
+                    handleOptionsChange(card.attributeID ?? 0, val)
+                  }
+                  onRemove={() => {
+                    handleRemoveCard(card.attributeID ?? 0);
+                  }}
+                  onPreviewToggle={() =>
+                    handlePreviewToggle(card.attributeID ?? 0)
+                  }
+                  isExisting={card.isExisting}
+                  hasNoInputError={
+                    hasClickedNext && !card.attributeLabel?.trim()
+                  }
+                  hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
+                  noSelectablesError={hasClickedNext && noSelectables}
+                  hasClickedNext={hasClickedNext}
+                />
+              );
+            })}
+
             <View style={{ paddingTop: 10 }}>
               <AddButton
                 onPress={handleAddCard}
