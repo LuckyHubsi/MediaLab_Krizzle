@@ -119,7 +119,12 @@ export default function FolderScreen() {
   };
   const handleFolderUpdate = async () => {
     const trimmedName = folderNameInput.trim();
-    if (!folder || !trimmedName) return;
+    if (!folder) return;
+
+    if (!trimmedName) {
+      showSnackbar("Please enter a folder name.", "top", "error");
+      return;
+    }
 
     if (trimmedName.length > 30) {
       showSnackbar(

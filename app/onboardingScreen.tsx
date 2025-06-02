@@ -109,6 +109,7 @@ export default function OnboardingScreen() {
           variant="back"
           hasProgressIndicator={true}
           progressStep={currentStep + 1}
+          enableAnimation={true}
         />
       </View>
     </SafeAreaView>

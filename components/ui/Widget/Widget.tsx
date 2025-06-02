@@ -106,7 +106,13 @@ const Widget: React.FC<Props> = ({
           </ThemedText>
         )}
 
-        <ThemedText fontSize="regular" fontWeight="bold" colorVariant="white">
+        <ThemedText
+          fontSize="regular"
+          fontWeight="bold"
+          colorVariant="white"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
           {title}
         </ThemedText>
 

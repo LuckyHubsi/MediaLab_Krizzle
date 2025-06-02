@@ -25,15 +25,15 @@ const FAQSection = () => {
             faqTitle="Collection List"
             faqQuestion="What is a "
             faqContent="When creating a Collection you will be asked to add at least one List to your Collection. Krizzle’s Collections Lists make it possible for you to group together items within Collections. It’s perfect if you wish to have different grouped Lists within your Collections and toggle between them. Make Collections completely your own!"
-            faqExampleHeading="Example with a Game Collection"
+            faqExampleHeading="Example with Food Spots"
             faqExampleImage={require("@/assets/images/faq/faq_lists.png")}
-            imageHeight={133}
+            imageHeight={170}
           />
           <CollapsibleCard
             faqQuestion="What is a "
             faqTitle="Collection Item Template"
-            faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating and a multi-select. With a total of up to ten of these attributes you can create a form fully tailored to your own needs."
-            faqExampleHeading="Example of a Multi-Select in a Games Collection"
+            faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating, multi-select, link or an image. With a total of up to ten of these fields you can create a form fully tailored to your own needs."
+            faqExampleHeading="Example of a Text Field"
             faqExampleImage={require("@/assets/images/faq/faq_item_template.png")}
             imageHeight={210}
           />
