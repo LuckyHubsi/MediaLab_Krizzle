@@ -207,7 +207,7 @@ export class ItemTemplateService {
               valueString: null,
               displayText: null,
               valueMultiselect: null,
-              valueNumber: 0,
+              valueNumber: null,
             };
 
             // for each item insert the default attribute values with the itemID and new attributeID
