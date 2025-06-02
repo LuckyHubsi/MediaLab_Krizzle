@@ -198,17 +198,45 @@ export default function EditCollectionTemplateScreen() {
 
   const handlePreviewToggle = (id: number) => {
     setTemplates((prev) => {
+      const toggledCard = prev.find((card) => card.attributeID === id);
+      if (!toggledCard) return prev;
+
       const currentlySelected = prev.filter((c) => c.preview).length;
-      return prev.map((card, index) => {
-        const isFirst = index === 0;
-        if (card.attributeID === id) {
-          if (isFirst) return card;
-          const togglingOn = !card.preview;
-          if (togglingOn && currentlySelected >= 3) return card;
-          return { ...card, preview: togglingOn };
+      const isCurrentlyPreviewed = toggledCard.preview ?? false;
+      const togglingOn = !isCurrentlyPreviewed;
+
+      if (togglingOn) {
+        // Enforce max 3 preview limit
+        if (currentlySelected >= 3) {
+          showSnackbar(
+            "You can only preview up to 3 attributes.",
+            "bottom",
+            "error",
+          );
+          return prev;
         }
-        return card;
-      });
+
+        // Enforce unique type in preview
+        const sameTypeAlreadyPreviewed = prev.some(
+          (card) =>
+            card.attributeID !== id &&
+            card.preview === true &&
+            card.type === toggledCard.type,
+        );
+
+        if (sameTypeAlreadyPreviewed) {
+          showSnackbar(
+            "Only one preview is allowed per attribute type.",
+            "bottom",
+            "error",
+          );
+          return prev;
+        }
+      }
+
+      return prev.map((card) =>
+        card.attributeID === id ? { ...card, preview: togglingOn } : card,
+      );
     });
   };
 
