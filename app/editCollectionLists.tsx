@@ -170,75 +170,73 @@ export default function EditCollectionListsScreen() {
 
     let allSucceeded = true;
 
-    await Promise.all(
-      lists.map(async (l) => {
-        const updateDto = {
-          collectionID: numericId,
-          category_name: l.title,
-          collectionCategoryID: Number(l.id),
-        };
+    for (const l of lists) {
+      const updateDto = {
+        collectionID: numericId,
+        category_name: l.title,
+        collectionCategoryID: Number(l.id),
+      };
 
-        if (!isPersisted(l.id)) {
-          const insertListResult =
-            await collectionService.insertCollectionCategory(
-              {
-                category_name: l.title,
-                collectionID: numericId,
-              },
-              Number(pageId),
-            );
-          if (insertListResult.success) {
-            setInitialIds((prev) => new Set(prev).add(l.id));
+      if (!isPersisted(l.id)) {
+        const insertListResult =
+          await collectionService.insertCollectionCategory(
+            {
+              category_name: l.title,
+              collectionID: numericId,
+            },
+            Number(pageId),
+          );
+        if (insertListResult.success) {
+          setInitialIds((prev) => new Set(prev).add(l.id));
 
-            // remove all prior errors from the list insert source if service call succeeded
-            setErrors((prev) =>
-              prev.filter((error) => error.source !== "list:insert"),
-            );
-          } else {
-            allSucceeded = false;
-
-            // set all errors to the previous errors plus add the new error
-            // define the id and the source and set its read status to false
-            setErrors((prev) => [
-              ...prev,
-              {
-                ...insertListResult.error,
-                hasBeenRead: false,
-                id: `${Date.now()}-${Math.random()}`,
-                source: "list:insert",
-              },
-            ]);
-            setShowError(true);
-          }
+          // remove all prior errors from the list insert source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "list:insert"),
+          );
         } else {
-          const updateListResult =
-            await collectionService.updateCollectionCategory(
-              updateDto,
-              Number(pageId),
-            );
-          if (updateListResult.success) {
-            // remove all prior errors from the list update source if service call succeeded
-            setErrors((prev) =>
-              prev.filter((error) => error.source !== "list:update"),
-            );
-          } else {
-            allSucceeded = false;
-            // set all errors to the previous errors plus add the new error
-            // define the id and the source and set its read status to false
-            setErrors((prev) => [
-              ...prev,
-              {
-                ...updateListResult.error,
-                hasBeenRead: false,
-                id: `${Date.now()}-${Math.random()}`,
-                source: "list:update",
-              },
-            ]);
-            setShowError(true);
-          }
+          allSucceeded = false;
+
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...insertListResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "list:insert",
+            },
+          ]);
+          setShowError(true);
         }
-      }),
-    );
+      } else {
+        const updateListResult =
+          await collectionService.updateCollectionCategory(
+            updateDto,
+            Number(pageId),
+          );
+        if (updateListResult.success) {
+          // remove all prior errors from the list update source if service call succeeded
+          setErrors((prev) =>
+            prev.filter((error) => error.source !== "list:update"),
+          );
+        } else {
+          allSucceeded = false;
+          // set all errors to the previous errors plus add the new error
+          // define the id and the source and set its read status to false
+          setErrors((prev) => [
+            ...prev,
+            {
+              ...updateListResult.error,
+              hasBeenRead: false,
+              id: `${Date.now()}-${Math.random()}`,
+              source: "list:update",
+            },
+          ]);
+          setShowError(true);
+        }
+      }
+    }
 
     if (allSucceeded) {
       router.back();
