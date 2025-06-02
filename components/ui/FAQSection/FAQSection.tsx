@@ -25,9 +25,9 @@ const FAQSection = () => {
             faqTitle="Collection List"
             faqQuestion="What is a "
             faqContent="When creating a Collection you will be asked to add at least one List to your Collection. Krizzle’s Collections Lists make it possible for you to group together items within Collections. It’s perfect if you wish to have different grouped Lists within your Collections and toggle between them. Make Collections completely your own!"
-            faqExampleHeading="Example with a Game Collection"
+            faqExampleHeading="Example with Food Spots"
             faqExampleImage={require("@/assets/images/faq/faq_lists.png")}
-            imageHeight={133}
+            imageHeight={170}
           />
           <CollapsibleCard
             faqQuestion="What is a "
