@@ -60,7 +60,6 @@ export default function ResetDatabaseScreen() {
         >
           Reset all Data
         </Button>
-        <Button onPress={resetOnboarding}>Reset Onboarding</Button>
       </ThemedView>
 
       <DeleteModal
