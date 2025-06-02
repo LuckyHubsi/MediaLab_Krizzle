@@ -127,7 +127,8 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       (attr) =>
         attr.type === AttributeType.Multiselect &&
         "valueMultiselect" in attr &&
-        attr.valueMultiselect,
+        Array.isArray(attr.valueMultiselect) &&
+        attr.valueMultiselect.length > 0,
     );
 
     multiSelect.forEach((multi) => {
