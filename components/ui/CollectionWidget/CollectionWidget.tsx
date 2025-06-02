@@ -42,9 +42,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
 
   // Find indexes for each type
   const titleIndex = attributes.findIndex((attr) => attr.type === "text");
-  const textIndex = attributes.findIndex(
-    (attr, idx) => attr.type === "text" && idx !== titleIndex,
-  );
   const dateIndex = attributes.findIndex((attr) => attr.type === "date");
   const ratingIndex = attributes.findIndex((attr) => attr.type === "rating");
   const multiSelectIndex = attributes.findIndex(
@@ -55,7 +52,6 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
 
   // Get values
   const title = titleIndex !== -1 ? item.values[titleIndex] : "";
-  const text = textIndex !== -1 ? item.values[textIndex] : null;
   const date = dateIndex !== -1 ? item.values[dateIndex] : null;
   const rating = ratingIndex !== -1 ? item.values[ratingIndex] : null;
   const multiSelect =
@@ -133,11 +129,23 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             {title}
           </ThemedText>
           {/* Text preview */}
-          {text && (
-            <CollectionText colorScheme={colorScheme} numberOfLines={3}>
-              {text}
-            </CollectionText>
-          )}
+          {attributes.map((attr, idx) => {
+            if (attr.type === "text" && idx !== titleIndex) {
+              const value = item.values[idx];
+              if (typeof value === "string" && value.trim() !== "") {
+                return (
+                  <CollectionText
+                    key={attr.attributeID}
+                    colorScheme={colorScheme}
+                    numberOfLines={3}
+                  >
+                    {value}
+                  </CollectionText>
+                );
+              }
+            }
+            return null;
+          })}
           {/* Date and Rating */}
           {(date !== null && date !== undefined) ||
           (rating !== null && rating !== undefined) ? (

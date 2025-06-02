@@ -145,13 +145,13 @@ export default function AddCollectionItem() {
   };
 
   const validateFields = () => {
-    return attributes.every((attribute) => {
-      if (attribute.type === AttributeType.Text) {
-        const value = attributeValues[attribute.attributeID || 0];
-        return value && value.trim() !== "";
-      }
-      return true;
-    });
+    const firstTextAttribute = attributes.find(
+      (attribute) => attribute.type === AttributeType.Text,
+    );
+    if (!firstTextAttribute) return true;
+
+    const value = attributeValues[firstTextAttribute.attributeID || 0];
+    return value && value.trim() !== "";
   };
 
   const mapToItemDTO = (attributes: AttributeDTO[]): ItemDTO => {
