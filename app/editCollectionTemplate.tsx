@@ -255,12 +255,23 @@ export default function EditCollectionTemplateScreen() {
       const toggledCard = prev.find((card) => card.attributeID === id);
       if (!toggledCard) return prev;
 
+      const index = prev.findIndex((card) => card.attributeID === id);
+      if (index === 0) {
+        // 🔒 First card is always preview — don't toggle
+        showSnackbar(
+          "The first text field must always be in the preview.",
+          "top",
+          "error",
+        );
+        return prev;
+      }
+
       const currentlySelected = prev.filter((c) => c.preview).length;
       const isCurrentlyPreviewed = toggledCard.preview ?? false;
       const togglingOn = !isCurrentlyPreviewed;
 
       if (togglingOn) {
-        // Enforce max 3 preview limit
+        // Limit max 3 previews
         if (currentlySelected >= 3) {
           showSnackbar(
             "You can only preview up to 3 attributes.",
@@ -270,13 +281,23 @@ export default function EditCollectionTemplateScreen() {
           return prev;
         }
 
-        // Enforce unique type in preview
-        const sameTypeAlreadyPreviewed = prev.some(
-          (card) =>
-            card.attributeID !== id &&
-            card.preview === true &&
-            card.type === toggledCard.type,
-        );
+        // Only one preview per type, except for Text (allow max 2)
+        let sameTypeAlreadyPreviewed = false;
+        if (toggledCard.type === AttributeType.Text) {
+          const textPreviewCount = prev.filter(
+            (card) => card.preview && card.type === AttributeType.Text,
+          ).length;
+          if (textPreviewCount >= 2) {
+            sameTypeAlreadyPreviewed = true;
+          }
+        } else {
+          sameTypeAlreadyPreviewed = prev.some(
+            (card) =>
+              card.attributeID !== id &&
+              card.preview === true &&
+              card.type === toggledCard.type,
+          );
+        }
 
         if (sameTypeAlreadyPreviewed) {
           showSnackbar(
