@@ -58,13 +58,16 @@ export default function CollectionScreen() {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
+        if (routing === "goArchive") {
+          setShouldReload(true);
+        }
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
           const collectionResult =
             await collectionService.getCollectionByPageId(numericID);
           if (collectionResult.success) {
             setCollection(collectionResult.value);
-            setCollectionTitle(title || collectionResult.value.page_title);
+            setCollectionTitle(collectionResult.value.page_title);
 
             // remove all prior errors from the collection retrieval source if service call succeeded
             setErrors((prev) =>
@@ -118,7 +121,7 @@ export default function CollectionScreen() {
         }
       };
       fetchData();
-    }, [pageId, shouldReload]),
+    }, [pageId, shouldReload, routing]),
   );
 
   const goToEditPage = () => {
@@ -216,6 +219,7 @@ export default function CollectionScreen() {
           searchQuery={searchQuery}
           routing={routing}
           collectionId={collection?.collectionID?.toString()}
+          isArchived={collection?.archived}
         />
       </SafeAreaView>
 
@@ -388,7 +392,10 @@ export default function CollectionScreen() {
             onPress: () => {
               router.push({
                 pathname: "/editCollectionItem",
-                params: { itemId: selectedItem?.itemID, routing: routing },
+                params: {
+                  itemId: selectedItem?.itemID,
+                  routing: routing,
+                },
               });
             },
           },
@@ -496,14 +503,8 @@ export default function CollectionScreen() {
         onclose={() => setShowItemDeleteModal(false)}
       />
 
-      {!routing && (
-        <View
-          style={{
-            position: "absolute",
-            right: 20,
-            bottom: 30,
-          }}
-        >
+      {!collection?.archived && (
+        <View style={{ position: "absolute", right: 20, bottom: 30 }}>
           <FloatingAddButton
             onPress={() => {
               router.push({

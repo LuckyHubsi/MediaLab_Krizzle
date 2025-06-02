@@ -131,7 +131,7 @@ export default function CreateNoteScreen() {
 
       router.replace({
         pathname: "/notePage",
-        params: { pageId: noteIDResult.value, title: title },
+        params: { pageId: noteIDResult.value },
       });
 
       showSnackbar(

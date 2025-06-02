@@ -14,12 +14,14 @@ type CollectionListProps = {
   collectionLists: string[];
   onSelect?: (selected: string) => void;
   collectionId?: string;
+  isArchived?: boolean;
 };
 
 const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onSelect,
   collectionId,
+  isArchived = false,
 }) => {
   const [activeList, setActiveList] = useState<string | null>(null);
   const themeMode = useActiveColorScheme() ?? "light";
@@ -38,7 +40,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
     onSelect?.(collectionList);
   };
 
-  const shouldShowEditIcon = collectionLists.length <= 9;
+  const shouldShowEditIcon = collectionLists.length <= 9 && !isArchived;
 
   return (
     <View style={{ marginLeft: 20, marginRight: 20 }}>

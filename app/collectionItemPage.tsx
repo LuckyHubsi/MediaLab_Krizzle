@@ -24,11 +24,15 @@ import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export default function CollectionItemScreen() {
-  const { itemId, collectionItemText, routing } = useLocalSearchParams<{
-    itemId: string;
-    collectionItemText?: string;
-    routing?: string;
-  }>();
+  const { itemId, collectionItemText, routing, archived } =
+    useLocalSearchParams<{
+      itemId: string;
+      collectionItemText?: string;
+      routing?: string;
+      archived?: string;
+    }>();
+
+  const isArchived = archived === "true";
   const { collectionService } = useServices();
 
   const [item, setItem] = useState<ItemDTO>();
@@ -102,9 +106,9 @@ export default function CollectionItemScreen() {
             backBehavior="goCollection" // Go back to home when back button is pressed
             iconName={undefined} // No icon for the header
             onIconPress={() => {}} // No action when pressed
-            iconName2={routing ? undefined : "more-horiz"} // icon for the pop up menu
+            iconName2={!isArchived ? "more-horiz" : undefined}
             onIconMenuPress={() => {
-              setShowModal(true);
+              if (!isArchived) setShowModal(true);
             }} // action when icon menu is pressed
             param={item?.pageID.toString()}
             borderRadiusTop={33}
@@ -154,6 +158,7 @@ export default function CollectionItemScreen() {
           },
         ]}
       />
+
       <DeleteModal
         visible={showDeleteModal}
         title={itemName}
