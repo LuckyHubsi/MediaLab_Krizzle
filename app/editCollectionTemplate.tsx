@@ -453,6 +453,9 @@ export default function EditCollectionTemplateScreen() {
                 (trimmedOptions.length === 0 ||
                   trimmedOptions.some((o) => o === ""));
 
+              const noSelectables =
+                card.type === "multi-select" && trimmedOptions.length === 0;
+
               const hasDuplicates =
                 card.type === "multi-select" &&
                 new Set(lowerTrimmedOptions).size !==
@@ -491,7 +494,8 @@ export default function EditCollectionTemplateScreen() {
                     hasClickedNext && !card.attributeLabel?.trim()
                   }
                   hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
-                  duplicateOptionsError={hasClickedNext && hasDuplicates} // ✅ ADD THIS
+                  noSelectablesError={hasClickedNext && noSelectables}
+                  hasClickedNext={hasClickedNext}
                 />
               );
             })}

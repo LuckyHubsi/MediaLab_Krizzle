@@ -1,9 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
-import RNPickerSelect from "react-native-picker-select";
-
+import React, { FC } from "react";
 import {
   TemplateSelectCard,
   CardTitleRow,
@@ -19,7 +17,6 @@ import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { Platform } from "react-native";
 import CustomPicker from "@/components/ui/CustomPicker/CustomPicker";
 
 interface ItemTemplateCardProps {
@@ -40,8 +37,9 @@ interface ItemTemplateCardProps {
   hasNoMultiSelectableError?: boolean;
   previewCount?: number;
   isExisting?: boolean;
-  duplicateOptionsError?: boolean;
   fieldCount?: number;
+  noSelectablesError?: boolean;
+  hasClickedNext?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -62,8 +60,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   hasNoMultiSelectableError,
   previewCount,
   isExisting = false,
-  duplicateOptionsError = false,
   fieldCount,
+  noSelectablesError = false,
+  hasClickedNext = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -77,7 +76,31 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
     "link",
   ];
   const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
+  let errorMessage = undefined;
 
+  if (hasClickedNext && itemType === "multi-select") {
+    const trimmedOptions = (options ?? []).map((o) => o.trim());
+    const lowerTrimmed = trimmedOptions
+      .filter((o) => o !== "")
+      .map((o) => o.toLowerCase());
+    const hasTitle = !!title?.trim();
+    const hasOptions = trimmedOptions.length > 0;
+    const hasEmpty = trimmedOptions.some((o) => o === "");
+    const hasDuplicates = new Set(lowerTrimmed).size !== lowerTrimmed.length;
+
+    if (!hasOptions) {
+      errorMessage = "Please add at least one selectable.";
+    } else if (hasTitle && !hasOptions) {
+      errorMessage = "Please add at least one selectable.";
+    } else if (hasEmpty && hasDuplicates) {
+      errorMessage =
+        "Please fill out all selectable fields and ensure options are unique.";
+    } else if (hasEmpty) {
+      errorMessage = "Please fill out all selectable fields.";
+    } else if (hasDuplicates) {
+      errorMessage = "Options must be unique.";
+    }
+  }
   return (
     <TemplateSelectCard colorScheme={colorScheme}>
       <CardTitleRow>
@@ -193,13 +216,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               title=""
               options={options}
               onOptionsChange={onOptionsChange}
-              hasNoInputError={hasNoMultiSelectableError}
+              errorMessage={errorMessage}
             />
-            {duplicateOptionsError && (
-              <ThemedText fontSize="s" fontWeight="regular" colorVariant="red">
-                Options must be unique.
-              </ThemedText>
-            )}
           </>
         )}
 

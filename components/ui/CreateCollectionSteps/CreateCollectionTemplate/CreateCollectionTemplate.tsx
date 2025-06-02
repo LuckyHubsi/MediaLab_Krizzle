@@ -1,8 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import {
-  Alert,
   ScrollView,
-  TouchableOpacity,
   View,
   KeyboardAvoidingView,
   Keyboard,
@@ -324,7 +322,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             Your Additional Fields:
           </ThemedText>
 
-          {otherCards.map((card) => {
+          {otherCards.map((card, index) => {
             const trimmedOptions = (card.options ?? []).map((o) => o.trim());
             const lowerTrimmedOptions = trimmedOptions
               .map((o) => o.toLowerCase())
@@ -338,6 +336,9 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             const hasDuplicates =
               card.itemType === "multi-select" &&
               new Set(lowerTrimmedOptions).size !== lowerTrimmedOptions.length;
+
+            const noSelectables =
+              card.itemType === "multi-select" && trimmedOptions.length === 0;
 
             return (
               <ItemTemplateCard
@@ -363,7 +364,8 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                   hasClickedNext && (!card.title || card.title.trim() === "")
                 }
                 hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
-                duplicateOptionsError={hasClickedNext && hasDuplicates}
+                noSelectablesError={hasClickedNext && noSelectables}
+                hasClickedNext={hasClickedNext} // ← 🔥 THIS IS THE CRUCIAL PART
                 previewCount={previewCount}
               />
             );
