@@ -454,6 +454,15 @@ export default function FolderScreen() {
               setShowSortModal(false);
             },
           },
+          {
+            label: "Created ascending",
+            icon: "sort",
+            disabled: sortingMode === FolderState.GeneralCreated,
+            onPress: () => {
+              setSortingMode(FolderState.GeneralCreated);
+              setShowSortModal(false);
+            },
+          },
         ]}
       />
 
