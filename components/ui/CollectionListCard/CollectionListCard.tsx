@@ -11,6 +11,7 @@ import { ThemedView } from "../ThemedView/ThemedView";
 import { router } from "expo-router";
 import CollectionWidget from "../CollectionWidget/CollectionWidget";
 import { ThemedText } from "@/components/ThemedText";
+import { ar } from "date-fns/locale";
 
 export type CollectionListCardPorps = ViewProps & {
   collectionLists: string[];
@@ -28,6 +29,7 @@ export type CollectionListCardPorps = ViewProps & {
   searchQuery?: string;
   routing?: string;
   collectionId?: string;
+  isArchived?: boolean;
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
@@ -48,6 +50,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   searchQuery,
   routing,
   collectionId,
+  isArchived = false,
   ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
@@ -64,6 +67,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
           }
         }}
         collectionId={collectionId}
+        isArchived={isArchived}
       />
 
       <BackgroundCard
@@ -101,7 +105,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                       });
                     }}
                     onLongPress={() => {
-                      if (!routing) {
+                      if (!isArchived) {
                         if (setSelectedItem) {
                           setSelectedItem(item);
                         }

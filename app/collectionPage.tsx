@@ -219,6 +219,7 @@ export default function CollectionScreen() {
           searchQuery={searchQuery}
           routing={routing}
           collectionId={collection?.collectionID?.toString()}
+          isArchived={collection?.archived}
         />
       </SafeAreaView>
 
