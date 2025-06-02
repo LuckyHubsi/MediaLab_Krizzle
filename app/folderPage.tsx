@@ -131,6 +131,25 @@ export default function FolderScreen() {
     }
 
     try {
+      const allFoldersResult = await folderService.getAllFolders();
+
+      if (allFoldersResult.success) {
+        const duplicate = allFoldersResult.value.find(
+          (f) =>
+            f.folderID !== folder.folderID &&
+            f.folderName.trim().toLowerCase() === trimmedName.toLowerCase(),
+        );
+
+        if (duplicate) {
+          showSnackbar(
+            "A folder with this name already exists.",
+            "top",
+            "error",
+          );
+          return;
+        }
+      }
+
       const updateResult = await folderService.updateFolder({
         folderID: folder.folderID,
         folderName: trimmedName,
@@ -140,16 +159,13 @@ export default function FolderScreen() {
       if (updateResult.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
-
-        // remove all prior errors from the folder update source if service call succeeded
+        setFolderEditMode(false);
+        setFolderNameInput("");
         setErrors((prev) =>
           prev.filter((error) => error.source !== "folder:update"),
         );
       } else {
         showSnackbar("Update failed", "top", "error");
-
-        // set all errors to the previous errors plus add the new error
-        // define the id and the source and set its read status to false
         setErrors((prev) => [
           ...prev,
           {
