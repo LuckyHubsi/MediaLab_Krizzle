@@ -292,6 +292,7 @@ export default function FoldersScreen() {
       <DeleteModal
         visible={showDeleteModal}
         title={selectedFolder?.title}
+        extraInformation="Deleting this folder will remove all items inside it as well."
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           if (selectedFolder) {
