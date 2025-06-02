@@ -196,12 +196,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               hasNoInputError={hasNoMultiSelectableError}
             />
             {duplicateOptionsError && (
-              <ThemedText
-                fontSize="s"
-                fontWeight="regular"
-                colorVariant="red"
-                style={{ marginTop: 4, marginLeft: 4 }}
-              >
+              <ThemedText fontSize="s" fontWeight="regular" colorVariant="red">
                 Options must be unique.
               </ThemedText>
             )}

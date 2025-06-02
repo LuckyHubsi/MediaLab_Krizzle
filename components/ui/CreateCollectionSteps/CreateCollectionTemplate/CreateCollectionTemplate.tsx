@@ -318,7 +318,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           )}
 
           <ThemedText
-            colorVariant="grey"
+            colorVariant="greyScale"
             style={{ marginLeft: 10, marginTop: 10 }}
           >
             Your Additional Fields:
