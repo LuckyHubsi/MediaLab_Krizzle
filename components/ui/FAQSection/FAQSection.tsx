@@ -32,8 +32,8 @@ const FAQSection = () => {
           <CollapsibleCard
             faqQuestion="What is a "
             faqTitle="Collection Item Template"
-            faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating and a multi-select. With a total of up to ten of these attributes you can create a form fully tailored to your own needs."
-            faqExampleHeading="Example of a Multi-Select in a Games Collection"
+            faqContent="When creating a Collection you will be asked to create an Item Template for your Collection. This is a completely customizable template that will include all the fields you can fill out when adding a new Item inside your Collection. In there you can choose between the types text, date, rating, multi-select, link or an image. With a total of up to ten of these fields you can create a form fully tailored to your own needs."
+            faqExampleHeading="Example of a Text Field"
             faqExampleImage={require("@/assets/images/faq/faq_item_template.png")}
             imageHeight={210}
           />
