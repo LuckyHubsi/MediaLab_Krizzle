@@ -21,6 +21,7 @@ interface BottomButtonsProps {
   variant?: "discard" | "back";
   hasProgressIndicator?: boolean;
   progressStep?: number;
+  enableAnimation?: boolean;
 }
 
 const BottomButtons: FC<BottomButtonsProps> = ({
@@ -32,6 +33,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   variant,
   hasProgressIndicator = false,
   progressStep,
+  enableAnimation = false,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   const window = useWindowDimensions();
@@ -42,6 +44,12 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   const dualButtonsOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    if (!enableAnimation) {
+      singleButtonOpacity.setValue(progressStep === 1 ? 1 : 0);
+      dualButtonsOpacity.setValue(progressStep === 1 ? 0 : 1);
+      return;
+    }
+
     if (progressStep === 1) {
       Animated.parallel([
         Animated.timing(singleButtonOpacity, {
@@ -69,7 +77,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
         }),
       ]).start();
     }
-  }, [progressStep]);
+  }, [progressStep, enableAnimation]);
 
   return (
     <LinearGradient
