@@ -309,7 +309,11 @@ export default function HomeScreen() {
                       <ThemedText fontSize="regular" fontWeight="regular">
                         Pinned
                       </ThemedText>
-                      <ThemedText fontSize="regular" fontWeight="regular">
+                      <ThemedText
+                        fontSize="s"
+                        fontWeight="regular"
+                        colorVariant="greyScale"
+                      >
                         {pinnedWidgets.length} out of 4
                       </ThemedText>
                     </View>
@@ -361,13 +365,19 @@ export default function HomeScreen() {
                           gap: 6,
                         }}
                       >
-                        <ThemedText fontSize="s" fontWeight="regular">
+                        <ThemedText
+                          fontSize="s"
+                          fontWeight="regular"
+                          colorVariant="greyScale"
+                        >
                           Sort by
                         </ThemedText>
                         <MaterialIcons
                           name="filter-list"
                           size={20}
-                          color={Colors[colorScheme || "light"].text}
+                          color={
+                            Colors[colorScheme || "light"].searchBarPlaceholder
+                          }
                         />
                       </View>
                     </Pressable>
