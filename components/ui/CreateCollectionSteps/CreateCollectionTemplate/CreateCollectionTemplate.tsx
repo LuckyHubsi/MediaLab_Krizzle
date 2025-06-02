@@ -132,12 +132,36 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   };
 
   const handleTypeChange = (id: number, newType: string) => {
-    setData((prev) => ({
-      ...prev,
-      templates: prev.templates.map((card) =>
-        card.id === id ? { ...card, itemType: newType } : card,
-      ),
-    }));
+    setData((prev) => {
+      const updatedTemplates = prev.templates.map((card) => {
+        if (card.id !== id) return card;
+
+        const isChangingType = card.itemType !== newType;
+        const isPreview = card.isPreview;
+
+        if (isChangingType && isPreview) {
+          const isTypeAlreadyPreviewed = prev.templates.some(
+            (c) => c.id !== id && c.isPreview && c.itemType === newType,
+          );
+
+          if (isTypeAlreadyPreviewed) {
+            showSnackbar(
+              "Preview was disabled because another field already uses that type.",
+              "bottom",
+              "error",
+            );
+            return { ...card, itemType: newType, isPreview: false };
+          }
+        }
+
+        return { ...card, itemType: newType };
+      });
+
+      return {
+        ...prev,
+        templates: updatedTemplates,
+      };
+    });
   };
 
   const handleTitleChange = (id: number, text: string) => {
@@ -238,7 +262,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             <CardText>
               <CardHeader>
                 <ThemedText fontSize="l" fontWeight="bold">
-                  Adding Templates
+                  Add Template
                 </ThemedText>
               </CardHeader>
               <ThemedText
@@ -259,7 +283,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               <ThemedText
                 colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
               >
-                /10 Item Types
+                /10 Fields
               </ThemedText>
             </ItemCount>
             <ItemCount colorScheme={colorScheme}>
@@ -297,7 +321,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             colorVariant="grey"
             style={{ marginLeft: 10, marginTop: 10 }}
           >
-            Your Templates:
+            Your Additional Fields:
           </ThemedText>
 
           {otherCards.map((card) => {

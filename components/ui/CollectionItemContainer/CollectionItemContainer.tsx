@@ -174,7 +174,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
               color: colorScheme === "light" ? "#176BBA" : "#4599E8",
               textDecorationLine: "underline",
               marginTop: -8,
-              height: 48,
+              minHeight: 48,
               textAlignVertical: "center",
             }}
           >

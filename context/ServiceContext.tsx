@@ -51,12 +51,16 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   } = useRepositories();
 
   const tagService = new TagService(tagRepository);
-  const generalPageService = new GeneralPageService(generalPageRepository);
+  const generalPageService = new GeneralPageService(
+    generalPageRepository,
+    baseRepository,
+  );
   const noteService = new NoteService(noteRepository);
   const itemTemplateService = new ItemTemplateService(
     itemTemplateRepository,
     attributeRepository,
     itemRepository,
+    generalPageRepository,
   );
   const collectionService = new CollectionService(
     baseRepository,

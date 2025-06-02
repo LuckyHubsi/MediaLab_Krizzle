@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   Alert,
   Keyboard,
@@ -36,7 +36,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { PageType } from "@/shared/enum/PageType";
 import { useServices } from "@/context/ServiceContext";
-import { ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 interface CreateCollectionProps {
   data: {
@@ -73,6 +74,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   onNext,
 }) => {
   const { tagService } = useServices();
+  const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
   const colorScheme = useActiveColorScheme();
   const title = data.title;
@@ -100,6 +102,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     label: colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key,
   }));
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   const getWidgetColorKey = (
     value: string,
   ): keyof typeof Colors.widget | undefined =>
@@ -115,11 +120,27 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     useCallback(() => {
       const fetchTags = async () => {
         try {
-          const result = await tagService.getAllTags();
-          if (result.success) {
-            if (result.value) setTags(result.value);
+          const tagResult = await tagService.getAllTags();
+          if (tagResult.success) {
+            if (tagResult.value) setTags(tagResult.value);
+
+            // remove all prior errors from the tag retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "tags:retrieval"),
+            );
           } else {
-            // TODO: show the error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...tagResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "tags:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Failed to load tags:", error);
@@ -144,6 +165,22 @@ const CreateCollection: FC<CreateCollectionProps> = ({
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
+      try {
+        const tag = JSON.parse(lastCreatedTagParam);
+        if (tag && tag.tagID) {
+          setData((prev: any) => ({
+            ...prev,
+            selectedTag: tag as TagDTO,
+          }));
+        }
+      } catch (err) {
+        console.warn("Invalid tag param:", err);
+      }
+    }
+  }, [lastCreatedTagParam]);
 
   const { showSnackbar } = useSnackbar();
 
@@ -222,7 +259,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 setData((prev: any) => ({
                   ...prev,
                   selectedTag:
-                    prev.selectedTag?.tagID === tag.tagID ? null : tag,
+                    tag && prev.selectedTag?.tagID === tag.tagID ? null : tag,
                 }));
               }}
               onViewAllPress={() => router.navigate("/tagManagement")}
@@ -333,6 +370,20 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           description={`Collections let you group related Lists into a single custom page — perfect\u00A0for organizing similar Items together in one\u00A0place.\n\nFor example, you could create a Collection for your Books, add a special icon to make it stand out, and even use tags to keep things\u00A0organized.\nSimple! 📚`}
         />
       )}
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
+      />
     </>
   );
 };

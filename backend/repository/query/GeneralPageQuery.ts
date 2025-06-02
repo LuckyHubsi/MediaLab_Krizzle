@@ -95,7 +95,7 @@ const updatePinnedByPageIDQuery: string = `
 `;
 
 const updateArchivedByPageIDQuery: string = `
-    UPDATE general_page_data SET archived = ?, pinned = ? WHERE pageID = ?
+    UPDATE general_page_data SET archived = ?, pinned = 0, parent_folderID = NULL WHERE pageID = ?
 `;
 
 export {

@@ -75,8 +75,8 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     return url;
   };
   const handlePressLink = async () => {
-    if (!link) return;
-    const validUrl = getValidUrl(link);
+    if (!link.value) return;
+    const validUrl = getValidUrl(link.value);
     const supported = await Linking.canOpenURL(validUrl);
     if (supported) {
       await Linking.openURL(validUrl);

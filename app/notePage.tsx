@@ -19,6 +19,8 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -42,22 +44,41 @@ export default function NotesScreen() {
     AppState.currentState,
   );
 
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   useEffect(() => {
     if (pageId) {
       const numericID = Number(pageId);
       if (!isNaN(numericID)) {
         (async () => {
-          const result = await noteService.getNoteDataByPageID(numericID);
+          const noteResult = await noteService.getNoteDataByPageID(numericID);
           let noteContent = noteData?.note_content;
           if (noteContent == null) {
             noteContent = "";
           }
-          if (result.success) {
+          if (noteResult.success) {
             setNoteContent(noteContent);
-            setNoteData(result.value);
+            setNoteData(noteResult.value);
             setShouldReload(false);
+
+            // remove all prior errors from the note retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "note:retrieval"),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...noteResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "note:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         })();
       } else {
@@ -68,9 +89,28 @@ export default function NotesScreen() {
 
   const saveNote = async (html: string) => {
     if (!pageId) return;
-    const result = await noteService.updateNoteContent(Number(pageId), html);
-    if (!result.success) {
-      // TODO: show error modal
+    const updateResult = await noteService.updateNoteContent(
+      Number(pageId),
+      html,
+    );
+    if (updateResult.success) {
+      // remove all prior errors from the note update source if service call succeeded
+      setErrors((prev) =>
+        prev.filter((error) => error.source !== "note:update"),
+      );
+    } else {
+      // set all errors to the previous errors plus add the new error
+      // define the id and the source and set its read status to false
+      setErrors((prev) => [
+        ...prev,
+        {
+          ...updateResult.error,
+          hasBeenRead: false,
+          id: `${Date.now()}-${Math.random()}`,
+          source: "note:update",
+        },
+      ]);
+      setShowError(true);
     }
   };
 
@@ -148,14 +188,30 @@ export default function NotesScreen() {
                         noteData.pin_count < 4) ||
                       (noteData && noteData?.pinned)
                     ) {
-                      const result = await generalPageService.togglePagePin(
+                      const pinResult = await generalPageService.togglePagePin(
                         Number(pageId),
                         noteData.pinned,
                       );
-                      if (result.success) {
+                      if (pinResult.success) {
                         setShouldReload(true);
+
+                        // remove all prior errors from the pinning source if service call succeeded
+                        setErrors((prev) =>
+                          prev.filter((error) => error.source !== "pinning"),
+                        );
                       } else {
-                        // TODO: show error modal
+                        // set all errors to the previous errors plus add the new error
+                        // define the id and the source and set its read status to false
+                        setErrors((prev) => [
+                          ...prev,
+                          {
+                            ...pinResult.error,
+                            hasBeenRead: false,
+                            id: `${Date.now()}-${Math.random()}`,
+                            source: "pinning",
+                          },
+                        ]);
+                        setShowError(true);
                       }
                     }
                   },
@@ -175,11 +231,12 @@ export default function NotesScreen() {
               icon: noteData?.archived ? "restore" : "archive",
               onPress: async () => {
                 if (noteData) {
-                  const result = await generalPageService.togglePageArchive(
-                    Number(pageId),
-                    noteData.archived,
-                  );
-                  if (result.success) {
+                  const archiveResult =
+                    await generalPageService.togglePageArchive(
+                      Number(pageId),
+                      noteData.archived,
+                    );
+                  if (archiveResult.success) {
                     showSnackbar(
                       noteData.archived
                         ? "Successfully restored Note."
@@ -188,8 +245,24 @@ export default function NotesScreen() {
                       "success",
                     );
                     setShouldReload(true);
+
+                    // remove all prior errors from the archiving source if service call succeeded
+                    setErrors((prev) =>
+                      prev.filter((error) => error.source !== "archiving"),
+                    );
                   } else {
-                    // TODO: show error modal
+                    // set all errors to the previous errors plus add the new error
+                    // define the id and the source and set its read status to false
+                    setErrors((prev) => [
+                      ...prev,
+                      {
+                        ...archiveResult.error,
+                        hasBeenRead: false,
+                        id: `${Date.now()}-${Math.random()}`,
+                        source: "archiving",
+                      },
+                    ]);
+                    setShowError(true);
                     showSnackbar(
                       noteData.archived
                         ? "Failed to restore Note."
@@ -229,14 +302,30 @@ export default function NotesScreen() {
           if (pageId) {
             try {
               const widgetIdAsNumber = Number(pageId);
-              const result =
+              const deleteResult =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
-              if (result.success) {
+              if (deleteResult.success) {
                 setShowDeleteModal(false);
 
+                // remove all prior errors from the widget delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
                 router.replace("/");
               } else {
-                // TODO: show error modal
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "widget:delete",
+                  },
+                ]);
+                setShowError(true);
+                setShowDeleteModal(false);
               }
             } catch (error) {
               console.error("Error deleting note:", error);
@@ -263,6 +352,20 @@ export default function NotesScreen() {
             showSnackbar("Failed to move note to folder.", "bottom", "error");
           }
           setShowFolderSelectionModal(false);
+        }}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
         }}
       />
     </>

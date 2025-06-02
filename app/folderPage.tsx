@@ -24,6 +24,8 @@ import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -71,7 +73,6 @@ export default function FolderScreen() {
   const [pinnedWidgets, setPinnedWidgets] = useState<Widget[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWidget, setSelectedWidget] = useState<Widget | null>(null);
-  const [tags, setTags] = useState<TagDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showFolderDeleteModal, setShowFolderDeleteModal] = useState(false);
@@ -83,6 +84,9 @@ export default function FolderScreen() {
     FolderState.GeneralModfied,
   );
   const [folder, setFolder] = useState<FolderDTO | null>(null);
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
 
   const getColorKeyFromValue = (
     value: string,
@@ -127,38 +131,35 @@ export default function FolderScreen() {
     }
 
     try {
-      const allFoldersResult = await folderService.getAllFolders();
-
-      if (allFoldersResult.success) {
-        const duplicate = allFoldersResult.value.find(
-          (f) =>
-            f.folderID !== folder.folderID &&
-            f.folderName.trim().toLowerCase() === trimmedName.toLowerCase(),
-        );
-
-        if (duplicate) {
-          showSnackbar(
-            "A folder with this name already exists.",
-            "top",
-            "error",
-          );
-          return;
-        }
-      }
-
-      const success = await folderService.updateFolder({
+      const updateResult = await folderService.updateFolder({
         folderID: folder.folderID,
         folderName: trimmedName,
         itemCount: folder.itemCount ?? 0,
       });
 
-      if (success) {
+      if (updateResult.success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
-        setFolderEditMode(false);
-        setFolderNameInput("");
+
+        // remove all prior errors from the folder update source if service call succeeded
+        setErrors((prev) =>
+          prev.filter((error) => error.source !== "folder:update"),
+        );
       } else {
         showSnackbar("Update failed", "top", "error");
+
+        // set all errors to the previous errors plus add the new error
+        // define the id and the source and set its read status to false
+        setErrors((prev) => [
+          ...prev,
+          {
+            ...updateResult.error,
+            hasBeenRead: false,
+            id: `${Date.now()}-${Math.random()}`,
+            source: "folder:update",
+          },
+        ]);
+        setShowError(true);
       }
     } catch (error) {
       console.error("Error updating folder:", error);
@@ -172,36 +173,59 @@ export default function FolderScreen() {
         if (!folderId) return;
 
         try {
-          const result = await folderService.getFolder(Number(folderId));
-          if (result.success) {
-            setFolder(result.value);
+          const folderResult = await folderService.getFolder(Number(folderId));
+          if (folderResult.success) {
+            setFolder(folderResult.value);
+
+            // remove all prior errors from the folder retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "folder:retrieval"),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...folderResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "folder:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
-          const resultFolder =
+          const widgetResult =
             await generalPageService.getAllFolderGeneralPageData(
               sortingMode,
               Number(folderId),
             );
-          if (resultFolder.success) {
-            const enrichedWidgets = mapToEnrichedWidgets(resultFolder.value);
+          if (widgetResult.success) {
+            const enrichedWidgets = mapToEnrichedWidgets(widgetResult.value);
             setWidgets(enrichedWidgets);
+
+            // remove all prior errors from the folder widget retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter(
+                (error) => error.source !== "folder:widgets:retrieval",
+              ),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...widgetResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "folder:widgets:retrieval",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Error loading folder:", error);
-        }
-
-        try {
-          const result = await tagService.getAllTags();
-          if (result.success) {
-            setTags(result.value);
-          } else {
-            // TODO: show error modal
-          }
-        } catch (error) {
-          console.error("Failed to load tags:", error);
         }
 
         setShouldReload(false);
@@ -448,15 +472,32 @@ export default function FolderScreen() {
             onPress: async () => {
               if (selectedWidget) {
                 try {
-                  const success = await generalPageService.updateFolderID(
+                  const updateResult = await generalPageService.updateFolderID(
                     Number(selectedWidget.id),
                     null,
                   );
 
-                  if (success) {
+                  if (updateResult.success) {
                     showSnackbar("Moved back to home", "bottom", "success");
                     setShouldReload(true);
+
+                    // remove all prior errors from the widget move source if service call succeeded
+                    setErrors((prev) =>
+                      prev.filter((error) => error.source !== "widget:move"),
+                    );
                   } else {
+                    // set all errors to the previous errors plus add the new error
+                    // define the id and the source and set its read status to false
+                    setErrors((prev) => [
+                      ...prev,
+                      {
+                        ...updateResult.error,
+                        hasBeenRead: false,
+                        id: `${Date.now()}-${Math.random()}`,
+                        source: "widget:move",
+                      },
+                    ]);
+                    setShowError(true);
                     showSnackbar("Failed to move widget", "bottom", "error");
                   }
                 } catch (error) {
@@ -478,24 +519,36 @@ export default function FolderScreen() {
             icon: "archive",
             onPress: async () => {
               if (selectedWidget) {
-                const updateFolderSuccess =
-                  await generalPageService.updateFolderID(
-                    Number(selectedWidget.id),
-                    null,
-                  );
-                const archiveSuccess =
+                const archiveResult =
                   await generalPageService.togglePageArchive(
                     Number(selectedWidget.id),
                     selectedWidget.archived,
                   );
 
-                if (updateFolderSuccess && archiveSuccess) {
+                if (archiveResult.success) {
                   showSnackbar(
                     `Successfully moved ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
                     "success",
                   );
+
+                  // remove all prior errors from the archiving source if service call succeeded
+                  setErrors((prev) =>
+                    prev.filter((error) => error.source !== "archiving"),
+                  );
                 } else {
+                  // set all errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
+                  setErrors((prev) => [
+                    ...prev,
+                    {
+                      ...archiveResult.error,
+                      hasBeenRead: false,
+                      id: `${Date.now()}-${Math.random()}`,
+                      source: "archiving",
+                    },
+                  ]);
+                  setShowError(true);
                   showSnackbar(
                     `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} to Archive in Menu.`,
                     "bottom",
@@ -538,12 +591,31 @@ export default function FolderScreen() {
         onConfirm={async () => {
           if (folder) {
             try {
-              const success = await folderService.deleteFolder(
+              const deleteResult = await folderService.deleteFolder(
                 Number(folder.folderID),
               );
-              if (success) {
+              if (deleteResult.success) {
                 showSnackbar("Folder deleted", "bottom", "success");
                 router.replace("/folders");
+
+                // remove all prior errors from the folder delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "folder:delete"),
+                );
+              } else {
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "folder:delete",
+                  },
+                ]);
+                setShowError(true);
+                showSnackbar("Error deleting folder", "top", "error");
               }
             } catch (error) {
               console.error("Error deleting folder:", error);
@@ -573,17 +645,35 @@ export default function FolderScreen() {
         onConfirm={async () => {
           if (selectedWidget) {
             try {
-              const result = await generalPageService.deleteGeneralPage(
+              const deleteResult = await generalPageService.deleteGeneralPage(
                 Number(selectedWidget.id),
               );
 
-              if (result.success) {
+              if (deleteResult.success) {
                 setShouldReload(true);
+
+                showSnackbar("Widget deleted", "bottom", "success");
+
+                // remove all prior errors from the widget delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
               } else {
-                // TODO: show error modal
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "widget:delete",
+                  },
+                ]);
+                setShowError(true);
+                showSnackbar("Error deleting widget", "top", "error");
               }
               setSelectedWidget(null);
-              showSnackbar("Widget deleted", "bottom", "success");
             } catch (error) {
               console.error("Error deleting widget:", error);
               showSnackbar("Error deleting widget", "top", "error");
@@ -601,6 +691,20 @@ export default function FolderScreen() {
         visible={showFolderSelectionModal}
         onClose={() => setShowFolderSelectionModal(false)}
         onMoved={() => setShouldReload(true)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );

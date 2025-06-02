@@ -71,9 +71,9 @@ export const PageErrorMessages = {
   updatePage:
     "There was a problem updating your widget. Please try again. If the error persists, consider trying again after changing your input or reopening the application.",
   updatePagePin:
-    "There was a problem chnaging the pin status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem changing the pin status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
   updatePageArchive:
-    "There was a problem chnaging the archive status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem changing the archive status of your widget. Please try again. If the error persists, consider trying again after reopening the application.",
   updatePageParent:
     "There was a problem moving your widget to or from a folder. Please try again. If the error persists, consider trying again after reopening the application.",
   deletePage:
@@ -114,9 +114,9 @@ export const TemplateErrorMessages = {
   editTemplate:
     "There was a problem editing your item template. Consider trying again with different input.",
   validateAttributeToDelete:
-    "The system does not seem to recognize the property you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
+    "The system does not seem to recognize the field you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
   deleteAttribute:
-    "There was a problem deleting your property. Please try again. If the error persists, consider trying again after reopening the application.",
+    "There was a problem deleting your field. Please try again. If the error persists, consider trying again after reopening the application.",
   unknown:
     "An unexpected error occurred while handling item templates. Some related features may not work as expected.",
 };
@@ -142,11 +142,11 @@ export const CategoryErrorMessages = {
   validateNewCollectionCat:
     "There was a problem validating your input for one of your new lists. Consider renaming them if the error persists.",
   insertNewCollectionCat:
-    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names.",
+    "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names. Creation or other updates may have succeeded.",
   validateCategoryToUpdate:
-    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application.",
+    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application. Creation or other updates may have succeeded.",
   updateCategory:
-    "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application.",
+    "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application. Creation or other updates may have succeeded.",
   validateCategoryToDelete:
     "The system does not seem to recognize the collection list you want to delete. Please try again. If the error persists, consider trying again after reopening the application.",
   deleteCategory:
@@ -168,7 +168,7 @@ export const ItemErrorMessages = {
   deleteItem:
     "There was a problem deleting your collection item. Please try again. If the error persists, consider trying again after reopening the application.",
   validateNewItem:
-    "There was a problem validating your input. Consider making changes in your input for the collectionitem.",
+    "There was a problem validating your input. Consider making changes in your input for the collection item.",
   insertNewItem:
     "There was a problem adding your collection item. Please try again. If the error persists, consider changing your input in the form.",
   validateItemToUpdate:

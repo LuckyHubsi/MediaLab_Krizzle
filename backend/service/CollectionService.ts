@@ -231,15 +231,25 @@ export class CollectionService {
    * Insert new category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be saved.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async insertCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const brandedCollectionID = collectionID.parse(categoryDTO.collectionID);
       const category = CollectionCategoryMapper.toNewEntity(categoryDTO);
-      await this.categoryRepo.insertCategory(category, brandedCollectionID);
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.insertCategory(
+          category,
+          brandedCollectionID,
+          txn,
+        );
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -248,8 +258,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateNewCollectionCat,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Insert Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Insert Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Creation Failed",
@@ -268,20 +280,27 @@ export class CollectionService {
    * Update an existing category.
    *
    * @param categoryDTO - A `CollectionCategoryDTO` to be updated.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async updateCollectionCategory(
     categoryDTO: CollectionCategoryDTO,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const updatedCategory = CollectionCategoryMapper.toNewEntity(categoryDTO);
       const brandedCategoryID = collectionCategoryID.parse(
         categoryDTO.collectionCategoryID,
       );
-      await this.categoryRepo.updateCategory(
-        updatedCategory,
-        brandedCategoryID,
-      );
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.updateCategory(
+          updatedCategory,
+          brandedCategoryID,
+          txn,
+        );
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -290,8 +309,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Update Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Update Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Update Failed",
@@ -310,14 +331,20 @@ export class CollectionService {
    * Deleting a category.
    *
    * @param categoryId - A number representing the categoryID.
+   * @param pageId - A `number` representing the pageID of the page to be updated.
    * @returns A Promise resolving to a `Result` containing either `true` or `ServiceErrorType`
    */
   async deleteCollectionCategoryByID(
     categoryId: number,
+    pageId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
+      const brandedPageID = pageID.parse(pageId);
       const brandedCategoryID = collectionCategoryID.parse(categoryId);
-      await this.categoryRepo.deleteCategory(brandedCategoryID);
+      await this.baseRepo.executeTransaction(async (txn) => {
+        await this.categoryRepo.deleteCategory(brandedCategoryID, txn);
+        await this.generalPageRepo.updateDateModified(brandedPageID, txn);
+      });
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -326,8 +353,10 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Delete Failed"
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Delete Failed") ||
+        (error instanceof RepositoryErrorNew &&
+          error.type === "Transaction Failed")
       ) {
         return failure({
           type: "Delete Failed",

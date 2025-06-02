@@ -60,6 +60,7 @@ export class NoteRepositoryImpl
    *
    * @param note - The note data to be inserted.
    * @param pageId - The pageID of the note.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
    * @throws RepositoryErrorNew if the insert fails.
    */
@@ -80,22 +81,21 @@ export class NoteRepositoryImpl
    *
    * @param pageId - The pageID of the note.
    * @param newContent - The textual note content to be updated.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateContent(
     pageId: PageID,
     newContent: common.String50000,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
-      await this.executeTransaction(async (txn) => {
-        await this.executeQuery(
-          updateNoteContentQuery,
-          [newContent, pageId],
-          txn,
-        );
-        await this.updateDateModified(pageId, txn);
-      });
+      await this.executeQuery(
+        updateNoteContentQuery,
+        [newContent, pageId],
+        txn,
+      );
       return true;
     } catch (error) {
       throw new RepositoryErrorNew("Update Failed");

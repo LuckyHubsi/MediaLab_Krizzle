@@ -398,22 +398,23 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @param currentPinStatus - A boolean representing the current pin status.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
-  async updatePin(pageID: PageID, currentPinStatus: boolean): Promise<boolean> {
+  async updatePin(
+    pageID: PageID,
+    currentPinStatus: boolean,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<boolean> {
     try {
       const newPinStatus = currentPinStatus ? 0 : 1;
 
-      await this.executeTransaction(async (txn) => {
-        await this.executeQuery(
-          updatePinnedByPageIDQuery,
-          [newPinStatus, pageID],
-          txn,
-        );
-
-        await this.updateDateModified(pageID, txn);
-      });
+      await this.executeQuery(
+        updatePinnedByPageIDQuery,
+        [newPinStatus, pageID],
+        txn,
+      );
 
       return true;
     } catch (error) {
@@ -426,12 +427,14 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @param currentArchiveStatus - A boolean representing the current archive status.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateArchive(
     pageID: PageID,
     currentArchiveStatus: boolean,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
       const newArchiveStatus = currentArchiveStatus ? 0 : 1;
@@ -439,7 +442,7 @@ export class GeneralPageRepositoryImpl
       await this.executeTransaction(async (txn) => {
         await this.executeQuery(
           updateArchivedByPageIDQuery,
-          [newArchiveStatus, 0, pageID], // set pin status to false
+          [newArchiveStatus, pageID], // set pin status to false
           txn,
         );
 
@@ -481,12 +484,14 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageId - A branded pageID.
    * @param parentId - A branded folderID to which the page should be moved.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true if successful.
    * @throws RepositoryErrorNew if the update fails.
    */
   async updateParentID(
     pageId: PageID,
     parentId: FolderID | null,
+    txn?: SQLite.SQLiteDatabase,
   ): Promise<boolean> {
     try {
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);

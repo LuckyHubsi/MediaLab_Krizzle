@@ -20,6 +20,9 @@ import { PageType } from "@/shared/enum/PageType";
 import { GeneralPageState } from "@/shared/enum/GeneralPageState";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useServices } from "@/context/ServiceContext";
+import { EnrichedError } from "@/shared/error/ServiceError";
+import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -64,6 +67,11 @@ export default function ArchiveScreen() {
     null,
   );
 
+  const { showSnackbar } = useSnackbar();
+
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -104,17 +112,33 @@ export default function ArchiveScreen() {
     useCallback(() => {
       const fetchWidgets = async () => {
         try {
-          const result = await generalPageService.getAllGeneralPageData(
+          const archiveResult = await generalPageService.getAllGeneralPageData(
             GeneralPageState.Archived,
           );
 
-          if (result.success) {
+          if (archiveResult.success) {
             const enrichedWidgets: ArchivedWidget[] = mapToEnrichedWidgets(
-              result.value,
+              archiveResult.value,
             );
             setWidgets(enrichedWidgets);
+
+            // remove all prior errors from the archived widgets source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "widgets:archived"),
+            );
           } else {
-            // TODO: show error modal
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...archiveResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "widgets:archived",
+              },
+            ]);
+            setShowError(true);
           }
         } catch (error) {
           console.error("Error loading widgets:", error);
@@ -218,14 +242,36 @@ export default function ArchiveScreen() {
             icon: "restore",
             onPress: async () => {
               if (selectedWidget) {
-                const result = await generalPageService.togglePageArchive(
-                  Number(selectedWidget.id),
-                  selectedWidget.archived,
-                );
-                if (result.success) {
+                const archiveResult =
+                  await generalPageService.togglePageArchive(
+                    Number(selectedWidget.id),
+                    selectedWidget.archived,
+                  );
+                if (archiveResult.success) {
                   setShouldReload(true);
+
+                  // remove all prior errors from the archived widgets source if service call succeeded
+                  setErrors((prev) =>
+                    prev.filter((error) => error.source !== "archiving"),
+                  );
                 } else {
-                  // TODO: show error modal
+                  // set all errors to the previous errors plus add the new error
+                  // define the id and the source and set its read status to false
+                  setErrors((prev) => [
+                    ...prev,
+                    {
+                      ...archiveResult.error,
+                      hasBeenRead: false,
+                      id: `${Date.now()}-${Math.random()}`,
+                      source: "archiving",
+                    },
+                  ]);
+                  setShowError(true);
+                  showSnackbar(
+                    `Failed to move ${selectedWidget.page_type === "note" ? "Note" : "Collection"} back to Home.`,
+                    "bottom",
+                    "error",
+                  );
                 }
               }
             },
@@ -255,14 +301,35 @@ export default function ArchiveScreen() {
           if (selectedWidget) {
             try {
               const widgetIdAsNumber = Number(selectedWidget.id);
-              const result =
+              const deleteResult =
                 await generalPageService.deleteGeneralPage(widgetIdAsNumber);
 
-              if (result.success) {
+              if (deleteResult.success) {
                 setShouldReload(true);
+
+                // remove all prior errors from the widget delete source if service call succeeded
+                setErrors((prev) =>
+                  prev.filter((error) => error.source !== "widget:delete"),
+                );
               } else {
-                // TODO: show error modal
+                // set all errors to the previous errors plus add the new error
+                // define the id and the source and set its read status to false
+                setErrors((prev) => [
+                  ...prev,
+                  {
+                    ...deleteResult.error,
+                    hasBeenRead: false,
+                    id: `${Date.now()}-${Math.random()}`,
+                    source: "widget:delete",
+                  },
+                ]);
               }
+              setShowError(true);
+              showSnackbar(
+                `Failed to delete ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                "bottom",
+                "error",
+              );
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {
@@ -271,6 +338,20 @@ export default function ArchiveScreen() {
           }
         }}
         onclose={() => setShowDeleteModal(false)}
+      />
+
+      <ErrorPopup
+        visible={showError && errors.some((e) => !e.hasBeenRead)}
+        errors={errors.filter((e) => !e.hasBeenRead) || []}
+        onClose={(updatedErrors) => {
+          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
+          const updatedIds = updatedErrors.map((e) => e.id);
+          const newCombined = errors.map((e) =>
+            updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
+          );
+          setErrors(newCombined);
+          setShowError(false);
+        }}
       />
     </>
   );

@@ -32,6 +32,11 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
     }
   };
 
+  const handleAllPress = () => {
+    setActiveTag("All");
+    onSelect?.("All");
+  };
+
   const isActive = (tag: TagDTO) =>
     activeTag !== "All" && activeTag?.tagID === tag.tagID;
 
