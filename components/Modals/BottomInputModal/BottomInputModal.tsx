@@ -63,6 +63,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                   onSubmitEditing={onSubmit}
                   textColor={Colors[colorScheme].text}
                   autoFocus
+                  maxLength={30}
                 />
                 <TouchableOpacity
                   onPress={onSubmit}
