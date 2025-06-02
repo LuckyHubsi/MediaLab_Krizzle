@@ -15,6 +15,7 @@ type CollectionListProps = {
   onSelect?: (selected: string) => void;
   collectionId?: string;
   isArchived?: boolean;
+  goToEdit: () => void;
 };
 
 const CollectionList: React.FC<CollectionListProps> = ({
@@ -22,6 +23,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
   onSelect,
   collectionId,
   isArchived = false,
+  goToEdit,
 }) => {
   const [activeList, setActiveList] = useState<string | null>(null);
   const themeMode = useActiveColorScheme() ?? "light";
@@ -86,12 +88,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
 
           {shouldShowEditIcon && (
             <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/editCollectionLists",
-                  params: { collectionId: collectionId },
-                })
-              }
+              onPress={goToEdit}
               style={{ marginLeft: 8, justifyContent: "center" }}
             >
               <MaterialIcons

@@ -30,6 +30,7 @@ export type CollectionListCardPorps = ViewProps & {
   routing?: string;
   collectionId?: string;
   isArchived?: boolean;
+  goToEdit: () => void;
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
@@ -51,6 +52,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   routing,
   collectionId,
   isArchived = false,
+  goToEdit,
   ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
@@ -68,6 +70,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         }}
         collectionId={collectionId}
         isArchived={isArchived}
+        goToEdit={goToEdit}
       />
 
       <BackgroundCard

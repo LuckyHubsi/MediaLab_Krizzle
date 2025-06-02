@@ -220,6 +220,7 @@ export default function CollectionScreen() {
           routing={routing}
           collectionId={collection?.collectionID?.toString()}
           isArchived={collection?.archived}
+          goToEdit={goToEditListsPage}
         />
       </SafeAreaView>
 
