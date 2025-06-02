@@ -44,6 +44,11 @@ export default function TabThreeScreen() {
             href="/resetDatabase"
             iconName="delete-forever"
           />
+          <SettingsLink
+            label="Onboarding"
+            href="/onboardingScreen"
+            iconName="restart-alt"
+          />
         </View>
       </ThemedView>
     </SafeAreaView>

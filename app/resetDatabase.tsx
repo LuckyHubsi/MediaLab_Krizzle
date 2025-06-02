@@ -12,9 +12,11 @@ import {
   View,
   Platform,
   StatusBar,
+  Alert,
 } from "react-native";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ResetDatabaseScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -22,6 +24,11 @@ export default function ResetDatabaseScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const resetOnboarding = async () => {
+    await AsyncStorage.removeItem("hasOnboarded");
+    console.log("✅ hasOnboarded removed");
+    Alert.alert("Onboarding Reset", "Restart the app to see onboarding again.");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -53,6 +60,7 @@ export default function ResetDatabaseScreen() {
         >
           Reset all Data
         </Button>
+        <Button onPress={resetOnboarding}>Reset Onboarding</Button>
       </ThemedView>
 
       <DeleteModal
