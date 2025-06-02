@@ -222,6 +222,7 @@ export class ItemMapper {
             return {
               ...base,
               valueString: attr.value ?? null,
+              altText: attr.alt_text ?? null,
             };
           case "link":
             return {
