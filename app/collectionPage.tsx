@@ -58,6 +58,9 @@ export default function CollectionScreen() {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
+        if (routing === "goArchive") {
+          setShouldReload(true);
+        }
         const numericID = Number(pageId);
         if (!isNaN(numericID)) {
           const collectionResult =
@@ -118,7 +121,7 @@ export default function CollectionScreen() {
         }
       };
       fetchData();
-    }, [pageId, shouldReload]),
+    }, [pageId, shouldReload, routing]),
   );
 
   const goToEditPage = () => {
@@ -496,14 +499,8 @@ export default function CollectionScreen() {
         onclose={() => setShowItemDeleteModal(false)}
       />
 
-      {!routing && (
-        <View
-          style={{
-            position: "absolute",
-            right: 20,
-            bottom: 30,
-          }}
-        >
+      {!collection?.archived && (
+        <View style={{ position: "absolute", right: 20, bottom: 30 }}>
           <FloatingAddButton
             onPress={() => {
               router.push({
