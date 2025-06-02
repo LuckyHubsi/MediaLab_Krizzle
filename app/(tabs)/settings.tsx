@@ -49,6 +49,11 @@ export default function TabThreeScreen() {
             href="/onboardingScreen"
             iconName="restart-alt"
           />
+          <SettingsLink
+            label="Visit Website"
+            href="https://krizzle-website.vercel.app/"
+            iconName="language"
+          />
         </View>
       </ThemedView>
     </SafeAreaView>
