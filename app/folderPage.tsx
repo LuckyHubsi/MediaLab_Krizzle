@@ -127,6 +127,25 @@ export default function FolderScreen() {
     }
 
     try {
+      const allFoldersResult = await folderService.getAllFolders();
+
+      if (allFoldersResult.success) {
+        const duplicate = allFoldersResult.value.find(
+          (f) =>
+            f.folderID !== folder.folderID &&
+            f.folderName.trim().toLowerCase() === trimmedName.toLowerCase(),
+        );
+
+        if (duplicate) {
+          showSnackbar(
+            "A folder with this name already exists.",
+            "top",
+            "error",
+          );
+          return;
+        }
+      }
+
       const success = await folderService.updateFolder({
         folderID: folder.folderID,
         folderName: trimmedName,
@@ -136,13 +155,14 @@ export default function FolderScreen() {
       if (success) {
         showSnackbar("Folder updated", "bottom", "success");
         setShouldReload(true);
+        setFolderEditMode(false);
+        setFolderNameInput("");
+      } else {
+        showSnackbar("Update failed", "top", "error");
       }
     } catch (error) {
       console.error("Error updating folder:", error);
       showSnackbar("Update failed", "top", "error");
-    } finally {
-      setFolderEditMode(false);
-      setFolderNameInput("");
     }
   };
 
