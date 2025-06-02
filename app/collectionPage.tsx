@@ -64,7 +64,7 @@ export default function CollectionScreen() {
             await collectionService.getCollectionByPageId(numericID);
           if (collectionResult.success) {
             setCollection(collectionResult.value);
-            setCollectionTitle(title || collectionResult.value.page_title);
+            setCollectionTitle(collectionResult.value.page_title);
 
             // remove all prior errors from the collection retrieval source if service call succeeded
             setErrors((prev) =>
