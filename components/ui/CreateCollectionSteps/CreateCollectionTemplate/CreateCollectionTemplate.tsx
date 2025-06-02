@@ -367,6 +367,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 noSelectablesError={hasClickedNext && noSelectables}
                 hasClickedNext={hasClickedNext} // ← 🔥 THIS IS THE CRUCIAL PART
                 previewCount={previewCount}
+                fieldCount={index + 2}
               />
             );
           })}

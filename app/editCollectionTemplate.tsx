@@ -471,6 +471,7 @@ export default function EditCollectionTemplateScreen() {
                   title={card.attributeLabel}
                   rating={card.symbol as keyof typeof MaterialIcons.glyphMap}
                   options={card.options ?? undefined}
+                  fieldCount={index + 1}
                   onTypeChange={(val) =>
                     handleTypeChange(card.attributeID ?? 0, val)
                   }
