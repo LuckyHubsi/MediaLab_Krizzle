@@ -77,7 +77,7 @@ const imageValue = itemAttributeBase.extend({
 const linkValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Link),
   valueString: common.string750.optional().nullable(),
-  displayText: common.string30.optional().nullable(),
+  displayText: common.string750.optional().nullable(),
 });
 
 /**
