@@ -88,6 +88,7 @@ export default function HomeScreen() {
   );
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const [completedWithError, setCompletedWithError] = useState(false);
 
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
@@ -156,6 +157,7 @@ export default function HomeScreen() {
             await generalPageService.getAllGeneralPageData(sortingMode);
           if (widgetResult.success) {
             setWidgets(mapToEnrichedWidgets(widgetResult.value));
+            setCompletedWithError(false);
 
             // remove all prior errors from the general sorting mode source
             setErrors((prev) =>
@@ -174,6 +176,7 @@ export default function HomeScreen() {
               },
             ]);
             setShowError(true);
+            setCompletedWithError(true);
           }
         } catch (error) {
           console.error("Error loading widgets:", error);
@@ -273,7 +276,9 @@ export default function HomeScreen() {
             Home
           </ThemedText>
 
-          {widgets.length === 0 && pinnedWidgets.length === 0 ? (
+          {widgets.length === 0 &&
+          pinnedWidgets.length === 0 &&
+          !completedWithError ? (
             <EmptyHome
               text="Add your first note/collection"
               buttonLabel="Start"
