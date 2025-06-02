@@ -372,45 +372,60 @@ export default function EditCollectionTemplateScreen() {
             contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
             showsVerticalScrollIndicator={false}
           >
-            {templates.map((card, index) => (
-              <ItemTemplateCard
-                key={card.attributeID}
-                isTitleCard={index === 0}
-                itemType={card.type}
-                textfieldIcon="short-text"
-                isPreview={card.preview ?? false}
-                title={card.attributeLabel}
-                rating={card.symbol as keyof typeof MaterialIcons.glyphMap}
-                options={card.options ?? undefined}
-                onTypeChange={(val) =>
-                  handleTypeChange(card.attributeID ?? 0, val)
-                }
-                onTitleChange={(text) =>
-                  handleTitleChange(card.attributeID ?? 0, text)
-                }
-                onRatingChange={(val) =>
-                  handleRatingChange(card.attributeID ?? 0, val)
-                }
-                onOptionsChange={(val) =>
-                  handleOptionsChange(card.attributeID ?? 0, val)
-                }
-                onRemove={() => {
-                  handleRemoveCard(card.attributeID ?? 0);
-                }}
-                hasNoInputError={hasClickedNext && !card.attributeLabel?.trim()}
-                hasNoMultiSelectableError={
-                  hasClickedNext &&
-                  card.type === "multi-select" &&
-                  (!card.options ||
-                    card.options.length === 0 ||
-                    card.options.some((o) => o.trim() === ""))
-                }
-                onPreviewToggle={() =>
-                  handlePreviewToggle(card.attributeID ?? 0)
-                }
-                isExisting={card.isExisting}
-              />
-            ))}
+            {templates.map((card, index) => {
+              const trimmedOptions = (card.options ?? []).map((o) => o.trim());
+              const lowerTrimmedOptions = trimmedOptions
+                .map((o) => o.toLowerCase())
+                .filter((o) => o !== "");
+
+              const hasEmptyOption =
+                card.type === "multi-select" &&
+                (trimmedOptions.length === 0 ||
+                  trimmedOptions.some((o) => o === ""));
+
+              const hasDuplicates =
+                card.type === "multi-select" &&
+                new Set(lowerTrimmedOptions).size !==
+                  lowerTrimmedOptions.length;
+
+              return (
+                <ItemTemplateCard
+                  key={card.attributeID}
+                  isTitleCard={index === 0}
+                  itemType={card.type}
+                  textfieldIcon="short-text"
+                  isPreview={card.preview ?? false}
+                  title={card.attributeLabel}
+                  rating={card.symbol as keyof typeof MaterialIcons.glyphMap}
+                  options={card.options ?? undefined}
+                  onTypeChange={(val) =>
+                    handleTypeChange(card.attributeID ?? 0, val)
+                  }
+                  onTitleChange={(text) =>
+                    handleTitleChange(card.attributeID ?? 0, text)
+                  }
+                  onRatingChange={(val) =>
+                    handleRatingChange(card.attributeID ?? 0, val)
+                  }
+                  onOptionsChange={(val) =>
+                    handleOptionsChange(card.attributeID ?? 0, val)
+                  }
+                  onRemove={() => {
+                    handleRemoveCard(card.attributeID ?? 0);
+                  }}
+                  onPreviewToggle={() =>
+                    handlePreviewToggle(card.attributeID ?? 0)
+                  }
+                  isExisting={card.isExisting}
+                  hasNoInputError={
+                    hasClickedNext && !card.attributeLabel?.trim()
+                  }
+                  hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
+                  duplicateOptionsError={hasClickedNext && hasDuplicates} // ✅ ADD THIS
+                />
+              );
+            })}
+
             <View style={{ paddingTop: 10 }}>
               <AddButton
                 onPress={handleAddCard}

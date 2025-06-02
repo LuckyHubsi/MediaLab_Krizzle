@@ -300,39 +300,51 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             Your Templates:
           </ThemedText>
 
-          {otherCards.map((card) => (
-            <ItemTemplateCard
-              key={card.id}
-              isTitleCard={false}
-              isPreview={card.isPreview}
-              itemType={card.itemType}
-              textfieldIcon={getIconForType(card.itemType)}
-              title={card.title}
-              rating={card.rating}
-              options={card.options}
-              onTypeChange={(newType) => handleTypeChange(card.id, newType)}
-              onTitleChange={(text) => handleTitleChange(card.id, text)}
-              onRatingChange={(newRating) =>
-                handleRatingChange(card.id, newRating)
-              }
-              onOptionsChange={(newOptions) =>
-                handleOptionsChange(card.id, newOptions)
-              }
-              onRemove={() => handleRemoveCard(card.id)}
-              onPreviewToggle={() => handlePreviewToggle(card.id)}
-              hasNoInputError={
-                hasClickedNext && (!card.title || card.title.trim() === "")
-              }
-              hasNoMultiSelectableError={
-                hasClickedNext &&
-                card.itemType === "multi-select" &&
-                (!card.options ||
-                  card.options.length === 0 ||
-                  card.options.some((o) => o.trim() === ""))
-              }
-              previewCount={previewCount}
-            />
-          ))}
+          {otherCards.map((card) => {
+            const trimmedOptions = (card.options ?? []).map((o) => o.trim());
+            const lowerTrimmedOptions = trimmedOptions
+              .map((o) => o.toLowerCase())
+              .filter((o) => o !== "");
+
+            const hasEmptyOption =
+              card.itemType === "multi-select" &&
+              (trimmedOptions.length === 0 ||
+                trimmedOptions.some((o) => o === ""));
+
+            const hasDuplicates =
+              card.itemType === "multi-select" &&
+              new Set(lowerTrimmedOptions).size !== lowerTrimmedOptions.length;
+
+            return (
+              <ItemTemplateCard
+                key={card.id}
+                isTitleCard={false}
+                isPreview={card.isPreview}
+                itemType={card.itemType}
+                textfieldIcon={getIconForType(card.itemType)}
+                title={card.title}
+                rating={card.rating}
+                options={card.options}
+                onTypeChange={(newType) => handleTypeChange(card.id, newType)}
+                onTitleChange={(text) => handleTitleChange(card.id, text)}
+                onRatingChange={(newRating) =>
+                  handleRatingChange(card.id, newRating)
+                }
+                onOptionsChange={(newOptions) =>
+                  handleOptionsChange(card.id, newOptions)
+                }
+                onRemove={() => handleRemoveCard(card.id)}
+                onPreviewToggle={() => handlePreviewToggle(card.id)}
+                hasNoInputError={
+                  hasClickedNext && (!card.title || card.title.trim() === "")
+                }
+                hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
+                duplicateOptionsError={hasClickedNext && hasDuplicates}
+                previewCount={previewCount}
+              />
+            );
+          })}
+
           <View style={{ paddingTop: 10 }}>
             <AddButton
               onPress={() => {

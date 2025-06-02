@@ -40,6 +40,7 @@ interface ItemTemplateCardProps {
   hasNoMultiSelectableError?: boolean;
   previewCount?: number;
   isExisting?: boolean;
+  duplicateOptionsError?: boolean;
 }
 
 const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
@@ -60,6 +61,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   hasNoMultiSelectableError,
   previewCount,
   isExisting = false,
+  duplicateOptionsError = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -177,12 +179,24 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
       {itemType === "multi-select" &&
         options !== undefined &&
         onOptionsChange && (
-          <AddMultiSelectables
-            title=""
-            options={options}
-            onOptionsChange={onOptionsChange}
-            hasNoInputError={hasNoMultiSelectableError}
-          />
+          <>
+            <AddMultiSelectables
+              title=""
+              options={options}
+              onOptionsChange={onOptionsChange}
+              hasNoInputError={hasNoMultiSelectableError}
+            />
+            {duplicateOptionsError && (
+              <ThemedText
+                fontSize="s"
+                fontWeight="regular"
+                colorVariant="red"
+                style={{ marginTop: 4, marginLeft: 4 }}
+              >
+                Options must be unique.
+              </ThemedText>
+            )}
+          </>
         )}
 
       {!isTitleCard && <RemoveButton onPress={onRemove} />}
