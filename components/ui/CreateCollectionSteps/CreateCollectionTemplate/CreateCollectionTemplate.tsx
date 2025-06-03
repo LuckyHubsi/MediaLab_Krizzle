@@ -389,7 +389,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           <BottomButtons
             variant="back"
             titleLeftButton="Back"
-            titleRightButton="Add"
+            titleRightButton="Create"
             onDiscard={onBack!}
             onNext={() => {
               setHasClickedNext(true);
