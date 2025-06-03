@@ -275,7 +275,7 @@ export default function EditCollectionTemplateScreen() {
         if (currentlySelected >= 3) {
           showSnackbar(
             "You can only preview up to 3 attributes.",
-            "bottom",
+            "top",
             "error",
           );
           return prev;
@@ -302,7 +302,7 @@ export default function EditCollectionTemplateScreen() {
         if (sameTypeAlreadyPreviewed) {
           showSnackbar(
             "Only one preview is allowed per attribute type.",
-            "bottom",
+            "top",
             "error",
           );
           return prev;
@@ -332,7 +332,7 @@ export default function EditCollectionTemplateScreen() {
     if (!allValid) {
       showSnackbar(
         "Make sure all templates have titles and valid options where needed.",
-        "bottom",
+        "top",
         "error",
       );
       return;
@@ -365,7 +365,7 @@ export default function EditCollectionTemplateScreen() {
     if (hasMultiSelectDuplicates) {
       showSnackbar(
         "Each multi-select must have only unique values.",
-        "bottom",
+        "top",
         "error",
       );
       return;
