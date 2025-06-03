@@ -1,60 +1,116 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-import { FloatingAddButton } from '@/components/ui/floatingAddButton';
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Keyboard, Platform, View } from "react-native";
+import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
+import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
+import { HapticTab } from "@/components/HapticTab";
+import TabBarBackground from "@/components/ui/TabBarBackground";
+import { Colors } from "@/constants/Colors";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
+      setKeyboardVisible(true),
+    );
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardVisible(false),
+    );
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const theme = colorScheme ?? "light";
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+    <View style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
+          tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarBackground: () =>
+            Platform.OS === "android" && isKeyboardVisible ? null : (
+              <TabBarBackground />
+            ),
+          tabBarHideOnKeyboard: Platform.OS === "android",
+          tabBarLabelStyle: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 12,
           },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarStyle: {
+            position: Platform.OS === "ios" ? "absolute" : "relative",
+            height:
+              Platform.OS === "android" && isKeyboardVisible
+                ? 0
+                : Platform.OS === "ios"
+                  ? 80
+                  : 60,
+            paddingTop: Platform.OS === "ios" ? 5 : 2,
+            backgroundColor:
+              Platform.OS === "android" && isKeyboardVisible
+                ? "transparent"
+                : Colors[theme].tabBarBackgroundColor,
+            borderTopWidth: 0,
+            paddingRight: 75,
+          },
         }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="home-filled" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="folders"
+          options={{
+            title: "Folders",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="folder" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Menu",
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="widgets" size={24} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+
+      {/* FloatingAddButton only visible if keyboard is not open on Android */}
+      {!(Platform.OS === "android" && isKeyboardVisible) && (
+        <View
+          style={{
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <FloatingAddButton onPress={() => setModalVisible(true)} />
+        </View>
+      )}
+
+      <ModalSelection
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
       />
-       <Tabs.Screen
-        name="archive"
-        options={{
-          title: 'Archive',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="tray.full.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gear" color={color} />,
-        }}
-      />
-     <Tabs.Screen
-        name="addPage"
-        options={{
-           title: '',
-           tabBarIcon: () => null, // Icon is handled inside the custom button
-           tabBarButton: (props) => <FloatingAddButton {...props} />,
-  }}
-/>
-    </Tabs>
+    </View>
   );
 }
