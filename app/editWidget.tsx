@@ -154,6 +154,7 @@ export default function EditWidgetScreen() {
         prev.filter((error) => error.source !== "widget:update"),
       );
       router.back();
+      router.setParams({ title: newPageDTO.page_title });
     } else {
       // set all errors to the previous errors plus add the new error
       // define the id and the source and set its read status to false
