@@ -10,7 +10,6 @@ import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
-import { useColorScheme } from "react-native";
 import QuickActionModal, {
   QuickActionItem,
 } from "@/components/Modals/QuickActionModal/QuickActionModal";
@@ -21,6 +20,8 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -33,7 +34,7 @@ export default function NotesScreen() {
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
-  const colorScheme = useColorScheme();
+  const colorScheme = useActiveColorScheme();
   const [showModal, setShowModal] = useState(false);
   const [noteData, setNoteData] = useState<NoteDTO | null>();
   const [shouldReload, setShouldReload] = useState<boolean>();
@@ -146,7 +147,12 @@ export default function NotesScreen() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        }}
+      >
         <CustomStyledHeader
           title={title || "Note"}
           iconName="more-horiz"

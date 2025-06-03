@@ -334,7 +334,7 @@ export default function CreateNoteScreen() {
         >
           <BottomButtons
             titleLeftButton="Discard"
-            titleRightButton="Save"
+            titleRightButton="Create"
             onDiscard={() => {
               router.back();
             }}

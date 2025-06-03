@@ -145,7 +145,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           if (isTypeAlreadyPreviewed) {
             showSnackbar(
               "Preview was disabled because another field already uses that type.",
-              "bottom",
+              "top",
               "error",
             );
             return { ...card, itemType: newType, isPreview: false };
@@ -212,7 +212,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       if (!underMaxPreviewCount) {
         showSnackbar(
           "You can only select up to 3 preview items.",
-          "bottom",
+          "top",
           "error",
         );
         return;
@@ -221,7 +221,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       if (typeAlreadyUsed) {
         showSnackbar(
           "Only one preview is allowed per item type.",
-          "bottom",
+          "top",
           "error",
         );
         return;
@@ -389,7 +389,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
           <BottomButtons
             variant="back"
             titleLeftButton="Back"
-            titleRightButton="Add"
+            titleRightButton="Create"
             onDiscard={onBack!}
             onNext={() => {
               setHasClickedNext(true);
@@ -425,7 +425,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               if (!isMainTitleFilled || !allOtherTitlesFilled) {
                 showSnackbar(
                   "Almost there! Just add all the titles and pick at least one option.",
-                  "bottom",
+                  "top",
                   "error",
                 );
                 return;
@@ -434,7 +434,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               if (hasMultiSelectDuplicates) {
                 showSnackbar(
                   "Each multi-select must have only unique values.",
-                  "bottom",
+                  "top",
                   "error",
                 );
                 return;
