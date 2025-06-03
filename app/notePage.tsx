@@ -21,6 +21,7 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
@@ -146,7 +147,12 @@ export default function NotesScreen() {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        }}
+      >
         <CustomStyledHeader
           title={title || "Note"}
           iconName="more-horiz"
