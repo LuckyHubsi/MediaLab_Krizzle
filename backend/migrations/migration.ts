@@ -406,9 +406,16 @@ export const migrations: {
           const attributeID = Number(attributeIDStr);
 
           let mergedValues: string[] = [];
+          let allNull = true;
 
           // options is string[] from grouped rows for the same attributeID
           for (const val of value) {
+            if (val === null || val === "null") {
+              continue; // track that value was null, skip processing it
+            }
+
+            allNull = false;
+
             try {
               const parsed = JSON.parse(val);
 
@@ -434,9 +441,12 @@ export const migrations: {
           // stringify the merged values array
           const newVal = JSON.stringify(mergedValues);
 
+          // final value to insert: `null` if all were null, otherwise stringified array
+          const finalVal = allNull ? null : JSON.stringify(mergedValues);
+
           await txn.runAsync(
             `INSERT INTO multiselect_values (itemID, attributeID, value) VALUES (?, ?, ?)`,
-            [itemID, attributeID, newVal],
+            [itemID, attributeID, finalVal],
           );
         }
         // _____________________________________________________________________
