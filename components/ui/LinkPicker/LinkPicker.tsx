@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import Textfield from "../Textfield/Textfield";
 import { ThemedText } from "@/components/ThemedText";
@@ -33,6 +33,12 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
     setShowCustomTextfield(false);
     onLinkTextChange("");
   };
+
+  useEffect(() => {
+    if (linkText) {
+      setShowCustomTextfield(true);
+    }
+  }, [linkText]);
 
   return (
     <>
