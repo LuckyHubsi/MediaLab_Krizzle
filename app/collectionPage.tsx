@@ -196,7 +196,7 @@ export default function CollectionScreen() {
 
         <View style={{ paddingHorizontal: 20 }}>
           <SearchBar
-            placeholder="Search"
+            placeholder="Search for item name"
             onSearch={(text) => setSearchQuery(text)}
           />
         </View>
