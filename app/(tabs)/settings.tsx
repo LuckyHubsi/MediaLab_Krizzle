@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
 import { resetDatabase } from "@/backend/service/DatabaseReset";
 import { Button } from "@/components/ui/Button/Button";
@@ -22,38 +22,49 @@ export default function TabThreeScreen() {
         <ThemedText fontSize="xl" fontWeight="bold">
           Menu
         </ThemedText>
-        <View style={{ gap: 6 }}>
-          <SettingsLink label="Appearance" href="/appearance" iconName="tune" />
-          <SettingsLink
-            label="Tag Management"
-            href="/tagManagement"
-            iconName="local-offer"
-          />
-          <SettingsLink
-            label="Archive"
-            href="/archivePage"
-            iconName="archive"
-          />
-          <SettingsLink
-            label="Frequently Asked Questions"
-            href="/faq"
-            iconName="help-outline"
-          />
-          <SettingsLink
-            label="Reset Data"
-            href="/resetDatabase"
-            iconName="delete-forever"
-          />
-          <SettingsLink
-            label="Onboarding"
-            href="/onboardingScreen"
-            iconName="restart-alt"
-          />
-          <SettingsLink
-            label="Visit Website"
-            href="https://krizzle-website.vercel.app/"
-            iconName="language"
-          />
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              contentContainerStyle={{ gap: 6, paddingBottom: 10 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <SettingsLink
+                label="Appearance"
+                href="/appearance"
+                iconName="tune"
+              />
+              <SettingsLink
+                label="Tag Management"
+                href="/tagManagement"
+                iconName="local-offer"
+              />
+              <SettingsLink
+                label="Archive"
+                href="/archivePage"
+                iconName="archive"
+              />
+              <SettingsLink
+                label="Frequently Asked Questions"
+                href="/faq"
+                iconName="help-outline"
+              />
+              <SettingsLink
+                label="Reset Data"
+                href="/resetDatabase"
+                iconName="delete-forever"
+              />
+              <SettingsLink
+                label="Onboarding"
+                href="/onboardingScreen"
+                iconName="restart-alt"
+              />
+              <SettingsLink
+                label="Visit Website"
+                href="https://krizzle-website.vercel.app/"
+                iconName="language"
+              />
+            </ScrollView>
+          </View>
         </View>
       </ThemedView>
     </SafeAreaView>
