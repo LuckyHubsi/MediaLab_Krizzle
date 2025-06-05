@@ -338,7 +338,7 @@ export default function NotesScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <SelectFolderModal

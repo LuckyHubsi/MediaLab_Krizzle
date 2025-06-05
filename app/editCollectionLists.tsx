@@ -416,7 +416,7 @@ export default function EditCollectionListsScreen() {
           extraInformation="Deleting this list will also remove all its items in the collection. This action cannot be undone."
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={confirmDelete}
-          onclose={() => setShowDeleteModal(false)}
+          onClose={() => setShowDeleteModal(false)}
         />
         {showHelp && (
           <InfoPopup

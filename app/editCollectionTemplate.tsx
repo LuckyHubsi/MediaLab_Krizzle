@@ -567,7 +567,7 @@ export default function EditCollectionTemplateScreen() {
           extraInformation="Deleting this field will also remove all its uses in your existing items in the collection."
           onCancel={() => setShowDeleteModal(false)}
           onConfirm={confirmDelete}
-          onclose={() => setShowDeleteModal(false)}
+          onClose={() => setShowDeleteModal(false)}
         />
       </View>
 

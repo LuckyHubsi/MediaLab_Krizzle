@@ -656,7 +656,7 @@ export default function FolderScreen() {
             }
           }
         }}
-        onclose={() => setShowFolderDeleteModal(false)}
+        onClose={() => setShowFolderDeleteModal(false)}
       />
       <BottomInputModal
         visible={folderEditMode}
@@ -713,7 +713,7 @@ export default function FolderScreen() {
             }
           }
         }}
-        onclose={() => setShowWidgetDeleteModal(false)}
+        onClose={() => setShowWidgetDeleteModal(false)}
       />
       <SelectFolderModal
         widgetTitle={selectedWidget?.title}

@@ -337,7 +337,7 @@ export default function ArchiveScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup

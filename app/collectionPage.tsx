@@ -460,7 +460,7 @@ export default function CollectionScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
       <DeleteModal
         visible={showItemDeleteModal}
@@ -501,7 +501,7 @@ export default function CollectionScreen() {
             }
           }
         }}
-        onclose={() => setShowItemDeleteModal(false)}
+        onClose={() => setShowItemDeleteModal(false)}
       />
 
       {!collection?.archived && (
