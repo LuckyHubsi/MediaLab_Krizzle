@@ -3,6 +3,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
 
+/**
+ * Component for the first step of the onboarding process.
+ */
+
 export default function Step1() {
   const backgroundHeight = 87;
   return (
