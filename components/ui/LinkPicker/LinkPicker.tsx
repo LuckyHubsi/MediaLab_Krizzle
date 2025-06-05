@@ -5,10 +5,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
-import { Link } from "expo-router";
 import { LinkPickerContainer, LinkTitleButton } from "./LinkPicker.styles";
 
-// Inside the component
+/**
+ * Component for selecting a link with an optional custom title.
+ *
+ * @param title (required) - The title of the link picker.
+ * @param value - The current link value.
+ * @param onChange (required) - Callback function to handle link value changes.
+ * @param linkText - The custom link title.
+ * @param onLinkTextChange (required) - Callback function to handle changes to the custom link title.
+ * @returns A React component that allows users to pick a link and optionally set a custom title for it.
+ */
 
 interface LinkPickerProps {
   title: string;
@@ -29,11 +37,17 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
   const colorScheme = useColorScheme();
   const iconColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
 
+  /**
+   * Handles the removal of custom text for the link title.
+   */
   const handleRemoveCustomText = () => {
     setShowCustomTextfield(false);
     onLinkTextChange("");
   };
 
+  /**
+   * Effect to show the custom text field if a link title is provided.
+   */
   useEffect(() => {
     if (linkText) {
       setShowCustomTextfield(true);
