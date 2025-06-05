@@ -35,17 +35,6 @@ export const Icon = styled.View`
   align-items: center;
 `;
 
-export const Title = styled.Text.attrs({
-  numberOfLines: 1,
-  ellipsizeMode: "tail",
-})`
-  font-family: Lexend_400Regular;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  max-width: 90%;
-`;
-
 export const Tag = styled.Text`
   font-family: Lexend_400Regular;
   color: #111111;
