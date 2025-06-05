@@ -6,6 +6,12 @@ import { StyledButtonContainer } from "./RemoveButton.styles";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component for a button that allows users to remove an item or perform a type of deletion action.
+ *
+ * @param onPress - Callback function to handle press events.
+ */
+
 type RemoveButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
 };
