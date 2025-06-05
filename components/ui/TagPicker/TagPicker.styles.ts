@@ -34,6 +34,7 @@ export const ViewAllText = styled.Text<ColorSchemeProps>`
 
 export const TagScrollView = styled.ScrollView`
   flex-direction: row;
+  margin-top: 8px;
 `;
 
 export const TagPill = styled.View<{

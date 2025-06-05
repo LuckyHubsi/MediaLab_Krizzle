@@ -12,6 +12,17 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/shared/dto/TagDTO";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a tag from a list of available tags in the create/edit widget flow.
+ *
+ * @param tags (required) - Array of TagDTO objects to display.
+ * @param selectedTag (required) - The currently selected tag, or null if none is selected.
+ * @param onSelectTag (required) - Callback function to handle tag selection.
+ * @param onViewAllPress (required) - Callback function for when the "Edit Tags" button is pressed.
+ *
+ */
 
 interface TagPickerProps {
   tags: TagDTO[];
@@ -26,7 +37,7 @@ export const TagPicker: React.FC<TagPickerProps> = ({
   onSelectTag,
   onViewAllPress,
 }) => {
-  const themeMode = useActiveColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Container>
@@ -41,7 +52,10 @@ export const TagPicker: React.FC<TagPickerProps> = ({
             colorVariant="greyScale"
           >
             Edit Tags
-            <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
+            <BackIcon
+              name="chevron-forward-outline"
+              colorScheme={colorScheme}
+            />
           </ThemedText>
         </EditTextContainer>
       </HeaderRow>
@@ -54,9 +68,9 @@ export const TagPicker: React.FC<TagPickerProps> = ({
               key={tag.tagID}
               onPress={() => {
                 if (isSelected) {
-                  onSelectTag(null); // Deselect
+                  onSelectTag(null);
                 } else {
-                  onSelectTag(tag); // Select
+                  onSelectTag(tag);
                 }
               }}
               style={{
@@ -66,12 +80,12 @@ export const TagPicker: React.FC<TagPickerProps> = ({
                 justifyContent: "center",
               }}
             >
-              <TagPill isSelected={isSelected} colorScheme={themeMode}>
+              <TagPill isSelected={isSelected} colorScheme={colorScheme}>
                 {isSelected && (
                   <MaterialIcons
                     name="check-circle"
                     size={16}
-                    color="#FBFBFB"
+                    color={Colors.white}
                     style={{ marginRight: 10 }}
                   />
                 )}
@@ -88,14 +102,16 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         })}
         {tags.length === 0 && (
           <TouchableOpacity onPress={() => onViewAllPress()}>
-            <TagPill onPress={onViewAllPress} colorScheme={themeMode}>
+            <TagPill onPress={onViewAllPress} colorScheme={colorScheme}>
               <MaterialIcons
                 name="edit"
                 size={16}
-                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+                color={colorScheme === "dark" ? Colors.white : Colors.black}
                 style={{ marginRight: 5 }}
               />
-              <ThemedText>Edit Tags</ThemedText>
+              <ThemedText fontSize="s" fontWeight="regular">
+                Edit Tags
+              </ThemedText>
             </TagPill>
           </TouchableOpacity>
         )}
