@@ -7,6 +7,15 @@ import {
 } from "./GradientBackground.styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * Component for rendering a gradient background with a card overlay.
+ *
+ * @param lightColor - The color for light mode background.
+ * @param darkColor - The color for dark mode background.
+ * @param topPadding - The padding at the top of the content.
+ * @param backgroundCardTopOffset - The top offset for the background card.
+ */
+
 export type GradientBackgroundProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
