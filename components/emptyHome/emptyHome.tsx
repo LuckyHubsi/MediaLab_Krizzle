@@ -1,11 +1,20 @@
 import React, { FC, useState } from "react";
 import { Image } from "react-native";
-import { Colors } from "@/constants/Colors";
 import { Button } from "../ui/Button/Button";
 import { ThemedText } from "../ThemedText";
 import { StyledEmptyHome } from "./emptyHome.styles";
 import { ModalSelection } from "../Modals/CreateNCModal/CreateNCModal";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * Component to display an empty home screen with a message and an optional button.
+ *
+ * @param text - The message to display when there are no notes or collections.
+ * @param showButton - Whether to show the button (default is true).
+ * @param buttonLabel - The label for the button (default is "Start").
+ * @param onButtonPress - Callback function to handle button press events.
+ * @param useModal - Whether to use a modal for creating a new note/collection (default is true).
+ */
 
 interface EmptyHomeProps {
   text?: string;
@@ -25,6 +34,9 @@ export const EmptyHome: FC<EmptyHomeProps> = ({
   const colorScheme = useActiveColorScheme() ?? "light";
   const [isModalVisible, setModalVisible] = useState(false);
 
+  /**
+   * Handles the button press event.
+   */
   const handlePress = () => {
     if (useModal) {
       setModalVisible(true);
@@ -42,15 +54,7 @@ export const EmptyHome: FC<EmptyHomeProps> = ({
       <ThemedText fontSize="regular" fontWeight="regular">
         {text}
       </ThemedText>
-      {showButton && (
-        <Button
-          color={Colors[colorScheme].tint}
-          size="medium"
-          onPress={handlePress}
-        >
-          {buttonLabel}
-        </Button>
-      )}
+      {showButton && <Button onPress={handlePress}>{buttonLabel}</Button>}
       {useModal && (
         <ModalSelection
           isVisible={isModalVisible}
