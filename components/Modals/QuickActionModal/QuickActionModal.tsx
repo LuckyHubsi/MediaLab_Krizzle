@@ -11,18 +11,36 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 
+/**
+ * A modal component that displays a list of quick action items (e.g., edit, delete).
+ *
+ * @param {boolean} visible - Whether the modal is currently visible.
+ * @param {() => void} onClose - Callback to close the modal.
+ * @param {QuickActionItem[]} items - The list of actions to display in the modal.
+ */
+
+type QuickActionModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  items: QuickActionItem[];
+};
+
+/**
+ * A single quick action item used in the QuickActionModal.
+ *
+ * @property {string} label - The display label for the action.
+ * @property {keyof typeof MaterialIcons.glyphMap} icon - The MaterialIcon name.
+ * @property {() => void} onPress - Function called when the item is pressed.
+ * @property {boolean} [danger] - Marks the action as destructive.
+ * @property {boolean} [disabled] - Disables the item.
+ */
+
 export type QuickActionItem = {
   label: string;
   icon: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
   danger?: boolean;
   disabled?: boolean;
-};
-
-type QuickActionModalProps = {
-  visible: boolean;
-  onClose: () => void;
-  items: QuickActionItem[];
 };
 
 export default function QuickActionModal({
@@ -34,6 +52,9 @@ export default function QuickActionModal({
   const [internalVisible, setInternalVisible] = useState(visible);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  /**
+   * Effect to handle the visibility of the modal.
+   */
   useEffect(() => {
     if (visible) {
       setInternalVisible(true);
@@ -45,6 +66,9 @@ export default function QuickActionModal({
     }
   }, [visible]);
 
+  /**
+   * Handles the fade-out animation and closes the modal.
+   */
   const handleFadeOut = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -56,6 +80,9 @@ export default function QuickActionModal({
     });
   };
 
+  /**
+   * Returns null if the modal is not visible.
+   */
   if (!internalVisible) return null;
 
   return (
