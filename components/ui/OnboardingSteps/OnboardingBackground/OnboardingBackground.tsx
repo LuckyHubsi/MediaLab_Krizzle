@@ -2,6 +2,15 @@ import { View, Image, StyleProp, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component for rendering an image with a gradient background
+ *
+ * @param imageSourceLight (required) - Image source for light mode
+ * @param imageSourceDark (required) - Image source for dark mode
+ * @param heightPercent - Height of the background as a percentage of the screen height (default: 65%)
+ * @param style - Additional styles for the background container
+ */
+
 type OnboardingBackgroundProps = {
   imageSourceLight: any;
   imageSourceDark: any;
