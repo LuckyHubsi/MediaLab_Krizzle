@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
 import { FC } from "react";
-import { Colors } from "@/constants/Colors";
 import {
   MultiSelectContainer,
   MultiSelectPicker as MultiSelectPickerWrapper,
@@ -8,6 +7,16 @@ import {
 } from "./MultiSelectPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for rendering a multi-select picker with a list of selectables.
+ *
+ * @param title - The title of the multi-select picker.
+ * @param multiselectArray - An array of strings representing selectable items.
+ * @param selectedTags (required) - An array of currently selected tags.
+ * @param onSelectTag (required) - Callback function to handle tag selection changes.
+ */
 
 interface MultiSelectPickerProps {
   title?: string;
@@ -38,8 +47,7 @@ const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
                 {isSelected && (
                   <MaterialIcons
                     name="check-circle"
-                    size={16}
-                    color="#FBFBFB"
+                    color={Colors.white}
                     style={{ marginRight: 5 }}
                   />
                 )}
