@@ -12,6 +12,18 @@ import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ModalContent, StyledTextInput } from "./BottomInputModal.styles";
 
+/**
+ * Component for displaying a modal with a text input at the bottom of the screen.
+ * It allows users to enter text and submit it, used for adding tags or folder names.
+ *
+ * @param visible (required) - Controls the visibility of the modal.
+ * @param value (required) - The current text input value.
+ * @param onChangeText (required) - Callback function to handle text changes.
+ * @param onSubmit (required) - Callback function to handle submission of the text input.
+ * @param onClose (required) - Callback function to close the modal.
+ * @param placeholderText (required) - Placeholder text for the input field.
+ */
+
 type TagInputModalProps = {
   visible: boolean;
   value: string;
@@ -30,7 +42,6 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
   placeholderText,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
-
   return (
     <Modal
       visible={visible}
