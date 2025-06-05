@@ -1,12 +1,10 @@
-// TextEditor.tsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppState,
   AppStateStatus,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  useColorScheme,
   View,
 } from "react-native";
 import {
@@ -23,6 +21,13 @@ import { customEditorHtml } from "./TextEditorCustomHtml";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "../ThemedText";
 
+/**
+ * Text editor component that allows users to create and edit rich text content.
+ *
+ * @param initialContent - The initial HTML content to load into the editor.
+ * @param onChange - Callback function that is called whenever the content changes.
+ */
+
 interface TextEditorProps {
   initialContent: string;
   onChange: (html: string) => void;
@@ -37,10 +42,12 @@ const TextEditor: React.FC<TextEditorProps> = ({
     AppState.currentState,
   );
 
-  // Dummy object used to call item.image() for filtering toolbar buttons
-  // The image() function expects an ArgsToolbarCB object,
-  // but since we’re only interested in comparing the returned image (icon),
-  // we don’t need real editor behavior here — just placeholders that satisfy the type.
+  /**
+   * Dummy object used to call item.image() for filtering toolbar buttons
+   * This is necessary because the item.image() function expects an object with
+   * specific properties, but we don't need to use the actual editor state in this case.
+   * This is a workaround to avoid errors when filtering out specific toolbar items.
+   */
   const dummyArgs = {
     editor: {} as any,
     editorState: {} as any,
@@ -48,6 +55,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
     toolbarContext: 0,
   };
 
+  /**
+   * Filter out specific toolbar items that are not needed in this editor.
+   */
   const toolbarItems = DEFAULT_TOOLBAR_ITEMS.filter((item) => {
     const img = item.image(dummyArgs);
     return (
@@ -58,7 +68,10 @@ const TextEditor: React.FC<TextEditorProps> = ({
       img !== Images.indent
     );
   });
-
+  /**
+   * Initialize the editor with the provided initial content and custom HTML file.
+   * This setup includes a custom toolbar and theme based on the active color scheme.
+   */
   const editor = useEditorBridge({
     autofocus: false,
     avoidIosKeyboard: true,
@@ -115,6 +128,10 @@ const TextEditor: React.FC<TextEditorProps> = ({
       const html = await editor.getHTML();
       const plainText = html.replace(/<[^>]*>/g, "").trim();
 
+      /**
+       * Check if the plain text content exceeds the character limit of 5000 characters
+       * If it does, set the charLimitExceeded state to true and prevent further changes
+       */
       if (plainText.length <= 5000) {
         setCharLimitExceeded(false);
         onChange(html);
@@ -125,6 +142,10 @@ const TextEditor: React.FC<TextEditorProps> = ({
     },
   });
 
+  /**
+   * Effect to handle app state changes. When the app goes inactive or to the background,
+   * it saves the current HTML content of the editor.
+   */
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (
@@ -142,7 +163,6 @@ const TextEditor: React.FC<TextEditorProps> = ({
     return () => subscription.remove();
   }, [appState, onChange, editor]);
 
-  // Handling the toolbar above keyboard for iOs and Android (keep comment in for future use)
   const { top } = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
