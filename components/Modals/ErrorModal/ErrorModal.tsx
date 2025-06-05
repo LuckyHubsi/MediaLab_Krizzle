@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Modal, ScrollView, TouchableWithoutFeedback } from "react-native";
+import { Modal, TouchableWithoutFeedback } from "react-native";
 import {
   PopupBackdrop,
   PopupContainer,
   PopupText,
   CTAButton,
   CTAButtonText,
-  ChevronButton,
   NavigationContainer,
   IndicatorText,
   RightChevronButton,
@@ -15,28 +14,38 @@ import {
   TopContentContainer,
 } from "./ErrorModal.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { View } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
 import { HeaderRow } from "@/components/ui/TagPicker/TagPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for displaying a popup with error messages.
+ *
+ * @param visible (required) - Whether the popup is visible.
+ * @param onClose (required) - Callback function to handle closing the popup and updating errors.
+ * @param errors (required) - Array of error objects to display.
+ */
 
 interface ErrorPopupProps {
   visible: boolean;
   onClose: (updatedErrors: EnrichedError[]) => void;
   errors: EnrichedError[];
-  ctaText?: string;
 }
 
 export const ErrorPopup: React.FC<ErrorPopupProps> = ({
   visible,
   onClose,
   errors,
-  ctaText = "Got it",
 }) => {
   const colorScheme = useActiveColorScheme();
   const [index, setIndex] = useState(0);
+  const current = errors[index];
 
+  /**
+   * Effect to reset the index if it exceeds the number of errors.
+   */
   useEffect(() => {
     if (index >= errors.length) {
       setIndex(0);
@@ -45,9 +54,11 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
 
   if (!visible || !errors || errors.length === 0) return null;
 
-  const current = errors[index];
   if (!current) return null;
 
+  /**
+   * Function to get a default message based on the error type
+   */
   const getDefaultMessage = (type: ServiceErrorType["type"]) => {
     switch (type) {
       case "Validation Error":
@@ -72,9 +83,15 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
     }
   };
 
+  /**
+   * Resolve the description from the current error or use a default message
+   */
   const resolvedDescription =
     current.message || getDefaultMessage(current.type);
 
+  /**
+   * If the error has a description, use it; otherwise, use the default message
+   */
   const handleConfirm = () => {
     const updated = errors.map((err, i) =>
       i === index ? { ...err, hasBeenRead: true } : err,
@@ -82,6 +99,9 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
     onClose(updated); // Send updated errors back to HomeScreen
   };
 
+  /**
+   * Navigation functions to go back and next through the errors
+   */
   const goBack = () => setIndex((prev) => Math.max(0, prev - 1));
   const goNext = () =>
     setIndex((prev) => Math.min(errors.length - 1, prev + 1));
@@ -113,7 +133,9 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
                       <MaterialIcons
                         name="chevron-left"
                         size={30}
-                        color={colorScheme === "dark" ? "white" : "black"}
+                        color={
+                          colorScheme === "dark" ? Colors.white : Colors.black
+                        }
                       />
                     </LeftChevronButton>
                   )}
@@ -125,7 +147,9 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
                       <MaterialIcons
                         name="chevron-right"
                         size={30}
-                        color={colorScheme === "dark" ? "white" : "black"}
+                        color={
+                          colorScheme === "dark" ? Colors.white : Colors.black
+                        }
                       />
                     </RightChevronButton>
                   )}
