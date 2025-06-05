@@ -7,6 +7,16 @@ import {
 } from "./RatingPicker.styles";
 import { Colors } from "@/constants/Colors";
 
+/**
+ * Component for selecting a rating using icons.
+ *
+ * @param title - The title of the rating picker.
+ * @param selectedIcon - The icon to use for the selected rating (default is "star").
+ * @param editable - Whether the rating can be changed by the user (default is true).
+ * @param value - The current rating value (default is 0).
+ * @param onChange - Callback function to handle rating changes.
+ */
+
 interface RatingPickerProps {
   title?: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
@@ -24,10 +34,19 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
 }) => {
   const [rating, setRating] = useState(value);
 
+  /**
+   * Effect to initialize the rating state with the provided value.
+   */
   useEffect(() => {
     setRating(value);
   }, [value]);
 
+  /**
+   * Handles the press event on a rating icon.
+   * Toggles the rating between the pressed index and 0 if already selected.
+   *
+   * @param index - The index of the pressed icon.
+   */
   const handlePress = (index: number) => {
     const newRating = index + 1;
     const updatedRating = newRating === rating ? 0 : newRating;
