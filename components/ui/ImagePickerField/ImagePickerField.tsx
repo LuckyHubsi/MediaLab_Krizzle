@@ -1,6 +1,4 @@
-// components/ImagePickerField/ImagePickerField.tsx
 import React from "react";
-import { TouchableOpacity, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import {
   ImagePickerContainer,
@@ -10,11 +8,19 @@ import {
   DeleteButton,
   ImageUploadContainer,
 } from "./ImagePickerField.styles";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { DividerWithLabel } from "../DividerWithLabel/DividerWithLabel";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * Component for selecting or an image in the item creation process.
+ *
+ * @param title (required) - The title of the image picker field.
+ * @param value - The current image URI.
+ * @param onChange (required) - Callback function to handle image selection changes.
+ */
 
 interface ImagePickerFieldProps {
   title: string;
@@ -28,6 +34,11 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   onChange,
 }) => {
   const colorScheme = useActiveColorScheme();
+
+  /**
+   * Function to open the image picker and allow the user to select an image from their library.
+   * The selected image will be returned as a URI.
+   */
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -39,6 +50,10 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
     }
   };
 
+  /**
+   * Function to open the camera and allow the user to take a photo.
+   * The photo will be returned as a URI.
+   */
   const takePhoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -72,7 +87,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             <ThemedText
               fontWeight="light"
               fontSize="s"
-              colorVariant="lightGrey"
+              colorVariant="greyScale"
             >
               10.0MB max file size
             </ThemedText>
@@ -88,7 +103,6 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
       ) : (
         <>
           <ImagePreview source={{ uri: value }} resizeMode="cover" />
-
           <DeleteButton onPress={() => onChange("")} colorScheme={colorScheme}>
             <MaterialIcons
               name="delete"
