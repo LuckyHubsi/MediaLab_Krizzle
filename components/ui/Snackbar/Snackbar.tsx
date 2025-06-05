@@ -3,11 +3,18 @@ import Toast from "react-native-toast-message";
 import { ToastContainer } from "./Snackbar.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 type SnackbarType = "success" | "error" | "info";
 type SnackbarPosition = "top" | "bottom";
+
+/**
+ * Component for rendering a linkbox for the Menu page with an icon and label, which navigates to a specified route when pressed.
+ *
+ * @param message (required) - The text message to display in the snackbar.
+ * @param position - The position of the snackbar on the screen, either "top" or "bottom".
+ * @param type - The type of snackbar, which determines its style. Can be "success", "error", or "info".
+ */
 
 interface SnackbarContextType {
   showSnackbar: (
