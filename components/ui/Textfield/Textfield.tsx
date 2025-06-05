@@ -9,6 +9,22 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component for displaying a text input field with an optional title and icon.
+ *
+ * @param title (required) - The title of the text field.
+ * @param showTitle - Whether to show the title (default: true).
+ * @param placeholderText (required) - The placeholder text for the input field.
+ * @param editable - Whether the input field is editable (default: true).
+ * @param textfieldIcon - The icon to display in the input field (default: "short-text").
+ * @param onChangeText - Callback function to handle text changes.
+ * @param value - The current value of the input field.
+ * @param hasNoInputError - Whether to show an error message for empty input (default: false).
+ * @param maxLength - Maximum length of the input text (default: no limit).
+ * @param multiline - Whether the input field supports multiple lines (default: false).
+ * @param hasDuplicateTitle - Whether to show an error message for duplicate titles (default: false).
+ */
+
 interface TextfieldProps {
   title: string;
   showTitle?: boolean;
@@ -45,7 +61,7 @@ const Textfield: FC<TextfieldProps> = ({
         <MaterialIcons
           name={textfieldIcon}
           size={20}
-          color={colorScheme === "light" ? "#333" : "#ccc"}
+          color={colorScheme === "light" ? Colors.light.text : Colors.dark.text}
         />
         <StyledTextInput
           colorScheme={colorScheme}
