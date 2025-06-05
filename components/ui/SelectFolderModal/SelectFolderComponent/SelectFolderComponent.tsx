@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   Folder,
   FolderContainer,
@@ -8,6 +8,16 @@ import {
 } from "./SelectFolderComponent.styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a folder and selection state.
+ *
+ * @param title (required) - The title of the folder.
+ * @param key (required) - Unique key for the folder component.
+ * @param onPress (required) - Callback function to handle folder selection.
+ * @param selected (required) - Boolean indicating if the folder is selected.
+ * @param itemSize (required) - The size of the folder item.
+ */
 
 interface SelectFolderComponentProps {
   title: string;
