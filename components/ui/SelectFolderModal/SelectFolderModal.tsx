@@ -1,21 +1,16 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import {
   ButtonContainer,
   CancelButton,
-  FolderList,
   NextButton,
-  StyledAddFolderButton,
   StyledModalContent,
 } from "./SelectFolderModal.styles";
 import {
-  Animated,
   Dimensions,
   Keyboard,
   Modal,
-  Platform,
-  ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -23,18 +18,26 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import SelectFolderComponent from "./SelectFolderComponent/SelectFolderComponent";
 import { FlatList } from "react-native";
-import { Button } from "../Button/Button";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { useSnackbar } from "../Snackbar/Snackbar";
-import { TagDTO } from "@/shared/dto/TagDTO";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
-import { FloatingAddButton } from "../NavBar/FloatingAddButton/FloatingAddButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useServices } from "@/context/ServiceContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+
+/**
+ * Component for selecting a folder to move a widget into.
+ *
+ * @param visible (required) - Whether the modal is visible.
+ * @param widgetTitle - The title of the widget being moved.
+ * @param widgetId - The ID of the widget being moved.
+ * @param onClose (required) - Callback function to close the modal.
+ * @param initialSelectedFolderId - The ID of the folder initially selected.
+ * @param onMoved - Callback function to handle the result of the move operation.
+ */
 
 interface SelectFolderModalProps {
   visible: boolean;
@@ -61,21 +64,29 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const [editingFolder, setEditingFolder] = useState<FolderDTO | null>(null);
   const [folders, setFolders] = useState<FolderDTO[]>([]);
-
-  const { generalPageService, tagService, folderService } = useServices();
+  const { generalPageService, folderService } = useServices();
   const { showSnackbar } = useSnackbar();
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const modalPadding = 30;
+  const numColumns = 3;
+  const screenWidth = Dimensions.get("window").width - modalPadding;
+  const itemMargin = 10;
+  const itemSize = (screenWidth - itemMargin * (numColumns + 1)) / numColumns;
 
+  /**
+   * Handles the submission of a new or edited folder name.
+   */
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
+    // Check for empty folder name
     if (!trimmedFolder) {
       showSnackbar("Please enter a folder name.", "top", "error");
       return;
     }
 
+    // Name may not be longer than 30 characters
     if (trimmedFolder.length > 30) {
       showSnackbar(
         "Folder name must be less than 30 characters.",
@@ -85,6 +96,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       return;
     }
 
+    // Check for duplicate folder names
     const isDuplicate = folders.some(
       (folder) =>
         folder.folderName.trim().toLowerCase() ===
@@ -200,6 +212,13 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     }
   };
 
+  /**
+   * Represents a folder in the modal.
+   *
+   * @property {string} id (required) - The unique identifier of the folder.
+   * @property {string} title (required) - The title of the folder.
+   * @property {number} itemCount (required) - The number of items in the folder.
+   */
   interface Folder {
     id: string;
     title: string;
@@ -207,6 +226,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   }
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
 
+  /**
+   * Effect to load folders when the modal becomes visible.
+   * It fetches all folders and sets the initial selected folder if provided.
+   */
   useEffect(() => {
     if (visible) {
       setInternalVisible(true);
@@ -256,6 +279,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     }
   }, [visible]);
 
+  /**
+   * Maps the folder data from the service in the modal.
+   *
+   * @param {FolderDTO[] | null} data - The folder data from the service.
+   * @returns {Folder[]}
+   */
   const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
     if (data == null) {
       return [];
@@ -268,6 +297,25 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     }
   };
 
+  /**
+   * Combines the folders into a list of items for the modal.
+   * It includes an "Add Folder" button at the end of the list.
+   */
+  const folderItems = [
+    ...mapToFolderShape(
+      [...folders].sort((a, b) => (b.folderID ?? 0) - (a.folderID ?? 0)),
+    ),
+    {
+      id: "add-folder-button",
+      title: "Add Folder",
+      isAddButton: true,
+    },
+  ];
+
+  /**
+   * Effect to refetch folders when the modal is visible or if a refetch is requested.
+   * This ensures that the folder list is always up-to-date.
+   */
   useEffect(() => {
     if (visible || shouldRefetch) {
       setInternalVisible(true);
@@ -308,23 +356,6 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       fetchFolders();
     }
   }, [visible, shouldRefetch]);
-
-  const folderItems = [
-    ...mapToFolderShape(
-      [...folders].sort((a, b) => (b.folderID ?? 0) - (a.folderID ?? 0)),
-    ),
-    {
-      id: "add-folder-button",
-      title: "Add Folder",
-      isAddButton: true,
-    },
-  ];
-
-  const modalPadding = 30;
-  const numColumns = 3;
-  const screenWidth = Dimensions.get("window").width - modalPadding;
-  const itemMargin = 10;
-  const itemSize = (screenWidth - itemMargin * (numColumns + 1)) / numColumns;
 
   if (!internalVisible) return null;
 
