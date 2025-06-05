@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
-import {
-  Switch,
-  Touchable,
-  TouchableOpacity,
-  useColorScheme,
-} from "react-native";
+import { Switch, TouchableOpacity, useColorScheme } from "react-native";
 import {
   Container,
   Card,
@@ -16,13 +11,16 @@ import {
   ModeContainer,
   ResetContainer,
 } from "./ThemeSelector.styles";
-import {
-  ColorSchemeOption,
-  useActiveColorScheme,
-} from "@/context/ThemeContext";
+import { ColorSchemeOption } from "@/context/ThemeContext";
 import { useUserTheme } from "@/context/ThemeContext";
-import { Button } from "../Button/Button";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a color scheme theme in the settings.
+ *
+ * @param selected (required) - The currently selected color scheme option.
+ * @param onSelect (required) - Callback function to handle theme selection.
+ */
 
 type ThemeSelectorProps = {
   selected: ColorSchemeOption;
