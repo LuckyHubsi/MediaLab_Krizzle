@@ -637,7 +637,7 @@ export default function HomeScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup

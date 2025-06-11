@@ -331,7 +331,7 @@ export default function FoldersScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
       <BottomInputModal
         visible={editMode}

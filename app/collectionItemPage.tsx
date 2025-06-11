@@ -207,7 +207,7 @@ export default function CollectionItemScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup
