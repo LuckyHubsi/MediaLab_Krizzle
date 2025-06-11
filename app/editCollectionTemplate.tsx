@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useServices } from "@/context/ServiceContext";
-import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { ThemedText } from "@/components/ThemedText";
@@ -30,27 +29,26 @@ import {
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionTemplate/CreateCollectionTemplate.styles";
 import { Header } from "@/components/ui/Header/Header";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
-import { success } from "@/shared/result/Result";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Screen for editing a collection template.
+ */
 export default function EditCollectionTemplateScreen() {
   const { collectionService, itemTemplateService } = useServices();
   const router = useRouter();
   const colorScheme = useActiveColorScheme();
   const { showSnackbar } = useSnackbar();
-
   const { pageId, templateId } = useLocalSearchParams<{
     pageId: string;
     templateId: string;
   }>();
-
   const [title, setTitle] = useState("");
   const [templates, setTemplates] = useState<
     (AttributeDTO & { isExisting?: boolean })[]
   >([]);
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [attributeToDelete, setAttributeToDelete] =
     useState<AttributeDTO | null>(null);
@@ -60,6 +58,12 @@ export default function EditCollectionTemplateScreen() {
   const cards = templates;
   const otherCards = cards.slice(1);
   const previewCount = templates.filter((card) => card.preview).length;
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+
+  /**
+   * Effect to handle keyboard visibility on Android.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -75,9 +79,9 @@ export default function EditCollectionTemplateScreen() {
     }
   }, []);
 
-  const [errors, setErrors] = useState<EnrichedError[]>([]);
-  const [showError, setShowError] = useState(false);
-
+  /**
+   * Effect to load collection and template data when the component mounts.
+   */
   useEffect(() => {
     const loadData = async () => {
       const collectionResult = await collectionService.getCollectionByPageId(
@@ -140,6 +144,9 @@ export default function EditCollectionTemplateScreen() {
     loadData();
   }, []);
 
+  /**
+   * Handles changes to the title of a template card.
+   */
   const handleTitleChange = (id: number, text: string) => {
     setTemplates((prev) =>
       prev.map((card) =>
@@ -148,6 +155,9 @@ export default function EditCollectionTemplateScreen() {
     );
   };
 
+  /**
+   * Handles changes to the type of a template card.
+   */
   const handleTypeChange = (id: number, newType: string) => {
     setTemplates((prev) =>
       prev.map((card, index) =>
@@ -158,6 +168,9 @@ export default function EditCollectionTemplateScreen() {
     );
   };
 
+  /**
+   * Handles changes to the rating (icon) of a template card.
+   */
   const handleRatingChange = (
     id: number,
     rating: keyof typeof MaterialIcons.glyphMap,
@@ -169,6 +182,9 @@ export default function EditCollectionTemplateScreen() {
     );
   };
 
+  /**
+   * Handles changes to the options of a multi-select template card.
+   */
   const handleOptionsChange = (id: number, options: string[]) => {
     setTemplates((prev) =>
       prev.map((card) =>
@@ -177,6 +193,9 @@ export default function EditCollectionTemplateScreen() {
     );
   };
 
+  /**
+   * Handles the removal of a template card.
+   */
   const handleRemoveCard = async (id: number) => {
     if (templates.length <= 1) {
       showSnackbar("You must have at least one field.", "top", "error");
@@ -190,6 +209,9 @@ export default function EditCollectionTemplateScreen() {
     }
   };
 
+  /**
+   * Confirms the deletion of a template card.
+   */
   const confirmDelete = async () => {
     if (!attributeToDelete) return;
 
@@ -234,6 +256,9 @@ export default function EditCollectionTemplateScreen() {
     setShowDeleteModal(false);
   };
 
+  /**
+   * Handles adding a new template card.
+   */
   const handleAddCard = () => {
     if (templates.length >= 10) return;
     setTemplates((prev) => [
@@ -250,6 +275,9 @@ export default function EditCollectionTemplateScreen() {
     ]);
   };
 
+  /**
+   * Handles toggling the preview state of a template card.
+   */
   const handlePreviewToggle = (id: number) => {
     setTemplates((prev) => {
       const toggledCard = prev.find((card) => card.attributeID === id);
@@ -257,7 +285,6 @@ export default function EditCollectionTemplateScreen() {
 
       const index = prev.findIndex((card) => card.attributeID === id);
       if (index === 0) {
-        // 🔒 First card is always preview — don't toggle
         showSnackbar(
           "The first text field must always be in the preview.",
           "top",
@@ -271,7 +298,6 @@ export default function EditCollectionTemplateScreen() {
       const togglingOn = !isCurrentlyPreviewed;
 
       if (togglingOn) {
-        // Limit max 3 previews
         if (currentlySelected >= 3) {
           showSnackbar(
             "You can only preview up to 3 attributes.",
@@ -281,7 +307,6 @@ export default function EditCollectionTemplateScreen() {
           return prev;
         }
 
-        // Only one preview per type, except for Text (allow max 2)
         let sameTypeAlreadyPreviewed = false;
         if (toggledCard.type === AttributeType.Text) {
           const textPreviewCount = prev.filter(
@@ -315,6 +340,9 @@ export default function EditCollectionTemplateScreen() {
     });
   };
 
+  /**
+   * Handles saving the template changes.
+   */
   const handleSave = async () => {
     setHasClickedNext(true);
 
@@ -341,6 +369,7 @@ export default function EditCollectionTemplateScreen() {
     const existingAttributes: AttributeDTO[] = templates.filter(
       (template) => template.isExisting === true,
     );
+
     const newAttributes: AttributeDTO[] = templates.filter(
       (template) => template.isExisting === false,
     );
@@ -351,6 +380,7 @@ export default function EditCollectionTemplateScreen() {
       newAttributes,
       Number(pageId),
     );
+
     const hasMultiSelectDuplicates = templates.some((card) => {
       if (card.type !== "multi-select" || !card.options) return false;
 
@@ -396,6 +426,22 @@ export default function EditCollectionTemplateScreen() {
     }
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - Card: A card component to display the header and help icon.
+   * - IconTopRight: A component for the help icon in the top right corner.
+   * - ThemedText: A themed text component for consistent styling.
+   * - ItemCountContainer: A container for displaying item counts.
+   * - ItemCount: A component to display the count of fields and previews.
+   * - ItemTemplateCard: A component for each template card, allowing editing of title, type, rating, options, and preview state.
+   * - AddButton: A button to add new template cards.
+   * - BottomButtons: A component for the bottom action buttons (Cancel and Save).
+   * - InfoPopup: A modal to display help information about item templates.
+   * - DeleteModal: A modal for confirming the deletion of a template card.
+   * - ErrorPopup: A modal to display errors that occur during the process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
@@ -465,9 +511,6 @@ export default function EditCollectionTemplateScreen() {
           >
             {templates.map((card, index) => {
               const trimmedOptions = (card.options ?? []).map((o) => o.trim());
-              const lowerTrimmedOptions = trimmedOptions
-                .map((o) => o.toLowerCase())
-                .filter((o) => o !== "");
 
               const hasEmptyOption =
                 card.type === "multi-select" &&
@@ -476,11 +519,6 @@ export default function EditCollectionTemplateScreen() {
 
               const noSelectables =
                 card.type === "multi-select" && trimmedOptions.length === 0;
-
-              const hasDuplicates =
-                card.type === "multi-select" &&
-                new Set(lowerTrimmedOptions).size !==
-                  lowerTrimmedOptions.length;
 
               return (
                 <ItemTemplateCard
