@@ -1,48 +1,37 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, ScrollView, Keyboard } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
-import { Header } from "@/components/ui/Header/Header";
-import { Button } from "@/components/ui/Button/Button";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "react-native";
-import { KeyboardAvoidingView, Platform } from "react-native";
-import {
-  colorLabelMap,
-  colorKeyMap,
-  iconLabelMap,
-} from "@/constants/LabelMaps";
+import { Platform } from "react-native";
+import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
-import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { ThemedText } from "@/components/ThemedText";
-import { red } from "react-native-reanimated/lib/typescript/Colors";
 import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLabel";
 import { useFocusEffect } from "@react-navigation/native";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
-import { set } from "date-fns";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
-import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Screen for editing a widget.
+ */
 export default function EditWidgetScreen() {
   const { generalPageService, tagService } = useServices();
   const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
-
-  const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
   const { widgetID } = useLocalSearchParams<{ widgetID: string }>();
   const [pageData, setPageData] = useState<GeneralPageDTO | null>();
@@ -59,13 +48,18 @@ export default function EditWidgetScreen() {
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
+  const { showSnackbar } = useSnackbar();
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
     : "Choose Icon";
-
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
 
+    /**
+     * Maps widget colors to a standardized format for the color picker.
+     */
     return {
       id: key,
       color: value,
@@ -74,6 +68,9 @@ export default function EditWidgetScreen() {
     };
   });
 
+  /**
+   * Finds the key of a widget color based on its value.
+   */
   const getWidgetColorKey = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -87,11 +84,9 @@ export default function EditWidgetScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
-  const { showSnackbar } = useSnackbar();
-
-  const [errors, setErrors] = useState<EnrichedError[]>([]);
-  const [showError, setShowError] = useState(false);
-
+  /**
+   * Reference to store initial values for comparison after updates.
+   */
   const initialValuesRef = useRef({
     title: "",
     selectedTag: null as TagDTO | null,
@@ -99,10 +94,13 @@ export default function EditWidgetScreen() {
     selectedIcon: null as keyof typeof MaterialIcons.glyphMap | null,
   });
 
+  /**
+   * Updates the widget with the current state values.
+   */
   const updateWidget = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
-      showSnackbar("Please enter a title to continue.", "bottom", "error"); // ✅ Snackbar
+      showSnackbar("Please enter a title to continue.", "bottom", "error");
       return;
     }
 
@@ -137,7 +135,6 @@ export default function EditWidgetScreen() {
       await generalPageService.updateGeneralPageData(newPageDTO);
 
     if (updateResult.success) {
-      // only send snackbar if data has changed
       const hasChanges =
         title !== initialValuesRef.current.title ||
         selectedColor !== initialValuesRef.current.selectedColor ||
@@ -171,6 +168,9 @@ export default function EditWidgetScreen() {
     }
   };
 
+  /**
+   * Focus effect to fetch tags and widget data when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
@@ -202,6 +202,9 @@ export default function EditWidgetScreen() {
         }
       };
 
+      /**
+       * Fetches the general page data for the widget based on the widgetID.
+       */
       const fetchGeneralPage = async () => {
         try {
           const widgetResult = await generalPageService.getGeneralPageByID(
@@ -256,6 +259,9 @@ export default function EditWidgetScreen() {
     }, []),
   );
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -271,6 +277,9 @@ export default function EditWidgetScreen() {
     }
   }, []);
 
+  /**
+   * Effect to handle the last created tag parameter.
+   */
   useEffect(() => {
     if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
       try {
@@ -284,6 +293,20 @@ export default function EditWidgetScreen() {
     }
   }, [lastCreatedTagParam]);
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - Card: A styled card component for displaying content.
+   * - ThemedText: A text component that adapts to the current theme.
+   * - Widget: Displays a preview of the widget with the current settings.
+   * - TitleCard: A card for editing the widget title.
+   * - DividerWithLabel: A divider with a label for better UI organization.
+   * - TagPicker: Allows selection of tags for the widget.
+   * - ChooseCard: A card for selecting colors or icons.
+   * - BottomButtons: Provides buttons for discarding changes or saving the widget.
+   * - ChoosePopup: A popup for selecting colors or icons.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
@@ -461,7 +484,4 @@ export default function EditWidgetScreen() {
       />
     </GradientBackground>
   );
-}
-function setKeyboardVisible(arg0: boolean): void {
-  throw new Error("Function not implemented.");
 }
