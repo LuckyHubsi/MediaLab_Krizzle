@@ -14,7 +14,6 @@ import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionMo
 import { ModalSelection } from "@/components/Modals/CreateNCModal/CreateNCModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { FloatingAddButton } from "@/components/ui/NavBar/FloatingAddButton/FloatingAddButton";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/shared/dto/TagDTO";
 import { PageType } from "@/shared/enum/PageType";
@@ -27,10 +26,16 @@ import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderMod
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Returns a Material icon component with the specified name, size, and color.
+ */
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
+/**
+ * Returns the appropriate icon for a given page type.
+ */
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
@@ -42,6 +47,9 @@ export const getIconForPageType = (type: string) => {
   }
 };
 
+/**
+ * Inside Folder Screen that displays a folder with its widgets.
+ */
 export default function FolderScreen() {
   const { folderId, title } = useLocalSearchParams<{
     folderId: string;
@@ -54,19 +62,6 @@ export default function FolderScreen() {
   const [folderNameInput, setFolderNameInput] = useState("");
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showWidgetModal, setShowWidgetModal] = useState(false);
-
-  interface Widget {
-    id: string;
-    title: string;
-    tag: TagDTO;
-    page_icon?: string;
-    page_type: PageType;
-    color?: string;
-    archived: boolean;
-    pinned: boolean;
-    [key: string]: any;
-  }
-
   const [shouldReload, setShouldReload] = useState(false);
   const [widgets, setWidgets] = useState<Widget[]>([]);
   const [selectedTag, setSelectedTag] = useState<TagDTO | "All">("All");
@@ -79,15 +74,41 @@ export default function FolderScreen() {
   const [showWidgetDeleteModal, setShowWidgetDeleteModal] = useState(false);
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
-
   const [sortingMode, setSortingMode] = useState<FolderState>(
     FolderState.GeneralModfied,
   );
   const [folder, setFolder] = useState<FolderDTO | null>(null);
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
+  /**
+   * Widget interface that represents a widget in the folder.
+   * * @property {string} id - Unique identifier for the widget.
+   * * @property {string} title - Title of the widget.
+   * * @property {TagDTO} tag - Tag associated with the widget.
+   * * @property {string} [page_icon] - Optional icon for the widget.
+   * * @property {PageType} page_type - Type of the page (note or collection).
+   * * @property {string} [color] - Color of the widget, defaults to primary color.
+   * * @property {boolean} archived - Indicates if the widget is archived.
+   * * @property {boolean} pinned - Indicates if the widget is pinned.
+   * * @property {any} [key: string] - Additional properties can be added dynamically.
+   */
+  interface Widget {
+    id: string;
+    title: string;
+    tag: TagDTO;
+    page_icon?: string;
+    page_type: PageType;
+    color?: string;
+    archived: boolean;
+    pinned: boolean;
+    [key: string]: any;
+  }
+
+  /**
+   * Function to get the color key from a value.
+   */
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -102,6 +123,9 @@ export default function FolderScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
+  /**
+   * Maps the GeneralPageDTO data to enriched widgets.
+   */
   const mapToEnrichedWidgets = (data: GeneralPageDTO[] | null): Widget[] => {
     if (!data) return [];
     return data.map((widget) => ({
@@ -117,6 +141,10 @@ export default function FolderScreen() {
       pinned: widget.pinned,
     }));
   };
+
+  /**
+   * Handles the update of the folder name.
+   */
   const handleFolderUpdate = async () => {
     const trimmedName = folderNameInput.trim();
     if (!folder) return;
@@ -188,6 +216,10 @@ export default function FolderScreen() {
     }
   };
 
+  /**
+   * Focus effect to load folder and widgets data when the screen is focused.
+   * It retrieves the folder details and all widgets associated with it.
+   */
   useFocusEffect(
     useCallback(() => {
       const loadData = async () => {
@@ -256,6 +288,9 @@ export default function FolderScreen() {
     }, [folderId, sortingMode, shouldReload]),
   );
 
+  /**
+   * Filters the widgets based on the selected tag and search query.
+   */
   const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
@@ -270,6 +305,9 @@ export default function FolderScreen() {
     });
   };
 
+  /**
+   * Filters the widgets based on the selected tag and search query.
+   */
   const filteredWidgets = useMemo(
     () => filter(widgets),
     [widgets, selectedTag, searchQuery],
@@ -279,6 +317,9 @@ export default function FolderScreen() {
     [pinnedWidgets, selectedTag, searchQuery],
   );
 
+  /**
+   * Navigates to the page of the selected widget.
+   */
   const goToPage = (widget: Widget) => {
     const path =
       widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
@@ -288,12 +329,28 @@ export default function FolderScreen() {
     });
   };
 
+  /**
+   * Navigates to the edit page of the selected widget.
+   */
   const goToEditPage = (widget: Widget) => {
     router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
 
-  const { showSnackbar } = useSnackbar();
-
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title and icon.
+   * - ThemedView: A themed view component that applies the current theme.
+   * - SearchBar: A search bar component for filtering widgets.
+   * - ThemedText: A themed text component for displaying text.
+   * - Widget: A widget component that displays individual widgets.
+   * - QuickActionModal: A modal for quick actions like deletion, editing, and moving widgets.
+   * - ModalSelection: A modal for selecting options.
+   * - DeleteModal: A modal for confirming deletions.
+   * - BottomInputModal: A modal for inputting text, used for editing folder names.
+   * - SelectFolderModal: A modal for selecting a folder to move widgets.
+   * - ErrorPopup: A popup for displaying errors.
+   */
   return (
     <>
       <SafeAreaView>
@@ -423,17 +480,6 @@ export default function FolderScreen() {
               </ScrollView>
             </>
           )}
-
-          <View
-            style={{
-              position: "absolute",
-              right: 10,
-              bottom: 50,
-            }}
-          >
-            {/* TODO: Add onPress Logic */}
-            <FloatingAddButton onPress={() => {}} />
-          </View>
         </ThemedView>
       </SafeAreaView>
 
@@ -443,7 +489,7 @@ export default function FolderScreen() {
         items={[
           {
             label: "Last modified descending",
-            icon: "swap-vert", // or "arrow-upward"/"arrow-downward"
+            icon: "swap-vert",
             disabled: sortingMode === FolderState.GeneralModfied,
             onPress: () => {
               setSortingMode(FolderState.GeneralModfied);
@@ -715,6 +761,7 @@ export default function FolderScreen() {
         }}
         onClose={() => setShowWidgetDeleteModal(false)}
       />
+
       <SelectFolderModal
         widgetTitle={selectedWidget?.title}
         widgetId={selectedWidget?.id}
@@ -728,7 +775,6 @@ export default function FolderScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
