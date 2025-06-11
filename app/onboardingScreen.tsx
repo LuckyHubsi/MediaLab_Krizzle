@@ -14,14 +14,20 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
 const { width } = Dimensions.get("window");
-
 const steps = [Step1, Step2, Step3, Step4, Step5];
 
+/**
+ * OnboardingScreen that guides users through the onboarding process.
+ */
 export default function OnboardingScreen() {
   const [currentStep, setCurrentStep] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const colorSceme = useActiveColorScheme() ?? "light";
 
+  /**
+   * Handles the next button click.
+   * If the current step is less than the last step, it scrolls to the next step.
+   */
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentStep + 1 });
@@ -32,6 +38,10 @@ export default function OnboardingScreen() {
     }
   };
 
+  /**
+   * Handles the back button click.
+   * If the current step is greater than 0, it scrolls to the previous step.
+   */
   const handleBack = () => {
     if (currentStep > 0) {
       flatListRef.current?.scrollToIndex({ index: currentStep - 1 });
@@ -39,11 +49,21 @@ export default function OnboardingScreen() {
     }
   };
 
+  /**
+   * Handles the skip button click.
+   * It sets the onboarding status to true and navigates to the main app tabs.
+   */
   const handleSkip = () => {
     AsyncStorage.setItem("hasOnboarded", "true");
     router.replace("/(tabs)");
   };
 
+  /**
+   * Components used:
+   *
+   * - StepComponents: A series of components that represent each step in the onboarding process.
+   * - BottomButtons: A component that provides navigation buttons at the bottom of the screen.
+   */
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
