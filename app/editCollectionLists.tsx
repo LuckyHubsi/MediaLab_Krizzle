@@ -18,7 +18,6 @@ import {
   ItemCountContainer,
   ListContent,
   RemoveButtonContainer,
-  RemoveButtonContent,
   HorizontalTitleRow,
 } from "@/components/ui/CreateCollectionSteps/CreateCollectionList/CreateCollectionList.styles";
 import {
@@ -37,13 +36,15 @@ import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Screen for editing collection lists.
+ */
 export default function EditCollectionListsScreen() {
   const { collectionId, pageId } = useLocalSearchParams<{
     collectionId: string;
     pageId: string;
   }>();
   const { collectionService } = useServices();
-
   const numericId = Number(collectionId);
   const colorScheme = useActiveColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -59,10 +60,12 @@ export default function EditCollectionListsScreen() {
   const isPersisted = (id: string) => !isNaN(Number(id)) && initialIds.has(id);
   const [isLoading, setIsLoading] = useState(true);
   const { showSnackbar } = useSnackbar();
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const show = Keyboard.addListener("keyboardDidShow", () =>
@@ -78,6 +81,10 @@ export default function EditCollectionListsScreen() {
     }
   }, []);
 
+  /**
+   * Effect to load collection categories when the component mounts.
+   * It retrieves the categories from the collection service and maps them to the required format.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -118,17 +125,26 @@ export default function EditCollectionListsScreen() {
     })();
   }, [collectionId]);
 
+  /**
+   * Function to handle adding a new card (list).
+   */
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString(), title: "" };
     setLists((prev) => [...prev, newCard]);
   };
 
+  /**
+   * Function to handle removing a card (list).
+   */
   const handleRemoveCard = (id: string) => {
     if (lists.length <= 1) {
       showSnackbar("You must have at least one list.", "top", "error");
       return;
     }
 
+    /**
+     * Find the list item by ID and set it for deletion confirmation.
+     */
     const item = lists.find((l) => l.id === id);
     if (item) {
       setListToDelete(item);
@@ -136,12 +152,19 @@ export default function EditCollectionListsScreen() {
     }
   };
 
+  /**
+   * Function to handle changes to the title of a list.
+   */
   const handleTitleChange = (id: string, text: string) => {
     setLists((prev) =>
       prev.map((l) => (l.id === id ? { ...l, title: text } : l)),
     );
   };
 
+  /**
+   * Function to save all changes made to the lists.
+   * It checks if all titles are filled, ensures uniqueness, and then either inserts or updates the lists.
+   */
   const saveAllChanges = async () => {
     setHasClickedNext(true);
 
@@ -243,6 +266,10 @@ export default function EditCollectionListsScreen() {
     }
   };
 
+  /**
+   * Function to confirm the deletion of a list.
+   * It checks if the list to delete is valid, then attempts to delete it using the collection service.
+   */
   const confirmDelete = async () => {
     if (!listToDelete) return;
 
@@ -291,6 +318,25 @@ export default function EditCollectionListsScreen() {
     setShowDeleteModal(false);
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - Card: A styled card component for displaying content.
+   * -CardText: Contains text elements within the card.
+   * - CardHeader: A header section for the card.
+   * - ThemedText: A text component that adapts to the current theme.
+   * - ItemCountContainer: A container for displaying the count of lists.
+   * - ItemCount: Displays the number of lists and a maximum limit.
+   * - HorizontalTitleRow: A row for displaying the title of each list.
+   * - Textfield: A text input field for entering list titles.
+   * - RemoveButton: A button to remove a list.
+   * - AddButton: A button to add a new list.
+   * - BottomButtons: A component for navigation buttons at the bottom.
+   * - DeleteModal: A modal for confirming the deletion of a list.
+   * - InfoPopup: A modal for displaying help information about collection lists.
+   * - ErrorPopup: A modal for displaying errors that have occurred.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
