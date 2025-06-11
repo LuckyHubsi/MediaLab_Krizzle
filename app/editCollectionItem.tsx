@@ -15,6 +15,14 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Page for editing a collection item.
+ * This page allows users to modify the attributes of an existing item in a collection.
+ *
+ * @param itemId (required) - The ID of the item to be edited.
+ * @param routing - Routing parameter to handle navigation after saving.
+ */
+
 export default function EditCollectionItem() {
   const { itemId, routing } = useLocalSearchParams<{
     itemId: string;
@@ -22,7 +30,6 @@ export default function EditCollectionItem() {
   }>();
 
   const { collectionService, itemTemplateService } = useServices();
-
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [attributeValues, setAttributeValues] = useState<Record<number, any>>(
     {},
@@ -37,10 +44,12 @@ export default function EditCollectionItem() {
   const [error, setError] = useState<string | null>(null);
   const [hasClickedSave, setHasClickedSave] = useState(false);
   const { showSnackbar } = useSnackbar();
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  /**
+   * Effect to fetch the item and its attributes when the component mounts.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -173,6 +182,10 @@ export default function EditCollectionItem() {
     })();
   }, [itemId]);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   * This is necessary to adjust the layout when the keyboard is shown or hidden.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -188,6 +201,9 @@ export default function EditCollectionItem() {
     }
   }, []);
 
+  /**
+   * Effect to reset the hasClickedSave state when the component mounts.
+   */
   const handleInputChange = (
     attributeID: number,
     value: any,
@@ -210,12 +226,19 @@ export default function EditCollectionItem() {
     });
   };
 
+  /**
+   * Handles the change of the selected category from the list.
+   * Converts the categoryID to a number if it is not null, and updates the selectedCategoryID state.
+   */
   const handleListChange = (categoryID: number | null) => {
     const numericCategoryID = categoryID !== null ? Number(categoryID) : null;
-
     setSelectedCategoryID(numericCategoryID);
   };
 
+  /**
+   * Validates the title attribute of the collection item.
+   * Checks if the title attribute exists and if its value is a non-empty string.
+   */
   const validateTitle = () => {
     const titleAttr = attributes.find((a) => a.type === AttributeType.Text);
     if (!titleAttr) return true;
@@ -223,6 +246,9 @@ export default function EditCollectionItem() {
     return typeof val === "string" && val.trim().length > 0;
   };
 
+  /**
+   * Handles the saving of the collection item.
+   */
   const handleSaveItem = async (itemId: string) => {
     const firstKey = Object.keys(attributeValues)[0];
     const firstValueRaw = firstKey
@@ -243,6 +269,15 @@ export default function EditCollectionItem() {
     });
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the page.
+   * - Header: Displays the title and an icon for the page.
+   * - AddCollectionItemCard: A card component for editing the collection item attributes.
+   * - BottomButtons: Contains the Cancel and Save buttons for the page.
+   * - ErrorPopup: Displays any errors that occur during the item retrieval or update process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
