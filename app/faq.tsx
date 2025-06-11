@@ -3,7 +3,17 @@ import FAQSection from "@/components/ui/FAQSection/FAQSection";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Platform, SafeAreaView, StatusBar, View } from "react-native";
 
+/**
+ * FAQScreen that displays a FAQ section with a custom header.
+ */
 export default function FaqScreen() {
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title.
+   * - FAQSection: A section that displays frequently asked questions.
+   * - ThemedView: A themed view component that applies the current theme.
+   */
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
