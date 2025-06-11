@@ -1,6 +1,4 @@
 import TextEditor from "@/components/TextEditor/TextEditor";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppState, AppStateStatus, Platform, View } from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
@@ -13,7 +11,6 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import QuickActionModal, {
   QuickActionItem,
 } from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
@@ -23,6 +20,13 @@ import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * NotesScreen screen that displays a note with rich text editing capabilities.
+ *
+ * @params pageId - The ID of the note to display.
+ * @params title - The title of the note.
+ * @params routing - The routing behavior for the back button.
+ */
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
     pageId?: string;
@@ -30,7 +34,6 @@ export default function NotesScreen() {
     routing?: string;
   }>();
   const { generalPageService, noteService } = useServices();
-
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
@@ -44,10 +47,13 @@ export default function NotesScreen() {
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
+  /**
+   * Fetches the note data by page ID when the component mounts or when the pageId changes.
+   */
   useEffect(() => {
     if (pageId) {
       const numericID = Number(pageId);
@@ -88,6 +94,9 @@ export default function NotesScreen() {
     }
   }, [pageId, shouldReload, colorScheme]);
 
+  /**
+   * Saves the note content to the server when the content changes.
+   */
   const saveNote = async (html: string) => {
     if (!pageId) return;
     const updateResult = await noteService.updateNoteContent(
@@ -115,6 +124,9 @@ export default function NotesScreen() {
     }
   };
 
+  /**
+   * Debounced save function that saves the note content after a delay of 1000ms.
+   */
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -143,8 +155,16 @@ export default function NotesScreen() {
     });
   };
 
-  const { showSnackbar } = useSnackbar();
-
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title and actions.
+   * - TextEditor: A rich text editor for editing the note content.
+   * - QuickActionModal: A modal for quick actions on the note.
+   * - DeleteModal: A modal for confirming deletion of the note.
+   * - SelectFolderModal: A modal for selecting a folder to move the note.
+   * - ErrorPopup: A modal for displaying errors.
+   */
   return (
     <>
       <SafeAreaView
@@ -365,7 +385,6 @@ export default function NotesScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
