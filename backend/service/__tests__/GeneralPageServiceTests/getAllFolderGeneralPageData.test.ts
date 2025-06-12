@@ -1,10 +1,13 @@
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { GeneralPageService } from "../../GeneralPageService";
-import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { success } from "@/shared/result/Result";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { FolderState } from "@/shared/enum/FolderState";
+import {
+  mockGeneralPageRepository,
+  mockBaseRepository,
+} from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/GeneralPageMapper", () => ({
   GeneralPageMapper: {
@@ -24,34 +27,16 @@ describe("GeneralPageService - getAllFolderGeneralPageData", () => {
   } as any;
 
   let generalPageService: GeneralPageService;
-  let mockGeneralPageRepository: jest.Mocked<GeneralPageRepository>;
+
+  beforeAll(() => {
+    generalPageService = new GeneralPageService(
+      mockGeneralPageRepository,
+      mockBaseRepository,
+    );
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGeneralPageRepository = {
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    generalPageService = new GeneralPageService(mockGeneralPageRepository);
   });
 
   describe("different success cases dependent on page state", () => {

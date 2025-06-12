@@ -1,11 +1,13 @@
 import { pageID } from "@/backend/domain/common/IDs";
-import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { GeneralPageService } from "../../GeneralPageService";
-import { BaseRepository } from "@/backend/repository/interfaces/BaseRepository.interface";
+import {
+  mockGeneralPageRepository,
+  mockBaseRepository,
+} from "../ServiceTest.setup";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -19,41 +21,16 @@ jest.mock("@/backend/domain/common/IDs", () => {
 
 describe("GeneralPageService - togglePagePin", () => {
   let generalPageService: GeneralPageService;
-  let mockGeneralPageRepository: jest.Mocked<GeneralPageRepository>;
-  let mockBaseRepository: jest.Mocked<BaseRepository>;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockBaseRepository = {
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    mockGeneralPageRepository = {
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-      ...mockBaseRepository,
-    };
+  beforeAll(() => {
     generalPageService = new GeneralPageService(
       mockGeneralPageRepository,
       mockBaseRepository,
     );
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it("should return a success Result containing true", async () => {

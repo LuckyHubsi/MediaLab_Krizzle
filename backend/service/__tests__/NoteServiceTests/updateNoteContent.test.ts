@@ -1,4 +1,3 @@
-import { NoteRepository } from "@/backend/repository/interfaces/NoteRepository.interface";
 import { NoteService } from "../../NoteService";
 import { string50000 } from "@/backend/domain/common/types";
 import { success } from "@/shared/result/Result";
@@ -6,6 +5,7 @@ import { pageID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { mockNoteRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -28,48 +28,14 @@ jest.mock("@/backend/domain/common/types", () => {
 });
 
 describe("NoteService - updateNoteContent", () => {
-  const mockFolderEntity = {
-    folderID: 1,
-    folderName: "Test Folder",
-  } as any;
-
-  const mockFolderDTO = {
-    folderID: 1,
-    folderName: "Test Folder",
-  } as any;
-
   let noteService: NoteService;
-  let mockNoteRepository: jest.Mocked<NoteRepository>;
+
+  beforeAll(() => {
+    noteService = new NoteService(mockNoteRepository);
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockNoteRepository = {
-      insertNote: jest.fn(),
-      updateContent: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      getByPageId: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-    };
-    noteService = new NoteService(mockNoteRepository);
   });
 
   it("should return a success Result containing undefined/void", async () => {

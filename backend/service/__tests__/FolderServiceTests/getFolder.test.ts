@@ -1,11 +1,11 @@
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 import { FolderService } from "../../FolderService";
-import { FolderRepository } from "@/backend/repository/interfaces/FolderRepository.interface";
 import { success } from "@/shared/result/Result";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
 import { folderID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
+import { mockFolderRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/FolderMapper", () => ({
   FolderMapper: {
@@ -31,23 +31,13 @@ describe("folderService - getFolder", () => {
   } as any;
 
   let folderService: FolderService;
-  let mockFolderRepository: jest.Mocked<FolderRepository>;
+
+  beforeAll(() => {
+    folderService = new FolderService(mockFolderRepository);
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFolderRepository = {
-      getAllFolders: jest.fn(),
-      getFolderByID: jest.fn(),
-      insertFolder: jest.fn(),
-      deleteFolderByID: jest.fn(),
-      updateFolderByID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    folderService = new FolderService(mockFolderRepository);
   });
 
   it("should return a success Result containing a FolderDTO", async () => {
