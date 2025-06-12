@@ -2,7 +2,7 @@ import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 import { FolderService } from "../../FolderService";
 import { FolderRepository } from "@/backend/repository/interfaces/FolderRepository.interface";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
 
 jest.mock("@/backend/util/mapper/FolderMapper", () => ({
@@ -55,9 +55,9 @@ describe("folderService - getAllFolders", () => {
     );
   });
 
-  it("should return failure Result if RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Fetch Failed') is thrown", async () => {
     mockFolderRepository.getAllFolders.mockRejectedValue(
-      new RepositoryErrorNew("Fetch Failed"),
+      new RepositoryError("Fetch Failed"),
     );
 
     const result = await folderService.getAllFolders();
@@ -74,7 +74,7 @@ describe("folderService - getAllFolders", () => {
     expect(mockFolderRepository.getAllFolders).toHaveBeenCalled();
   });
 
-  it("should return failure Result if any Error besides RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if any Error besides RepositoryError('Fetch Failed') is thrown", async () => {
     mockFolderRepository.getAllFolders.mockRejectedValue(new Error());
 
     const result = await folderService.getAllFolders();

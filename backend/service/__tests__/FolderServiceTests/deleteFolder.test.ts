@@ -5,7 +5,7 @@ import { folderID } from "@/backend/domain/common/IDs";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/domain/common/IDs", () => ({
   folderID: {
@@ -68,11 +68,11 @@ describe("FolderService - deleteFolder", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Delete Failed') is thrown", async () => {
     const mockBrandedId = 1 as any;
     (folderID.parse as jest.Mock).mockReturnValue(mockBrandedId);
     mockFolderRepository.deleteFolderByID.mockRejectedValue(
-      new RepositoryErrorNew("Delete Failed"),
+      new RepositoryError("Delete Failed"),
     );
 
     const result = await folderService.deleteFolder(1);
@@ -87,7 +87,7 @@ describe("FolderService - deleteFolder", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Delete Failed') is thrown", async () => {
     const mockBrandedId = 1 as any;
     (folderID.parse as jest.Mock).mockReturnValue(mockBrandedId);
     mockFolderRepository.deleteFolderByID.mockRejectedValue(new Error());

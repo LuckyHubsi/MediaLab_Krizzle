@@ -1,4 +1,4 @@
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { ItemRepository } from "../interfaces/ItemRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import {
@@ -64,7 +64,7 @@ export class ItemRepositoryImpl
    *
    * @param itemId - The ID of the item to be fetched.
    * @returns A Promise resolving to an `Item` domain entity.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getItemByID(itemId: ItemID): Promise<Item> {
     try {
@@ -74,10 +74,10 @@ export class ItemRepositoryImpl
       if (item) {
         return ItemMapper.toEntity(item);
       } else {
-        throw new RepositoryErrorNew("Not Found");
+        throw new RepositoryError("Not Found");
       }
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -88,7 +88,7 @@ export class ItemRepositoryImpl
    * @param attributes - An array of Attributes to help with mapping the items to domain entities.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an array of `PreviewItem` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getItemsByID(
     pageId: PageID,
@@ -104,7 +104,7 @@ export class ItemRepositoryImpl
 
       return ItemMapper.toPreviewEntities(items, attributes);
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -115,7 +115,7 @@ export class ItemRepositoryImpl
    * @param categoryId - The `CategoryID` of the category the item was assigned to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to a ItemID.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertItemAndReturnID(
     pageId: PageID,
@@ -135,7 +135,7 @@ export class ItemRepositoryImpl
       });
       return itemID.parse(itemId);
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -146,7 +146,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertTextValue(
     itemAttributeValue: ItemAttributeValue,
@@ -165,7 +165,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -176,7 +176,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertDateValue(
     itemAttributeValue: ItemAttributeValue,
@@ -195,7 +195,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -206,7 +206,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertRatingValue(
     itemAttributeValue: ItemAttributeValue,
@@ -225,7 +225,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -236,7 +236,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertMultiselectValue(
     itemAttributeValue: ItemAttributeValue,
@@ -255,7 +255,7 @@ export class ItemRepositoryImpl
           txn,
         );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -265,7 +265,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertImageValue(
     itemAttributeValue: ItemAttributeValue,
@@ -290,7 +290,7 @@ export class ItemRepositoryImpl
         );
       }
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -300,7 +300,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item the value belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertLinkValue(
     itemAttributeValue: ItemAttributeValue,
@@ -326,7 +326,7 @@ export class ItemRepositoryImpl
         );
       }
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -336,7 +336,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item to be deleted.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to `PageID` (the page it belonged to).
-   * @throws RepositoryErrorNew if the delete fails.
+   * @throws RepositoryError if the delete fails.
    */
   async deleteItem(
     itemId: ItemID,
@@ -350,7 +350,7 @@ export class ItemRepositoryImpl
       );
       return pageID.parse(result?.pageID);
     } catch (error) {
-      throw new RepositoryErrorNew("Delete Failed");
+      throw new RepositoryError("Delete Failed");
     }
   }
 
@@ -360,7 +360,7 @@ export class ItemRepositoryImpl
    * @param itemId - The `ItemID` of the item for which the values should be deleted.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the delete fails.
+   * @throws RepositoryError if the delete fails.
    */
   async deleteItemValues(
     itemId: ItemID,
@@ -373,7 +373,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Delete Failed");
+      throw new RepositoryError("Delete Failed");
     }
   }
 
@@ -384,7 +384,7 @@ export class ItemRepositoryImpl
    * @param categoryId - The `CategoryID` of the category the item was assigned to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateItem(
     itemId: ItemID,
@@ -394,7 +394,7 @@ export class ItemRepositoryImpl
     try {
       await this.executeQuery(updateItemQuery, [categoryId, itemId], txn);
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -406,7 +406,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateTextValue(
     itemId: ItemID,
@@ -421,7 +421,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -433,7 +433,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null is removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateDateValue(
     itemId: ItemID,
@@ -448,7 +448,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -460,7 +460,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateRatingValue(
     itemId: ItemID,
@@ -475,7 +475,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -487,7 +487,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateMultiselectValue(
     itemId: ItemID,
@@ -502,7 +502,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -514,7 +514,7 @@ export class ItemRepositoryImpl
    * @param value - The updated value or null if removed.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateImageValue(
     itemId: ItemID,
@@ -529,7 +529,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -542,7 +542,7 @@ export class ItemRepositoryImpl
    * @param displayText - The display text of the hyperlink.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateLinkValue(
     itemId: ItemID,
@@ -558,7 +558,7 @@ export class ItemRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -568,7 +568,7 @@ export class ItemRepositoryImpl
    * @param pageId - The ID of the page.
    * @returns A Promise resolving to an array of `ItemIDs`.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getItemIDs(
     pageId: PageID,
@@ -583,7 +583,7 @@ export class ItemRepositoryImpl
 
       return itemIDs.map((id) => itemID.parse(id.itemID));
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -593,7 +593,7 @@ export class ItemRepositoryImpl
    * @param pageId - The ID of the page.
    * @returns A Promise resolving to an array of `ItemIDs`.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getMultiselectValues(
     itemID: ItemID,
@@ -624,7 +624,7 @@ export class ItemRepositoryImpl
       }
       return null;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 }

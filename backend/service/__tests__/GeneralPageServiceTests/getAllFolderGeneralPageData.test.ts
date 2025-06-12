@@ -2,7 +2,7 @@ import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { GeneralPageService } from "../../GeneralPageService";
 import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { FolderState } from "@/shared/enum/FolderState";
 
@@ -115,9 +115,9 @@ describe("GeneralPageService - getAllFolderGeneralPageData", () => {
   });
 
   describe("different error cases returning failure containing ServiceErrorType of 'Retrieval Failed'", () => {
-    it("should return failure Result if RepositoryErrorNew('Fetch Failed') is thrown for sorting mode modification date", async () => {
+    it("should return failure Result if RepositoryError('Fetch Failed') is thrown for sorting mode modification date", async () => {
       mockGeneralPageRepository.getAllFolderPagesSortedByModified.mockRejectedValue(
-        new RepositoryErrorNew("Fetch Failed"),
+        new RepositoryError("Fetch Failed"),
       );
 
       const result = await generalPageService.getAllFolderGeneralPageData(
@@ -136,9 +136,9 @@ describe("GeneralPageService - getAllFolderGeneralPageData", () => {
         throw new Error("Expected failure result, but got success");
       }
     });
-    it("should return failure Result if RepositoryErrorNew('Fetch Failed') is thrown for sorting mode creation date", async () => {
+    it("should return failure Result if RepositoryError('Fetch Failed') is thrown for sorting mode creation date", async () => {
       mockGeneralPageRepository.getAllFolderPagesSortedByCreated.mockRejectedValue(
-        new RepositoryErrorNew("Fetch Failed"),
+        new RepositoryError("Fetch Failed"),
       );
 
       const result = await generalPageService.getAllFolderGeneralPageData(
@@ -157,9 +157,9 @@ describe("GeneralPageService - getAllFolderGeneralPageData", () => {
         throw new Error("Expected failure result, but got success");
       }
     });
-    it("should return failure Result if RepositoryErrorNew('Fetch Failed') is thrown for sorting mode alphabet", async () => {
+    it("should return failure Result if RepositoryError('Fetch Failed') is thrown for sorting mode alphabet", async () => {
       mockGeneralPageRepository.getAllFolderPagesSortedByAlphabet.mockRejectedValue(
-        new RepositoryErrorNew("Fetch Failed"),
+        new RepositoryError("Fetch Failed"),
       );
 
       const result = await generalPageService.getAllFolderGeneralPageData(

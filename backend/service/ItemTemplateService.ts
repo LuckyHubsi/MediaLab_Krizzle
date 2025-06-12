@@ -11,7 +11,7 @@ import {
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
 import { ZodError } from "zod";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { TemplateErrorMessages } from "@/shared/error/ErrorMessages";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { AttributeMapper } from "../util/mapper/AttributeMapper";
@@ -55,14 +55,14 @@ export class ItemTemplateService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: TemplateErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -270,11 +270,9 @@ export class ItemTemplateService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -316,9 +314,8 @@ export class ItemTemplateService {
           message: TemplateErrorMessages.validateAttributeToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({

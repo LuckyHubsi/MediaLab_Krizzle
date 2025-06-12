@@ -4,7 +4,7 @@ import { pageID } from "@/backend/domain/common/IDs";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -78,10 +78,10 @@ describe("GeneralPageService - deleteGeneralPage", () => {
     expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Delete Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(
-      new RepositoryErrorNew("Delete Failed"),
+      new RepositoryError("Delete Failed"),
     );
 
     const result = await generalPageService.deleteGeneralPage(1);
@@ -98,7 +98,7 @@ describe("GeneralPageService - deleteGeneralPage", () => {
     expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(1);
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Delete Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(new Error());
 

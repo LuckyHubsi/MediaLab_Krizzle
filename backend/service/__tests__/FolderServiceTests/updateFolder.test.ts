@@ -4,7 +4,7 @@ import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/util/mapper/FolderMapper", () => ({
   FolderMapper: {
@@ -80,12 +80,12 @@ describe("FolderService - updateFolder", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Udpate Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (FolderMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockFolderEntity,
     );
     mockFolderRepository.updateFolderByID.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+      new RepositoryError("Update Failed"),
     );
 
     const result = await folderService.updateFolder(mockFolderDTO);
@@ -100,7 +100,7 @@ describe("FolderService - updateFolder", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (FolderMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockFolderEntity,
     );

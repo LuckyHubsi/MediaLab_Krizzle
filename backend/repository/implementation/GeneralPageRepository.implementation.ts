@@ -5,7 +5,7 @@ import {
 import { GeneralPageRepository } from "../interfaces/GeneralPageRepository.interface";
 import { BaseRepositoryImpl } from "./BaseRepository.implementation";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
   deleteGeneralPageByIDQuery,
   insertNewPageQuery,
@@ -51,7 +51,7 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their last modified date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllPagesSortedByModified(): Promise<GeneralPage[]> {
     try {
@@ -71,7 +71,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -79,7 +79,7 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by alphabet (ascending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllPagesSortedByAlphabet(): Promise<GeneralPage[]> {
     try {
@@ -99,7 +99,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -107,7 +107,7 @@ export class GeneralPageRepositoryImpl
    * Fetches all general pages sorted by their creation date (descending).
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllPagesSortedByCreated(): Promise<GeneralPage[]> {
     try {
@@ -127,7 +127,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -136,7 +136,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllFolderPagesSortedByModified(
     folderId: FolderID,
@@ -159,7 +159,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -168,7 +168,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllFolderPagesSortedByAlphabet(
     folderId: FolderID,
@@ -191,7 +191,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -200,7 +200,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param folderID - A branded folderID.
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllFolderPagesSortedByCreated(
     folderId: FolderID,
@@ -223,7 +223,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -231,7 +231,7 @@ export class GeneralPageRepositoryImpl
    * Fetches all pinned general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllPinnedPages(): Promise<GeneralPage[]> {
     try {
@@ -251,7 +251,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -259,7 +259,7 @@ export class GeneralPageRepositoryImpl
    * Fetches all archived general pages.
    *
    * @returns A Promise resolving to an array of `GeneralPage` domain entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getAllArchivedPages(): Promise<GeneralPage[]> {
     try {
@@ -279,7 +279,7 @@ export class GeneralPageRepositoryImpl
       }
       return validPages;
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -288,7 +288,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to a `GeneralPage` domain entity.
-   * @throws RepositoryErrorNew if the fetch fails or if the page was not found.
+   * @throws RepositoryError if the fetch fails or if the page was not found.
    */
   async getByPageID(pageID: PageID): Promise<GeneralPage> {
     try {
@@ -299,10 +299,10 @@ export class GeneralPageRepositoryImpl
       if (result !== null) {
         return GeneralPageMapper.toEntity(result);
       } else {
-        throw new RepositoryErrorNew("Not Found");
+        throw new RepositoryError("Not Found");
       }
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -312,7 +312,7 @@ export class GeneralPageRepositoryImpl
    * @param pageID - A branded pageID.
    * @param updatedPage - A NewGeneralPage entity.
    * @returns A Promise resolving to a boolean.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateGeneralPageData(
     pageID: PageID,
@@ -329,7 +329,7 @@ export class GeneralPageRepositoryImpl
       ]);
       return true;
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -339,7 +339,7 @@ export class GeneralPageRepositoryImpl
    * @param page - A `NewGeneralPage` entity.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to a PageID.
-   * @throws RepositoryErrorNew if the insert fails.
+   * @throws RepositoryError if the insert fails.
    */
   async insertPage(
     page: NewGeneralPage,
@@ -369,7 +369,7 @@ export class GeneralPageRepositoryImpl
       });
       return pageID.parse(pageId);
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -378,7 +378,7 @@ export class GeneralPageRepositoryImpl
    *
    * @param pageID - A branded pageID.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryErrorNew if the delete fails.
+   * @throws RepositoryError if the delete fails.
    */
   async deletePage(pageID: PageID): Promise<boolean> {
     try {
@@ -389,7 +389,7 @@ export class GeneralPageRepositoryImpl
       });
     } catch (error) {
       console.error("Error in deletePage:", error);
-      throw new RepositoryErrorNew("Delete Failed");
+      throw new RepositoryError("Delete Failed");
     }
   }
 
@@ -400,7 +400,7 @@ export class GeneralPageRepositoryImpl
    * @param currentPinStatus - A boolean representing the current pin status.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updatePin(
     pageID: PageID,
@@ -418,7 +418,7 @@ export class GeneralPageRepositoryImpl
 
       return true;
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -429,7 +429,7 @@ export class GeneralPageRepositoryImpl
    * @param currentArchiveStatus - A boolean representing the current archive status.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true on success.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateArchive(
     pageID: PageID,
@@ -451,7 +451,7 @@ export class GeneralPageRepositoryImpl
 
       return true;
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -461,7 +461,7 @@ export class GeneralPageRepositoryImpl
    * @param pageId - A branded pageID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateDateModified(
     pageId: PageID,
@@ -475,7 +475,7 @@ export class GeneralPageRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -486,7 +486,7 @@ export class GeneralPageRepositoryImpl
    * @param parentId - A branded folderID to which the page should be moved.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to true if successful.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateParentID(
     pageId: PageID,
@@ -497,7 +497,7 @@ export class GeneralPageRepositoryImpl
       await this.executeQuery(updateParentFolderQuery, [parentId, pageId]);
       return true;
     } catch (error) {
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 }

@@ -5,7 +5,7 @@ import { success } from "@/shared/result/Result";
 import { pageID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -123,11 +123,11 @@ describe("NoteService - updateNoteContent", () => {
     expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Udpate Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
     mockNoteRepository.updateContent.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+      new RepositoryError("Update Failed"),
     );
 
     const result = await noteService.updateNoteContent(1, "content");
@@ -145,7 +145,7 @@ describe("NoteService - updateNoteContent", () => {
     expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(1);
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
     mockNoteRepository.updateContent.mockRejectedValue(new Error());

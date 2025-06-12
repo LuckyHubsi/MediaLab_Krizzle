@@ -2,7 +2,7 @@ import { TagRepository } from "@/backend/repository/interfaces/TagRepository.int
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagService } from "../../TagService";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
 import { ZodError } from "zod";
 
@@ -71,10 +71,10 @@ describe("TagService - insertNewTag", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Insert Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Insert Failed') is thrown", async () => {
     (TagMapper.toNewEntity as jest.Mock).mockReturnValue(mockNewTagEntity);
     mockTagRepository.insertTag.mockRejectedValue(
-      new RepositoryErrorNew("Insert Failed"),
+      new RepositoryError("Insert Failed"),
     );
 
     const result = await tagService.insertTag(mockNewTagDTO);
@@ -89,7 +89,7 @@ describe("TagService - insertNewTag", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Insert Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Insert Failed') is thrown", async () => {
     (TagMapper.toNewEntity as jest.Mock).mockReturnValue(mockNewTagEntity);
     mockTagRepository.insertTag.mockRejectedValue(new Error());
 

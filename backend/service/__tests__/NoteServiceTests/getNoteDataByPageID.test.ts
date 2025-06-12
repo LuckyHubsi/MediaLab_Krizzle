@@ -4,7 +4,7 @@ import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPa
 import { pageID } from "@/backend/domain/common/IDs";
 import { NoteMapper } from "@/backend/util/mapper/NoteMapper";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
 import { ZodError } from "zod";
 
@@ -79,10 +79,10 @@ describe("noteService - getNoteDataByPageID", () => {
     );
   });
 
-  it("should return failure Result if RepositoryErrorNew('Not Found') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Not Found') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
     mockNoteRepository.getByPageId.mockRejectedValue(
-      new RepositoryErrorNew("Not Found"),
+      new RepositoryError("Not Found"),
     );
 
     const result = await noteService.getNoteDataByPageID(1);
@@ -116,7 +116,7 @@ describe("noteService - getNoteDataByPageID", () => {
     }
   });
 
-  it("should return failure Result if any Error besides RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if any Error besides RepositoryError('Fetch Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
     mockNoteRepository.getByPageId.mockRejectedValue(new Error());
 

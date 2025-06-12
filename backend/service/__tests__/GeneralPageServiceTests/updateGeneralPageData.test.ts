@@ -4,7 +4,7 @@ import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPa
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/util/mapper/GeneralPageMapper", () => ({
   GeneralPageMapper: {
@@ -88,12 +88,12 @@ describe("GeneralPageService - updateGeneralPageData", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Udpate Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (GeneralPageMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockPageEntity,
     );
     mockGeneralPageRepository.updateGeneralPageData.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+      new RepositoryError("Update Failed"),
     );
 
     const result = await generalPageService.updateGeneralPageData(mockPageDTO);
@@ -108,7 +108,7 @@ describe("GeneralPageService - updateGeneralPageData", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (GeneralPageMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockPageEntity,
     );

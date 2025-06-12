@@ -4,7 +4,7 @@ import { NoteMapper } from "@/backend/util/mapper/NoteMapper";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 
 jest.mock("@/backend/util/mapper/NoteMapper", () => ({
   NoteMapper: {
@@ -106,7 +106,7 @@ describe("NoteService - insertNewNote", () => {
     expect(mockNoteRepository.insertNote).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Insert Failed') is thrown pt.1", async () => {
+  it("should return failure Result if RepositoryError('Insert Failed') is thrown pt.1", async () => {
     (NoteMapper.toNewEntity as jest.Mock).mockReturnValue(mockNewNoteEntity);
     mockNoteRepository.executeTransaction.mockImplementation(
       async (callback) => {
@@ -114,7 +114,7 @@ describe("NoteService - insertNewNote", () => {
       },
     );
     mockNoteRepository.insertPage.mockRejectedValue(
-      new RepositoryErrorNew("Insert Failed"),
+      new RepositoryError("Insert Failed"),
     );
     mockNoteRepository.insertNote.mockResolvedValue();
 
@@ -133,7 +133,7 @@ describe("NoteService - insertNewNote", () => {
     expect(mockNoteRepository.insertNote).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Insert Failed') is thrown pt.2", async () => {
+  it("should return failure Result if RepositoryError('Insert Failed') is thrown pt.2", async () => {
     (NoteMapper.toNewEntity as jest.Mock).mockReturnValue(mockNewNoteEntity);
     mockNoteRepository.executeTransaction.mockImplementation(
       async (callback) => {
@@ -142,7 +142,7 @@ describe("NoteService - insertNewNote", () => {
     );
     mockNoteRepository.insertPage.mockReturnValue(pageId);
     mockNoteRepository.insertNote.mockRejectedValue(
-      new RepositoryErrorNew("Insert Failed"),
+      new RepositoryError("Insert Failed"),
     );
 
     const result = await noteService.insertNote(mockNewNoteDTO);
@@ -160,7 +160,7 @@ describe("NoteService - insertNewNote", () => {
     expect(mockNoteRepository.insertNote).toHaveBeenCalledTimes(1);
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Insert Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Insert Failed') is thrown", async () => {
     (NoteMapper.toNewEntity as jest.Mock).mockReturnValue(mockNewNoteEntity);
     mockNoteRepository.executeTransaction.mockRejectedValue(new Error());
 

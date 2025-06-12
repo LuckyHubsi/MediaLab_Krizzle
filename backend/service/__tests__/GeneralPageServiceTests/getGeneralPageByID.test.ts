@@ -4,7 +4,7 @@ import { pageID } from "@/backend/domain/common/IDs";
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { success } from "@/shared/result/Result";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { ZodError } from "zod";
 
 jest.mock("@/backend/util/mapper/GeneralPageMapper", () => ({
@@ -75,10 +75,10 @@ describe("GeneralPageService - getGeneralPageByID", () => {
     );
   });
 
-  it("should return failure Result if RepositoryErrorNew('Not Found') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Not Found') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
     mockGeneralPageRepository.getByPageID.mockRejectedValue(
-      new RepositoryErrorNew("Not Found"),
+      new RepositoryError("Not Found"),
     );
 
     const result = await generalPageService.getGeneralPageByID(1);
@@ -112,7 +112,7 @@ describe("GeneralPageService - getGeneralPageByID", () => {
     }
   });
 
-  it("should return failure Result if any Error besides RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if any Error besides RepositoryError('Fetch Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
     mockGeneralPageRepository.getByPageID.mockRejectedValue(new Error());
 

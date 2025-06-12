@@ -21,7 +21,7 @@ import * as FileSystem from "expo-file-system";
 import { Item } from "@/backend/domain/entity/Item";
 import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
 import { ZodError } from "zod";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import {
   CategoryErrorMessages,
   CollectionErrorMessages,
@@ -66,14 +66,14 @@ export class CollectionService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: CollectionErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -175,9 +175,8 @@ export class CollectionService {
           message: CollectionErrorMessages.validateNewCollection,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -210,10 +209,7 @@ export class CollectionService {
         );
       return success(categories.map(CollectionCategoryMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: CategoryErrorMessages.loadingAllCategories,
@@ -258,9 +254,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateNewCollectionCat,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -309,9 +304,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -353,9 +347,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -450,14 +443,14 @@ export class CollectionService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: ItemErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -558,9 +551,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateNewItem,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -624,9 +616,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateItemToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -748,9 +739,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateItemToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -788,10 +778,7 @@ export class CollectionService {
 
       return success(ItemMapper.toItemsDTO(previewItems, attributes));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: ItemErrorMessages.loadingAllItems,

@@ -1,4 +1,4 @@
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { BaseRepository } from "../interfaces/BaseRepository.interface";
 import * as SQLite from "expo-sqlite";
 
@@ -79,7 +79,7 @@ export class BaseRepositoryImpl implements BaseRepository {
    * @template T - The return type of the function.
    * @param {(txn: SQLite.SQLiteDatabase) => Promise<T>} fn - The function to execute within the transaction.
    * @returns {Promise<T>} A promise that resolves to the return value of the function.
-   * @throws {RepositoryErrorNew} Of type 'Transaction Failed' if the transaction fails and rolls back.
+   * @throws {RepositoryError} Of type 'Transaction Failed' if the transaction fails and rolls back.
    *
    */
   async executeTransaction<T>(
@@ -99,7 +99,7 @@ export class BaseRepositoryImpl implements BaseRepository {
           } catch (error) {
             console.error("Transaction error, rolling back:", error);
             reject(error);
-            throw new RepositoryErrorNew("Transaction Failed");
+            throw new RepositoryError("Transaction Failed");
           }
         });
       });

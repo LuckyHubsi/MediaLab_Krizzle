@@ -9,7 +9,7 @@ import { ZodError } from "zod";
 import { FolderState } from "@/shared/enum/FolderState";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
 // import { collectionService } from "./CollectionService";
@@ -42,7 +42,7 @@ export class GeneralPageService {
       let pages: GeneralPage[] = [];
       switch (pageState) {
         case GeneralPageState.GeneralModfied:
-          // throw new RepositoryErrorNew("Fetch Failed");
+          // throw new RepositoryError("Fetch Failed");
           pages = await this.generalPageRepo.getAllPagesSortedByModified();
           break;
         case GeneralPageState.GeneralCreated:
@@ -62,10 +62,7 @@ export class GeneralPageService {
       }
       return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         let errorMessage: string = "";
         switch (pageState) {
           case GeneralPageState.GeneralModfied:
@@ -139,10 +136,7 @@ export class GeneralPageService {
       }
       return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         let errorMessage: string = "";
         switch (sortingMode) {
           case FolderState.GeneralModfied:
@@ -189,14 +183,14 @@ export class GeneralPageService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: PageErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -236,7 +230,7 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Update Failed"
       ) {
         return failure({
@@ -282,9 +276,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -330,9 +323,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -368,7 +360,7 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Delete Failed"
       ) {
         return failure({
@@ -416,9 +408,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
