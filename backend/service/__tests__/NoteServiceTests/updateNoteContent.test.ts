@@ -73,12 +73,11 @@ describe("NoteService - updateNoteContent", () => {
   });
 
   it("should return a success Result containing undefined/void", async () => {
-    mockNoteRepository.updateContent.mockResolvedValue(true);
+    mockNoteRepository.executeTransaction.mockResolvedValue(true);
 
     const result = await noteService.updateNoteContent(1, "content");
 
     expect(result).toEqual(success(undefined));
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledWith(1, "content");
     expect(pageID.parse as jest.Mock).toHaveBeenCalledWith(1);
     expect(string50000.parse as jest.Mock).toHaveBeenCalledWith("content");
   });
@@ -100,7 +99,7 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(0);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(0);
   });
 
   it("should return failure Result if ZodError is thrown pt.2", async () => {
@@ -120,13 +119,13 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(0);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(0);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(0);
   });
 
   it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
-    mockNoteRepository.updateContent.mockRejectedValue(
+    mockNoteRepository.executeTransaction.mockRejectedValue(
       new RepositoryError("Update Failed"),
     );
 
@@ -142,13 +141,13 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(1);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(1);
   });
 
   it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
-    mockNoteRepository.updateContent.mockRejectedValue(new Error());
+    mockNoteRepository.executeTransaction.mockRejectedValue(new Error());
 
     const result = await noteService.updateNoteContent(1, "content");
 
@@ -162,6 +161,6 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(1);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(1);
   });
 });
