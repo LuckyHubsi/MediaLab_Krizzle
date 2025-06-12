@@ -364,7 +364,10 @@ export default function FolderScreen() {
             <ThemedText textIsCentered>Your Folder is empty.</ThemedText>
           ) : (
             <>
-              <SearchBar placeholder="Search" onSearch={setSearchQuery} />
+              <SearchBar
+                placeholder="Search for widget title"
+                onSearch={setSearchQuery}
+              />
 
               <ScrollView
                 contentContainerStyle={{ paddingBottom: 40 }}

@@ -217,7 +217,7 @@ export default function FoldersScreen() {
           ) : (
             <>
               <SearchBar
-                placeholder="Search for folder name"
+                placeholder="Search for older name"
                 onSearch={(query) => setSearchQuery(query)}
               />
 
