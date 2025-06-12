@@ -5,6 +5,7 @@ import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { BaseRepository } from "@/backend/repository/interfaces/BaseRepository.interface";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -19,9 +20,17 @@ jest.mock("@/backend/domain/common/IDs", () => {
 describe("GeneralPageService - updateFolderID", () => {
   let generalPageService: GeneralPageService;
   let mockGeneralPageRepository: jest.Mocked<GeneralPageRepository>;
+  let mockBaseRepository: jest.Mocked<BaseRepository>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockBaseRepository = {
+      executeQuery: jest.fn(),
+      fetchFirst: jest.fn(),
+      fetchAll: jest.fn(),
+      executeTransaction: jest.fn(),
+      getLastInsertId: jest.fn(),
+    };
     mockGeneralPageRepository = {
       getAllFolderPagesSortedByModified: jest.fn(),
       getAllFolderPagesSortedByCreated: jest.fn(),
@@ -39,23 +48,21 @@ describe("GeneralPageService - updateFolderID", () => {
       updateArchive: jest.fn(),
       updateDateModified: jest.fn(),
       updateParentID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
+      ...mockBaseRepository,
     };
-    generalPageService = new GeneralPageService(mockGeneralPageRepository);
+    generalPageService = new GeneralPageService(
+      mockGeneralPageRepository,
+      mockBaseRepository,
+    );
   });
 
   it("should return a success Result containing true", async () => {
-    mockGeneralPageRepository.updateParentID.mockResolvedValue(true);
+    mockBaseRepository.executeTransaction.mockResolvedValue(true);
     (pageID.parse as jest.Mock).mockReturnValue(1);
 
     const result = await generalPageService.updateFolderID(1, 2);
 
     expect(result).toEqual(success(true));
-    expect(mockGeneralPageRepository.updateParentID).toHaveBeenCalledWith(1, 2);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledWith(1);
   });
 
@@ -78,7 +85,7 @@ describe("GeneralPageService - updateFolderID", () => {
 
   it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
-    mockGeneralPageRepository.updateParentID.mockRejectedValue(
+    mockBaseRepository.executeTransaction.mockRejectedValue(
       new RepositoryError("Update Failed"),
     );
 
@@ -96,7 +103,7 @@ describe("GeneralPageService - updateFolderID", () => {
 
   it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockReturnValue(1);
-    mockGeneralPageRepository.updateParentID.mockRejectedValue(new Error());
+    mockBaseRepository.executeTransaction.mockRejectedValue(new Error());
 
     const result = await generalPageService.updateFolderID(1, 2);
 
