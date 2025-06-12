@@ -54,7 +54,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
             <OverlayTextBox>
-              <ThemedText fontSize="regular" fontWeight="semibold">
+              <ThemedText
+                fontSize="regular"
+                fontWeight="semibold"
+                textIsCentered
+              >
                 {titleHasApostrophes
                   ? `Do you want to delete "${title}"?`
                   : `Do you want to delete ${title}?`}
