@@ -90,6 +90,7 @@ export interface ItemRepository extends BaseRepository {
     itemId: ItemID,
     attributeID: AttributeID,
     value: string | null,
+    altText: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void>;
   updateLinkValue(

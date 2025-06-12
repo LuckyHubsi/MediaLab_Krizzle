@@ -18,4 +18,10 @@ export type ItemAttributeValueDTO =
       itemID?: number;
       valueString?: string;
       displayText?: string;
+    })
+  | (AttributeDTO & {
+      valueID?: number;
+      itemID?: number;
+      valueString?: string;
+      altText?: string;
     });
