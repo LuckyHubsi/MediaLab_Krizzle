@@ -1,16 +1,19 @@
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
 import { ItemTemplateService } from "../../ItemTemplateService";
-import { ItemTemplateRepository } from "@/backend/repository/interfaces/ItemTemplateRepository.interface";
-import { AttributeRepository } from "@/backend/repository/interfaces/AttributeRepository.interface";
-import { ItemRepository } from "@/backend/repository/interfaces/ItemRepository.interface";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { TemplateErrorMessages } from "@/shared/error/ErrorMessages";
 import { itemTemplateID, pageID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { Attribute, NewAttribute } from "@/backend/domain/common/Attribute";
 import { AttributeType } from "@/shared/enum/AttributeType";
+import {
+  mockTemplateRepository,
+  mockAttributeRepository,
+  mockItemRepository,
+  mockGeneralPageRepository,
+} from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/AttributeMapper", () => ({
   AttributeMapper: {
@@ -30,9 +33,19 @@ jest.mock("@/backend/domain/common/IDs", () => ({
 
 describe("ItemTemplateService - updateTemplate", () => {
   let itemTemplateService: ItemTemplateService;
-  let mockTemplateRepository: jest.Mocked<ItemTemplateRepository>;
-  let mockAttributeRepository: jest.Mocked<AttributeRepository>;
-  let mockItemRepository: jest.Mocked<ItemRepository>;
+
+  beforeAll(() => {
+    itemTemplateService = new ItemTemplateService(
+      mockTemplateRepository,
+      mockAttributeRepository,
+      mockItemRepository,
+      mockGeneralPageRepository,
+    );
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   const mockExistingAttributeDTOs: AttributeDTO[] = [
     {
@@ -123,70 +136,6 @@ describe("ItemTemplateService - updateTemplate", () => {
   ];
 
   const mockItemIDs = [1 as any, 2 as any, 3 as any];
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    mockTemplateRepository = {
-      getItemTemplateById: jest.fn(),
-      insertTemplateAndReturnID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-
-    mockAttributeRepository = {
-      insertAttribute: jest.fn(),
-      insertMultiselectOptions: jest.fn(),
-      insertRatingSymbol: jest.fn(),
-      getPreviewAttributes: jest.fn(),
-      updateAttribute: jest.fn(),
-      updateMultiselectOptions: jest.fn(),
-      updateRatingSymbol: jest.fn(),
-      deleteAttribute: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-
-    mockItemRepository = {
-      getItemByID: jest.fn(),
-      getItemsByID: jest.fn(),
-      getItemIDs: jest.fn(),
-      getMultiselectValues: jest.fn(),
-      insertItemAndReturnID: jest.fn(),
-      insertTextValue: jest.fn(),
-      insertDateValue: jest.fn(),
-      insertRatingValue: jest.fn(),
-      insertMultiselectValue: jest.fn(),
-      insertImageValue: jest.fn(),
-      insertLinkValue: jest.fn(),
-      updateItem: jest.fn(),
-      updateTextValue: jest.fn(),
-      updateDateValue: jest.fn(),
-      updateRatingValue: jest.fn(),
-      updateMultiselectValue: jest.fn(),
-      updateImageValue: jest.fn(),
-      updateLinkValue: jest.fn(),
-      deleteItem: jest.fn(),
-      deleteItemValues: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-
-    itemTemplateService = new ItemTemplateService(
-      mockTemplateRepository,
-      mockAttributeRepository,
-      mockItemRepository,
-    );
-  });
 
   it("should return success Result when template is updated successfully", async () => {
     (itemTemplateID.parse as jest.Mock).mockReturnValue(1);
@@ -347,7 +296,7 @@ describe("ItemTemplateService - updateTemplate", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.type).toBe("Retrieval Failed");
+      expect(result.error.type).toBe("Update Failed");
       expect(result.error.message).toBe(TemplateErrorMessages.editTemplate);
     } else {
       throw new Error("Expected failure result, but got success");
@@ -355,7 +304,7 @@ describe("ItemTemplateService - updateTemplate", () => {
     expect(mockTemplateRepository.executeTransaction).not.toHaveBeenCalled();
   });
 
-  it("should return failure Result if RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Update Failed') is thrown", async () => {
     (itemTemplateID.parse as jest.Mock).mockReturnValue(1);
     (pageID.parse as jest.Mock).mockReturnValue(2);
     (AttributeMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
@@ -366,7 +315,7 @@ describe("ItemTemplateService - updateTemplate", () => {
     );
 
     mockTemplateRepository.executeTransaction.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+      new RepositoryError("Update Failed"),
     );
 
     const result = await itemTemplateService.updateTemplate(
@@ -378,14 +327,14 @@ describe("ItemTemplateService - updateTemplate", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.type).toBe("Retrieval Failed");
+      expect(result.error.type).toBe("Update Failed");
       expect(result.error.message).toBe(TemplateErrorMessages.editTemplate);
     } else {
       throw new Error("Expected failure result, but got success");
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Transaction Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Transaction Failed') is thrown", async () => {
     (itemTemplateID.parse as jest.Mock).mockReturnValue(1);
     (pageID.parse as jest.Mock).mockReturnValue(2);
     (AttributeMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
@@ -396,7 +345,7 @@ describe("ItemTemplateService - updateTemplate", () => {
     );
 
     mockTemplateRepository.executeTransaction.mockRejectedValue(
-      new RepositoryErrorNew("Transaction Failed"),
+      new RepositoryError("Transaction Failed"),
     );
 
     const result = await itemTemplateService.updateTemplate(
@@ -408,7 +357,7 @@ describe("ItemTemplateService - updateTemplate", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.type).toBe("Retrieval Failed");
+      expect(result.error.type).toBe("Update Failed");
       expect(result.error.message).toBe(TemplateErrorMessages.editTemplate);
     } else {
       throw new Error("Expected failure result, but got success");
