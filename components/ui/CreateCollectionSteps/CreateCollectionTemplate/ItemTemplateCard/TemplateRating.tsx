@@ -6,6 +6,7 @@ import {
   IconContainer,
   RatingIconsContainer,
 } from "../CreateCollectionTemplate.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 const iconArray: (keyof typeof MaterialIcons.glyphMap)[] = [
   "star",
@@ -45,6 +46,7 @@ const TemplateRating: React.FC<TemplateRatingProps> = ({
   rating,
   onRatingChange,
 }) => {
+  const colorScheme = useActiveColorScheme() ?? "light";
   return (
     <RatingIconsContainer>
       <ThemedText>{title}</ThemedText>
@@ -55,7 +57,15 @@ const TemplateRating: React.FC<TemplateRatingProps> = ({
               <MaterialIcons
                 name={icon}
                 size={28}
-                color={rating === icon ? Colors.primary : Colors.grey100}
+                color={
+                  rating === icon
+                    ? colorScheme === "light"
+                      ? Colors.primary
+                      : Colors.secondary
+                    : colorScheme === "light"
+                      ? Colors.grey100
+                      : Colors.grey50
+                }
                 style={{ marginRight: 10 }}
               />
             </TouchableOpacity>
