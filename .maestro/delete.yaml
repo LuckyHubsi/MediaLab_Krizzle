@@ -1,0 +1,13 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- takeScreenshot: home-before-delete
+
+- longPressOn: "Maestro Note"
+- takeScreenshot: delete-context-menu
+
+- tapOn: "Delete"
+- takeScreenshot: delete-confirmation-modal
+
+- tapOn: "Delete"
+- takeScreenshot: widget-deleted

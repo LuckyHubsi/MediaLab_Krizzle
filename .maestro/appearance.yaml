@@ -1,0 +1,13 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- tapOn: "Menu"
+- takeScreenshot: menu-screen
+- tapOn: "Appearance"
+- takeScreenshot: appearance-settings
+
+- tapOn: "Dark"
+- takeScreenshot: dark-mode-enabled
+
+- tapOn: "Light" 
+- takeScreenshot: light-mode-enabled

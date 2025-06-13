@@ -1,0 +1,24 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- takeScreenshot: home-before-pin
+
+- longPressOn: "Maestro Collection"
+- tapOn: "Pin Widget"
+- takeScreenshot: collection-pinned
+
+- longPressOn: "Maestro Collection"
+- tapOn: "Archive"
+- takeScreenshot: collection-archived
+
+- tapOn: "Menu"
+- tapOn: "Archive"
+- takeScreenshot: archive-screen
+
+- longPressOn: "Maestro Collection"
+- tapOn: "Restore"
+- takeScreenshot: collection-restored
+
+- tapOn: "Archive"
+- tapOn: "Home"
+- takeScreenshot: final-home-state

@@ -1,0 +1,13 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- longPressOn: "Maestro Note"
+- takeScreenshot: widget-context-menu
+
+- tapOn: "Move to Folder"
+- tapOn: "Add Folder"
+- inputText: "Test Folder"
+- pressKey: Enter
+- tapOn: "Move"
+- tapOn: "Folders"
+- takeScreenshot: note-moved-to-folder

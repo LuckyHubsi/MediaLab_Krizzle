@@ -1,0 +1,32 @@
+appId: com.venii24.frontend
+---
+- launchApp
+- assertVisible: "Home"
+- takeScreenshot: first-screen
+
+- tapOn: "Start"
+- tapOn: "Create a note"
+- takeScreenshot: note-widget-screen
+
+- tapOn: "Add a title"
+- inputText: "Maestro Note"
+- hideKeyboard
+
+- tapOn: "Edit tags"
+- tapOn: "Add"
+- tapOn: "Enter a new tag"
+- inputText: "Maestro Tag"
+- pressKey: Enter
+- tapOn: "Tags"
+- tapOn: "Maestro Tag"
+
+- tapOn: "Blue"
+- tapOn: "Sage"
+- tapOn: "Done"
+- takeScreenshot: widget-configured
+
+- tapOn: "Create"
+
+- tapOn: "Type here..."
+- inputText: "Maestro"
+- takeScreenshot: note-created

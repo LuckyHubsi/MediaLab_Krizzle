@@ -1,0 +1,9 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- tapOn: "Menu"
+- tapOn: "Tag Management"
+- tapOn: "Add"
+- inputText: "Test Tag"
+- pressKey: Enter
+- takeScreenshot: new-tag-created

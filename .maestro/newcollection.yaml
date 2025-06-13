@@ -1,0 +1,16 @@
+appId: com.ven1124.frontend
+---
+- tapOn: "Create a collection"
+- takeScreenshot: collection-widget-screen
+
+- tapOn: "Add a title"
+- inputText: "Maestro Collection 2"
+- hideKeyboard
+- tapOn: "Next"
+
+- tapOn: 'E.g. "Title" or "Name"'
+- inputText: "Maestro Title 2"
+- hideKeyboard
+
+- tapOn: "Create"
+- takeScreenshot: collection-created

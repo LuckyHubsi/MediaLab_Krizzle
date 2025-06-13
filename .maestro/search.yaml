@@ -1,0 +1,7 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- tapOn: "Search for title"
+- inputText: "Maestro N"
+- hideKeyboard
+- takeScreenshot: search-results

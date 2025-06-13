@@ -1,0 +1,68 @@
+appId: com.ven1124.frontend
+---
+- launchApp
+- tapOn: "Start"
+- tapOn: "Create a collection"
+- takeScreenshot: collection-widget-screen
+
+- tapOn: "Add a title"
+- inputText: "Maestro Collection"
+- hideKeyboard
+- tapOn: "Next"
+
+- tapOn: 'E.g. "Title" or "Name"'
+- inputText: "Maestro Title"
+- hideKeyboard
+
+- tapOn: "+" 
+- tapOn: "Date"
+- tapOn: "Add a label to your date"
+- inputText: "Maestro Date"
+- hideKeyboard
+
+- tapOn: "+"
+- tapOn: "Multiselect"
+- tapOn: "Add a label to your multiselect"
+- inputText: "Maestro Multi"
+- hideKeyboard
+- tapOn: "Add a selectable"
+- tapOn: "Enter selectable"
+- inputText: "Maestro Option"
+- hideKeyboard
+
+- tapOn: "+"
+- tapOn: "Link"
+- tapOn: "Add a label to your link"
+- inputText: "Maestro Link"
+- hideKeyboard
+
+- tapOn: "+"
+- tapOn: "Image"
+- tapOn: "Add a label to your image"
+- inputText: "Maestro Image"
+- hideKeyboard
+
+- tapOn: "Create"
+- takeScreenshot: collection-created
+
+- tapOn: "+" 
+- tapOn: "Add text here"
+- inputText: "Maestro Item"
+- hideKeyboard
+
+- tapOn: "dd.mm.yyyy"
+- tapOn: "OK"
+
+- tapOn: "Maestro Option"
+
+- tapOn: "www.krizzle.com"
+- inputText: "https://maestro.mobile.dev"
+- hideKeyboard
+
+- tapOn: "Open Camera"
+- tapOn:
+    point: "50%,85%"
+- tapOn: "OK"
+
+- tapOn: "Create"
+- takeScreenshot: item-with-all-fields-created

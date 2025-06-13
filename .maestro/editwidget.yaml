@@ -1,0 +1,16 @@
+appId: com.ven1124.frontend
+---
+- assertVisible: "Home"
+- takeScreenshot: home-with-widgets
+
+- longPressOn: "Maestro Note"
+
+- tapOn: "Edit Widget"
+- takeScreenshot: edit-widget-screen
+
+- tapOn: "Maestro Note"
+- inputText: " Edit"
+- pressKey: Enter
+
+- tapOn: "Save"
+- takeScreenshot: widget-edited
