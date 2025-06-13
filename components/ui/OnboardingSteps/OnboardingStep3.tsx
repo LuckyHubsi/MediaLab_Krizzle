@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
@@ -16,7 +16,7 @@ export default function Step3() {
         imageSourceDark={require("@/assets/images/onboardingDark3.png")}
         heightPercent={backgroundHeight}
       />
-      <View style={{ gap: 8, top: "60%" }}>
+      <ScrollView style={{ gap: 8, top: "60%", height: "28%", flexGrow: 0 }}>
         <ThemedText fontWeight="bold" fontSize="l">
           Quickly capture what’s on&nbsp;your mind
         </ThemedText>
@@ -24,7 +24,7 @@ export default function Step3() {
           Open, write, done. Whether it’s a sudden thought, a task, or an idea -
           krizzle helps you jot it down in seconds, without getting in your way.
         </ThemedText>
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }

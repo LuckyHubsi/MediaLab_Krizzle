@@ -41,11 +41,11 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
         : Colors.secondary
       : Colors.dark.text};
   font-family: Lexend_400Regular;
-  height: 24px;
+  min-height: 24px;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 18px;
   letter-spacing: -0.4px;
   text-align: center;
 `;

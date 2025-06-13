@@ -74,8 +74,8 @@ export default function OnboardingScreen() {
             top: 5,
             right: 5,
             zIndex: 100,
-            height: 48,
-            width: 48,
+            minHeight: 48,
+            minWidth: 48,
             justifyContent: "center",
           }}
         >

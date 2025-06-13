@@ -14,8 +14,8 @@ export const TagContainer = styled(TouchableOpacity).attrs({
   margin-right: 10px;
   justify-content: center;
   align-items: center;
-  height: 48px;
   min-width: 48px;
+  min-height: 48px;
 `;
 
 // Visual pill button inside
@@ -32,7 +32,8 @@ export const TagButton = styled(View)<TagProps>`
   border-radius: 33px;
   padding-horizontal: 16px;
   padding-vertical: 6px;
-  height: 32px;
+  min-width: 48px;
+  min-height: 36px;
 `;
 
 export const TagText = styled(Text)<TagProps>`

@@ -68,7 +68,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                   {extraInformation}
                 </ThemedText>
               )}
-              <ThemedText fontSize="s" fontWeight="regular">
+              <ThemedText fontSize="s" fontWeight="regular" textIsCentered>
                 You cannot undo this action
               </ThemedText>
             </OverlayTextBox>

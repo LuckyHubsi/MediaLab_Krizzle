@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
@@ -16,7 +16,7 @@ export default function Step4() {
         imageSourceDark={require("@/assets/images/onboardingDark4.png")}
         heightPercent={backgroundHeight}
       />
-      <View style={{ gap: 8, top: "60%" }}>
+      <ScrollView style={{ gap: 8, top: "60%", height: "28%", flexGrow: 0 }}>
         <ThemedText fontWeight="bold" fontSize="l">
           Keep Everything in One Place with Collections
         </ThemedText>
@@ -24,7 +24,7 @@ export default function Step4() {
           Collections let you group favorite places, items, or ideas in one
           simple space. Organize them into Lists like cities or&nbsp;categories.
         </ThemedText>
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }
