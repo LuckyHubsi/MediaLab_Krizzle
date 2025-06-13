@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, TouchableWithoutFeedback } from "react-native";
+import { Modal, ScrollView, TouchableWithoutFeedback } from "react-native";
 import {
   PopupBackdrop,
   PopupContainer,
@@ -47,9 +47,17 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <TouchableWithoutFeedback onPress={onClose}>
-        <PopupBackdrop>
+      <PopupBackdrop>
+        <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+            flexGrow: 1,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <PopupImage source={image} />
+
           <PopupContainer colorScheme={colorScheme}>
             <View style={{ marginBottom: 10 }}>
               <ThemedText fontSize="regular" fontWeight="bold">
@@ -65,8 +73,8 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
               <CTAButtonText>{ctaText}</CTAButtonText>
             </CTAButton>
           </PopupContainer>
-        </PopupBackdrop>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+      </PopupBackdrop>
     </Modal>
   );
 };
