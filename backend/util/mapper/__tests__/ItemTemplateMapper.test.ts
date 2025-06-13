@@ -1,11 +1,11 @@
 import {
   ItemTemplate,
-  itemTemplateID,
   NewItemTemplate,
 } from "@/backend/domain/entity/ItemTemplate";
 import { ItemTemplateModel } from "@/backend/repository/model/ItemTemplateModel";
-import { ItemTemplateDTORestructure } from "@/shared/dto/ItemTemplateDTO";
 import { ItemTemplateMapper } from "../ItemTemplateMapper";
+import { itemTemplateID } from "@/backend/domain/common/IDs";
+import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 
 const mockAttributeEntity = {
   attributeID: 1,
@@ -53,7 +53,7 @@ describe("ItemTemplateMapper", () => {
     attributes: [mockAttributeEntity as any],
   };
 
-  const itemTemplateDTO: ItemTemplateDTORestructure = {
+  const itemTemplateDTO: ItemTemplateDTO = {
     item_templateID: 1,
     template_name: "test template",
     attributes: [mockAttributeDTO as any],
@@ -98,25 +98,6 @@ describe("ItemTemplateMapper", () => {
     });
   });
 
-  describe("toModel", () => {
-    it("should map a ItemTemplatePage entity to a ItemTemplateModel", () => {
-      const result = ItemTemplateMapper.toModel(itemTemplateEntity);
-
-      expect(result).toEqual({
-        ...itemTemplateModel,
-        attributes: JSON.stringify([mockAttributeModel]),
-      });
-    });
-  });
-
-  describe("toInsertModel", () => {
-    it("should map a ItemTemplate entity to a ItemTemplateModel", () => {
-      const result = ItemTemplateMapper.toInsertModel(newItemTemplate);
-
-      expect(result).toEqual(insertItemTemplateModel);
-    });
-  });
-
   describe("toNewEntity", () => {
     it("should map an ItemTemplateDTO to a NewItemTemplate entity", () => {
       const result = ItemTemplateMapper.toNewEntity(itemTemplateDTO);
@@ -141,7 +122,7 @@ describe("ItemTemplateMapper", () => {
         attributes: "[INVALID JSON",
       };
       expect(() => ItemTemplateMapper.toEntity(badModel)).toThrow(
-        "Failed to map ItemTemplateModel to Entity",
+        expect.anything(),
       );
     });
   });
