@@ -106,6 +106,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
               width: "100%",
               opacity: singleButtonOpacity,
             }}
+            pointerEvents={progressStep === 1 ? "auto" : "none"}
           >
             <NextButton onPress={onNext}>
               <ThemedText colorVariant="white" fontWeight="bold">
@@ -119,6 +120,7 @@ const BottomButtons: FC<BottomButtonsProps> = ({
               width: "100%",
               opacity: dualButtonsOpacity,
             }}
+            pointerEvents={progressStep === 1 ? "none" : "auto"}
           >
             <BottomButtonContainer>
               <DiscardButton
