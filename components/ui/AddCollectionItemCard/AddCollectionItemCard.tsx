@@ -96,7 +96,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         const currentValue = attributeValues[attributeId];
 
         if (currentValue && typeof currentValue === "object") {
-          imageUriMap[attributeId] = currentValue.uri || "";
+          imageUriMap[attributeId] = currentValue.value || "";
           altTextMap[attributeId] = currentValue.altText || "";
         } else {
           imageUriMap[attributeId] = "";

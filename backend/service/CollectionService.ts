@@ -713,6 +713,7 @@ export class CollectionService {
                     itemId,
                     value.attributeID,
                     value.valueString ?? null,
+                    value.altText ?? null,
                     txn,
                   );
                 }
