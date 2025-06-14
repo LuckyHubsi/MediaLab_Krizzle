@@ -168,7 +168,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             >
               <View style={{ flex: 1 }}>
                 <Textfield
-                  title="Alt Text"
+                  title="Image Description"
                   placeholderText="Describe the image"
                   value={altText}
                   onChangeText={onAltTextChange}
