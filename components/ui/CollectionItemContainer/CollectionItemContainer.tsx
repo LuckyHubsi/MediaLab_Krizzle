@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import {
   ItemContainer,
   SelectableContainer,
+  AltTextContainer,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
@@ -108,21 +109,11 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             accessibilityLabel={altText}
           />
           {altText && (
-            <ThemedText
-              fontWeight="regular"
-              fontSize="s"
-              style={{
-                position: "absolute",
-                bottom: 8,
-                left: 8,
-                color: themeMode === "dark" ? "#FFFFFF" : "#000000",
-                backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
-                padding: 4,
-                borderRadius: 4,
-              }}
-            >
-              {altText}
-            </ThemedText>
+            <AltTextContainer themeMode={themeMode}>
+              <ThemedText fontWeight="regular" fontSize="s">
+                {altText}
+              </ThemedText>
+            </AltTextContainer>
           )}
         </View>
       )}

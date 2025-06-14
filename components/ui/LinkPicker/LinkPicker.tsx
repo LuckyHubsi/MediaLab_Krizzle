@@ -15,7 +15,6 @@ import { LinkPickerContainer, LinkTitleButton } from "./LinkPicker.styles";
  * @param onChange (required) - Callback function to handle link value changes.
  * @param linkText - The custom link title.
  * @param onLinkTextChange (required) - Callback function to handle changes to the custom link title.
- * @returns A React component that allows users to pick a link and optionally set a custom title for it.
  */
 
 interface LinkPickerProps {
