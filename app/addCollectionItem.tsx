@@ -122,20 +122,33 @@ export default function AddCollectionItem() {
     attributeID: number,
     value: any,
     displayText?: string,
+    altText?: string,
   ) => {
     setAttributeValues((prevValues) => {
-      const isLink =
-        attributes.find((a) => a.attributeID === attributeID)?.type ===
-        AttributeType.Link;
+      const attribute = attributes.find((a) => a.attributeID === attributeID);
+      if (!attribute) return prevValues;
+
+      const isLink = attribute.type === AttributeType.Link;
+      const isImage = attribute.type === AttributeType.Image;
+
+      let newValue;
+      if (isLink) {
+        newValue = {
+          value: value?.trim() || null,
+          displayText: displayText?.trim() || null,
+        };
+      } else if (isImage) {
+        newValue = {
+          uri: typeof value === "string" ? value : value?.uri || null,
+          altText: altText?.trim() || null,
+        };
+      } else {
+        newValue = value;
+      }
 
       return {
         ...prevValues,
-        [attributeID]: isLink
-          ? {
-              value: value?.trim() || null,
-              displayText: displayText?.trim() || null,
-            }
-          : value,
+        [attributeID]: newValue,
       };
     });
   };
@@ -177,7 +190,7 @@ export default function AddCollectionItem() {
             return {
               ...attribute,
               valueString: typeof value === "string" ? value : value?.uri || "",
-              displayText: value?.alt?.trim?.() || null,
+              altText: value?.altText?.trim?.() || null,
             };
           default:
             return { ...attribute };

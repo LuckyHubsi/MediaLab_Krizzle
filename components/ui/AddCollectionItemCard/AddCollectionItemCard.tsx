@@ -22,6 +22,7 @@ interface AddCollectionItemProps {
     attributeID: number,
     value: any,
     displayText?: string,
+    alText?: string,
   ) => void;
   hasNoInputError?: boolean;
   onListChange: (categoryID: number | null) => void;
@@ -96,7 +97,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
         if (currentValue && typeof currentValue === "object") {
           imageUriMap[attributeId] = currentValue.uri || "";
-          altTextMap[attributeId] = currentValue.alt || "";
+          altTextMap[attributeId] = currentValue.altText || "";
         } else {
           imageUriMap[attributeId] = "";
           altTextMap[attributeId] = "";
@@ -297,7 +298,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                     [imageAttributeId]: uri,
                   }));
                   const currentAlt = customAltText[imageAttributeId] || "";
-                  onInputChange(imageAttributeId, { uri, alt: currentAlt });
+                  onInputChange(imageAttributeId, uri, undefined, currentAlt);
                 }}
                 altText={customAltText[imageAttributeId] || ""}
                 onAltTextChange={(text) => {
@@ -306,10 +307,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                     [imageAttributeId]: text,
                   }));
                   const currentUri = imageUris[imageAttributeId] || "";
-                  onInputChange(imageAttributeId, {
-                    uri: currentUri,
-                    alt: text,
-                  });
+                  onInputChange(imageAttributeId, currentUri, undefined, text);
                 }}
               />,
             );
