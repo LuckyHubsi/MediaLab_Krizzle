@@ -72,7 +72,13 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
         {!showCustomTextfield ? (
           <TouchableOpacity onPress={() => setShowCustomTextfield(true)}>
             <LinkTitleButton>
-              <MaterialIcons name="add" size={20} color={Colors.primary} />
+              <MaterialIcons
+                name="add"
+                size={20}
+                color={
+                  colorScheme === "dark" ? Colors.secondary : Colors.primary
+                }
+              />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Add custom link title
               </ThemedText>

@@ -147,7 +147,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
               onPress={() => setShowAltTextField(true)}
               style={{ marginTop: 8 }}
             >
-              <MaterialIcons name="add" size={20} color={Colors.primary} />
+              <MaterialIcons
+                name="add"
+                size={20}
+                color={
+                  colorScheme === "dark" ? Colors.secondary : Colors.primary
+                }
+              />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Image alternative text
               </ThemedText>

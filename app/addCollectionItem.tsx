@@ -174,7 +174,11 @@ export default function AddCollectionItem() {
               displayText: value?.displayText?.trim() || null,
             };
           case AttributeType.Image:
-            return { ...attribute, valueString: value };
+            return {
+              ...attribute,
+              valueString: typeof value === "string" ? value : value?.uri || "",
+              displayText: value?.alt?.trim?.() || null,
+            };
           default:
             return { ...attribute };
         }

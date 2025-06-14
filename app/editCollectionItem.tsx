@@ -123,10 +123,16 @@ export default function EditCollectionItem() {
                     break;
 
                   case AttributeType.Image:
-                    mappedValues[attrID] =
-                      "valueString" in attrValue
-                        ? (attrValue.valueString ?? "")
-                        : "";
+                    mappedValues[attrID] = {
+                      value:
+                        "valueString" in attrValue
+                          ? (attrValue.valueString ?? "")
+                          : "",
+                      displayText:
+                        "displayText" in attrValue
+                          ? (attrValue.displayText ?? "")
+                          : "",
+                    };
                     break;
 
                   case AttributeType.Text:
