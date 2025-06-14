@@ -155,7 +155,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                 }
               />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
-                Image alternative text
+                Image Description
               </ThemedText>
             </CameraButton>
           ) : (
@@ -175,6 +175,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                   textfieldIcon="edit"
                   showTitle={true}
                   multiline={false}
+                  maxLength={100}
                 />
               </View>
               <TouchableOpacity
