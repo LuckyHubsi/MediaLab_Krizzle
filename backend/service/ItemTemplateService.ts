@@ -206,6 +206,7 @@ export class ItemTemplateService {
               attributeID: newID,
               valueString: null,
               displayText: null,
+              altText: null,
               valueMultiselect: null,
               valueNumber: null,
             };
