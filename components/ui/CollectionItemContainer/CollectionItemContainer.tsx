@@ -29,6 +29,7 @@ interface CollectionItemContainerProps {
   link?: string;
   linkPreview?: string;
   imageUri?: string;
+  altText?: string;
 }
 const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   type,
@@ -41,6 +42,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   link,
   linkPreview,
   imageUri,
+  altText,
 }) => {
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -102,7 +104,26 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
               height: "100%",
               resizeMode: "contain",
             }}
+            accessible={true}
+            accessibilityLabel={altText}
           />
+          {altText && (
+            <ThemedText
+              fontWeight="regular"
+              fontSize="s"
+              style={{
+                position: "absolute",
+                bottom: 8,
+                left: 8,
+                color: themeMode === "dark" ? "#FFFFFF" : "#000000",
+                backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
+                padding: 4,
+                borderRadius: 4,
+              }}
+            >
+              {altText}
+            </ThemedText>
+          )}
         </View>
       )}
 

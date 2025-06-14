@@ -48,6 +48,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
         "valueString" in attr &&
         attr.valueString,
     );
+
     if (imageAttribute.length > 0) {
       elements.push(
         <View
@@ -77,6 +78,9 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
                 <CollectionItemContainer
                   subtitle={multi.attributeLabel}
                   imageUri={"valueString" in multi ? multi.valueString : ""}
+                  altText={
+                    "altText" in multi && multi.altText ? multi.altText : ""
+                  }
                 />
               </View>
             ))}
