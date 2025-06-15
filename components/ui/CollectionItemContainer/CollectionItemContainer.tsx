@@ -178,16 +178,13 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       {link && (
-        <TouchableOpacity onPress={handlePressLink}>
+        <TouchableOpacity onPress={handlePressLink} style={{ minHeight: 48 }}>
           <ThemedText
             fontWeight="semibold"
             fontSize="regular"
             style={{
               color: colorScheme === "light" ? "#176BBA" : "#4599E8",
               textDecorationLine: "underline",
-              marginTop: -8,
-              minHeight: 48,
-              textAlignVertical: "center",
             }}
           >
             {linkPreview || link}
