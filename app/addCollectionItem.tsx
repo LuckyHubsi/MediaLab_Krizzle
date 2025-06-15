@@ -259,8 +259,8 @@ export default function AddCollectionItem() {
 
   return (
     <GradientBackground
-      backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      backgroundCardTopOffset={Platform.select({ ios: 55, android: 60 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
         <View style={{ marginBottom: 10 }}>
