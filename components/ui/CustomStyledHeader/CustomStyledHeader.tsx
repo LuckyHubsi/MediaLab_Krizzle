@@ -86,7 +86,12 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
     >
       <TouchableOpacity
         onPress={handleBackPress}
-        style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flex: 1,
+          minHeight: 48,
+        }}
       >
         <BackIcon
           name="chevron-back-outline"
