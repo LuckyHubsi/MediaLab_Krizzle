@@ -33,11 +33,12 @@ export const ItemsGrid = styled.View`
 export const ItemWrapper = styled.TouchableOpacity<{
   isSelected: boolean;
   colorScheme: "light" | "dark";
+  hitSlop?: { top: 10; bottom: 10; left: 10; right: 10 };
 }>`
   flex-direction: row;
   align-items: center;
-  padding: 5px;
-  border-radius: 33px;
+  padding: 9px;
+  border-radius: 12px;
   background-color: ${({
     isSelected,
     colorScheme,
@@ -60,9 +61,9 @@ export const ItemCircle = styled.View<{
   colorScheme: "light" | "dark";
   showBorder: boolean;
 }>`
-  width: 24px;
-  height: 24px;
-  border-radius: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 18px;
   justify-content: center;
   align-items: center;
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>

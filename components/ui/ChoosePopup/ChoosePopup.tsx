@@ -118,7 +118,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                             {type === "icon" && (
                               <MaterialIcons
                                 name={item.value as any}
-                                size={24}
+                                size={28}
                                 color={
                                   isSelected ? "#fff" : Colors[colorScheme].text
                                 }
