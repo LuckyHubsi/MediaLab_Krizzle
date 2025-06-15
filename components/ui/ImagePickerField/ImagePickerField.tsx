@@ -121,7 +121,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
           </ImageUploadContainer>
           <DividerWithLabel label="or" />
           <CameraButton onPress={takePhoto}>
-            <MaterialIcons name="camera-alt" size={20} color={Colors.primary} />
+            <MaterialIcons
+              name="camera-alt"
+              size={20}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
+            />
             <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
               Open Camera
             </ThemedText>
@@ -183,7 +189,12 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                   setShowAltTextField(false);
                   onAltTextChange("");
                 }}
-                style={{ marginLeft: 8, marginBottom: 12 }}
+                style={{
+                  right: -10,
+                  height: 48,
+                  width: 48,
+                  justifyContent: "center",
+                }}
               >
                 <MaterialIcons
                   name="close"
