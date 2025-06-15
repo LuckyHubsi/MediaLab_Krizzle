@@ -104,6 +104,10 @@ export interface ItemRepository extends BaseRepository {
     pageId: PageID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<string[]>;
+  getImageValuesByAttributeID(
+    attributeId: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]>;
   getMultiselectValues(
     itemID: ItemID,
     attributeID: AttributeID,
