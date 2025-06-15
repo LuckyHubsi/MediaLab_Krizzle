@@ -349,7 +349,15 @@ export default function EditCollectionListsScreen() {
               <ThemedText fontSize="l" fontWeight="bold">
                 Edit Lists
               </ThemedText>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
+              <TouchableOpacity
+                onPress={() => setShowHelp(true)}
+                style={{
+                  minHeight: 48,
+                  minWidth: 48,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <MaterialIcons
                   name="help-outline"
                   size={26}
