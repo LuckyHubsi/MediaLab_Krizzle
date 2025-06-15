@@ -22,7 +22,13 @@ export const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
   const color = useActiveColorScheme();
 
   return (
-    <StyledButtonContainer onPress={onPress} colorScheme={color}>
+    <StyledButtonContainer
+      onPress={onPress}
+      colorScheme={color}
+      accessibilityRole="button"
+      accessibilityLabel="Add new note, collection or folder"
+      accessibilityHint="Opens a menu to create a new note, collection or folder"
+    >
       <MaterialIcons name="add" size={40} color={Colors.white} />
     </StyledButtonContainer>
   );

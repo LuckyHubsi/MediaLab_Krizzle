@@ -70,6 +70,9 @@ export const TagListItem: React.FC<Props> = ({
             name="edit"
             size={24}
             color={colorScheme === "light" ? Colors.black : Colors.white}
+            accessibilityLabel="Edit tag"
+            accessibilityHint="Edit the tag name"
+            accessibilityRole="button"
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -85,6 +88,9 @@ export const TagListItem: React.FC<Props> = ({
             name="delete"
             size={24}
             color={Colors[colorScheme].negative}
+            accessibilityLabel="Delete tag"
+            accessibilityHint="Delete the tag"
+            accessibilityRole="button"
           />
         </TouchableOpacity>
       </IconRow>

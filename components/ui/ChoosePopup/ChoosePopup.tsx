@@ -122,6 +122,12 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                                 color={
                                   isSelected ? "#fff" : Colors[colorScheme].text
                                 }
+                                accessibilityLabel={item.value as string}
+                                accessibilityHint="Icon"
+                                accessibilityRole="imagebutton"
+                                accessibilityState={{
+                                  selected: isSelected,
+                                }}
                               />
                             )}
                           </ItemCircle>

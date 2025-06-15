@@ -78,6 +78,21 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
     }
   };
 
+  const getAccessibilityHint = () => {
+    switch (backBehavior) {
+      case "goHome":
+        return "Goes back to the Home screen";
+      case "goArchive":
+        return "Goes back to the Archive screen";
+      case "goSettings":
+        return "Goes back to the Settings screen";
+      case "goCollection":
+        return "Goes back to the Collection screen";
+      default:
+        return "Goes back to the previous screen";
+    }
+  };
+
   return (
     <StyledHeader
       colorScheme={colorScheme}
@@ -86,7 +101,10 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
     >
       <TouchableOpacity
         onPress={handleBackPress}
-        style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+        style={{ flexDirection: "row", alignItems: "center" }}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+        accessibilityHint={getAccessibilityHint()}
       >
         <BackIcon
           name="chevron-back-outline"

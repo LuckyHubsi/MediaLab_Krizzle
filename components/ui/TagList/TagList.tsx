@@ -82,6 +82,10 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
             onPress={() => handlePress(tag)}
             key={tag.tagID}
             activeOpacity={0.7}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Filter by tag ${tag.tag_label}`}
+            accessibilityState={{ selected: isActive(tag) }}
           >
             <TagButton active={isActive(tag)} themeMode={colorScheme}>
               {isActive(tag) && (

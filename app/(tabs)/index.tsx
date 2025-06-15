@@ -265,14 +265,29 @@ export default function HomeScreen() {
     <>
       <SafeAreaView>
         <ThemedView>
-          <IconTopRight onPress={() => router.push({ pathname: "/faq" })}>
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
+          <IconTopRight>
+            <TouchableOpacity
+              accessibilityRole="imagebutton"
+              accessibilityLabel="Help and FAQ"
+              accessibilityHint="Opens the Frequently Asked Questions page"
+              onPress={() => {
+                router.push({
+                  pathname: "/faq",
+                });
+              }}
+            >
+              <Image
+                source={require("@/assets/images/kriz.png")}
+                style={{ width: 30, height: 32 }}
+              />
+            </TouchableOpacity>
           </IconTopRight>
 
-          <ThemedText fontSize="xl" fontWeight="bold">
+          <ThemedText
+            fontSize="xl"
+            fontWeight="bold"
+            accessibilityRole="header"
+          >
             Home
           </ThemedText>
 
@@ -311,7 +326,13 @@ export default function HomeScreen() {
                         marginBottom: 8,
                       }}
                     >
-                      <ThemedText fontSize="regular" fontWeight="regular">
+                      <ThemedText
+                        fontSize="regular"
+                        fontWeight="regular"
+                        style={{ marginBottom: 8 }}
+                        accessibilityRole="text"
+                        accessibilityLabel="Pinned widgets"
+                      >
                         Pinned
                       </ThemedText>
                       <ThemedText
@@ -419,6 +440,8 @@ export default function HomeScreen() {
                       fontSize="regular"
                       fontWeight="regular"
                       style={{ textAlign: "center", marginTop: 25 }}
+                      accessibilityRole="text"
+                      accessibilityLiveRegion="polite"
                     >
                       {selectedTag === "All" && !searchQuery
                         ? "No entries found."

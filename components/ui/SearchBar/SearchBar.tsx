@@ -34,7 +34,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <SearchContainer style={{ backgroundColor: colors.searchBarBackground }}>
-      <SearchIcon name="magnify" size={20} color={colors.text} />
+      <SearchIcon
+        name="magnify"
+        size={20}
+        color={colors.text}
+        accessible={false}
+        importantForAccessibility="no"
+      />
       <SearchInput
         style={{ color: colors.text }}
         placeholder={placeholder}
@@ -43,7 +49,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChangeText={setQuery}
         returnKeyType="search"
         accessibilityRole="search"
-        accessibilityHint="Type to search"
+        accessibilityLabel="Search"
+        accessibilityHint="Enter a title to filter your notes or collections"
       />
       {query.length > 0 && (
         <TouchableOpacity

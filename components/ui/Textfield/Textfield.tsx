@@ -62,6 +62,8 @@ const Textfield: FC<TextfieldProps> = ({
           name={textfieldIcon}
           size={20}
           color={colorScheme === "light" ? Colors.light.text : Colors.dark.text}
+          accessible={false}
+          importantForAccessibility="no"
         />
         <StyledTextInput
           colorScheme={colorScheme}

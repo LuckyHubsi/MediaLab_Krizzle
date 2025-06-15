@@ -36,6 +36,9 @@ export const Header: React.FC<HeaderProps> = ({
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={{ flexDirection: "row", alignItems: "center" }}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
+        accessibilityHint="Goes back to the previous screen"
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
         <ThemedText fontSize="l" fontWeight="semibold">

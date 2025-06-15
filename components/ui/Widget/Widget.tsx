@@ -87,11 +87,19 @@ const Widget: React.FC<Props> = ({
     }
   };
 
+  const iconName =
+    React.isValidElement(icon) && icon.props?.name
+      ? icon.props.name
+      : "unknown icon";
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
       onLongPress={handleLongPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Open ${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
+      accessibilityHint="Double tap to open. Long press for more options."
     >
       <CardWrapper {...cardProps}>
         {isGradient && (
