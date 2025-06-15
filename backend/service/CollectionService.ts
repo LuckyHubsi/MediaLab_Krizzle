@@ -390,44 +390,6 @@ export class CollectionService {
   }
 
   /**
-   * Deletes all image files from the file system tied to a collection.
-   *
-   * @param pageId - the collection pageID to be deleted.
-   * @returns Promise resolving to void.
-   * @throws Rethrows error
-   */
-  async deleteCollectionImages(pageId: number): Promise<void> {
-    try {
-      const brandedPageID = pageID.parse(pageId);
-
-      const attributes =
-        await this.attributeRepo.getPreviewAttributes(brandedPageID);
-      const imageAttributeIds: number[] = [];
-
-      attributes.forEach((attr) => {
-        if (attr.type === AttributeType.Image) {
-          imageAttributeIds.push(attr.attributeID);
-        }
-      });
-
-      if (imageAttributeIds.length === 0) return;
-
-      const imageValues = await this.baseRepo.fetchAll<{ value: string }>(
-        selectImageValuesByPageIdQuery,
-        [pageId],
-      );
-
-      for (const imgValue of imageValues) {
-        if (imgValue.value) {
-          await this.deleteImageFile(imgValue.value);
-        }
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
    * Fetches an item and its values.
    *
    * @param itemId - A number representing the itemID.
