@@ -46,6 +46,7 @@ export const TagPill = styled.View<{
   justify-content: center;
   padding: 8px 12px;
   border-radius: 20px;
+  min-width: 48px;
   background-color: ${({
     isSelected,
     colorScheme,
