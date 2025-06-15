@@ -66,7 +66,7 @@ const FAQSection = () => {
           <CollapsibleCard
             faqQuestion="What is "
             faqTitle="Long-Press"
-            faqContent="Long-pressing on a Widget allows you to quickly access options like editing, archiving, or deleting the Widget."
+            faqContent="Long-pressing on a Widget or a Collection Item allows you to quickly access options like editing, archiving, or deleting the Widget."
           />
         </CardsContainer>
       </View>
