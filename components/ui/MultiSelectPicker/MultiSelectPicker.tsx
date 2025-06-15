@@ -4,6 +4,7 @@ import {
   MultiSelectContainer,
   MultiSelectPicker as MultiSelectPickerWrapper,
   IndividualSelect,
+  TagPill,
 } from "./MultiSelectPicker.styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
@@ -44,16 +45,18 @@ const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
                 isSelected={isSelected}
                 onPress={() => onSelectTag(item)}
               >
-                {isSelected && (
-                  <MaterialIcons
-                    name="check-circle"
-                    color={Colors.white}
-                    style={{ marginRight: 5 }}
-                  />
-                )}
-                <ThemedText colorVariant={isSelected ? "white" : "grey"}>
-                  {item}
-                </ThemedText>
+                <TagPill isSelected={isSelected}>
+                  {isSelected && (
+                    <MaterialIcons
+                      name="check-circle"
+                      color={Colors.white}
+                      style={{ marginRight: 5 }}
+                    />
+                  )}
+                  <ThemedText colorVariant={isSelected ? "white" : "grey"}>
+                    {item}
+                  </ThemedText>
+                </TagPill>
               </IndividualSelect>
             );
           })}
