@@ -98,9 +98,18 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
             </View>
             <TouchableOpacity
               onPress={handleRemoveCustomText}
-              style={{ marginLeft: 8, marginBottom: 12 }}
+              style={{
+                right: -10,
+                minHeight: 48,
+                minWidth: 48,
+                justifyContent: "center",
+              }}
             >
-              <MaterialIcons name="close" size={24} color={iconColor} />
+              <MaterialIcons
+                name="close"
+                size={24}
+                color={Colors[colorScheme ?? "light"].text}
+              />
             </TouchableOpacity>
           </View>
         )}
