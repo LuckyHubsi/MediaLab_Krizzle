@@ -55,7 +55,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       <TouchableOpacity
         style={{ flex: 1 }}
         activeOpacity={1}
-        onPress={onclose}
+        onPress={onClose}
         accessible={false}
         importantForAccessibility="no"
         accessibilityElementsHidden={true}
