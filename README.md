@@ -23,7 +23,7 @@ Table of Contents
 
 ## Project Overview
 
-Krizzle is a personal note-taking app built with a focus on full offline capability and flexible data organization. The app enables users to write rich text notes, organize content into collections using customizable templates, and sort their work using tags and folders. Templates can contain up to 10 fields including text, image, link, multiselect, date, and rating. The app includes a dark mode, an archive system for hiding items, and a built-in FAQ. All data stays entirely on the user’s device. Further information can be found at [our website](https://krizzle-website.vercel.app/privacy).
+Krizzle is a personal note-taking app built with a focus on full offline capability and flexible data organization. The app enables users to write rich text notes, organize content into collections using customizable templates, and sort their work using tags and folders. Templates can contain up to 10 fields including text, image, link, multiselect, date, and rating. The app includes theme selection between light and dark mode, an archive system for hiding notes and collections, and a built-in FAQ. All data stays entirely on the user’s device. Further information can be found at [our website](https://krizzle-website.vercel.app/privacy).
 
 ## Features
 
@@ -110,7 +110,7 @@ An example of a template for a `cafe`:
       <td><i>rating (croissant icon)</i></td>
       <td><i>rating (mug icon)</i></td>
       <td><i>date</i></td>
-      <td><i>multiselect</i> (e.g. <i>'croissants'</i> or <i>'sandwiches'</i>)</td>
+      <td><i>multiselect</i> (e.g. <i>'croissants'</i> & <i>'sandwiches'</i>)</td>
    </tr>
 </table>
 
@@ -156,13 +156,13 @@ An example of a template for a `travel spot`:
       <td><i>date</i></td>
       <td><i>date</i></td>
       <td><i>image</i></td>
-      <td><i>multiselect</i> (<i>'planning'</i> or <i>'have visited'</i>)</td>
+      <td><i>multiselect</i> (<i>'planning'</i> & <i>'have visited'</i>)</td>
    </tr>
 </table>
 
 #### **Useful Website Record**
 
-An example of a template for a `travel spot`:
+An example of a template for a `website`:
 
 <table style="table-layout: fixed; text-align: center;">
    <tr>
@@ -275,13 +275,14 @@ The app requests camera access for image input fields in collection items. This 
 
 The app launches with a clean SQLite database stored in `assets/database`. All data remains local to the user’s device. To view and make changes to the database you can use the desktop application `DB Browser (SQLite)`. Below is the database diagram (status June 14th 2025).
 
-The application has access to the database via `SQLiteProvider` (setup in `./app/_layout.tsx`). and communicate with it via theinstantiated repositories inside the `RepositoryContext` component by using the hook `useRepositories()`.
+The application has access to the database via `SQLiteProvider` (setup in `./app/_layout.tsx`). and communicate with it via the instantiated repositories inside the `RepositoryContext` component by using the hook `useRepositories()`.
 
-![Database Diagram](./assets/readme/database_diagram.png)
+![Database Diagram](./assets/readme/database-diagram.png)
 
 Schema migrations are managed in `backend/migrations` and are automatically applied on app launch via `RepositoryContext`. The current schema version is stored using AsyncStorage, and each new migration must be manually registered by adding one to the current `SCHEMA_VERSION`. To implement a new migration, you can follow this structure:
 
 ```ts
+// change 1 to the new SCHEMA_VERSION
 1: async (db) => {
    // disable FKs temporarily
    await db.withExclusiveTransactionAsync(async (txn) => {
@@ -360,7 +361,7 @@ The app is compliant with GDPR regulations. A public privacy policy is available
 
 ## Licensing and Contributions
 
-This project is not accepting public pull requests. You may fork the repository for personal or educational use only. Commercial redistribution is not permitted. FH is granted rights for academic and marketing use.
+This project is not accepting public pull requests. You may fork the repository for personal or educational use only. Commercial redistribution is not permitted. The _University of Applied Sciences St. Pölten_ is granted rights for academic and marketing use.
 
 ## FAQ
 
@@ -368,7 +369,7 @@ This project is not accepting public pull requests. You may fork the repository 
 Yes. All features work offline. No internet is required or used.
 
 **Does it work on iOS?**\
-Only with manual migration of the project to SDK53, as the development and build version uses SDK52, which is not supported in newer App Store versions.
+The project is partially developed for iOS. However, further development is only possible with manual migration of the project to SDK53, as the development and build version us SDK52, which is not supported in newer App Store versions of `Expo Go` (status June 14th 2025).
 
 **Can I fork and modify the app?**\
 Yes, for non-commercial use. Pull requests to the main project are not accepted.
@@ -378,7 +379,7 @@ Krizzle was published on the Google Play Store on June 4th, 2025.
 
 ## Final Notes and Contributors
 
-Krizzle was built as an academic project in the final semester of the study program _Creative Computing_ at the _University of Applied Sciences St. Pölten_ with the goal of creating a mobile application. The team in accordance ith their supervisor decided on the topic.
+Krizzle was built as an academic project in the final semester of the study program _Creative Computing_ at the _University of Applied Sciences St. Pölten_ with the goal of creating a mobile application. The team in accordance with their supervisor decided on the topic.
 
 Members of the development team included:
 
@@ -387,4 +388,5 @@ Members of the development team included:
 - Michaela Topalovic
 - Noelle Jamöck
 - Szabolcs Meszaros
+- Seonghyeon Kim
 - Stefanie Plankensteiner
