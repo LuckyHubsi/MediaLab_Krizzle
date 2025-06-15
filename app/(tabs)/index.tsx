@@ -368,6 +368,8 @@ export default function HomeScreen() {
                         style={{
                           flexDirection: "row",
                           gap: 6,
+                          minHeight: 48,
+                          alignItems: "center",
                         }}
                       >
                         <ThemedText

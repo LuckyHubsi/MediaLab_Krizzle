@@ -428,6 +428,8 @@ export default function FolderScreen() {
                           style={{
                             flexDirection: "row",
                             gap: 6,
+                            minHeight: 48,
+                            alignItems: "center",
                           }}
                         >
                           <ThemedText fontSize="s" fontWeight="regular">
