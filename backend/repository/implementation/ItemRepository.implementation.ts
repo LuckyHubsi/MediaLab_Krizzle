@@ -19,6 +19,9 @@ import {
   insertRatingValueQuery,
   insertTextValueQuery,
   itemSelectByIdQuery,
+  selectImageValuesByAttributeIdQuery,
+  selectImageValuesByCategoryIdQuery,
+  selectImageValuesByPageIdQuery,
   selectItemPreviewValuesQuery,
   updateDateValueQuery,
   updateImageValueQuery,
@@ -582,6 +585,96 @@ export class ItemRepositoryImpl
       );
 
       return itemIDs.map((id) => itemID.parse(id.itemID));
+    } catch (error) {
+      throw new RepositoryError("Fetch Failed");
+    }
+  }
+
+  /**
+   * Fetches all image values for a page.
+   *
+   * @param pageId - The ID of the page.
+   * @returns A Promise resolving to an array of `string`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getmageValuesByPageID(
+    pageId: PageID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]> {
+    try {
+      const imageValues = await this.fetchAll<{ value: string }>(
+        selectImageValuesByPageIdQuery,
+        [pageId],
+        txn,
+      );
+
+      const values = [];
+      for (const value of imageValues) {
+        values.push(value.value);
+      }
+
+      return values;
+    } catch (error) {
+      throw new RepositoryError("Fetch Failed");
+    }
+  }
+
+  /**
+   * Fetches all image values associated with an attribute.
+   *
+   * @param attributeId - The ID of the attribute.
+   * @returns A Promise resolving to an array of `string`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getImageValuesByAttributeID(
+    attributeId: AttributeID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]> {
+    try {
+      const imageValues = await this.fetchAll<{ value: string }>(
+        selectImageValuesByAttributeIdQuery,
+        [attributeId],
+        txn,
+      );
+
+      const values = [];
+      for (const value of imageValues) {
+        values.push(value.value);
+      }
+
+      return values;
+    } catch (error) {
+      throw new RepositoryError("Fetch Failed");
+    }
+  }
+
+  /**
+   * Fetches all image values associated with a collection category attribute.
+   *
+   * @param categoryId - The ID of the collection catgeory.
+   * @returns A Promise resolving to an array of `string`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getImageValuesByCategoryID(
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]> {
+    try {
+      const imageValues = await this.fetchAll<{ value: string }>(
+        selectImageValuesByCategoryIdQuery,
+        [categoryId],
+        txn,
+      );
+
+      const values = [];
+      for (const value of imageValues) {
+        values.push(value.value);
+      }
+
+      return values;
     } catch (error) {
       throw new RepositoryError("Fetch Failed");
     }
