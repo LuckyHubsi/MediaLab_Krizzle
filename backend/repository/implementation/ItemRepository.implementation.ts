@@ -20,6 +20,7 @@ import {
   insertTextValueQuery,
   itemSelectByIdQuery,
   selectImageValuesByAttributeIdQuery,
+  selectImageValuesByCategoryIdQuery,
   selectImageValuesByPageIdQuery,
   selectItemPreviewValuesQuery,
   updateDateValueQuery,
@@ -635,6 +636,36 @@ export class ItemRepositoryImpl
       const imageValues = await this.fetchAll<{ value: string }>(
         selectImageValuesByAttributeIdQuery,
         [attributeId],
+        txn,
+      );
+
+      const values = [];
+      for (const value of imageValues) {
+        values.push(value.value);
+      }
+
+      return values;
+    } catch (error) {
+      throw new RepositoryError("Fetch Failed");
+    }
+  }
+
+  /**
+   * Fetches all image values associated with a collection category attribute.
+   *
+   * @param categoryId - The ID of the collection catgeory.
+   * @returns A Promise resolving to an array of `string`.
+   * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
+   * @throws RepositoryError if the fetch fails.
+   */
+  async getImageValuesByCategoryID(
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]> {
+    try {
+      const imageValues = await this.fetchAll<{ value: string }>(
+        selectImageValuesByCategoryIdQuery,
+        [categoryId],
         txn,
       );
 

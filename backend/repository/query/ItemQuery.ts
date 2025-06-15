@@ -160,6 +160,13 @@ const selectImageValuesByAttributeIdQuery: string = `
   WHERE iv.attributeID = ? AND iv.value IS NOT NULL
 `;
 
+const selectImageValuesByCategoryIdQuery: string = `
+  SELECT iv.value 
+  FROM image_value iv
+  JOIN item i ON iv.itemID = i.itemID
+  WHERE i.categoryID = ? AND iv.value IS NOT NULL
+`;
+
 const insertItemQuery: string = `
     INSERT INTO item (pageID, categoryID) VALUES (?, ?)
 `;
@@ -245,6 +252,7 @@ export {
   selectItemPreviewValuesQuery,
   selectImageValuesByPageIdQuery,
   selectImageValuesByAttributeIdQuery,
+  selectImageValuesByCategoryIdQuery,
   insertItemQuery,
   insertTextValueQuery,
   insertDateValueQuery,

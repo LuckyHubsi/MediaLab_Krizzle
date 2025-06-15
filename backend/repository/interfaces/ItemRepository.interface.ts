@@ -108,6 +108,10 @@ export interface ItemRepository extends BaseRepository {
     attributeId: AttributeID,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<string[]>;
+  getImageValuesByCategoryID(
+    categoryId: CategoryID,
+    txn?: SQLite.SQLiteDatabase,
+  ): Promise<string[]>;
   getMultiselectValues(
     itemID: ItemID,
     attributeID: AttributeID,

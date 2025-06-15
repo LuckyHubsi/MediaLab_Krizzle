@@ -339,6 +339,7 @@ export class CollectionService {
         await this.categoryRepo.deleteCategory(brandedCategoryID, txn);
         await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
+      await this.deleteCollectionCategoryImages(brandedCategoryID);
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -361,6 +362,30 @@ export class CollectionService {
           message: CategoryErrorMessages.unknown,
         });
       }
+    }
+  }
+
+  /**
+   * Deletes all image files from the file system tied to a collection category.
+   *
+   * @param categoryId - the collection category ID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteCollectionCategoryImages(categoryId: number): Promise<void> {
+    try {
+      const brandedCategoryID = collectionCategoryID.parse(categoryId);
+
+      const imageValues =
+        await this.itemRepo.getImageValuesByCategoryID(brandedCategoryID);
+
+      for (const imgValue of imageValues) {
+        if (imgValue) {
+          await this.deleteImageFile(imgValue);
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
