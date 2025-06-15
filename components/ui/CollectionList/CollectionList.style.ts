@@ -25,6 +25,7 @@ export const CollectionListContainer = styled(
   border-style: solid;
   padding: 10px 20px;
   min-width: 120px;
+  min-height: 50px;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -41,11 +42,14 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
         : Colors.secondary
       : Colors.dark.text};
   font-family: Lexend_400Regular;
-  min-height: 24px;
+  min-height: 48px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 18px;
+  line-height: 21px;
   letter-spacing: -0.4px;
   text-align: center;
 `;
