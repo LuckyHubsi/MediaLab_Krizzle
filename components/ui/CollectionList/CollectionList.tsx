@@ -2,13 +2,24 @@ import React, { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   CollectionListContainer,
+  CollectionListEditIcon,
+  CollectionListScrolls,
+  CollectionListTab,
   CollectionListText,
 } from "./CollectionList.style";
 import { View, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
-import { useRouter } from "expo-router";
+
+/**
+ * Component for displaying a list of collection names. (in CollectionScreen)
+ * It allows users to select a collection and navigate to edit it if needed.
+ * @param collectionLists (required) - Array of collection names to display.
+ * @param onSelect - Optional callback function to handle selection of a collection.
+ * @param isArchived - Optional boolean to indicate if the collections are archived.
+ * @param goToEdit (required) - Function to navigate to the edit screen for collection lists.
+ */
 
 type CollectionListProps = {
   collectionLists: string[];
@@ -21,14 +32,16 @@ type CollectionListProps = {
 const CollectionList: React.FC<CollectionListProps> = ({
   collectionLists,
   onSelect,
-  collectionId,
   isArchived = false,
   goToEdit,
 }) => {
   const [activeList, setActiveList] = useState<string | null>(null);
-  const themeMode = useActiveColorScheme() ?? "light";
-  const router = useRouter();
+  const colorScheme = useActiveColorScheme() ?? "light";
+  const shouldShowEditIcon = collectionLists.length <= 9 && !isArchived;
 
+  /**
+   * Effect to set the first collection as active when the component mounts.
+   */
   useEffect(() => {
     if (collectionLists.length > 0) {
       setActiveList(collectionLists[0]);
@@ -36,22 +49,26 @@ const CollectionList: React.FC<CollectionListProps> = ({
     }
   }, [collectionLists]);
 
+  /**
+   * Function to handle the selection of a collection list.
+   * It updates the active list and calls the onSelect callback if provided.
+   * @param collectionList - The name of the collection list to select.
+   */
   const handlePress = (collectionList: string) => {
     if (collectionList === activeList) return;
     setActiveList(collectionList);
     onSelect?.(collectionList);
   };
 
-  const shouldShowEditIcon = collectionLists.length <= 9 && !isArchived;
-
   return (
     <View style={{ marginLeft: 20, marginRight: 20 }}>
+      {/* Display a horizontal scroll view for the collection lists */}
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         style={{ maxHeight: 50 }}
       >
-        <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
+        <CollectionListScrolls>
           {collectionLists.map((collectionList, index) => {
             const isActive = collectionList === activeList;
 
@@ -59,29 +76,29 @@ const CollectionList: React.FC<CollectionListProps> = ({
               <CollectionListContainer
                 key={`${collectionList}-${index}`}
                 active={isActive}
-                themeMode={themeMode}
+                themeMode={colorScheme}
                 onPress={() => {
                   if (!isActive) handlePress(collectionList);
                 }}
                 activeOpacity={isActive ? 1 : 0.7}
               >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <CollectionListTab>
                   {isActive && (
                     <MaterialIcons
                       name="bookmark-added"
                       size={16}
                       color={
-                        themeMode === "light"
+                        colorScheme === "light"
                           ? Colors.primary
                           : Colors.secondary
                       }
                       style={{ marginRight: 10, marginTop: -6 }}
                     />
                   )}
-                  <CollectionListText active={isActive} themeMode={themeMode}>
+                  <CollectionListText active={isActive} themeMode={colorScheme}>
                     {collectionList}
                   </CollectionListText>
-                </View>
+                </CollectionListTab>
               </CollectionListContainer>
             );
           })}
@@ -93,24 +110,12 @@ const CollectionList: React.FC<CollectionListProps> = ({
                 justifyContent: "center",
               }}
             >
-              <View
-                style={{
-                  width: 52,
-                  height: 52,
-                  top: -3,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <MaterialIcons
-                  name="edit"
-                  size={24}
-                  color={themeMode === "dark" ? "white" : "white"}
-                />
-              </View>
+              <CollectionListEditIcon>
+                <MaterialIcons name="edit" size={24} color={Colors.white} />
+              </CollectionListEditIcon>
             </TouchableOpacity>
           )}
-        </View>
+        </CollectionListScrolls>
       </ScrollView>
     </View>
   );

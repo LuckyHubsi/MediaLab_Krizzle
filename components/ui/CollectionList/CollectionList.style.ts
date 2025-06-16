@@ -53,3 +53,21 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
   letter-spacing: -0.4px;
   text-align: center;
 `;
+
+export const CollectionListScrolls = styled.View`
+  flex-direction: row;
+  flex-wrap: nowrap;
+`;
+
+export const CollectionListTab = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const CollectionListEditIcon = styled.View`
+  width: 52px;
+  height: 52px;
+  justify-content: center;
+  align-items: center;
+  top: -3px;
+`;
