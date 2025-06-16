@@ -11,7 +11,7 @@ export const Backdrop = styled.View`
 
 export const Content = styled.View<ColorSchemeProps>`
   background-color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "#fff" : "#1A1A1A"};
+    colorScheme === "light" ? Colors.white : "#1A1A1A"};
   width: 80%;
   height: auto;
   max-height: 600px;
@@ -48,11 +48,11 @@ export const ItemWrapper = styled.TouchableOpacity<{
   }) =>
     isSelected
       ? colorScheme === "light"
-        ? "#176BBA"
-        : "#4599E8"
+        ? Colors.primary
+        : Colors.secondary
       : colorScheme === "light"
-        ? "#EAEAEA"
-        : "#3D3D3D"};
+        ? Colors.grey25
+        : Colors.dark.pillBackground};
 `;
 
 export const ItemCircle = styled.View<{
@@ -85,16 +85,6 @@ export const ColorLabel = styled.Text<{
   isSelected: boolean;
   colorScheme: "light" | "dark";
 }>`
-  color: {
-    color: ${({
-      isSelected,
-      colorScheme,
-    }: {
-      isSelected: boolean;
-      colorScheme: "light" | "dark";
-    }) =>
-      isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
-  }
   margin-left: 4px;
 `;
 
