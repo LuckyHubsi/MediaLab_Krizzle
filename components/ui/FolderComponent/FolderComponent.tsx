@@ -39,6 +39,10 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       onPress={onPress}
       activeOpacity={0.9}
       onLongPress={handleLongPress}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={`Folder named ${title}`}
+      accessibilityHint={`Folder currently holds ${itemCount === 0 ? "no widgets" : itemCount === 1 ? "one widget" : `${itemCount} widgets`}. Open or long press for more options.`}
     >
       <FolderContainer cardWidth={cardWidth}>
         <FolderShape />

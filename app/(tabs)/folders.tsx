@@ -197,29 +197,101 @@ export default function FoldersScreen() {
 
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
 
+  // for screenreader compatibility
+  const [announceKey, setAnnounceKey] = useState(0);
+  const [shouldAnnounceEmpty, setShouldAnnounceEmpty] = useState(false);
+  // update key to force re-render when searchQuery or results change to have screenreader announce results of search
+  useEffect(() => {
+    setAnnounceKey((prev) => prev + 1);
+  }, [searchQuery, filteredFolders.length]);
+
+  useEffect(() => {
+    if (folders.length === 0) {
+      const timeout = setTimeout(() => {
+        setShouldAnnounceEmpty(true);
+      }, 1200); // allow screen to settle, screenreader to be ready
+
+      return () => clearTimeout(timeout);
+    } else {
+      setShouldAnnounceEmpty(false);
+    }
+  }, [folders]);
+
   return (
     <>
       <SafeAreaView>
         <ThemedView>
           <IconTopRight onPress={() => router.push({ pathname: "/faq" })}>
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
+            <TouchableOpacity
+              accessibilityRole="imagebutton"
+              accessibilityLabel="Help and FAQ"
+              accessibilityHint="Opens the Frequently Asked Questions page"
+              onPress={() => {
+                router.push({
+                  pathname: "/faq",
+                });
+              }}
+            >
+              <Image
+                source={require("@/assets/images/kriz.png")}
+                style={{ width: 30, height: 32 }}
+              />
+            </TouchableOpacity>
           </IconTopRight>
 
-          <ThemedText fontSize="xl" fontWeight="bold">
+          <ThemedText
+            fontSize="xl"
+            fontWeight="bold"
+            accessible={true}
+            accessibilityLabel="Folder Page"
+            accessibilityRole="header"
+          >
             Folders
           </ThemedText>
 
           {folders.length === 0 ? (
-            <EmptyHome text="No folders yet" showButton={false} />
+            <>
+              {shouldAnnounceEmpty && (
+                <ThemedText
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    height: 0,
+                    width: 0,
+                    opacity: 0,
+                    position: "absolute",
+                  }}
+                >
+                  No folders yet
+                </ThemedText>
+              )}
+              <EmptyHome text="No folders yet" showButton={false} />
+            </>
           ) : (
             <>
               <SearchBar
                 placeholder="Search for folder name"
                 onSearch={(query) => setSearchQuery(query)}
               />
+
+              <ThemedText
+                key={`announce-${announceKey}`}
+                accessible={true}
+                accessibilityLiveRegion="polite"
+                style={{
+                  position: "absolute",
+                  height: 0,
+                  width: 0,
+                  opacity: 0,
+                }}
+              >
+                {searchQuery
+                  ? filteredFolders.length > 0
+                    ? `${filteredFolders.length} result${filteredFolders.length > 1 ? "s" : ""} found for ${searchQuery}`
+                    : `No folders found for ${searchQuery}`
+                  : ""}
+              </ThemedText>
 
               {filteredFolders.length === 0 ? (
                 <ThemedView
