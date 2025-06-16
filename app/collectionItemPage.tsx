@@ -120,10 +120,7 @@ export default function CollectionItemScreen() {
           showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         >
           <ThemedView topPadding={0} style={{ paddingBottom: 20 }}>
-            <CollectionLoadItem
-              attributeValues={item?.attributeValues}
-              listName={item?.categoryName}
-            />
+            <CollectionLoadItem attributeValues={item?.attributeValues} />
           </ThemedView>
         </ScrollView>
       </SafeAreaView>
