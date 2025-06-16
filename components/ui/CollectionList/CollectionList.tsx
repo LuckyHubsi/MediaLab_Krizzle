@@ -103,6 +103,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
             );
           })}
 
+          {/* Display the edit icon if there are not more than 9 collections and it's not archived */}
           {shouldShowEditIcon && (
             <TouchableOpacity
               onPress={goToEdit}
