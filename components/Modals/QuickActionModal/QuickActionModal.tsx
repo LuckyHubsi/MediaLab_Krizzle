@@ -96,8 +96,11 @@ export default function QuickActionModal({
         style={{ flex: 1 }}
         activeOpacity={1}
         onPress={handleFadeOut}
-        accessible={false}
-        importantForAccessibility="no"
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Close quick actions or swipe right to explore available actions."
+        accessibilityHint="Closes the quick action menu when activated."
+        importantForAccessibility="yes"
       >
         <Animated.View
           style={{
