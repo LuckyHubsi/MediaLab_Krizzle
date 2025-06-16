@@ -20,6 +20,22 @@ import {
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
+/**
+ * Component for displaying a collection item with various properties such as:
+ * - multiselect, date, title, text, icon, link (with optional title), and image (with alt text).
+ * @param type - Optional type of the item (string or number).
+ * @param multiselectArray - Optional array of strings for multiselect options.
+ * @param date - Optional date for the item.
+ * @param title - Optional title for the item.
+ * @param subtitle - Optional subtitle for the item.
+ * @param icon - Optional icon name from MaterialIcons.
+ * @param iconColor - Optional color for the icon.
+ * @param link - Optional link for the item.
+ * @param linkPreview - Optional preview text for the link.
+ * @param imageUri - Optional URI for an image to display.
+ * @param altText - Optional alt text for the image.
+ */
+
 interface CollectionItemContainerProps {
   type?: string | number;
   multiselectArray?: string[];
@@ -45,16 +61,27 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   imageUri,
   altText,
 }) => {
+  const colorScheme = useActiveColorScheme();
+  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const screenWidth = Dimensions.get("window").width;
+
+  /**
+   * Function to ensure the URL is valid by adding "https://"
+   * (if it doesn't already start with "http://" or "https://")
+   * Returns the valid URL.
+   */
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       return "https://" + url;
     }
     return url;
   };
-  const colorScheme = useActiveColorScheme();
-  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
-  const screenWidth = Dimensions.get("window").width;
 
+  /**
+   * Function to handle the link press event.
+   * It checks if the link is valid and supported, then opens it.
+   * If the link cannot be opened, it shows an alert.
+   */
   const handlePressLink = async () => {
     if (!link) return;
     const validUrl = getValidUrl(link);
@@ -65,6 +92,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       Alert.alert("Can't open this URL:", validUrl);
     }
   };
+
   return (
     <ItemContainer>
       <ThemedText
@@ -75,6 +103,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         {subtitle}
       </ThemedText>
 
+      {/* Display the image if imageUri is provided */}
       {imageUri && (
         <ImageContainer
           style={{
@@ -92,6 +121,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             accessible={true}
             accessibilityLabel={altText}
           />
+          {/* Display alt text if provided */}
           {altText && (
             <AltTextContainer colorScheme={colorScheme}>
               <ThemedText fontWeight="regular" fontSize="s">
@@ -102,6 +132,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         </ImageContainer>
       )}
 
+      {/* Display the title if provided */}
       {title && (
         <View style={{ marginTop: -8 }}>
           <ThemedText fontWeight="semibold" fontSize="l">
@@ -121,6 +152,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         </View>
       )}
 
+      {/* Display the icon, type, and date if provided */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
         {icon && (
           <MaterialIcons
@@ -141,6 +173,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         )}
       </View>
 
+      {/* Display the multiselect array if provided */}
       {multiselectArray && (
         <View
           style={{
@@ -164,6 +197,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         </View>
       )}
 
+      {/* Display the link if provided */}
       {link && (
         <TouchableOpacity onPress={handlePressLink} style={{ minHeight: 48 }}>
           <ThemedText
