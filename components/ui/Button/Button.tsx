@@ -1,8 +1,6 @@
 import React, { FC, PropsWithChildren } from "react";
 import { StyledButton } from "./Button.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
 export interface ButtonProps {
