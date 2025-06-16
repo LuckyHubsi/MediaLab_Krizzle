@@ -53,8 +53,8 @@ export default function TabLayout() {
               Platform.OS === "android" && isKeyboardVisible
                 ? 0
                 : Platform.OS === "ios"
-                  ? 80
-                  : 60,
+                  ? 90
+                  : 65,
             paddingTop: Platform.OS === "ios" ? 5 : 2,
             backgroundColor:
               Platform.OS === "android" && isKeyboardVisible

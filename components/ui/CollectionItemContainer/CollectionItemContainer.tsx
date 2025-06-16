@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import {
   ItemContainer,
   SelectableContainer,
+  AltTextContainer,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
@@ -29,6 +30,7 @@ interface CollectionItemContainerProps {
   link?: string;
   linkPreview?: string;
   imageUri?: string;
+  altText?: string;
 }
 const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   type,
@@ -41,6 +43,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   link,
   linkPreview,
   imageUri,
+  altText,
 }) => {
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -102,7 +105,16 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
               height: "100%",
               resizeMode: "contain",
             }}
+            accessible={true}
+            accessibilityLabel={altText}
           />
+          {altText && (
+            <AltTextContainer themeMode={themeMode}>
+              <ThemedText fontWeight="regular" fontSize="s">
+                {altText}
+              </ThemedText>
+            </AltTextContainer>
+          )}
         </View>
       )}
 
@@ -166,16 +178,13 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       {link && (
-        <TouchableOpacity onPress={handlePressLink}>
+        <TouchableOpacity onPress={handlePressLink} style={{ minHeight: 48 }}>
           <ThemedText
             fontWeight="semibold"
             fontSize="regular"
             style={{
               color: colorScheme === "light" ? "#176BBA" : "#4599E8",
               textDecorationLine: "underline",
-              marginTop: -8,
-              minHeight: 48,
-              textAlignVertical: "center",
             }}
           >
             {linkPreview || link}

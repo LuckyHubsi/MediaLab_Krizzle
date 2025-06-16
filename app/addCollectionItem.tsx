@@ -122,20 +122,33 @@ export default function AddCollectionItem() {
     attributeID: number,
     value: any,
     displayText?: string,
+    altText?: string,
   ) => {
     setAttributeValues((prevValues) => {
-      const isLink =
-        attributes.find((a) => a.attributeID === attributeID)?.type ===
-        AttributeType.Link;
+      const attribute = attributes.find((a) => a.attributeID === attributeID);
+      if (!attribute) return prevValues;
+
+      const isLink = attribute.type === AttributeType.Link;
+      const isImage = attribute.type === AttributeType.Image;
+
+      let newValue;
+      if (isLink) {
+        newValue = {
+          value: value?.trim() || null,
+          displayText: displayText?.trim() || null,
+        };
+      } else if (isImage) {
+        newValue = {
+          uri: typeof value === "string" ? value : value?.uri || null,
+          altText: altText?.trim() || null,
+        };
+      } else {
+        newValue = value;
+      }
 
       return {
         ...prevValues,
-        [attributeID]: isLink
-          ? {
-              value: value?.trim() || null,
-              displayText: displayText?.trim() || null,
-            }
-          : value,
+        [attributeID]: newValue,
       };
     });
   };
@@ -174,7 +187,11 @@ export default function AddCollectionItem() {
               displayText: value?.displayText?.trim() || null,
             };
           case AttributeType.Image:
-            return { ...attribute, valueString: value };
+            return {
+              ...attribute,
+              valueString: typeof value === "string" ? value : value?.uri || "",
+              altText: value?.altText?.trim?.() || null,
+            };
           default:
             return { ...attribute };
         }
@@ -242,8 +259,8 @@ export default function AddCollectionItem() {
 
   return (
     <GradientBackground
-      backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      backgroundCardTopOffset={Platform.select({ ios: 55, android: 60 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
         <View style={{ marginBottom: 10 }}>

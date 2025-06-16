@@ -5,6 +5,7 @@ import {
   LinkContainer,
   IconWrapper,
   ArrowWrapper,
+  LabelWrapper,
 } from "./Settingslink.styles";
 import type { LinkProps } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -38,9 +39,16 @@ export const SettingsLink = ({ label, href, iconName }: SettingsLinkProps) => {
           color={Colors[colorScheme].text}
         />
       </IconWrapper>
-      <ThemedText fontSize="regular" fontWeight="regular">
-        {label}
-      </ThemedText>
+      <LabelWrapper>
+        <ThemedText
+          fontSize="regular"
+          fontWeight="regular"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {label}
+        </ThemedText>
+      </LabelWrapper>
       <ArrowWrapper>
         <MaterialIcons
           name="keyboard-arrow-right"

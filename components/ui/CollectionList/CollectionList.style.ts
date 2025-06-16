@@ -14,9 +14,7 @@ export const CollectionListContainer = styled(
       ? themeMode === "light"
         ? Colors.light.background
         : Colors.dark.background
-      : themeMode === "light"
-        ? Colors.light.semiTransparentBackground
-        : Colors.dark.semiTransparentBackground};
+      : Colors.dark.semiTransparentBackground};
   display: flex;
   border-top-width: 1px;
   border-left-width: 1px;
@@ -26,6 +24,8 @@ export const CollectionListContainer = styled(
     themeMode === "light" ? Colors.white : Colors.black};
   border-style: solid;
   padding: 10px 20px;
+  min-width: 120px;
+  min-height: 50px;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -40,15 +40,16 @@ export const CollectionListText = styled(Text)<CollectionListProps>`
       ? themeMode === "light"
         ? Colors.primary
         : Colors.secondary
-      : themeMode === "light"
-        ? Colors.light.text
-        : Colors.dark.text};
+      : Colors.dark.text};
   font-family: Lexend_400Regular;
-  height: 24px;
+  min-height: 48px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 21px;
   letter-spacing: -0.4px;
   text-align: center;
 `;

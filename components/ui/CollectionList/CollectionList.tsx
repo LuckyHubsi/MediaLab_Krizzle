@@ -49,7 +49,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        style={{ maxHeight: 42 }}
+        style={{ maxHeight: 50 }}
       >
         <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
           {collectionLists.map((collectionList, index) => {
@@ -75,7 +75,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
                           ? Colors.primary
                           : Colors.secondary
                       }
-                      style={{ marginRight: 10 }}
+                      style={{ marginRight: 10, marginTop: -6 }}
                     />
                   )}
                   <CollectionListText active={isActive} themeMode={themeMode}>
@@ -89,13 +89,25 @@ const CollectionList: React.FC<CollectionListProps> = ({
           {shouldShowEditIcon && (
             <TouchableOpacity
               onPress={goToEdit}
-              style={{ marginLeft: 8, justifyContent: "center" }}
+              style={{
+                justifyContent: "center",
+              }}
             >
-              <MaterialIcons
-                name="edit"
-                size={24}
-                color={themeMode === "dark" ? "white" : "white"}
-              />
+              <View
+                style={{
+                  width: 52,
+                  height: 52,
+                  top: -3,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MaterialIcons
+                  name="edit"
+                  size={24}
+                  color={themeMode === "dark" ? "white" : "white"}
+                />
+              </View>
             </TouchableOpacity>
           )}
         </View>

@@ -18,4 +18,5 @@ export const BackIcon = styled(Ionicons)<ColorSchemeProps>`
   margin-right: 7px;
   margin-top: 5px;
   margin-left: 2px;
+  min-height: 48dp;
 `;

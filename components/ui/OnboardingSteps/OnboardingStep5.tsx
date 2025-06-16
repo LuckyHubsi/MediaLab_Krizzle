@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
@@ -16,7 +16,7 @@ export default function Step5() {
         imageSourceDark={require("@/assets/images/onboardingDark5.png")}
         heightPercent={backgroundHeight}
       />
-      <View style={{ gap: 8, top: "60%" }}>
+      <ScrollView style={{ gap: 8, top: "60%", height: "28%", flexGrow: 0 }}>
         <ThemedText fontWeight="bold" fontSize="l">
           Create Your Own Collection Templates
         </ThemedText>
@@ -24,7 +24,7 @@ export default function Step5() {
           Set up your own structure for any type of collection. Choose the
           details you want to include and organize information your way.
         </ThemedText>
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }

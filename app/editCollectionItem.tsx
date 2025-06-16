@@ -123,10 +123,14 @@ export default function EditCollectionItem() {
                     break;
 
                   case AttributeType.Image:
-                    mappedValues[attrID] =
-                      "valueString" in attrValue
-                        ? (attrValue.valueString ?? "")
-                        : "";
+                    mappedValues[attrID] = {
+                      value:
+                        "valueString" in attrValue
+                          ? (attrValue.valueString ?? "")
+                          : "",
+                      altText:
+                        "altText" in attrValue ? (attrValue.altText ?? "") : "",
+                    };
                     break;
 
                   case AttributeType.Text:
@@ -204,28 +208,47 @@ export default function EditCollectionItem() {
   /**
    * Effect to reset the hasClickedSave state when the component mounts.
    */
+
   const handleInputChange = (
     attributeID: number,
     value: any,
     displayText?: string,
+    altText?: string,
   ) => {
-    setAttributeValues((prevValues) => {
-      const isLink =
-        attributes.find((a) => a.attributeID === attributeID)?.type ===
-        AttributeType.Link;
+    const attributeType = attributes.find(
+      (a) => a.attributeID === attributeID,
+    )?.type;
 
-      return {
-        ...prevValues,
-        [attributeID]: isLink
-          ? {
+    setAttributeValues((prevValues) => {
+      const current = prevValues[attributeID] || {};
+
+      switch (attributeType) {
+        case AttributeType.Link:
+          return {
+            ...prevValues,
+            [attributeID]: {
               value: value?.trim() || null,
               displayText: displayText?.trim() || null,
-            }
-          : value,
-      };
+            },
+          };
+
+        case AttributeType.Image:
+          return {
+            ...prevValues,
+            [attributeID]: {
+              value: value?.trim() || null,
+              altText: altText?.trim() || null,
+            },
+          };
+
+        default:
+          return {
+            ...prevValues,
+            [attributeID]: value,
+          };
+      }
     });
   };
-
   /**
    * Handles the change of the selected category from the list.
    * Converts the categoryID to a number if it is not null, and updates the selectedCategoryID state.
@@ -280,8 +303,8 @@ export default function EditCollectionItem() {
    */
   return (
     <GradientBackground
-      backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      backgroundCardTopOffset={Platform.select({ ios: 55, android: 60 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
         <View style={{ marginBottom: 10 }}>
@@ -372,7 +395,10 @@ export default function EditCollectionItem() {
                             newValue?.displayText?.trim() || null;
                           break;
                         case AttributeType.Image:
-                          updatedValue.valueString = newValue || null;
+                          updatedValue.valueString =
+                            newValue?.value?.trim() || null;
+                          updatedValue.altText =
+                            newValue?.altText?.trim() || null;
                           break;
                       }
 

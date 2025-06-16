@@ -15,7 +15,6 @@ import { LinkPickerContainer, LinkTitleButton } from "./LinkPicker.styles";
  * @param onChange (required) - Callback function to handle link value changes.
  * @param linkText - The custom link title.
  * @param onLinkTextChange (required) - Callback function to handle changes to the custom link title.
- * @returns A React component that allows users to pick a link and optionally set a custom title for it.
  */
 
 interface LinkPickerProps {
@@ -72,7 +71,13 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
         {!showCustomTextfield ? (
           <TouchableOpacity onPress={() => setShowCustomTextfield(true)}>
             <LinkTitleButton>
-              <MaterialIcons name="add" size={20} color={Colors.primary} />
+              <MaterialIcons
+                name="add"
+                size={20}
+                color={
+                  colorScheme === "dark" ? Colors.secondary : Colors.primary
+                }
+              />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Add custom link title
               </ThemedText>
@@ -93,9 +98,18 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
             </View>
             <TouchableOpacity
               onPress={handleRemoveCustomText}
-              style={{ marginLeft: 8, marginBottom: 12 }}
+              style={{
+                right: -10,
+                minHeight: 48,
+                minWidth: 48,
+                justifyContent: "center",
+              }}
             >
-              <MaterialIcons name="close" size={24} color={iconColor} />
+              <MaterialIcons
+                name="close"
+                size={24}
+                color={Colors[colorScheme ?? "light"].text}
+              />
             </TouchableOpacity>
           </View>
         )}

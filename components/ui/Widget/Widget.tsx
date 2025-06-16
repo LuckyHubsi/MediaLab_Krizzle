@@ -56,18 +56,25 @@ const Widget: React.FC<Props> = ({
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
   const spacing = 19 * (columns + 1);
-  const cardWidth = (width - spacing) / columns;
+  const previewScale = isPreview ? 0.8 : 1; // scale down preview widgets
+  const cardWidth = ((width - spacing) / columns) * previewScale;
   const background = Colors.widget[color];
   const isGradient = Array.isArray(background);
   const CardWrapper = isGradient ? CardGradient : CardSolid;
+  const cardPadding = isPreview ? 15 : 20;
   const cardProps = isGradient
     ? {
         colors: background,
         start: { x: 0, y: 0 },
         end: { x: 1, y: 1 },
         cardWidth,
+        padding: cardPadding, // add this
       }
-    : { backgroundColor: background, cardWidth };
+    : {
+        backgroundColor: background,
+        cardWidth,
+        padding: cardPadding, // add this
+      };
 
   /**
    * Handles long press events on the widget.
@@ -104,7 +111,7 @@ const Widget: React.FC<Props> = ({
               fontSize="s"
               fontWeight="light"
               colorVariant="white"
-              style={{ position: "absolute", top: 20, left: 20, zIndex: 1 }}
+              style={{ position: "absolute", top: 15, left: 15, zIndex: 1 }}
             >
               Preview
             </ThemedText>
@@ -114,7 +121,7 @@ const Widget: React.FC<Props> = ({
         {icon && <IconsContainer>{icon && <Icon>{icon}</Icon>}</IconsContainer>}
 
         {/* Page Type */}
-        {pageType && (
+        {pageType && !isPreview && (
           <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
             {pageType === PageType.Collection ? "collection" : "note"}
           </ThemedText>

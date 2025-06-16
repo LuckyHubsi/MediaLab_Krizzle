@@ -48,6 +48,10 @@ const itemSelectByIdQuery: string = `
                     'display_text', CASE
                         WHEN a.type = 'link' THEN l.display_text
                         ELSE NULL
+                    END,
+                    'alt_text', CASE
+                        WHEN a.type = 'image' THEN iv.alt_text
+                        ELSE NULL
                     END
                 )
             )
@@ -131,7 +135,11 @@ const selectItemPreviewValuesQuery: string = `
     CASE
         WHEN a.type = 'link' THEN l.display_text
         ELSE NULL
-    END AS display_text
+    END AS display_text,
+    CASE
+        WHEN a.type = 'image' THEN iv.alt_text
+        ELSE NULL
+    END AS alt_text
     FROM item i
     JOIN collection c ON i.pageID = c.pageID
     JOIN attribute a ON a.item_templateID = c.item_templateID
@@ -175,7 +183,7 @@ const insertMultiselectValueQuery: string = `
 `;
 
 const insertImageValueQuery: string = `
-    INSERT INTO image_value (itemID, attributeID, value) VALUES (?, ?, ?)
+    INSERT INTO image_value (itemID, attributeID, value, alt_text) VALUES (?, ?, ?, ?)
 `;
 
 const insertLinkValueQuery: string = `
@@ -205,7 +213,7 @@ const updateMultiselectValueQuery: string = `
 `;
 
 const updateImageValueQuery: string = `
-    UPDATE image_value SET value = ? WHERE itemID = ? AND attributeID = ?
+    UPDATE image_value SET value = ?, alt_text = ? WHERE itemID = ? AND attributeID = ?
 `;
 
 const updateLinkValueQuery: string = `

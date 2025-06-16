@@ -45,23 +45,19 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
   return (
     <Modal
       visible={visible}
-      animationType="fade"
       transparent
+      animationType="fade"
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback onPress={onClose}>
-          <LinearGradient
-            colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.7)"]}
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              alignItems: "center",
-              padding: 20,
-            }}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <LinearGradient
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.7)"]}
+          style={{ flex: 1, justifyContent: "flex-end", padding: 20 }}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ width: "100%" }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
           >
             <TouchableWithoutFeedback>
               <ModalContent colorScheme={colorScheme}>
@@ -95,9 +91,9 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                 </TouchableOpacity>
               </ModalContent>
             </TouchableWithoutFeedback>
-          </LinearGradient>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </LinearGradient>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };

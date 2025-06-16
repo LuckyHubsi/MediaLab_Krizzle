@@ -288,7 +288,7 @@ export default function HomeScreen() {
           ) : (
             <>
               <SearchBar
-                placeholder="Search for title"
+                placeholder="Search for widget title"
                 onSearch={setSearchQuery}
               />
               <TagList
@@ -368,6 +368,8 @@ export default function HomeScreen() {
                         style={{
                           flexDirection: "row",
                           gap: 6,
+                          minHeight: 48,
+                          alignItems: "center",
                         }}
                       >
                         <ThemedText

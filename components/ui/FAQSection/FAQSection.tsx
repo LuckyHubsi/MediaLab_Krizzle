@@ -39,7 +39,7 @@ const FAQSection = () => {
           />
           <CollapsibleCard
             faqQuestion="What is a "
-            faqTitle="multi-select"
+            faqTitle="Multi-Select"
             faqContent="When creating a Collection, you can add an Item Template with the “multi-select” type. A multi-select lets you define a custom list of options that fit your needs. Then, whenever you add a new Item to the Collection, you can simply choose the option—or options—that best apply to that Item."
             faqExampleHeading="Example for a Games Collection: Genres"
             faqExampleImage={require("@/assets/images/faq/faq_multi-select.png")}
@@ -62,6 +62,11 @@ const FAQSection = () => {
             faqQuestion="What is a "
             faqTitle="Folder"
             faqContent="Folders in Krizzle help you keep your workspace tidy by grouping related widgets, such as Notes or Collections, into one organized place"
+          />
+          <CollapsibleCard
+            faqQuestion="What is "
+            faqTitle="Long-Press"
+            faqContent="Long-pressing on a Widget or a Collection Item allows you to quickly access options like editing, archiving, or deleting the Widget."
           />
         </CardsContainer>
       </View>

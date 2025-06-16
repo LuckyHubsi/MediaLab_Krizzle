@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import OnboardingBackground from "./OnboardingBackground/OnboardingBackground";
@@ -16,7 +16,7 @@ export default function Step2() {
         imageSourceDark={require("@/assets/images/onboardingDark2.png")}
         heightPercent={backgroundHeight}
       />
-      <View style={{ gap: 8, top: "60%" }}>
+      <ScrollView style={{ gap: 8, top: "60%", height: "28%", flexGrow: 0 }}>
         <ThemedText fontWeight="bold" fontSize="l">
           Customize your Home Screen with Widgets
         </ThemedText>
@@ -25,7 +25,7 @@ export default function Step2() {
           Widgets that you desire. Enter a text, choose a tag, a color or an
           icon.
         </ThemedText>
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }

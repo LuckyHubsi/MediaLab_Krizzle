@@ -6,6 +6,7 @@ import {
   RatingPickerWrapper,
 } from "./RatingPicker.styles";
 import { Colors } from "@/constants/Colors";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
 /**
  * Component for selecting a rating using icons.
@@ -33,7 +34,7 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
   onChange,
 }) => {
   const [rating, setRating] = useState(value);
-
+  const colorScheme = useActiveColorScheme() ?? "light";
   /**
    * Effect to initialize the rating state with the provided value.
    */
@@ -65,7 +66,15 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
             key={i}
             name={selectedIcon}
             size={32}
-            color={i < rating ? Colors.primary : Colors.grey100}
+            color={
+              i < rating
+                ? colorScheme === "light"
+                  ? Colors.primary
+                  : Colors.secondary
+                : colorScheme === "light"
+                  ? Colors.grey100
+                  : Colors.grey50
+            }
             onPress={editable ? () => handlePress(i) : undefined}
           />
         ))}

@@ -34,6 +34,7 @@ interface AddCollectionItemProps {
     attributeID: number,
     value: any,
     displayText?: string,
+    alText?: string,
   ) => void;
   hasNoInputError?: boolean;
   onListChange: (categoryID: number | null) => void;
@@ -60,6 +61,11 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const [linkValues, setLinkValues] = useState<{
     [id: number]: string;
   }>({});
+
+  const [customAltText, setCustomAltText] = useState<{ [id: number]: string }>(
+    {},
+  );
+  const [imageUris, setImageUris] = useState<{ [id: number]: string }>({});
 
   const initializedRef = useRef(false);
 
@@ -94,6 +100,27 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
         }
       }
     });
+
+    const altTextMap: { [id: number]: string } = {};
+    const imageUriMap: { [id: number]: string } = {};
+
+    attributes.forEach((attribute) => {
+      if (attribute.type === AttributeType.Image && attribute.attributeID) {
+        const attributeId = Number(attribute.attributeID);
+        const currentValue = attributeValues[attributeId];
+
+        if (currentValue && typeof currentValue === "object") {
+          imageUriMap[attributeId] = currentValue.value || "";
+          altTextMap[attributeId] = currentValue.altText || "";
+        } else {
+          imageUriMap[attributeId] = "";
+          altTextMap[attributeId] = "";
+        }
+      }
+    });
+
+    setImageUris(imageUriMap);
+    setCustomAltText(altTextMap);
 
     if (hasLinkAttributes) {
       setCustomLinkText(linkTextMap);
@@ -275,14 +302,29 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
             );
             break;
           case AttributeType.Image:
+            const imageAttributeId = Number(attribute.attributeID);
             elements.push(
               <ImagePickerField
-                key={attribute.attributeID}
+                key={imageAttributeId}
                 title={attribute.attributeLabel}
-                value={currentValue || ""}
-                onChange={(uri) =>
-                  onInputChange(Number(attribute.attributeID), uri)
-                }
+                value={imageUris[imageAttributeId] || ""}
+                onChange={(uri) => {
+                  setImageUris((prev) => ({
+                    ...prev,
+                    [imageAttributeId]: uri,
+                  }));
+                  const currentAlt = customAltText[imageAttributeId] || "";
+                  onInputChange(imageAttributeId, uri, undefined, currentAlt);
+                }}
+                altText={customAltText[imageAttributeId] || ""}
+                onAltTextChange={(text) => {
+                  setCustomAltText((prev) => ({
+                    ...prev,
+                    [imageAttributeId]: text,
+                  }));
+                  const currentUri = imageUris[imageAttributeId] || "";
+                  onInputChange(imageAttributeId, currentUri, undefined, text);
+                }}
               />,
             );
             break;

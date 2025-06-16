@@ -273,20 +273,19 @@ export class ItemRepositoryImpl
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
-      if ("valueString" in itemAttributeValue) {
+      if (
+        "valueString" in itemAttributeValue &&
+        "altText" in itemAttributeValue
+      ) {
         await this.executeQuery(
           insertImageValueQuery,
           [
             itemId,
             itemAttributeValue.attributeID,
             itemAttributeValue.valueString,
+            itemAttributeValue.altText,
           ],
           txn,
-        );
-      } else {
-        console.log(
-          "No valueString in itemAttributeValue:",
-          itemAttributeValue,
         );
       }
     } catch (error) {
@@ -520,12 +519,13 @@ export class ItemRepositoryImpl
     itemId: ItemID,
     attributeId: AttributeID,
     value: string | null,
+    altText: string | null,
     txn?: SQLite.SQLiteDatabase,
   ): Promise<void> {
     try {
       await this.executeQuery(
         updateImageValueQuery,
-        [value, itemId, attributeId],
+        [value, altText, itemId, attributeId],
         txn,
       );
     } catch (error) {

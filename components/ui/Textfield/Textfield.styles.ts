@@ -16,11 +16,22 @@ export const InputWrapper = styled.View<ColorSchemeProps>`
   border-radius: 16px;
   padding: 0 20px;
 `;
-export const StyledTextInput = styled.TextInput<ColorSchemeProps>`
-  padding: 15px 20px;
+export const StyledTextInput = styled.TextInput<
+  ColorSchemeProps & { multiline?: boolean }
+>`
   font-size: 16px;
   font-family: "Lexend_300Light";
   flex: 1;
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#000" : "#fff"};
+
+  ${({ multiline }: { multiline?: boolean }) =>
+    multiline
+      ? `
+    padding: 15px 20px;
+  `
+      : `
+    padding: 0 20px;
+    height: 50px; 
+  `}
 `;

@@ -9,7 +9,7 @@ export const ImagePickerContainer = styled.View`
 export const LinkPickerContainer = styled.View`
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0px;
   width: 100%;
   padding: 20px;
   border-radius: 16px;
@@ -23,6 +23,7 @@ export const LinkPickerContainer = styled.View`
 export const LinkTitleButton = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 4px;
   gap: 2px;
+  min-height: 48px;
 `;

@@ -60,7 +60,15 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
             />
           </TextfieldWrapper>
 
-          <TouchableOpacity onPress={() => handleRemoveTextfield(index)}>
+          <TouchableOpacity
+            onPress={() => handleRemoveTextfield(index)}
+            style={{
+              width: 48,
+              height: 48,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <MaterialIcons
               name="delete"
               size={24}
@@ -74,7 +82,11 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
           colorScheme={colorScheme}
           onPress={handleAddButtonClick}
         >
-          <MaterialIcons name="add-circle" size={24} color={Colors.primary} />
+          <MaterialIcons
+            name="add-circle"
+            size={24}
+            color={colorScheme === "light" ? Colors.primary : Colors.secondary}
+          />
           <ThemedText colorVariant="primary">Add a selectable</ThemedText>
         </AddMultiSelectableButton>
       )}
