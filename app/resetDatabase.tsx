@@ -37,7 +37,11 @@ export default function ResetDatabaseScreen() {
         <CustomStyledHeader title="Reset Data" />
       </View>
       <ThemedView>
-        <ThemedText fontWeight="bold" colorVariant="red">
+        <ThemedText
+          fontWeight="bold"
+          colorVariant="red"
+          accessibilityRole="header"
+        >
           Erase All Data and Start Fresh
         </ThemedText>
         <ThemedText>
@@ -54,6 +58,7 @@ export default function ResetDatabaseScreen() {
             setShowDeleteModal(true);
           }}
           isRed={true}
+          accessibilityLabel="Reset All Data"
         >
           Reset all Data
         </Button>

@@ -16,8 +16,8 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   children,
   onPress,
   isRed = false,
-  accessibilityLabel,
-  accessibilityHint,
+  accessibilityLabel = "",
+  accessibilityHint = "",
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
   return (
