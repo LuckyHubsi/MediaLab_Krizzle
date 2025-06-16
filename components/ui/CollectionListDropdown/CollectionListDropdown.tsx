@@ -7,6 +7,15 @@ import {
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import CustomPicker from "../CustomPicker/CustomPicker";
 
+/**
+ * Component for displaying a dropdown to select a collection list.
+ * It allows users to choose from a list of collections and triggers a callback on selection change.
+ * @param title (required) - The title of the dropdown.
+ * @param collectionList (required) - An array of collection list names to display in the dropdown.
+ * @param selectedList (required) - The currently selected collection list name.
+ * @param onSelectionChange (required) - Callback function to handle changes in selection.
+ */
+
 interface CollectionListDropdownProps {
   title: string;
   collectionList: string[];
@@ -21,6 +30,8 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
   onSelectionChange,
 }) => {
   const colorScheme = useActiveColorScheme();
+
+  // Convert collectionList to dropdown items
   const dropdownItems = collectionList.map((item) => ({
     label: item,
     value: item,
