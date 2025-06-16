@@ -22,10 +22,17 @@ import { ThemedText } from "@/components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component Popup for choosing a color or icon. (used in widget creation)
+ * @param id (required) - Unique identifier for the item.
+ * @param value (required) - The value of the item, can be a color string or an icon name.
+ * @param label - Optional label for the item, used for colors.
+ */
+
 type PopupItem = {
   id: string;
-  value: string | string[]; // support for gradient
-  label?: string; // optional, for colors
+  value: string | string[];
+  label?: string;
 };
 
 interface ChoosePopupProps {
@@ -78,6 +85,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                       const label = item.label || item.value;
 
                       return (
+                        // Render each item in the grid
                         <ItemWrapper
                           key={item.id}
                           isSelected={isSelected}
@@ -96,6 +104,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                             colorScheme={colorScheme}
                             showBorder={type === "color"}
                           >
+                            {/* Render color or icon based on type */}
                             {Array.isArray(item.value) ? (
                               <LinearGradient
                                 colors={
@@ -110,6 +119,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                                 }}
                               />
                             ) : null}
+                            {/* Render icon if type is "icon" */}
                             {type === "icon" && (
                               <MaterialIcons
                                 name={item.value as any}
@@ -120,6 +130,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                               />
                             )}
                           </ItemCircle>
+                          {/* Render label for color items if type is "color" */}
                           {type === "color" && (
                             <ColorLabel>
                               {isSelected ? (
