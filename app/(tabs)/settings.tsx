@@ -27,41 +27,50 @@ export default function TabThreeScreen() {
             <ScrollView
               contentContainerStyle={{ gap: 6, paddingBottom: 10 }}
               showsVerticalScrollIndicator={false}
+              accessible={true}
+              accessibilityRole="menu"
             >
               <SettingsLink
                 label="Appearance"
                 href="/appearance"
                 iconName="tune"
+                accessHint="Opens the Page for Theme Selection"
               />
               <SettingsLink
                 label="Tag Management"
                 href="/tagManagement"
                 iconName="local-offer"
+                accessHint="Opens the Page for Tag Management"
               />
               <SettingsLink
                 label="Archive"
                 href="/archivePage"
                 iconName="archive"
+                accessHint="Opens the Archived Page"
               />
               <SettingsLink
                 label="Frequently Asked Questions"
                 href="/faq"
                 iconName="help-outline"
+                accessHint="Opens the FAQ Page"
               />
               <SettingsLink
                 label="Reset Data"
                 href="/resetDatabase"
                 iconName="delete-forever"
+                accessHint="Opens the Page for Data Resetting"
               />
               <SettingsLink
                 label="Onboarding"
                 href="/onboardingScreen"
                 iconName="restart-alt"
+                accessHint="Starts the Onboarding"
               />
               <SettingsLink
                 label="Visit Website"
                 href="https://krizzle-website.vercel.app/"
                 iconName="language"
+                accessHint="Opens the Link to the krizzle website"
               />
             </ScrollView>
           </View>
