@@ -66,12 +66,67 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       Alert.alert("Can't open this URL:", validUrl);
     }
   };
+
+  const getAccessibilityLabel = () => {
+    const parts: string[] = [];
+
+    if (subtitle) {
+      parts.push(`Label ${subtitle}`);
+    }
+
+    if (title) {
+      parts.push(`${title}`);
+    }
+
+    if (type && typeof type === "string") {
+      let ratingNumber: number | null = null;
+      if (type.startsWith("0/5")) ratingNumber = 0;
+      if (type.startsWith("1/5")) ratingNumber = 1;
+      if (type.startsWith("2/5")) ratingNumber = 2;
+      if (type.startsWith("3/5")) ratingNumber = 3;
+      if (type.startsWith("4/5")) ratingNumber = 4;
+      if (type.startsWith("5/5")) ratingNumber = 5;
+      if (ratingNumber) {
+        parts.push(`Rating: ${ratingNumber} out of 5 ${icon} icons`);
+      } else {
+        parts.push(`Text: ${type}`);
+      }
+    } else if (type) {
+      parts.push(`Type: ${type}`);
+    }
+
+    if (date) {
+      parts.push(`Date: ${format(date, "dd.MM.yyyy")}`);
+    }
+
+    if (multiselectArray && multiselectArray.length > 0) {
+      parts.push(`Selectables: ${multiselectArray.join(", ")}`);
+    }
+
+    if (imageUri) {
+      parts.push(
+        `Image Description: ${altText ? altText : "no image desciprtion was provided"}`,
+      );
+    }
+
+    if (link) {
+      parts.push(`Link: ${linkPreview || link}`);
+    }
+
+    return parts.join(". ");
+  };
+
   return (
-    <ItemContainer>
+    <ItemContainer
+      accessible={true}
+      accessibilityRole="summary"
+      accessibilityLabel={getAccessibilityLabel()}
+    >
       <ThemedText
         fontWeight="regular"
         fontSize="s"
         style={{ color: greyColor }}
+        accessible={false}
       >
         {subtitle}
       </ThemedText>
@@ -87,6 +142,8 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             overflow: "hidden",
             gap: 8,
           }}
+          accessibilityLabel={altText}
+          accessibilityRole="image"
         >
           <View
             style={{
@@ -105,12 +162,11 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
               height: "100%",
               resizeMode: "contain",
             }}
-            accessible={true}
-            accessibilityLabel={altText}
+            accessible={false}
           />
           {altText && (
             <AltTextContainer themeMode={themeMode}>
-              <ThemedText fontWeight="regular" fontSize="s">
+              <ThemedText fontWeight="regular" fontSize="s" accessible={false}>
                 {altText}
               </ThemedText>
             </AltTextContainer>
@@ -178,7 +234,13 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       )}
 
       {link && (
-        <TouchableOpacity onPress={handlePressLink}>
+        <TouchableOpacity
+          onPress={handlePressLink}
+          accessible={true}
+          accessibilityRole="link"
+          accessibilityLabel={linkPreview || link}
+          accessibilityHint="Activate to open the link"
+        >
           <ThemedText
             fontWeight="semibold"
             fontSize="regular"
