@@ -50,8 +50,14 @@ export const EmptyHome: FC<EmptyHomeProps> = ({
       <Image
         source={require("@/assets/images/kriz.png")}
         style={{ width: 65, height: 70 }}
+        accessible={false}
       />
-      <ThemedText fontSize="regular" fontWeight="regular">
+      <ThemedText
+        fontSize="regular"
+        fontWeight="regular"
+        accessible={true}
+        accessibilityRole="text"
+      >
         {text}
       </ThemedText>
       {showButton && <Button onPress={handlePress}>{buttonLabel}</Button>}

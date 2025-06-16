@@ -72,6 +72,10 @@ export default function ArchiveScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  // for screenreader compatibility
+  const [announceKey, setAnnounceKey] = useState(0);
+  const [shouldAnnounceEmpty, setShouldAnnounceEmpty] = useState(false);
+
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -157,7 +161,17 @@ export default function ArchiveScreen() {
     );
   }, [widgets, searchQuery]);
 
-  useEffect(() => {}, [widgets]);
+  useEffect(() => {
+    if (widgets.length === 0) {
+      const timeout = setTimeout(() => {
+        setShouldAnnounceEmpty(true);
+      }, 500); // allow screen to settle, screenreader to be ready
+
+      return () => clearTimeout(timeout);
+    } else {
+      setShouldAnnounceEmpty(false);
+    }
+  }, [widgets]);
 
   const goToPage = (widget: ArchivedWidget) => {
     const path =
@@ -173,6 +187,11 @@ export default function ArchiveScreen() {
     });
   };
 
+  // update key to force re-render when searchQuery or results change to have screenreader announce results of search
+  useEffect(() => {
+    setAnnounceKey((prev) => prev + 1);
+  }, [searchQuery, filteredWidgets.length]);
+
   return (
     <>
       <SafeAreaView>
@@ -181,13 +200,47 @@ export default function ArchiveScreen() {
         </View>
         <ThemedView>
           {widgets.length === 0 ? (
-            <EmptyHome text="Archive is empty" showButton={false} />
+            <>
+              {shouldAnnounceEmpty && (
+                <ThemedText
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    height: 0,
+                    width: 0,
+                    opacity: 0,
+                    position: "absolute",
+                  }}
+                >
+                  Archive is empty
+                </ThemedText>
+              )}
+              <EmptyHome text="Archive is empty" showButton={false} />
+            </>
           ) : (
             <>
               <SearchBar
                 placeholder="Search for widget title"
                 onSearch={(query) => setSearchQuery(query)}
               />
+              <ThemedText
+                key={`announce-${announceKey}`}
+                accessible={true}
+                accessibilityLiveRegion="polite"
+                style={{
+                  position: "absolute",
+                  height: 0,
+                  width: 0,
+                  opacity: 0,
+                }}
+              >
+                {searchQuery
+                  ? filteredWidgets.length > 0
+                    ? `${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found for ${searchQuery}`
+                    : `No entries found for ${searchQuery}`
+                  : ""}
+              </ThemedText>
 
               {filteredWidgets.length > 0 ? (
                 <>
