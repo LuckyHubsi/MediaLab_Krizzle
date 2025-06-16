@@ -16,7 +16,7 @@ export const CollapsibleCardContainer = styled.View<ColorSchemeProps>`
   background-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? Colors.white : Colors.grey200};
   border-radius: 14px;
-  padding: 12px 20px;
+  padding: 2px 20px;
 `;
 
 export const CardHeader = styled.TouchableOpacity`

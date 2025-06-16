@@ -38,7 +38,10 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
         colorScheme={colorScheme}
         onPress={() => setExpanded(!expanded)}
       >
-        <CardHeader onPress={() => setExpanded(!expanded)}>
+        <CardHeader
+          onPress={() => setExpanded(!expanded)}
+          style={{ minHeight: 48 }}
+        >
           <ThemedText fontWeight="bold">
             {faqQuestion}
             <ThemedText colorVariant="primary" fontWeight="bold">
