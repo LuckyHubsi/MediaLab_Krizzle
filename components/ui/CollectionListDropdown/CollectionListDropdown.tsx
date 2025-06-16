@@ -1,13 +1,9 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   AndroidPickerWrapper,
   CollectionListContainer,
-  getPickerStyles,
 } from "./CollectionListDropdown.styles";
-import RNPickerSelect from "react-native-picker-select";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import CustomPicker from "../CustomPicker/CustomPicker";
 
@@ -25,7 +21,6 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
   onSelectionChange,
 }) => {
   const colorScheme = useActiveColorScheme();
-  const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
   const dropdownItems = collectionList.map((item) => ({
     label: item,
     value: item,
