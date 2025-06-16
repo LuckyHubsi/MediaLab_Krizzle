@@ -1,5 +1,4 @@
-import React from "react";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import React, { FC } from "react";
 import CollectionList from "../CollectionList/CollectionList";
 import { BackgroundCard } from "./CollectionListCard.styles";
 import { ScrollView, View, ViewProps } from "react-native";
@@ -7,16 +6,31 @@ import { ThemedView } from "../ThemedView/ThemedView";
 import { router } from "expo-router";
 import CollectionWidget from "../CollectionWidget/CollectionWidget";
 import { ThemedText } from "@/components/ThemedText";
+import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * Component for displaying a collection list card with a list of (collection) items.
+ * It includes a collection list selector and a scrollable view of items.
+ * @param collectionLists (required) - Array of collection list names to display.
+ * @param onSelect - Callback function to handle selection of a collection list.
+ * @param listNames - Optional array of collection list names to display.
+ * @param setSelectedList - Optional function to set the selected collection list.
+ * @param filteredItems - Optional array of filtered items to display in the collection.
+ * @param items - Optional object containing item attributes.
+ * @param setSelectedItem - Optional function to set the selected item.
+ * @param setShowItemModal - Optional function to control the visibility of the item modal (on LongPress).
+ * @param searchQuery - Optional search query to filter items.
+ * @param routing - Optional routing parameter for navigation.
+ * @param collectionId - Optional ID of the collection to filter items.
+ * @param isArchived - Optional boolean to indicate if the collection is archived.
+ * @param goToEdit (required) - Function to navigate to the edit page for the collection.
+ */
 
 export type CollectionListCardPorps = ViewProps & {
   collectionLists: string[];
   onSelect?: (selected: string | null) => void;
   listNames?: string[];
   setSelectedList?: (selectedList: string) => void;
-  lightColor?: string;
-  darkColor?: string;
-  topPadding?: number;
-  backgroundCardTopOffset?: number;
   filteredItems?: any[];
   items?: any;
   setSelectedItem?: (selectedItem: any) => void;
@@ -28,12 +42,9 @@ export type CollectionListCardPorps = ViewProps & {
   goToEdit: () => void;
 };
 
-export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
+export const CollectionListCard: FC<CollectionListCardPorps> = ({
   listNames = [],
   setSelectedList,
-  lightColor,
-  darkColor,
-  backgroundCardTopOffset,
   filteredItems = [],
   items,
   setSelectedItem,
@@ -44,12 +55,11 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   isArchived = false,
   goToEdit,
 }) => {
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "background",
-  );
+  const colorScheme = useActiveColorScheme();
+
   return (
     <View style={{ flex: 1 }}>
+      {/* Collection List Container: Horizontal ScollView */}
       <CollectionList
         collectionLists={listNames}
         onSelect={(collectionList) => {
@@ -62,11 +72,8 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         goToEdit={goToEdit}
       />
 
-      <BackgroundCard
-        backgroundColor={backgroundColor}
-        topOffset={backgroundCardTopOffset}
-        style={{ marginTop: 9 }}
-      >
+      {/* Collection Items Container: Vertical ScrollView */}
+      <BackgroundCard colorScheme={colorScheme}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{ borderRadius: 33, flexGrow: 0, flexShrink: 0, flex: 0 }}
@@ -79,6 +86,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
           overScrollMode="never"
         >
           <ThemedView>
+            {/* Display filtered items or a message if no items are found */}
             {filteredItems.length > 0 ? (
               <View style={{ flex: 1, gap: 12 }}>
                 {[...filteredItems].reverse().map((item) => (
@@ -97,6 +105,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                         },
                       });
                     }}
+                    //Open Item Modal on LongPress
                     onLongPress={() => {
                       if (!isArchived) {
                         if (setSelectedItem) {
@@ -115,7 +124,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                 <ThemedText
                   fontSize="regular"
                   fontWeight="regular"
-                  style={{ textAlign: "center" }}
+                  textIsCentered
                 >
                   {searchQuery
                     ? `No results for "${searchQuery}"`
