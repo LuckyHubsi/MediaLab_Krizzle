@@ -35,12 +35,24 @@ export const TagListItem: React.FC<Props> = ({
 
   return (
     <Row>
-      <Column style={{ marginLeft: 14 }}>
+      <Column
+        style={{ marginLeft: 14 }}
+        accessible={true}
+        accessibilityLabel={`Tag labelled ${tag}.`}
+        accessibilityHint={
+          tagCount !== undefined && tagCount > 0
+            ? `Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`
+            : "Unused"
+        }
+        accessibilityRole="text"
+        importantForAccessibility="yes"
+      >
         <ThemedText
           style={{
             flexWrap: "wrap",
             flexShrink: 1,
           }}
+          accessible={false}
         >
           {tag}
         </ThemedText>
@@ -49,9 +61,15 @@ export const TagListItem: React.FC<Props> = ({
             fontSize="s"
             fontWeight="light"
             colorVariant="greyScale"
+            accessible={false}
           >{`Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`}</ThemedText>
         ) : !tagCountLoading ? null : (
-          <ThemedText fontSize="s" fontWeight="light" colorVariant="greyScale">
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant="greyScale"
+            accessible={false}
+          >
             Unused
           </ThemedText>
         )}
@@ -71,7 +89,7 @@ export const TagListItem: React.FC<Props> = ({
             size={24}
             color={colorScheme === "light" ? Colors.black : Colors.white}
             accessibilityLabel="Edit tag"
-            accessibilityHint="Edit the tag name"
+            accessibilityHint={`Edit the tag name of tag labelled ${tag}`}
             accessibilityRole="button"
           />
         </TouchableOpacity>
@@ -89,7 +107,7 @@ export const TagListItem: React.FC<Props> = ({
             size={24}
             color={Colors[colorScheme].negative}
             accessibilityLabel="Delete tag"
-            accessibilityHint="Delete the tag"
+            accessibilityHint={`Delete the tag labelled ${tag}`}
             accessibilityRole="button"
           />
         </TouchableOpacity>

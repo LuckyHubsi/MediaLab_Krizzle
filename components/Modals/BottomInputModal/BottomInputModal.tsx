@@ -48,6 +48,9 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      accessible={true}
+      accessibilityViewIsModal={true}
+      accessibilityLabel="Input modal for adding a tag"
     >
       <TouchableWithoutFeedback onPress={onClose}>
         <LinearGradient
@@ -71,6 +74,8 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                   textColor={Colors[colorScheme].text}
                   autoFocus
                   maxLength={30}
+                  accessibilityHint="Enter or edit a name and press the arrow to submit"
+                  accessible={true}
                 />
                 <TouchableOpacity
                   onPress={onSubmit}
@@ -82,11 +87,15 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                     justifyContent: "center",
                     alignItems: "center",
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Submit"
+                  accessibilityHint="Saves the new tag"
                 >
                   <MaterialIcons
                     name="arrow-upward"
                     size={24}
                     color={Colors[colorScheme].text}
+                    accessible={false}
                   />
                 </TouchableOpacity>
               </ModalContent>

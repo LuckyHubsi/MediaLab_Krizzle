@@ -339,7 +339,13 @@ export default function TagManagementScreen() {
                 paddingTop: 35,
               }}
             >
-              <Button onPress={() => setModalVisible(true)}>Add</Button>
+              <Button
+                onPress={() => setModalVisible(true)}
+                accessibilityLabel="Add Tag Button"
+                accessibilityHint="Opens the input modal for adding a new tag"
+              >
+                Add
+              </Button>
             </LinearGradient>
           </View>
         )}
@@ -353,7 +359,7 @@ export default function TagManagementScreen() {
           Keyboard.dismiss();
           setModalVisible(false);
         }}
-        placeholderText="Enter a new tag"
+        placeholderText="Edit or Enter a new tag"
       />
       <DeleteModal
         visible={showDeleteModal}
