@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { format } from "date-fns";
 import {
   ItemContainer,
@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  ScrollView,
   Dimensions,
 } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
