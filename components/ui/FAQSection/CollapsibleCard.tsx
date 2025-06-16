@@ -10,7 +10,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { Image } from "react-native";
+import { Image, View, AccessibilityState } from "react-native";
 
 interface CollapsibleCardProps {
   faqTitle: string;
@@ -18,7 +18,9 @@ interface CollapsibleCardProps {
   faqQuestion?: string;
   faqExampleHeading?: string;
   faqExampleImage?: string;
+  faqExampleImageAlt?: string;
   imageHeight?: number;
+  itemNumber: number;
 }
 
 const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
@@ -27,10 +29,16 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
   faqQuestion,
   faqExampleHeading,
   faqExampleImage,
+  faqExampleImageAlt,
   imageHeight,
+  itemNumber,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const colorScheme = useActiveColorScheme();
+
+  // for screenreader compatibility
+  const accessibilityState: AccessibilityState = { expanded };
+  const numberofQuestions = 8; // change the number when adding a new FAQ card
 
   return (
     <GradientBorder>
@@ -38,7 +46,17 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
         colorScheme={colorScheme}
         onPress={() => setExpanded(!expanded)}
       >
-        <CardHeader onPress={() => setExpanded(!expanded)}>
+        <CardHeader
+          onPress={() => setExpanded(!expanded)}
+          accessibilityRole="button"
+          accessibilityLabel={`Question ${itemNumber} out of ${numberofQuestions}: ${faqQuestion} ${faqTitle}`}
+          accessibilityHint={
+            expanded
+              ? "Double tap to collapse the answer."
+              : "Double tap to expand and read the answer."
+          }
+          accessibilityState={accessibilityState}
+        >
           <ThemedText fontWeight="bold">
             {faqQuestion}
             <ThemedText colorVariant="primary" fontWeight="bold">
@@ -52,14 +70,19 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
             color={colorScheme === "light" ? Colors.grey100 : Colors.grey50}
           />
         </CardHeader>
+
         {expanded && (
-          <CollapsibleCardContent>
+          <CollapsibleCardContent accessible={true}>
             <GradientTopBorder />
             <ThemedText style={{ marginBottom: 12 }}>{faqContent}</ThemedText>
+
             {faqExampleHeading && (
               <>
                 <GradientTopBorder />
                 <ThemedText
+                  accessible={true}
+                  accessibilityRole="header"
+                  accessibilityLabel={`Section for ${faqExampleHeading}`}
                   fontWeight="bold"
                   style={{
                     textAlign: "center",
@@ -78,6 +101,11 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
                   height: imageHeight,
                   resizeMode: "contain",
                 }}
+                accessibilityRole="image"
+                accessibilityLabel={`Example Illustration`}
+                accessibilityHint={
+                  `Depicts ${faqExampleImageAlt}` || "Example image"
+                }
               />
             )}
           </CollapsibleCardContent>
