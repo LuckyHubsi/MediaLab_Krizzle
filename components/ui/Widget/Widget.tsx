@@ -4,6 +4,7 @@ import {
   useWindowDimensions,
   View,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import {
@@ -100,6 +101,7 @@ const Widget: React.FC<Props> = ({
       accessibilityRole="button"
       accessibilityLabel={`Open ${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
       accessibilityHint="Double tap to open. Long press for more options."
+      style={{ overflow: "hidden" }}
     >
       <CardWrapper {...cardProps}>
         {isGradient && (
@@ -130,7 +132,13 @@ const Widget: React.FC<Props> = ({
 
         {/* Page Type */}
         {pageType && !isPreview && (
-          <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant="white"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {pageType === PageType.Collection ? "collection" : "note"}
           </ThemedText>
         )}
