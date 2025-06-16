@@ -1,17 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import CollectionList from "../CollectionList/CollectionList";
 import { BackgroundCard } from "./CollectionListCard.styles";
-import { SafeAreaView, ScrollView, View, ViewProps } from "react-native";
-import {
-  GradientBackgroundWrapper,
-  StyledView,
-} from "../GradientBackground/GradientBackground.styles";
+import { ScrollView, View, ViewProps } from "react-native";
 import { ThemedView } from "../ThemedView/ThemedView";
 import { router } from "expo-router";
 import CollectionWidget from "../CollectionWidget/CollectionWidget";
 import { ThemedText } from "@/components/ThemedText";
-import { ar } from "date-fns/locale";
 
 export type CollectionListCardPorps = ViewProps & {
   collectionLists: string[];
@@ -34,15 +29,10 @@ export type CollectionListCardPorps = ViewProps & {
 };
 
 export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
-  collectionLists,
-  onSelect,
   listNames = [],
   setSelectedList,
   lightColor,
   darkColor,
-  topPadding = 30,
-  style,
-  children,
   backgroundCardTopOffset,
   filteredItems = [],
   items,
@@ -53,7 +43,6 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
   collectionId,
   isArchived = false,
   goToEdit,
-  ...otherProps
 }) => {
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
