@@ -163,7 +163,12 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           </Icon>
         )}
         {iconName2 && onIconMenuPress && (
-          <Icon onPress={onIconMenuPress}>
+          <Icon
+            onPress={onIconMenuPress}
+            accessibilityRole="button"
+            accessibilityLabel="Page Menu"
+            accessibilityHint="Opens a modal for actions available on this page"
+          >
             <MaterialIcons
               name={iconName2}
               size={24}
