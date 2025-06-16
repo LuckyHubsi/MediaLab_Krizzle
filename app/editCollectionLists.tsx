@@ -383,8 +383,6 @@ export default function EditCollectionListsScreen() {
         </ItemCountContainer>
         {!isLoading && (
           <ScrollView
-            keyboardShouldPersistTaps="always"
-            keyboardDismissMode="on-drag"
             contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
             showsVerticalScrollIndicator={false}
           >
