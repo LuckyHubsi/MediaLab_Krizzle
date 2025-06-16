@@ -53,7 +53,11 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
 
       {shouldScroll && (
         <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.7)"]}
+          colors={
+            colorScheme === "light"
+              ? ["transparent", "rgba(255, 255, 255, 0.7)"]
+              : ["transparent", "rgba(0, 0, 0, 0.7)"]
+          }
           style={{
             position: "absolute",
             bottom: 0,
