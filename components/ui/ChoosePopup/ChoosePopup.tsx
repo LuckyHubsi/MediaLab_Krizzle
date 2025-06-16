@@ -2,13 +2,11 @@ import React from "react";
 import {
   Modal,
   TouchableOpacity,
-  View,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import {
   Backdrop,
@@ -21,11 +19,8 @@ import {
   ColorLabel,
 } from "./ChoosePopup.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { colorLabelMap } from "@/constants/LabelMaps";
 import { LinearGradient } from "expo-linear-gradient";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-
-type ColorKey = keyof typeof Colors.widget;
 
 type PopupItem = {
   id: string;
