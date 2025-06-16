@@ -5,6 +5,8 @@ import {
   ItemContainer,
   SelectableContainer,
   AltTextContainer,
+  ImageContainer,
+  ImageOverlay,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
@@ -38,7 +40,6 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   title,
   subtitle,
   icon,
-  iconColor,
   link,
   linkPreview,
   imageUri,
@@ -50,7 +51,6 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
     }
     return url;
   };
-  const themeMode = useActiveColorScheme() ?? "light";
   const colorScheme = useActiveColorScheme();
   const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
   const screenWidth = Dimensions.get("window").width;
@@ -76,27 +76,12 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       </ThemedText>
 
       {imageUri && (
-        <View
+        <ImageContainer
           style={{
-            height: 400,
             width: screenWidth - 40,
-            borderRadius: 16,
-            backgroundColor: "#EAEAEA",
-            marginTop: 8,
-            overflow: "hidden",
-            gap: 8,
           }}
         >
-          <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
-            }}
-          />
+          <ImageOverlay colorScheme={colorScheme} />
           <Image
             source={{ uri: imageUri }}
             style={{
@@ -108,13 +93,13 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             accessibilityLabel={altText}
           />
           {altText && (
-            <AltTextContainer themeMode={themeMode}>
+            <AltTextContainer colorScheme={colorScheme}>
               <ThemedText fontWeight="regular" fontSize="s">
                 {altText}
               </ThemedText>
             </AltTextContainer>
           )}
-        </View>
+        </ImageContainer>
       )}
 
       {title && (
@@ -126,7 +111,10 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: colorScheme === "dark" ? "#3d3d3d" : "#EAEAEA",
+              backgroundColor:
+                colorScheme === "dark"
+                  ? Colors.dark.pillBackground
+                  : Colors.grey25,
               marginTop: 8,
             }}
           />
@@ -138,7 +126,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           <MaterialIcons
             name={icon}
             size={24}
-            color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+            color={colorScheme === "light" ? Colors.primary : Colors.secondary}
           />
         )}
         {type && (
@@ -165,7 +153,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           {multiselectArray.map((multiselectArray, index) => (
             <SelectableContainer
               key={`${multiselectArray}-${index}`}
-              themeMode={themeMode}
+              colorScheme={colorScheme}
               style={{ border: `1px solid ${greyColor}` }}
             >
               <ThemedText fontWeight="regular" fontSize="s">
@@ -182,7 +170,8 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             fontWeight="semibold"
             fontSize="regular"
             style={{
-              color: colorScheme === "light" ? "#176BBA" : "#4599E8",
+              color:
+                colorScheme === "light" ? Colors.primary : Colors.secondary,
               textDecorationLine: "underline",
             }}
           >
