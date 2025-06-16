@@ -13,8 +13,8 @@ export const StyledCard = styled(View)<{
   background-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].cardBackground};
   border-radius: 33px;
-  padding: 20px;
   border-color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? "#EAEAEA" : "#242424"};
   border-width: 1px;
+  overflow: hidden;
 `;

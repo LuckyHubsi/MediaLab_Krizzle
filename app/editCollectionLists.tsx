@@ -343,7 +343,7 @@ export default function EditCollectionListsScreen() {
       topPadding={Platform.select({ ios: 0, android: 15 })}
     >
       <View style={{ flex: 1 }}>
-        <Card>
+        <Card maxHeight={200} scrollable={true}>
           <CardText>
             <CardHeader>
               <ThemedText fontSize="l" fontWeight="bold">

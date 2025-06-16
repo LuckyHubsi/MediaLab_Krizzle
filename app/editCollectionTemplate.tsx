@@ -448,7 +448,7 @@ export default function EditCollectionTemplateScreen() {
       topPadding={Platform.select({ ios: 0, android: 15 })}
     >
       <View style={{ marginBottom: 10 }}>
-        <Card>
+        <Card maxHeight={200} scrollable={true}>
           <IconTopRight onPress={() => setShowHelp(true)}>
             <MaterialIcons
               name="help-outline"

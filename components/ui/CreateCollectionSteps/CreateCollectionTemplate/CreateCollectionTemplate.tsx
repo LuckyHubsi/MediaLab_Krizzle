@@ -247,7 +247,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
       >
         <View style={{ gap: 10, paddingBottom: 10 }}>
-          <Card>
+          <Card maxHeight={200} scrollable={true}>
             <IconTopRight onPress={() => setShowHelp(true)}>
               <MaterialIcons
                 name="help-outline"

@@ -187,7 +187,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   return (
     <>
       <View style={{ marginBottom: 8 }}>
-        <Card>
+        <Card maxHeight={320} scrollable={true}>
           <IconTopRight onPress={() => setShowHelp(true)}>
             <MaterialIcons
               name="help-outline"

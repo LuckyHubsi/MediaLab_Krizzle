@@ -224,7 +224,7 @@ export default function CreateNoteScreen() {
       topPadding={Platform.select({ ios: 0, android: 15 })}
     >
       <View style={{ marginBottom: 8 }}>
-        <Card>
+        <Card maxHeight={320} scrollable={true}>
           <View style={{ alignItems: "center", gap: 20 }}>
             <View style={{ alignItems: "center" }}>
               <ThemedText fontSize="l" fontWeight="bold">
