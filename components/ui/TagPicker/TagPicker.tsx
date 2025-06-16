@@ -6,7 +6,6 @@ import {
   TagScrollView,
   TagPill,
   BackIcon,
-  EditTextContainer,
 } from "./TagPicker.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
@@ -45,19 +44,15 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         <ThemedText fontSize="regular" fontWeight="regular">
           Choose a Tag
         </ThemedText>
-        <EditTextContainer onPress={onViewAllPress}>
-          <ThemedText
-            fontSize="s"
-            fontWeight="regular"
-            colorVariant="greyScale"
-          >
-            Edit Tags
-            <BackIcon
-              name="chevron-forward-outline"
-              colorScheme={colorScheme}
-            />
-          </ThemedText>
-        </EditTextContainer>
+        <ThemedText
+          onPress={onViewAllPress}
+          fontSize="s"
+          fontWeight="regular"
+          colorVariant="greyScale"
+        >
+          Edit Tags
+          <BackIcon name="chevron-forward-outline" colorScheme={colorScheme} />
+        </ThemedText>
       </HeaderRow>
 
       <TagScrollView horizontal showsHorizontalScrollIndicator={false}>

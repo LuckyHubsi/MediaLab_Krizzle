@@ -10,6 +10,7 @@ export const Container = styled.View`
 export const HeaderRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
   margin-top: 4px;
   margin-bottom: 2px;
@@ -58,11 +59,4 @@ export const TagPill = styled.View<{
       : colorScheme === "light"
         ? Colors[colorScheme].pillBackground
         : Colors[colorScheme].pillBackground};
-`;
-
-export const EditTextContainer = styled.TouchableOpacity`
-  height: 48;
-  position: absolute;
-  right: 0;
-  top: 0;
 `;
