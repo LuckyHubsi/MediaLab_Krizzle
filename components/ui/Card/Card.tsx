@@ -1,5 +1,4 @@
 import React, { FC, PropsWithChildren } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyledCard } from "./Card.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
