@@ -71,14 +71,13 @@ export const ItemCircle = styled.View<{
   border: ${({
     showBorder,
     isSelected,
-    colorScheme,
   }: {
     showBorder: boolean;
     isSelected: boolean;
     colorScheme: "light" | "dark";
   }) =>
     showBorder && isSelected
-      ? `1px solid ${colorScheme === "light" ? "#fff" : "#000"}`
+      ? `1px solid ${Colors.white}`
       : "1px solid transparent"};
 `;
 
