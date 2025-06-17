@@ -18,6 +18,7 @@ import {
   ModalOverlay,
 } from "./CustomPicker.styles";
 import { ThemedText } from "@/components/ThemedText";
+import { AccessibilityRole } from "react-native";
 
 interface CustomPickerProps {
   value: string | number | null;
@@ -25,6 +26,9 @@ interface CustomPickerProps {
   items: { label: string; value: string | number }[];
   placeholder?: any;
   colorScheme: "light" | "dark";
+  accessibilityRole?: AccessibilityRole;
+  accessibilityLabel?: string;
+  accessibilityLabelledBy?: string;
 }
 
 const CustomPicker: React.FC<CustomPickerProps> = ({
@@ -33,6 +37,9 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
   items,
   placeholder,
   colorScheme,
+  accessibilityRole,
+  accessibilityLabel,
+  accessibilityLabelledBy,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [shouldRenderSheet, setShouldRenderSheet] = useState(false);
@@ -97,14 +104,21 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
       <AndroidPickerTouchable
         onPress={() => setIsModalVisible(true)}
         colorScheme={colorScheme}
+        accessibilityRole={accessibilityRole ?? "combobox"}
+        accessibilityLabel={accessibilityLabel ?? "Dropdown menu"}
+        accessibilityHint={`Currently selected option ${selectedLabel}`}
+        accessible={true}
+        accessibilityLabelledBy={accessibilityLabelledBy}
+        importantForAccessibility="yes"
       >
-        <ThemedText fontSize="regular" fontWeight="regular">
+        <ThemedText fontSize="regular" fontWeight="regular" accessible={false}>
           {selectedLabel ?? "Select"}
         </ThemedText>
         <MaterialIcons
           name="arrow-drop-down"
           size={24}
           color={colorScheme === "dark" ? "#fff" : "#000"}
+          accessible={false}
         />
       </AndroidPickerTouchable>
 
@@ -114,6 +128,11 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
             style={{ flex: 1 }}
             activeOpacity={1}
             onPress={closeModal}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Close Dropdown"
+            accessibilityHint="Dropdown currently opened. Close dropdown selection or move to next item to browse options."
+            importantForAccessibility="yes"
           />
 
           {shouldRenderSheet && (
@@ -127,6 +146,13 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
               }}
             >
               <ModalContent colorScheme={colorScheme}>
+                <TouchableOpacity
+                  accessible={true}
+                  accessibilityLabel=""
+                  accessibilityRole="none"
+                  style={{ height: 1, width: 1, opacity: 0 }}
+                  importantForAccessibility="yes"
+                />
                 <FlatList
                   data={items}
                   keyExtractor={(item) => item.value.toString()}
@@ -136,6 +162,9 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
                         onValueChange(item.value);
                         closeModal();
                       }}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Option for ${item.label}`}
                     >
                       <ThemedText fontSize="regular" fontWeight="regular">
                         {item.label}

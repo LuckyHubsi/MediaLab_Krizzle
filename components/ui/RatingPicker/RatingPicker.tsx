@@ -59,7 +59,9 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
 
   return (
     <RatingPickerContainer>
-      <ThemedText>{title}</ThemedText>
+      <ThemedText accessibilityLabel={`Label ${title}`} nativeID={title}>
+        {title}
+      </ThemedText>
       <RatingPickerWrapper>
         {[0, 1, 2, 3, 4].map((i) => (
           <MaterialIcons
@@ -76,6 +78,16 @@ const RatingPicker: React.FC<RatingPickerProps> = ({
                   : Colors.grey50
             }
             onPress={editable ? () => handlePress(i) : undefined}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Rating Button ${i + 1} of 5`}
+            accessibilityHint={
+              i + 1 === rating
+                ? `Reselect to reset your rating to 0 out of 5 ${selectedIcon}`
+                : `Select to set your rating to ${i + 1}  out of 5 ${selectedIcon} icons`
+            }
+            accessibilityState={{ selected: i + 1 === rating }}
+            accessibilityLabelledBy={title}
           />
         ))}
       </RatingPickerWrapper>

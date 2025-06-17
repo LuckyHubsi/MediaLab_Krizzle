@@ -33,7 +33,9 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
 
   return (
     <CollectionListContainer>
-      <ThemedText>{title}</ThemedText>
+      <ThemedText accessibilityLabel={`label ${title}`} nativeID={title}>
+        {title}
+      </ThemedText>
       <AndroidPickerWrapper colorScheme={colorScheme}>
         <CustomPicker
           placeholder={{}}
@@ -41,6 +43,9 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
           value={selectedList}
           onValueChange={onSelectionChange}
           colorScheme={colorScheme}
+          accessibilityRole="combobox"
+          accessibilityLabel="Collection List Dropdown"
+          accessibilityLabelledBy={title}
         />
       </AndroidPickerWrapper>
     </CollectionListContainer>

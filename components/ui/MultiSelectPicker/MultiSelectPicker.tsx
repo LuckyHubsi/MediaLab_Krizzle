@@ -33,8 +33,19 @@ const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
 }) => {
   return (
     <MultiSelectContainer>
-      <ThemedText fontWeight="regular">{title}</ThemedText>
-      <MultiSelectPickerWrapper>
+      <ThemedText
+        fontWeight="regular"
+        accessibilityLabel={`Label ${title}`}
+        nativeID={title}
+      >
+        {title}
+      </ThemedText>
+      <MultiSelectPickerWrapper
+        accessible={true}
+        accessibilityRole="radiogroup"
+        accessibilityLabel="Selectables section"
+        accessibilityLabelledBy={title}
+      >
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           {multiselectArray.map((item, index) => {
             const isSelected = selectedTags.includes(item);
@@ -43,12 +54,22 @@ const MultiSelectPicker: FC<MultiSelectPickerProps> = ({
                 key={index}
                 isSelected={isSelected}
                 onPress={() => onSelectTag(item)}
+                accessible={true}
+                accessibilityRole="radio"
+                accessibilityLabel={`selectable ${item}`}
+                accessibilityHint={
+                  isSelected
+                    ? "Deselect the selectable"
+                    : "Select the selectable"
+                }
+                accessibilityState={{ selected: isSelected }}
               >
                 {isSelected && (
                   <MaterialIcons
                     name="check-circle"
                     color={Colors.white}
                     style={{ marginRight: 5 }}
+                    accessible={false}
                   />
                 )}
                 <ThemedText colorVariant={isSelected ? "white" : "grey"}>

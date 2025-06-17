@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import Textfield from "../Textfield/Textfield";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -35,6 +40,7 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
   const [showCustomTextfield, setShowCustomTextfield] = useState(!!linkText);
   const colorScheme = useColorScheme();
   const iconColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const titleRef = useRef(null);
 
   /**
    * Handles the removal of custom text for the link title.
@@ -55,7 +61,13 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
 
   return (
     <>
-      <ThemedText fontWeight="regular" fontSize="regular">
+      <ThemedText
+        fontWeight="regular"
+        fontSize="regular"
+        accessibilityLabel={`label ${title}`}
+        nativeID={title}
+        optionalRef={titleRef}
+      >
         {title}
       </ThemedText>
       <LinkPickerContainer>
@@ -69,7 +81,13 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
         />
 
         {!showCustomTextfield ? (
-          <TouchableOpacity onPress={() => setShowCustomTextfield(true)}>
+          <TouchableOpacity
+            onPress={() => setShowCustomTextfield(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Add a custom link title or display text for ${title}`}
+            accessibilityHint="Opens a new text input field"
+          >
             <LinkTitleButton>
               <MaterialIcons
                 name="add"
@@ -77,6 +95,7 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
                 color={
                   colorScheme === "dark" ? Colors.secondary : Colors.primary
                 }
+                accessible={false}
               />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Add custom link title
@@ -97,10 +116,24 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
               />
             </View>
             <TouchableOpacity
-              onPress={handleRemoveCustomText}
+              onPress={() => {
+                handleRemoveCustomText();
+                const reactTag = findNodeHandle(titleRef.current);
+                if (reactTag) {
+                  AccessibilityInfo.setAccessibilityFocus(reactTag);
+                }
+              }}
               style={{ marginLeft: 8, marginBottom: 12 }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove selected custom link title for ${title}`}
             >
-              <MaterialIcons name="close" size={24} color={iconColor} />
+              <MaterialIcons
+                name="close"
+                size={24}
+                color={iconColor}
+                accessible={false}
+              />
             </TouchableOpacity>
           </View>
         )}

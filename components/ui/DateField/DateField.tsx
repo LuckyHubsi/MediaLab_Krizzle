@@ -39,7 +39,13 @@ const DateField: FC<DateFieldProps> = ({
 
   return (
     <DateFieldContainer>
-      <ThemedText fontWeight="regular">{title}</ThemedText>
+      <ThemedText
+        fontWeight="regular"
+        accessibilityLabel={`label ${title}`}
+        nativeID={title}
+      >
+        {title}
+      </ThemedText>
 
       <StyledPressable
         onPress={editable ? showDatePicker : undefined}
@@ -57,8 +63,15 @@ const DateField: FC<DateFieldProps> = ({
             name="calendar-today"
             size={20}
             color={colorScheme === "light" ? "#333" : "#ccc"}
+            accessible={false}
           />
-          <DateText placeholder={!value} colorScheme={colorScheme}>
+          <DateText
+            placeholder={!value}
+            colorScheme={colorScheme}
+            accessible={true}
+            accessibilityLabel={`Pick date for ${title}. Currently ${value ? format(value, "dd.MM.yyyy") : "no date"} picked`}
+            accessibilityLabelledBy={title}
+          >
             {value ? format(value, "dd.MM.yyyy") : "dd.mm.yyyy"}
           </DateText>
           {value && editable && (
@@ -68,6 +81,9 @@ const DateField: FC<DateFieldProps> = ({
               color={Colors[colorScheme].negative}
               onPress={() => onChange?.(null)}
               style={{ marginLeft: 8 }}
+              accessible={true}
+              accessibilityLabel={`Remove picked date for ${title}`}
+              accessibilityRole="button"
             />
           )}
         </DateInputContainer>

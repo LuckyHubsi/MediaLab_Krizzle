@@ -4,10 +4,11 @@ import {
   StyledTextInput,
   TextfieldContainer,
 } from "./Textfield.styles";
-import { FC } from "react";
+import { FC, useEffect, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { AccessibilityInfo, findNodeHandle } from "react-native";
 
 /**
  * Component for displaying a text input field with an optional title and icon.
@@ -54,9 +55,36 @@ const Textfield: FC<TextfieldProps> = ({
 }) => {
   const colorScheme = useActiveColorScheme();
 
+  const errorMessageRef = useRef(null);
+  useEffect(() => {
+    if (hasNoInputError) {
+      const node = findNodeHandle(errorMessageRef.current);
+      if (node) {
+        AccessibilityInfo.setAccessibilityFocus(node);
+      }
+    }
+  }, [hasNoInputError]);
+
+  useEffect(() => {
+    if (hasNoInputError) {
+      const node = findNodeHandle(errorMessageRef.current);
+      if (node) {
+        AccessibilityInfo.setAccessibilityFocus(node);
+      }
+    }
+  }, [hasDuplicateTitle]);
+
   return (
     <TextfieldContainer>
-      {showTitle ? <ThemedText fontWeight="regular">{title}</ThemedText> : null}
+      {showTitle ? (
+        <ThemedText
+          fontWeight="regular"
+          accessibilityLabel={`label ${title}`}
+          nativeID={title}
+        >
+          {title}
+        </ThemedText>
+      ) : null}
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
           name={textfieldIcon}
@@ -76,16 +104,32 @@ const Textfield: FC<TextfieldProps> = ({
           placeholder={placeholderText}
           maxLength={maxLength}
           multiline={multiline}
+          accessible={true}
+          accessibilityLabelledBy={title}
         />
       </InputWrapper>
       {hasNoInputError && (
-        <ThemedText fontSize="s" colorVariant="red">
-          Oops, this field is required. Please enter a text.
+        <ThemedText
+          fontSize="s"
+          colorVariant="red"
+          accessibilityLiveRegion="assertive"
+          accessibilityRole="alert"
+          accessible={true}
+          optionalRef={errorMessageRef}
+        >
+          Oops, the above field is required. Please enter a text.
         </ThemedText>
       )}
 
       {hasDuplicateTitle && (
-        <ThemedText fontSize="s" colorVariant="red">
+        <ThemedText
+          fontSize="s"
+          colorVariant="red"
+          accessibilityLiveRegion="assertive"
+          accessibilityRole="alert"
+          accessible={true}
+          optionalRef={errorMessageRef}
+        >
           Oops, here you have a duplicate Title.
         </ThemedText>
       )}

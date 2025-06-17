@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import {
   ImagePickerContainer,
@@ -14,7 +14,12 @@ import { Colors } from "@/constants/Colors";
 import { DividerWithLabel } from "../DividerWithLabel/DividerWithLabel";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import Textfield from "../Textfield/Textfield";
-import { TouchableOpacity, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 /**
  * Component for selecting an image in the item creation process, with an optional alt text field.
@@ -43,6 +48,8 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
 }) => {
   const colorScheme = useActiveColorScheme();
   const [showAltTextField, setShowAltTextField] = useState(!!altText);
+  const titleRef = useRef(null);
+  const altDescriptionRef = useRef(null);
 
   /**
    * Function to open the image picker and allow the user to select an image from their library.
@@ -56,6 +63,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
     });
     if (!result.canceled && result.assets.length > 0) {
       onChange(result.assets[0].uri);
+
+      setTimeout(() => {
+        const tag = findNodeHandle(altDescriptionRef.current);
+        if (tag) {
+          AccessibilityInfo.setAccessibilityFocus(tag);
+        }
+      }, 700);
     }
   };
 
@@ -70,6 +84,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
     });
     if (!result.canceled && result.assets.length > 0) {
       onChange(result.assets[0].uri);
+
+      setTimeout(() => {
+        const tag = findNodeHandle(altDescriptionRef.current);
+        if (tag) {
+          AccessibilityInfo.setAccessibilityFocus(tag);
+        }
+      }, 700);
     }
   };
 
@@ -80,6 +101,11 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
     onChange("");
     onAltTextChange("");
     setShowAltTextField(false);
+
+    const tag = findNodeHandle(titleRef.current);
+    if (tag) {
+      AccessibilityInfo.setAccessibilityFocus(tag);
+    }
   };
 
   /**
@@ -93,20 +119,40 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
 
   return (
     <ImagePickerContainer>
-      <ThemedText fontWeight="regular" fontSize="regular">
+      <ThemedText
+        fontWeight="regular"
+        fontSize="regular"
+        nativeID={title}
+        optionalRef={titleRef}
+        accessible={true}
+        accessibilityLabel={`Label ${title}`}
+      >
         {title}
       </ThemedText>
 
       {!value ? (
         <>
           <ImageUploadContainer>
-            <ImageButton onPress={pickImage}>
+            <ImageButton
+              onPress={pickImage}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`Upload image from device gallery  for ${title}`}
+              accessibilityHint="Opens your photo library. You can select an image with a maximum of up to 10 MB"
+              accessibilityLabelledBy={title}
+            >
               <MaterialIcons
                 name="add-photo-alternate"
                 size={20}
                 color="white"
+                accessible={false}
               />
-              <ThemedText fontWeight="bold" fontSize="s" colorVariant="white">
+              <ThemedText
+                fontWeight="bold"
+                fontSize="s"
+                colorVariant="white"
+                accessible={false}
+              >
                 Upload Image
               </ThemedText>
             </ImageButton>
@@ -115,28 +161,65 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
               fontWeight="light"
               fontSize="s"
               colorVariant="greyScale"
+              accessible={false}
+              importantForAccessibility="no"
             >
               10.0MB max file size
             </ThemedText>
           </ImageUploadContainer>
           <DividerWithLabel label="or" />
-          <CameraButton onPress={takePhoto}>
-            <MaterialIcons name="camera-alt" size={20} color={Colors.primary} />
-            <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
+          <CameraButton
+            onPress={takePhoto}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Open camera to take a new photo for ${title}`}
+            accessibilityHint="Opens your camera app"
+            accessibilityLabelledBy={title}
+          >
+            <MaterialIcons
+              name="camera-alt"
+              size={20}
+              color={Colors.primary}
+              accessible={false}
+            />
+            <ThemedText
+              fontWeight="bold"
+              fontSize="s"
+              colorVariant="primary"
+              accessible={false}
+            >
               Open Camera
             </ThemedText>
           </CameraButton>
         </>
       ) : (
         <>
-          <ImagePreview source={{ uri: value }} resizeMode="cover" />
-          <DeleteButton onPress={handleClearImage} colorScheme={colorScheme}>
+          <ImagePreview
+            source={{ uri: value }}
+            resizeMode="cover"
+            accessible={true}
+            accessibilityRole="image"
+            accessibilityLabel="Selected image preview"
+          />
+          <DeleteButton
+            onPress={handleClearImage}
+            colorScheme={colorScheme}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Clear selected image for ${title}`}
+          >
             <MaterialIcons
               name="delete"
               size={20}
               color={Colors[colorScheme].negative}
+              accessible={false}
             />
-            <ThemedText fontWeight="bold" fontSize="s" colorVariant="red">
+            <ThemedText
+              fontWeight="bold"
+              fontSize="s"
+              colorVariant="red"
+              accessible={false}
+            >
               Clear Image
             </ThemedText>
           </DeleteButton>
@@ -146,6 +229,10 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             <CameraButton
               onPress={() => setShowAltTextField(true)}
               style={{ marginTop: 8 }}
+              accessibilityRole="button"
+              accessibilityLabel={`Add a custom image description for your selected image for ${title}`}
+              accessibilityHint="Opens a new text input field"
+              ref={altDescriptionRef}
             >
               <MaterialIcons
                 name="add"
@@ -153,6 +240,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                 color={
                   colorScheme === "dark" ? Colors.secondary : Colors.primary
                 }
+                accessible={false}
               />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Image Description
@@ -182,13 +270,22 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                 onPress={() => {
                   setShowAltTextField(false);
                   onAltTextChange("");
+
+                  const tag = findNodeHandle(titleRef.current);
+                  if (tag) {
+                    AccessibilityInfo.setAccessibilityFocus(tag);
+                  }
                 }}
                 style={{ marginLeft: 8, marginBottom: 12 }}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove selected image description for ${title}`}
               >
                 <MaterialIcons
                   name="close"
                   size={24}
                   color={Colors[colorScheme].text}
+                  accessible={false}
                 />
               </TouchableOpacity>
             </View>
