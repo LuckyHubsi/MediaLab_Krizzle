@@ -1,4 +1,12 @@
-import { Platform, StatusBar, View, FlatList } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  View,
+  FlatList,
+  AccessibilityInfo,
+  findNodeHandle,
+  ScrollView,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -9,7 +17,13 @@ import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -75,6 +89,7 @@ export default function ArchiveScreen() {
   // for screenreader compatibility
   const [announceKey, setAnnounceKey] = useState(0);
   const [shouldAnnounceEmpty, setShouldAnnounceEmpty] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
   const getColorKeyFromValue = (
     value: string,
@@ -154,6 +169,20 @@ export default function ArchiveScreen() {
     }, [shouldReload]),
   );
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const node = findNodeHandle(headerRef.current);
+      if (node) {
+        AccessibilityInfo.setAccessibilityFocus(node);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   const filteredWidgets = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) =>
@@ -196,7 +225,11 @@ export default function ArchiveScreen() {
     <>
       <SafeAreaView>
         <View>
-          <CustomStyledHeader title="Archive" backBehavior="goSettings" />
+          <CustomStyledHeader
+            title="Archive"
+            backBehavior="goSettings"
+            headerRef={headerRef}
+          />
         </View>
         <ThemedView>
           {widgets.length === 0 ? (
@@ -245,6 +278,7 @@ export default function ArchiveScreen() {
               {filteredWidgets.length > 0 ? (
                 <>
                   <FlatList
+                    contentContainerStyle={{ paddingBottom: 200 }} // if you want spacing at bottom
                     data={filteredWidgets}
                     keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
