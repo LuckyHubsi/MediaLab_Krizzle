@@ -263,7 +263,7 @@ export default function AddCollectionItem() {
       topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
