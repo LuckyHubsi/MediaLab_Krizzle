@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, FlatList, Keyboard, Platform } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  Keyboard,
+  Platform,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
@@ -34,6 +42,7 @@ export default function TagManagementScreen() {
   const { showSnackbar } = useSnackbar();
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
   /**
    * Handles the submission of a new or edited tag.
@@ -270,6 +279,20 @@ export default function TagManagementScreen() {
   }, []);
 
   /**
+   * sets the screenreader focus to the header after mount
+   */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const node = findNodeHandle(headerRef.current);
+      if (node) {
+        AccessibilityInfo.setAccessibilityFocus(node);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  /**
    * Components used:
    *
    * - CustomStyledHeader: A custom header component with a title and back navigation.
@@ -289,6 +312,7 @@ export default function TagManagementScreen() {
           title="Tags"
           backBehavior="goBackWithParams"
           param={JSON.stringify(tags.length > 0 ? tags[tags.length - 1] : null)}
+          headerRef={headerRef}
         />
       </View>
 
