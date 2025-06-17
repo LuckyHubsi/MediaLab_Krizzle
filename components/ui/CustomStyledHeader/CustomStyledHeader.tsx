@@ -27,6 +27,7 @@ interface HeaderProps {
   leftIconName?: keyof typeof MaterialIcons.glyphMap;
   isTransparent?: boolean;
   borderRadiusTop?: number;
+  headerRef?: any;
 }
 
 export const CustomStyledHeader: React.FC<HeaderProps> = ({
@@ -43,6 +44,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   leftIconName,
   isTransparent,
   borderRadiusTop,
+  headerRef,
 }) => {
   const router = useRouter();
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -103,8 +105,9 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         onPress={handleBackPress}
         style={{ flexDirection: "row", alignItems: "center" }}
         accessibilityRole="button"
-        accessibilityLabel="Back"
+        accessibilityLabel={`Back Navigation Button. Currently on page ${title} ${subtitle ? `in ${subtitle}` : ""}`}
         accessibilityHint={getAccessibilityHint()}
+        ref={headerRef}
       >
         <BackIcon
           name="chevron-back-outline"
@@ -154,7 +157,12 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       {/* Optional right icon */}
       <IconContainer>
         {iconName && onIconPress && (
-          <Icon onPress={onIconPress}>
+          <Icon
+            onPress={onIconPress}
+            accessibilityRole="button"
+            accessibilityLabel="Page Menu"
+            accessibilityHint="Opens a modal for actions available on this page"
+          >
             <MaterialIcons
               name={iconName}
               size={24}

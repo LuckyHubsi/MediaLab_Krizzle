@@ -1,4 +1,11 @@
-import { ScrollView, View, Pressable } from "react-native";
+import {
+  ScrollView,
+  View,
+  Pressable,
+  AccessibilityInfo,
+  Platform,
+  findNodeHandle,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { Colors } from "@/constants/Colors";
@@ -6,7 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import Widget from "@/components/ui/Widget/Widget";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -81,6 +94,9 @@ export default function FolderScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const [searchAnnouncement, setSearchAnnouncement] = useState("");
+  const [sortAnnouncement, setSortAnnouncement] = useState("");
+  const headerRef = useRef<View | null>(null);
 
   /**
    * Widget interface that represents a widget in the folder.
@@ -289,6 +305,20 @@ export default function FolderScreen() {
   );
 
   /**
+   * sets the screenreader focus to the header after mount
+   */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const node = findNodeHandle(headerRef.current);
+      if (node) {
+        AccessibilityInfo.setAccessibilityFocus(node);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  /**
    * Filters the widgets based on the selected tag and search query.
    */
   const filter = (widgets: Widget[]) => {
@@ -337,6 +367,51 @@ export default function FolderScreen() {
   };
 
   /**
+   * effect to announce search result with screen reader.
+   */
+  useEffect(() => {
+    if (searchQuery) {
+      const message =
+        filteredWidgets.length > 0
+          ? `${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found for ${searchQuery}`
+          : `No entries found for ${searchQuery}`;
+      setSearchAnnouncement(message);
+    }
+  }, [searchQuery, filteredWidgets]);
+  useEffect(() => {
+    const announce = sortAnnouncement || searchAnnouncement;
+
+    if (announce) {
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(announce);
+      }
+
+      const timeout = setTimeout(() => {
+        setSortAnnouncement("");
+        setSearchAnnouncement("");
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [searchAnnouncement]);
+
+  /**
+   * effect to announce new sorting mode with screen reader.
+   */
+  useEffect(() => {
+    if (sortAnnouncement) {
+      // Android workaround
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(sortAnnouncement);
+      }
+
+      // Fallback live region announcement
+      const timeout = setTimeout(() => setSortAnnouncement(""), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [sortAnnouncement]);
+
+  /**
    * Components used:
    *
    * - CustomStyledHeader: A custom header component with a title and icon.
@@ -358,6 +433,7 @@ export default function FolderScreen() {
           title={folder?.folderName ?? ""}
           iconName="more-horiz"
           onIconPress={() => setShowFolderModal(true)}
+          headerRef={headerRef}
         />
         <ThemedView>
           {widgets.length === 0 && pinnedWidgets.length === 0 ? (
@@ -368,6 +444,19 @@ export default function FolderScreen() {
                 placeholder="Search for widget title"
                 onSearch={setSearchQuery}
               />
+
+              <ThemedText
+                accessibilityLiveRegion="assertive"
+                accessible={true}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  height: 0,
+                  width: 0,
+                }}
+              >
+                {sortAnnouncement || searchAnnouncement}
+              </ThemedText>
 
               <ScrollView
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -420,10 +509,22 @@ export default function FolderScreen() {
                         marginBottom: 8,
                       }}
                     >
-                      <ThemedText fontSize="regular" fontWeight="regular">
+                      <ThemedText
+                        fontSize="regular"
+                        fontWeight="regular"
+                        accessible={true}
+                        accessibilityRole="header"
+                        accessibilityLabel="Recent widgets"
+                      >
                         Recent
                       </ThemedText>
-                      <Pressable onPress={() => setShowSortModal(true)}>
+                      <Pressable
+                        onPress={() => setShowSortModal(true)}
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityLabel="Sorting modes"
+                        accessibilityHint={`Opens a menu for changing between widget sorting modes. Currently selected sorting mode ${sortingMode}`}
+                      >
                         <View
                           style={{
                             flexDirection: "row",
@@ -438,6 +539,18 @@ export default function FolderScreen() {
                             size={20}
                             color={Colors[colorScheme || "light"].text}
                           />
+                          <ThemedText
+                            accessibilityLiveRegion="assertive"
+                            accessible={true}
+                            style={{
+                              position: "absolute",
+                              opacity: 0,
+                              height: 0,
+                              width: 0,
+                            }}
+                          >
+                            {sortAnnouncement}
+                          </ThemedText>
                         </View>
                       </Pressable>
                     </View>
@@ -497,6 +610,9 @@ export default function FolderScreen() {
             onPress: () => {
               setSortingMode(FolderState.GeneralModfied);
               setShowSortModal(false);
+              setSortAnnouncement(
+                "Sorting changed to: Last modified descending",
+              );
             },
           },
           {
@@ -506,6 +622,7 @@ export default function FolderScreen() {
             onPress: () => {
               setSortingMode(FolderState.GeneralAlphabet);
               setShowSortModal(false);
+              setSortAnnouncement("Sorting changed to: Alphabet ascending");
             },
           },
           {
@@ -515,6 +632,7 @@ export default function FolderScreen() {
             onPress: () => {
               setSortingMode(FolderState.GeneralCreated);
               setShowSortModal(false);
+              setSortAnnouncement("Sorting changed to: Created ascending");
             },
           },
         ]}
