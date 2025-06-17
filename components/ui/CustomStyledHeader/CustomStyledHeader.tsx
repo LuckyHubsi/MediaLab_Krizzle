@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   StyledHeader,
   BackIcon,
@@ -8,7 +8,7 @@ import {
   TitleContainer,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useNavigation, usePathname, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
@@ -45,7 +45,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   borderRadiusTop,
 }) => {
   const router = useRouter();
-  const colorScheme = useActiveColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme();
   const navigation = useNavigation();
 
   const handleBackPress = () => {
@@ -129,10 +129,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           color={Colors[colorScheme].text}
           style={{
             marginRight: 8,
-            backgroundColor:
-              colorScheme === "light"
-                ? Colors.light.searchBarBackground
-                : Colors.dark.searchBarBackground,
+            backgroundColor: Colors[colorScheme].searchBarBackground,
             borderRadius: 8,
             padding: 2,
           }}
@@ -145,7 +142,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
             <MaterialIcons
               name={iconName}
               size={24}
-              color={colorScheme === "light" ? "black" : "white"}
+              color={colorScheme === "light" ? Colors.black : Colors.white}
             />
           </Icon>
         )}
@@ -156,10 +153,10 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
               size={24}
               color={
                 isTransparent
-                  ? "white"
+                  ? Colors.white
                   : colorScheme === "light"
-                    ? "black"
-                    : "white"
+                    ? Colors.black
+                    : Colors.white
               }
             />
           </Icon>
