@@ -9,6 +9,7 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
  * @param imageSourceDark (required) - Image source for dark mode
  * @param heightPercent - Height of the background as a percentage of the screen height (default: 65%)
  * @param style - Additional styles for the background container
+ * @param style - Additional screenreader hint
  */
 
 type OnboardingBackgroundProps = {
@@ -16,6 +17,7 @@ type OnboardingBackgroundProps = {
   imageSourceDark: any;
   heightPercent?: number;
   style?: StyleProp<ViewStyle>;
+  hint?: string;
 };
 
 export default function OnboardingBackground({
@@ -23,6 +25,7 @@ export default function OnboardingBackground({
   imageSourceDark,
   heightPercent = 65,
   style,
+  hint,
 }: OnboardingBackgroundProps) {
   const colorScheme = useActiveColorScheme();
   const selectedImage =
@@ -43,6 +46,10 @@ export default function OnboardingBackground({
         },
         style,
       ]}
+      accessible={true}
+      accessibilityRole="image"
+      accessibilityLabel="Illustration"
+      accessibilityHint={hint}
     >
       <LinearGradient
         colors={["#D9ECFF", "#DCD4FC"]}

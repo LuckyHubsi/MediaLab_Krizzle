@@ -1,4 +1,11 @@
-import { View, TouchableOpacity, FlatList, Dimensions } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
@@ -30,8 +37,12 @@ export default function OnboardingScreen() {
    */
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentStep + 1 });
-      setCurrentStep((prev) => prev + 1);
+      const nextStep = currentStep + 1;
+      flatListRef.current?.scrollToIndex({ index: nextStep });
+      setCurrentStep(nextStep);
+      AccessibilityInfo.announceForAccessibility(
+        `Step ${nextStep + 1} of ${steps.length}`,
+      );
     } else {
       AsyncStorage.setItem("hasOnboarded", "true");
       router.replace("/(tabs)");
@@ -44,8 +55,12 @@ export default function OnboardingScreen() {
    */
   const handleBack = () => {
     if (currentStep > 0) {
-      flatListRef.current?.scrollToIndex({ index: currentStep - 1 });
-      setCurrentStep((prev) => prev - 1);
+      const prevStep = currentStep - 1;
+      flatListRef.current?.scrollToIndex({ index: prevStep });
+      setCurrentStep(prevStep);
+      AccessibilityInfo.announceForAccessibility(
+        `Step ${prevStep + 1} of ${steps.length}`,
+      );
     }
   };
 
@@ -78,6 +93,9 @@ export default function OnboardingScreen() {
             minWidth: 48,
             justifyContent: "center",
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Skip onboarding"
+          accessibilityHint="Skips onboarding and takes you to the main screen"
         >
           <ThemedText
             colorVariant="black"
@@ -106,6 +124,9 @@ export default function OnboardingScreen() {
           onMomentumScrollEnd={(e) => {
             const index = Math.round(e.nativeEvent.contentOffset.x / width);
             setCurrentStep(index);
+            AccessibilityInfo.announceForAccessibility(
+              `Step ${index + 1} of ${steps.length}`,
+            );
           }}
           getItemLayout={(_, index) => ({
             length: width,
