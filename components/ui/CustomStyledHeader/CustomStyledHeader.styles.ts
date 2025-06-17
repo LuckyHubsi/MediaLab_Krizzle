@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ColorSchemeProps } from "@/context/ThemeContext";
 
 export const StyledHeader = styled.View<{
-  colorScheme: "light" | "dark";
+  colorScheme: ColorSchemeProps["colorScheme"];
   isTransparent?: boolean;
   borderRadiusTop?: number;
 }>`
@@ -19,18 +19,13 @@ export const StyledHeader = styled.View<{
     colorScheme,
     isTransparent,
   }: {
-    colorScheme: "light" | "dark";
+    colorScheme: ColorSchemeProps["colorScheme"];
     isTransparent?: boolean;
-  }) =>
-    isTransparent
-      ? "transparent"
-      : colorScheme === "light"
-        ? "#FBFBFB"
-        : "#111111"};
+  }) => (isTransparent ? "transparent" : Colors[colorScheme].background)};
 `;
 
 export const BackIcon = styled(Ionicons)<{
-  colorScheme: "light" | "dark";
+  colorScheme: ColorSchemeProps["colorScheme"];
   isTransparent?: boolean;
 }>`
   font-size: 24px;
@@ -38,10 +33,14 @@ export const BackIcon = styled(Ionicons)<{
     colorScheme,
     isTransparent,
   }: {
-    colorScheme: "light" | "dark";
+    colorScheme: ColorSchemeProps["colorScheme"];
     isTransparent?: boolean;
   }) =>
-    isTransparent ? "white" : colorScheme === "light" ? "black" : "white"};
+    isTransparent
+      ? "white"
+      : colorScheme === "light"
+        ? Colors.black
+        : Colors.white};
   margin-right: 15px;
   margin-top: 5px;
   margin-left: 5px;
@@ -50,7 +49,7 @@ export const BackIcon = styled(Ionicons)<{
 export const Icon = styled(Ionicons)<ColorSchemeProps>`
   font-size: 24px;
   color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "black" : "white"};
+    colorScheme === "light" ? Colors.black : Colors.white};
   margin: 6px;
 `;
 export const IconContainer = styled.View`
