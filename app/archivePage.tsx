@@ -24,10 +24,20 @@ import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
+/**
+ * ArchiveScreen component displays archived widgets (notes and collections).
+ */
+
+/**
+ * Returns a Material icon component with the specified name, size, and color.
+ */
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
+/**
+ * Returns the appropriate icon for a given page type.
+ */
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
@@ -42,7 +52,6 @@ export const getIconForPageType = (type: string) => {
 export default function ArchiveScreen() {
   const { generalPageService } = useServices();
   const colorScheme = useColorScheme();
-  const color = Colors[colorScheme || "light"].tint;
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
   const router = useRouter();
@@ -87,6 +96,10 @@ export default function ArchiveScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
+  /**
+   * Maps an array of GeneralPageDTO objects to an array of enriched Widget objects (with added properties).
+   * @param data - Array of GeneralPageDTO objects or null.
+   */
   const mapToEnrichedWidgets = (
     data: GeneralPageDTO[] | null,
   ): ArchivedWidget[] => {
@@ -108,6 +121,7 @@ export default function ArchiveScreen() {
     }
   };
 
+  // Load archived widgets when the screen is focused
   useFocusEffect(
     useCallback(() => {
       const fetchWidgets = async () => {
@@ -150,6 +164,7 @@ export default function ArchiveScreen() {
     }, [shouldReload]),
   );
 
+  // Filter widgets based on the search query
   const filteredWidgets = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) =>
@@ -159,6 +174,7 @@ export default function ArchiveScreen() {
 
   useEffect(() => {}, [widgets]);
 
+  // Navigate to the page associated with the widget
   const goToPage = (widget: ArchivedWidget) => {
     const path =
       widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
@@ -344,7 +360,6 @@ export default function ArchiveScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,
