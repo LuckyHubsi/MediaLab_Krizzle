@@ -23,11 +23,17 @@ import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderMod
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * CollectionScreen component displays a collection of items organized into lists.
+ */
+
 export default function CollectionScreen() {
   const { generalPageService, collectionService, itemTemplateService } =
     useServices();
 
   const router = useRouter();
+
+  // Using useLocalSearchParams to get the parameters passed to this screen
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
@@ -55,6 +61,10 @@ export default function CollectionScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  /**
+   * useFocusEffect hook to fetch collection data when the screen is focused.
+   * It retrieves the collection by pageId and fetches items associated with it.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -124,6 +134,7 @@ export default function CollectionScreen() {
     }, [pageId, shouldReload, routing]),
   );
 
+  // Function to navigate to the edit page for the corrisponding collection widget
   const goToEditPage = () => {
     const path = "/editWidget";
 
@@ -133,6 +144,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Function to navigate to the edit lists page for the collection
   const goToEditListsPage = () => {
     const path = "/editCollectionLists";
 
@@ -146,6 +158,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Memoized filtered items based on search query and selected list
   const filteredItems = useMemo(() => {
     if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
 
