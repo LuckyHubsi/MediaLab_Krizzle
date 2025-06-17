@@ -5,11 +5,7 @@ import {
   FolderShape,
   FolderTab,
 } from "./FolderComponent.styles";
-import {
-  TouchableNativeFeedback,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
 
 interface FolderComponentProps {
   title: string;
