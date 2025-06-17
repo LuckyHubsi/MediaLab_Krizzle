@@ -1,23 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { View, ScrollView, Keyboard } from "react-native";
 import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
-import { Header } from "@/components/ui/Header/Header";
-import { Button } from "@/components/ui/Button/Button";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
 import { ChooseCard } from "@/components/ui/ChooseCard/ChooseCard";
 import { ChoosePopup } from "@/components/ui/ChoosePopup/ChoosePopup";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "react-native";
-import { KeyboardAvoidingView, Platform } from "react-native";
-import {
-  colorLabelMap,
-  colorKeyMap,
-  iconLabelMap,
-} from "@/constants/LabelMaps";
+import { Platform } from "react-native";
+import { colorLabelMap, iconLabelMap } from "@/constants/LabelMaps";
 import { Icons } from "@/constants/Icons";
 import { NoteDTO } from "@/shared/dto/NoteDTO";
 import { TagDTO } from "@/shared/dto/TagDTO";
@@ -26,19 +19,21 @@ import { DividerWithLabel } from "@/components/ui/DividerWithLabel/DividerWithLa
 import { useFocusEffect } from "@react-navigation/native";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { ButtonContainer } from "@/components/ui/CreateCollectionSteps/CreateCollection/CreateCollection.styles";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { PageType } from "@/shared/enum/PageType";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
-import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+
+/**
+ * CreateNoteScreen is a screen that allows users to create a new note.
+ */
 
 export default function CreateNoteScreen() {
   const { noteService, tagService } = useServices();
   const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
-  const navigation = useNavigation();
   const colorScheme = useActiveColorScheme();
   const [title, setTitle] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagDTO | null>(null);
@@ -59,6 +54,7 @@ export default function CreateNoteScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  // Create a list of color options for the ChoosePopup
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
 
@@ -72,6 +68,9 @@ export default function CreateNoteScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Finds the key of a widget color based on its value.
+   */
   const getWidgetColorKey = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -85,6 +84,7 @@ export default function CreateNoteScreen() {
     ) as keyof typeof Colors.widget | undefined;
   };
 
+  // Function to create a new note
   const createNote = async () => {
     if (title.trim().length === 0) {
       setTitleError("Title is required.");
@@ -155,6 +155,9 @@ export default function CreateNoteScreen() {
     }
   };
 
+  /**
+   * useFocusEffect hook to fetch tags when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
@@ -190,6 +193,10 @@ export default function CreateNoteScreen() {
     }, []),
   );
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   * This is necessary to adjust the layout when the keyboard is shown or hidden.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -205,6 +212,9 @@ export default function CreateNoteScreen() {
     }
   }, []);
 
+  /**
+   * Effect to handle the last created tag parameter.
+   */
   useEffect(() => {
     if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
       try {
@@ -265,7 +275,7 @@ export default function CreateNoteScreen() {
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
-                  if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                  if (text.trim().length > 0) setTitleError(null);
                 }}
               />
               {titleError && (
