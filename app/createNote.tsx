@@ -228,6 +228,17 @@ export default function CreateNoteScreen() {
     }
   }, [lastCreatedTagParam]);
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - Card: A reusable card component for displaying content.
+   * - ThemedText: A themed text component.
+   * - Widget: Displays a preview of the note widget with title, tag, icon, and color.
+   * - TitleCard: A card for entering the note title.
+   * - TagPicker: Allows users to select a tag for the note.
+   * - ChooseCard: A card for selecting color and icon.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}

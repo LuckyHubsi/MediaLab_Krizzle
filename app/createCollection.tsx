@@ -136,6 +136,14 @@ export default function CollectionTemplateScreen() {
     }
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - CreateCollection: Step 1 component for creating a collection (widget).
+   * - CreateCollectionTemplate: Step 2 component for creating a template for the collection.
+   * - ErrorPopup: Displays errors that occur during the collection creation process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}

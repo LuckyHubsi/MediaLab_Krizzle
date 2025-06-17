@@ -220,6 +220,20 @@ export default function FoldersScreen() {
     }
   };
 
+  /**
+   * Components used:
+   *
+   * - IconTopRight: A component for the top right icon that navigates to the FAQ page.
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - SearchBar: A search bar component for filtering folders by name.
+   * - EmptyHome: A component that displays a message when no folders are present.
+   * - FolderComponent: A component that displays individual folder details.
+   * - QuickActionModal: A modal for quick actions on folders (edit/delete).
+   * - DeleteModal: A modal for confirming folder deletion.
+   * - BottomInputModal: A modal for inputting folder names when creating or editing folders.
+   * - ErrorPopup: A modal that displays errors related to folder operations.
+   */
   return (
     <>
       <SafeAreaView>

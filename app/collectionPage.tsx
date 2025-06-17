@@ -178,6 +178,19 @@ export default function CollectionScreen() {
     });
   }, [items, selectedList, searchQuery]);
 
+  /**
+   * Components used:
+   *
+   * - GradientBackgroundWrapper: A wrapper component that provides a gradient background.
+   * - CustomStyledHeader: A custom header component with a title and icons.
+   * - SearchBar: A search bar component for filtering items.
+   * - CollectionListCard: A card component that displays the collection lists and items.
+   * - QuickActionModal: A modal for quick actions on the collection or items.
+   * - DeleteModal: A modal for confirming deletion of the collection or items.
+   * - FloatingAddButton: A floating button to add new items to the collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the collection.
+   * - ErrorPopup: A popup for displaying errors.
+   */
   return (
     <>
       <SafeAreaView

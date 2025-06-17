@@ -289,6 +289,14 @@ export default function AddCollectionItem() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Components used:
+   * - GradientBackground: A background component with a gradient effect.
+   * - Header: A header component for the screen.
+   * - AddCollectionItemCard: A card component for adding collection items.
+   * - BottomButtons: A component for the bottom action buttons (Discard and Add).
+   * - ErrorPopup: A modal component for displaying errors.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 60 })}

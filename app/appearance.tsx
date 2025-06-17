@@ -30,6 +30,14 @@ export default function AppearanceScreen() {
     );
   }
 
+  /**
+   * Components used:
+   * - CustomStyledHeader: A custom header component for the screen.
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - Card: A card component for displaying the theme selector.
+   * - ThemeSelector: A component that allows users to select their preferred theme.
+   */
   return (
     <SafeAreaView>
       <CustomStyledHeader title={"Appearance"} iconName="more-horiz" />

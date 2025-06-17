@@ -281,6 +281,20 @@ export default function HomeScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Components used:
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - EmptyHome: A component that displays an empty state when no widgets are present.
+   * - SearchBar: A search bar component for filtering widgets by title.
+   * - TagList: A component that displays a list of tags for filtering widgets.
+   * - Widget: A component that represents a single widget with title, label, icon,
+   * - QuickActionModal: A modal for quick actions on widgets (like pinning, editing, archiving, etc.).
+   * - ModalSelection: A modal for selecting a new note or collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the widget to.
+   * - DeleteModal: A modal for confirming the deletion of a widget.
+   * - ErrorPopup: A modal for displaying errors that occurred during operations.
+   */
   return (
     <>
       <SafeAreaView>

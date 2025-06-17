@@ -189,6 +189,19 @@ export default function ArchiveScreen() {
     });
   };
 
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title and back navigation.
+   * - ThemedView: A themed view component for consistent styling.
+   * - SearchBar: A search bar component for filtering widgets by title.
+   * - Widget: A component representing each widget with title, label, icon, and color.
+   * - EmptyHome: A component displayed when there are no archived widgets.
+   * - QuickActionModal: A modal for quick actions on the selected widget (restore or delete).
+   * - DeleteModal: A modal for confirming the deletion of a widget.
+   * - ErrorPopup: A popup for displaying errors related to widget operations.
+   * - ThemedText: A themed text component for displaying messages.
+   */
   return (
     <>
       <SafeAreaView>
