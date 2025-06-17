@@ -12,6 +12,17 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Image } from "react-native";
 
+/**
+ * Component for displaying a collapsible FAQ card.
+ * It includes a question, answer, and optional example image.
+ * @param faqTitle (required) - The title of the FAQ.
+ * @param faqContent (required) - The content of the FAQ answer.
+ * @param faqQuestion - Optional question text to display before the title.
+ * @param faqExampleHeading - Optional heading for the example section.
+ * @param faqExampleImage - Optional image to display as an example.
+ * @param imageHeight - Optional height for the example image.
+ */
+
 interface CollapsibleCardProps {
   faqTitle: string;
   faqContent: string;
