@@ -4,10 +4,18 @@ import { Button } from "@/components/ui/Button/Button";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { resetDatabase } from "@/backend/service/DatabaseReset";
-import { useState } from "react";
-import { SafeAreaView, View, Platform, StatusBar } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import {
+  SafeAreaView,
+  View,
+  Platform,
+  StatusBar,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
+import { useFocusEffect } from "expo-router";
 
 /**
  * ResetDatabaseScreen that allows users to reset their database.
@@ -16,6 +24,23 @@ export default function ResetDatabaseScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
+
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   /**
    * Components used:
@@ -34,7 +59,7 @@ export default function ResetDatabaseScreen() {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <CustomStyledHeader title="Reset Data" />
+        <CustomStyledHeader title="Reset Data" headerRef={headerRef} />
       </View>
       <ThemedView>
         <ThemedText

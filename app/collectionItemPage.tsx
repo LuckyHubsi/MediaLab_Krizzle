@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
@@ -9,7 +9,13 @@ import {
   useRouter,
 } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
-import { Platform, ScrollView, View } from "react-native"; // Use ScrollView from react-native
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native"; // Use ScrollView from react-native
 
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
@@ -42,6 +48,7 @@ export default function CollectionItemScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
   const { showSnackbar } = useSnackbar();
 
@@ -81,6 +88,15 @@ export default function CollectionItemScreen() {
           setItemName(item?.attributeValues[0]?.valueString || "");
         }
       })();
+
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [itemId]),
   );
 
@@ -113,6 +129,7 @@ export default function CollectionItemScreen() {
             param={item?.pageID.toString()}
             borderRadiusTop={33}
             routing={routing}
+            headerRef={headerRef}
           />
         </View>
         <ScrollView

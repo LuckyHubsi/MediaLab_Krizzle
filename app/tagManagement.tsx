@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -23,6 +23,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useServices } from "@/context/ServiceContext";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { useFocusEffect } from "expo-router";
 
 /**
  * TagManagementScreen that allows users to manage their tags.
@@ -281,16 +282,18 @@ export default function TagManagementScreen() {
   /**
    * sets the screenreader focus to the header after mount
    */
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
-    }, 500);
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
 
-    return () => clearTimeout(timeout);
-  }, []);
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   /**
    * Components used:

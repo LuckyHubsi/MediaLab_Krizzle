@@ -1,9 +1,16 @@
 import TextEditor from "@/components/TextEditor/TextEditor";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppState, AppStateStatus, Platform, View } from "react-native";
+import {
+  AccessibilityInfo,
+  AppState,
+  AppStateStatus,
+  findNodeHandle,
+  Platform,
+  View,
+} from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef } from "react";
 import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
@@ -50,6 +57,23 @@ export default function NotesScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const headerRef = useRef<View | null>(null);
+
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   /**
    * Fetches the note data by page ID when the component mounts or when the pageId changes.
@@ -184,6 +208,7 @@ export default function NotesScreen() {
           leftIconName={
             noteData?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
+          headerRef={headerRef}
         />
         <TextEditor
           initialContent={noteContent}

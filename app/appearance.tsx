@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,7 +13,7 @@ import {
   AccessibilityInfo,
   findNodeHandle,
 } from "react-native";
-import { useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 export default function AppearanceScreen() {
   const { userTheme, saveUserTheme, isLoading } = useUserTheme();
@@ -24,16 +24,18 @@ export default function AppearanceScreen() {
   /**
    * sets the screenreader focus to the header after mount
    */
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
-    }, 500);
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
 
-    return () => clearTimeout(timeout);
-  }, []);
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   if (isLoading) {
     return (

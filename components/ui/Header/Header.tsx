@@ -20,12 +20,14 @@ interface HeaderProps {
   title: string;
   iconName?: keyof typeof Ionicons.glyphMap;
   onIconPress?: () => void;
+  headerRef?: any;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   title,
   iconName,
   onIconPress,
+  headerRef,
 }) => {
   const navigation = useNavigation();
   const colorScheme = useActiveColorScheme() ?? "light";
@@ -38,7 +40,8 @@ export const Header: React.FC<HeaderProps> = ({
         style={{ flexDirection: "row", alignItems: "center" }}
         accessibilityRole="button"
         accessibilityLabel="Back"
-        accessibilityHint="Goes back to the previous screen"
+        accessibilityHint={`Goes back to the previous screen. Currently on Screen ${title}`}
+        ref={headerRef}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
         <ThemedText fontSize="l" fontWeight="semibold">

@@ -83,15 +83,15 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   const getAccessibilityHint = () => {
     switch (backBehavior) {
       case "goHome":
-        return "Goes back to the Home screen";
+        return "Goes back to the Home Page";
       case "goArchive":
-        return "Goes back to the Archive screen";
+        return "Goes back to the Archive Page";
       case "goSettings":
-        return "Goes back to the Settings screen";
+        return "Goes back to the Menu Page";
       case "goCollection":
-        return "Goes back to the Collection screen";
+        return "Goes back to the Collection Page";
       default:
-        return "Goes back to the previous screen";
+        return "Goes back to the previous Page";
     }
   };
 
@@ -105,7 +105,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         onPress={handleBackPress}
         style={{ flexDirection: "row", alignItems: "center" }}
         accessibilityRole="button"
-        accessibilityLabel={`Back Navigation Button. Currently on page ${title} ${subtitle ? `in ${subtitle}` : ""}`}
+        accessibilityLabel={`Back Navigation Button. Currently on page ${title} ${subtitle ? `in list ${subtitle}` : ""}`}
         accessibilityHint={getAccessibilityHint()}
         ref={headerRef}
       >

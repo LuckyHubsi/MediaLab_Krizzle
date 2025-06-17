@@ -301,22 +301,17 @@ export default function FolderScreen() {
       };
 
       loadData();
+
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [folderId, sortingMode, shouldReload]),
   );
-
-  /**
-   * sets the screenreader focus to the header after mount
-   */
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   /**
    * Filters the widgets based on the selected tag and search query.

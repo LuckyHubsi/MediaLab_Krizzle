@@ -1,7 +1,8 @@
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import FAQSection from "@/components/ui/FAQSection/FAQSection";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { useRef, useEffect } from "react";
+import { useFocusEffect } from "expo-router";
+import { useRef, useCallback } from "react";
 import {
   AccessibilityInfo,
   findNodeHandle,
@@ -20,16 +21,19 @@ export default function FaqScreen() {
   /**
    * sets the screenreader focus to the header after mount
    */
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
-    }, 500);
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
 
-    return () => clearTimeout(timeout);
-  }, []);
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
   /**
    * Components used:
    *

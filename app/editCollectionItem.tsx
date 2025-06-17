@@ -1,9 +1,16 @@
 import { Header } from "@/components/ui/Header/Header";
-import { Keyboard, Platform, ScrollView, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Keyboard,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
@@ -46,6 +53,23 @@ export default function EditCollectionItem() {
   const { showSnackbar } = useSnackbar();
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
+
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   /**
    * Effect to fetch the item and its attributes when the component mounts.
@@ -311,6 +335,7 @@ export default function EditCollectionItem() {
           <Header
             title="Edit Collection Item"
             onIconPress={() => alert("Popup!")}
+            headerRef={headerRef}
           />
         </View>
         <ScrollView

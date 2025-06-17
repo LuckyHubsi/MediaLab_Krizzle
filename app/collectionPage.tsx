@@ -1,6 +1,11 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Platform } from "react-native";
+import {
+  View,
+  Platform,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -54,6 +59,7 @@ export default function CollectionScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -121,6 +127,15 @@ export default function CollectionScreen() {
         }
       };
       fetchData();
+
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [pageId, shouldReload, routing]),
   );
 
@@ -192,6 +207,7 @@ export default function CollectionScreen() {
             collection?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
           isTransparent={true}
+          headerRef={headerRef}
         />
 
         <View style={{ paddingHorizontal: 20 }}>

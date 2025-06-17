@@ -1,13 +1,20 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { Keyboard, Platform, ScrollView, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Keyboard,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { Button } from "@/components/ui/Button/Button";
@@ -40,6 +47,23 @@ export default function AddCollectionItem() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
+
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
 
   useEffect(() => {
     (async () => {
@@ -267,6 +291,7 @@ export default function AddCollectionItem() {
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
+            headerRef={headerRef}
           />
         </View>
         <ScrollView
