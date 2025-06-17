@@ -185,7 +185,13 @@ const TextEditor: React.FC<TextEditorProps> = ({
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <RichText editor={editor} />
+        <RichText
+          editor={editor}
+          accessible={true}
+          accessibilityLabel="Note Editor"
+          accessibilityHint="Double tap to activate and edit the note or swipe right two times to read out the note content. Be aware that editing the note with TalkBack can lead to unexpected behaviour."
+          accessibilityRole="button"
+        />
       </ScrollView>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
