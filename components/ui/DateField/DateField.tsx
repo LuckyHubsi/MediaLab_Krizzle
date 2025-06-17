@@ -7,10 +7,20 @@ import {
   DateInputContainer,
   DateText,
   StyledPressable,
+  StyledClearButton,
 } from "./DateField.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a date during item creation.
+ * It includes a date picker and displays the selected date.
+ * @param title - The optional title of the date field.
+ * @param editable - Determines if the date field is editable (defaults to true).
+ * @param value - The currently selected date.
+ * @param onChange - Callback function to handle date changes.
+ */
 
 interface DateFieldProps {
   title?: string;
@@ -26,16 +36,20 @@ const DateField: FC<DateFieldProps> = ({
   onChange,
 }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const colorScheme = useActiveColorScheme();
 
+  // Function to show and hide the date picker
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
 
+  /**
+   * Function to handle the date selection from the date picker.
+   * @param date - The selected date from the date picker.
+   */
   const handleConfirm = (date: Date) => {
     onChange?.(date);
     hideDatePicker();
   };
-
-  const colorScheme = useActiveColorScheme();
 
   return (
     <DateFieldContainer>
@@ -62,13 +76,15 @@ const DateField: FC<DateFieldProps> = ({
             {value ? format(value, "dd.MM.yyyy") : "dd.mm.yyyy"}
           </DateText>
           {value && editable && (
-            <MaterialIcons
-              name="close"
-              size={18}
-              color={Colors[colorScheme].negative}
-              onPress={() => onChange?.(null)}
-              style={{ marginLeft: 8 }}
-            />
+            <StyledClearButton onPress={() => onChange?.(null)}>
+              <MaterialIcons
+                name="close"
+                size={20}
+                color={Colors[colorScheme].negative}
+                onPress={() => onChange?.(null)}
+                style={{ marginLeft: 8 }}
+              />
+            </StyledClearButton>
           )}
         </DateInputContainer>
       </StyledPressable>
