@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -7,7 +7,6 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   CollectionCardContainer,
   CollectionText,
@@ -18,7 +17,15 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+
+/**
+ * Component for displaying a collection item inside the collection list card.
+ * It shows various attributes like title, date, rating, multi-select options,
+ * @param attributes (required) - Array of attributes for the collection item.
+ * @param item (required) - The collection item containing values for the attributes.
+ * @param onPress - Optional callback for item press action.
+ * @param onLongPress - Optional callback for item long press action.
+ */
 
 type Item = {
   itemID: number;
@@ -32,7 +39,7 @@ type CollectionWidgetProps = {
   onLongPress?: () => void;
 };
 
-const CollectionWidget: React.FC<CollectionWidgetProps> = ({
+const CollectionWidget: FC<CollectionWidgetProps> = ({
   attributes,
   item,
   onPress,
@@ -40,7 +47,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
-  // Find indexes for each type
+  // Find indexes for each type (title, date, rating, multi-select, image, link)
   const titleIndex = attributes.findIndex((attr) => attr.type === "text");
   const dateIndex = attributes.findIndex((attr) => attr.type === "date");
   const ratingIndex = attributes.findIndex((attr) => attr.type === "rating");
@@ -50,7 +57,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const imageIndex = attributes.findIndex((attr) => attr.type === "image");
   const linkIndex = attributes.findIndex((attr) => attr.type === "link");
 
-  // Get values
+  // Get values for each attribute type or set to default if not present (-1)
   const title = titleIndex !== -1 ? item.values[titleIndex] : "";
   const date = dateIndex !== -1 ? item.values[dateIndex] : null;
   const rating = ratingIndex !== -1 ? item.values[ratingIndex] : null;
@@ -64,12 +71,24 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     link && typeof link === "object" && link.displayText
       ? link.displayText
       : null;
+
+  /**
+   * Function to validate and format a URL.
+   * @param url - The URL to validate.
+   * @returns
+   */
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       return "https://" + url;
     }
     return url;
   };
+
+  /**
+   * Function to handle link press.
+   * It checks if the link is valid and opens it using the device's default browser.
+   * If the link cannot be opened, it shows an alert.
+   */
   const handlePressLink = async () => {
     if (!link.value) return;
     const validUrl = getValidUrl(link.value);
@@ -81,6 +100,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     }
   };
 
+  /**
+   * Function to handle long press action.
+   * If onLongPress callback is provided, it calls that function.
+   */
   const handleLongPress = () => {
     if (onLongPress) {
       onLongPress();
@@ -95,6 +118,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
       onLongPress={handleLongPress}
     >
       <CollectionCardContainer colorScheme={colorScheme}>
+        {/* Display image if available */}
         {image && (
           <View
             style={{
@@ -146,7 +170,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             }
             return null;
           })}
-          {/* Date and Rating */}
+          {/* Display Date and Rating if available */}
           {(date !== null && date !== undefined) ||
           (rating !== null && rating !== undefined) ? (
             <View
@@ -173,7 +197,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
                 </View>
               )}
 
-              {/* Rating (right) */}
+              {/* Display Rating (right) */}
               {rating !== null && rating !== undefined ? (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <MaterialIcons
@@ -193,6 +217,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
               ) : null}
             </View>
           ) : null}
+          {/* Display Link if available */}
           {link && (
             <TouchableOpacity onPress={handlePressLink}>
               <View
@@ -226,7 +251,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
               </View>
             </TouchableOpacity>
           )}
-          {/* Multi-Select */}
+          {/* Display selected multi-selects if available */}
           {multiSelect &&
             Array.isArray(multiSelect) &&
             multiSelect.length > 0 && (
