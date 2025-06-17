@@ -105,12 +105,12 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
 
     if (imageUri) {
       parts.push(
-        `Image Description: ${altText ? altText : "no image desciprtion was provided"}`,
+        `Image Description: ${altText ? altText : "no image description was provided"}`,
       );
     }
 
     if (link) {
-      parts.push(`Link: ${linkPreview || link}`);
+      parts.push(`Link Text: ${linkPreview || link}`);
     }
 
     return parts.join(". ");
