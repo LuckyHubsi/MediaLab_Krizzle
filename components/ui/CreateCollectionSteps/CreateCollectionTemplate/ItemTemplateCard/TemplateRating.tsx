@@ -8,6 +8,15 @@ import {
 } from "../CreateCollectionTemplate.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component for displaying a rating selection using Material Icons.
+ * It allows users to select a rating from a predefined set of icons.
+ * @param title (required) - The title of the rating section.
+ * @param rating (required) - The currently selected rating icon.
+ * @param onRatingChange (required) - Callback function to handle changes in the selected rating icon.
+ */
+
+// Array of icon names from MaterialIcons to be used in the rating component
 const iconArray: (keyof typeof MaterialIcons.glyphMap)[] = [
   "star",
   "coffee",
