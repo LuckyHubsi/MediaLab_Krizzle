@@ -2,26 +2,21 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import {
-  router,
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { CollectionLoadItem } from "@/components/ui/CollectionLoadItems/CollectionLoadItems";
 import { Platform, ScrollView, View } from "react-native"; // Use ScrollView from react-native
-
 import QuickActionModal from "@/components/Modals/QuickActionModal/QuickActionModal";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GradientBackgroundWrapper } from "@/components/ui/GradientBackground/GradientBackground.styles";
-import Card from "@/components/ui/Card/Card";
-import CollectionItemContainer from "@/components/ui/CollectionItemContainer/CollectionItemContainer";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
 import { useServices } from "@/context/ServiceContext";
-import { AttributeType } from "@/shared/enum/AttributeType";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+
+/**
+ * CollectionItemScreen is a screen that displays a collection item.
+ */
 
 export default function CollectionItemScreen() {
   const { itemId, collectionItemText, routing, archived } =
@@ -45,6 +40,9 @@ export default function CollectionItemScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * useFocusEffect is used to fetch the item details when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       (async () => {
@@ -84,10 +82,20 @@ export default function CollectionItemScreen() {
     }, [itemId]),
   );
 
+  /**
+   * Components used:
+   *
+   * - GradientBackgroundWrapper: A wrapper component for the gradient background.
+   * - CustomStyledHeader: A custom header component for the screen.
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - CollectionLoadItem: A component that displays the collection item details.
+   * - QuickActionModal: A modal for quick actions on the collection item.
+   * - DeleteModal: A modal for confirming deletion of the collection item.
+   * - ErrorPopup: A popup for displaying errors.
+   */
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-        {/* Background layers */}
         <GradientBackgroundWrapper
           colors={["#4599E8", "#583FE7"]}
           style={{
@@ -96,20 +104,20 @@ export default function CollectionItemScreen() {
             left: 0,
             right: 0,
             bottom: 400,
-            zIndex: -1, // Set zIndex lower than other elements
+            zIndex: -1,
           }}
         />
         <View style={{ marginTop: 16 }}>
           <CustomStyledHeader
-            title={collectionItemText || "Collection Item"} //Here should be the title of the collection
+            title={collectionItemText || "Collection Item"}
             subtitle={item?.categoryName || "Collection List"}
-            backBehavior="goCollection" // Go back to home when back button is pressed
-            iconName={undefined} // No icon for the header
-            onIconPress={() => {}} // No action when pressed
+            backBehavior="goCollection"
+            iconName={undefined}
+            onIconPress={() => {}}
             iconName2={!isArchived ? "more-horiz" : undefined}
             onIconMenuPress={() => {
               if (!isArchived) setShowModal(true);
-            }} // action when icon menu is pressed
+            }}
             param={item?.pageID.toString()}
             borderRadiusTop={33}
             routing={routing}
@@ -117,7 +125,7 @@ export default function CollectionItemScreen() {
         </View>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
+          showsVerticalScrollIndicator={false}
         >
           <ThemedView topPadding={0} style={{ paddingBottom: 20 }}>
             <CollectionLoadItem attributeValues={item?.attributeValues} />
