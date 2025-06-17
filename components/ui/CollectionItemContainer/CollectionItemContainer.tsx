@@ -119,7 +119,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   return (
     <ItemContainer
       accessible={true}
-      accessibilityRole="summary"
+      accessibilityRole="none"
       accessibilityLabel={getAccessibilityLabel()}
     >
       <ThemedText
