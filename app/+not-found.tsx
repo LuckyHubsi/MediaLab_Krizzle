@@ -3,6 +3,10 @@ import { StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 
+/**
+ * NotFoundScreen component that displays a message when a screen is not found.
+ */
+
 export default function NotFoundScreen() {
   return (
     <>
