@@ -12,11 +12,18 @@ import {
   CollectionText,
   CollectionRating,
   CollectionSelectable,
+  ImageContainer,
+  TextContainer,
+  RatingAndDateContainer,
+  CenteredRow,
+  LinkContainer,
+  MultiSelectContainer,
 } from "./CollectionWidget.style";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
 
 /**
  * Component for displaying a collection item inside the collection list card.
@@ -120,16 +127,7 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
       <CollectionCardContainer colorScheme={colorScheme}>
         {/* Display image if available */}
         {image && (
-          <View
-            style={{
-              height: 100,
-              width: 90,
-              borderRadius: 16,
-              overflow: "hidden",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
+          <ImageContainer>
             <Image
               source={{ uri: image }}
               style={{
@@ -138,16 +136,9 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
                 resizeMode: "cover",
               }}
             />
-          </View>
+          </ImageContainer>
         )}
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "flex-start",
-            width: "100%",
-          }}
-        >
+        <TextContainer>
           {/* Title */}
           <ThemedText fontWeight="bold" fontSize="regular">
             {title}
@@ -173,33 +164,26 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
           {/* Display Date and Rating if available */}
           {(date !== null && date !== undefined) ||
           (rating !== null && rating !== undefined) ? (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                marginTop: 8,
-              }}
-            >
+            <RatingAndDateContainer>
               {/* Date (left) */}
               {date && (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <CenteredRow>
                   <MaterialIcons
                     name="calendar-today"
                     size={24}
-                    color={colorScheme === "light" ? "#585858" : "#ABABAB"}
-                    style={{ marginRight: 6 }}
+                    color={
+                      colorScheme === "light" ? Colors.grey100 : Colors.grey50
+                    }
                   />
                   <CollectionRating colorScheme={colorScheme}>
                     {new Date(date).toLocaleDateString()}
                   </CollectionRating>
-                </View>
+                </CenteredRow>
               )}
 
               {/* Display Rating (right) */}
               {rating !== null && rating !== undefined ? (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <CenteredRow>
                   <MaterialIcons
                     name={
                       (attributes[ratingIndex]
@@ -207,32 +191,23 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
                       "star"
                     }
                     size={24}
-                    color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
-                    style={{ marginRight: 6 }}
+                    color={Colors[colorScheme].primary}
                   />
                   <CollectionRating colorScheme={colorScheme}>
                     {rating + "/5"}
                   </CollectionRating>
-                </View>
+                </CenteredRow>
               ) : null}
-            </View>
+            </RatingAndDateContainer>
           ) : null}
           {/* Display Link if available */}
           {link && (
             <TouchableOpacity onPress={handlePressLink}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 6,
-                  marginTop: -8,
-                  width: "100%",
-                }}
-              >
+              <LinkContainer>
                 <MaterialIcons
                   name="attach-file"
                   size={20}
-                  color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+                  color={Colors[colorScheme].primary}
                 />
                 <ThemedText
                   fontWeight="regular"
@@ -240,7 +215,7 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
-                    color: colorScheme === "light" ? "#176BBA" : "#4599E8",
+                    color: Colors[colorScheme].primary,
                     textDecorationLine: "underline",
                     height: 48,
                     textAlignVertical: "center",
@@ -248,24 +223,22 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
                 >
                   {linkPreview || linkValue}
                 </ThemedText>
-              </View>
+              </LinkContainer>
             </TouchableOpacity>
           )}
           {/* Display selected multi-selects if available */}
           {multiSelect &&
             Array.isArray(multiSelect) &&
             multiSelect.length > 0 && (
-              <View
-                style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 8 }}
-              >
+              <MultiSelectContainer>
                 {multiSelect.map((option: string) => (
                   <CollectionSelectable colorScheme={colorScheme} key={option}>
                     <Text>{option}</Text>
                   </CollectionSelectable>
                 ))}
-              </View>
+              </MultiSelectContainer>
             )}
-        </View>
+        </TextContainer>
       </CollectionCardContainer>
     </TouchableOpacity>
   );

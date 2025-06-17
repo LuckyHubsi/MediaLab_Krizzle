@@ -64,3 +64,47 @@ export const CollectionSelectable = styled.Text<ColorSchemeProps>`
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? Colors.grey100 : Colors.grey25};
 `;
+
+export const ImageContainer = styled.View`
+  height: 100px;
+  width: 90px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const TextContainer = styled.View`
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+`;
+
+export const RatingAndDateContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+`;
+
+export const CenteredRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const LinkContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin-top: -8px;
+  width: 100%;
+`;
+
+export const MultiSelectContainer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 8px;
+`;
