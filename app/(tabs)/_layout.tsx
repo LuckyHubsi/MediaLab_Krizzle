@@ -8,6 +8,7 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { BottomTabBar } from "@react-navigation/bottom-tabs";
 
 export default function TabLayout() {
   const colorScheme = useActiveColorScheme();
@@ -33,6 +34,15 @@ export default function TabLayout() {
   return (
     <View style={{ flex: 1 }}>
       <Tabs
+        tabBar={(props) => (
+          <View
+            accessible={true}
+            accessibilityRole="tablist"
+            accessibilityLabel="Bottom navigation tabs"
+          >
+            <BottomTabBar {...props} />
+          </View>
+        )}
         screenOptions={{
           tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
           tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
