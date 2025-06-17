@@ -5,6 +5,7 @@ import {
   Pressable,
   TouchableOpacity,
   Platform,
+  findNodeHandle,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
@@ -17,7 +18,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 import { useFocusEffect } from "@react-navigation/native";
@@ -35,6 +42,7 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { AccessibilityInfo } from "react-native";
 
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
@@ -92,6 +100,8 @@ export default function HomeScreen() {
 
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
+
+  const headerRef = useRef<View | null>(null);
 
   const getColorKeyFromValue = (
     value: string,
@@ -220,6 +230,16 @@ export default function HomeScreen() {
       };
 
       fetchTags();
+
+      // sets the screenreader focus to the header after mount
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, []),
   );
 
@@ -286,7 +306,10 @@ export default function HomeScreen() {
           <ThemedText
             fontSize="xl"
             fontWeight="bold"
+            accessible={true}
             accessibilityRole="header"
+            accessibilityLiveRegion="polite"
+            optionalRef={headerRef}
           >
             Home
           </ThemedText>

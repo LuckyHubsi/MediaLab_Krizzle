@@ -1,4 +1,12 @@
-import { FlatList, Image, Platform, TouchableOpacity } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  FlatList,
+  Image,
+  Platform,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -8,7 +16,7 @@ import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useRouter } from "expo-router";
@@ -63,6 +71,7 @@ export default function FoldersScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
   const filteredFolders = folders.filter((folder) =>
     folder.title.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -169,6 +178,16 @@ export default function FoldersScreen() {
 
       setShouldReload(false);
       fetchFolders();
+
+      // sets the screenreader focus to the header after mount
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [shouldReload, params.reload]),
   );
 
@@ -243,8 +262,9 @@ export default function FoldersScreen() {
             fontSize="xl"
             fontWeight="bold"
             accessible={true}
-            accessibilityLabel="Folder Page"
             accessibilityRole="header"
+            accessibilityLiveRegion="polite"
+            optionalRef={headerRef}
           >
             Folders
           </ThemedText>

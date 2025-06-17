@@ -2,13 +2,39 @@ import { ThemedText } from "@/components/ThemedText";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
 import { resetDatabase } from "@/backend/service/DatabaseReset";
 import { Button } from "@/components/ui/Button/Button";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useRef } from "react";
 
 export default function TabThreeScreen() {
+  const headerRef = useRef<View | null>(null);
+
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
   return (
     <SafeAreaView>
       <ThemedView>
@@ -19,7 +45,14 @@ export default function TabThreeScreen() {
           />
         </IconTopRight>
 
-        <ThemedText fontSize="xl" fontWeight="bold">
+        <ThemedText
+          fontSize="xl"
+          fontWeight="bold"
+          accessible={true}
+          accessibilityRole="header"
+          accessibilityLiveRegion="polite"
+          optionalRef={headerRef}
+        >
           Menu
         </ThemedText>
         <View style={{ flex: 1 }}>

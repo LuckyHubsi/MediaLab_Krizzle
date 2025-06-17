@@ -27,6 +27,7 @@ export type ThemedTextProps = TextProps & {
     | "greyScale";
   textIsCentered?: boolean;
   isTransparent?: boolean;
+  optionalRef?: any;
 };
 
 const colorVariants = {
@@ -59,6 +60,7 @@ export function ThemedText({
   colorVariant = "default",
   textIsCentered = false,
   isTransparent,
+  optionalRef,
   ...rest
 }: ThemedTextProps) {
   const theme = useActiveColorScheme();
@@ -109,6 +111,7 @@ export function ThemedText({
         textIsCentered ? { textAlign: "center" } : undefined,
         style,
       ]}
+      ref={optionalRef}
       {...rest}
     />
   );
