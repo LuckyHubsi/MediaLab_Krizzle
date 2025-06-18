@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -60,6 +66,7 @@ export default function CollectionScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
   const headerRef = useRef<View | null>(null);
+  const [announceKey, setAnnounceKey] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -180,6 +187,11 @@ export default function CollectionScreen() {
     });
   }, [items, selectedList, searchQuery]);
 
+  // update key to force re-render when searchQuery or results change to have screenreader announce results of search
+  useEffect(() => {
+    setAnnounceKey((prev) => prev + 1);
+  }, [searchQuery, filteredItems.length, selectedList]);
+
   return (
     <>
       <SafeAreaView
@@ -215,6 +227,24 @@ export default function CollectionScreen() {
             placeholder="Search for item name"
             onSearch={(text) => setSearchQuery(text)}
           />
+
+          <ThemedText
+            key={`announce-${announceKey}`}
+            accessible={true}
+            accessibilityLiveRegion="polite"
+            style={{
+              position: "absolute",
+              height: 0,
+              width: 0,
+              opacity: 0,
+            }}
+          >
+            {searchQuery
+              ? filteredItems.length > 0
+                ? `${filteredItems.length} result${filteredItems.length > 1 ? "s" : ""} found for ${searchQuery} inside collection list ${selectedList}`
+                : `No results found for ${searchQuery} inside Collection list ${selectedList}`
+              : ""}
+          </ThemedText>
         </View>
 
         <CollectionListCard

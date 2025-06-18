@@ -59,6 +59,9 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
     { light: lightColor, dark: darkColor },
     "background",
   );
+
+  const [selectedListInside, setSelectedListInside] = useState("");
+
   return (
     <View style={{ flex: 1 }}>
       <CollectionList
@@ -66,6 +69,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
         onSelect={(collectionList) => {
           if (setSelectedList) {
             setSelectedList(collectionList || "All");
+            setSelectedListInside(collectionList);
           }
         }}
         collectionId={collectionId}
@@ -92,7 +96,7 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
           <ThemedView>
             {filteredItems.length > 0 ? (
               <View style={{ flex: 1, gap: 12 }}>
-                {[...filteredItems].reverse().map((item) => (
+                {[...filteredItems].reverse().map((item, index) => (
                   <CollectionWidget
                     key={item.itemID}
                     attributes={items?.attributes || []}
@@ -118,6 +122,9 @@ export const CollectionListCard: React.FC<CollectionListCardPorps> = ({
                         }
                       }
                     }}
+                    index={index}
+                    itemCountPerList={filteredItems.length}
+                    list={selectedListInside}
                   />
                 ))}
               </View>

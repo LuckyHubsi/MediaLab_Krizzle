@@ -18,6 +18,7 @@ export type ItemPreviewValueModel = {
   attributeID: number;
   value: string | number | null;
   display_text: string | null;
+  alt_text: string | null;
   categoryID: number | null;
   category_name: string | null;
 };

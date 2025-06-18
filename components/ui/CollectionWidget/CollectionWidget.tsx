@@ -23,6 +23,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 type Item = {
   itemID: number;
   values: any[];
+  itemCountPerList: number;
 };
 
 type CollectionWidgetProps = {
@@ -30,6 +31,9 @@ type CollectionWidgetProps = {
   item: Item;
   onPress?: () => void;
   onLongPress?: () => void;
+  index: number;
+  itemCountPerList: number;
+  list: string;
 };
 
 const CollectionWidget: React.FC<CollectionWidgetProps> = ({
@@ -37,6 +41,9 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   item,
   onPress,
   onLongPress,
+  index,
+  itemCountPerList,
+  list,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
@@ -57,6 +64,10 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
   const multiSelect =
     multiSelectIndex !== -1 ? item.values[multiSelectIndex] : [];
   const image = imageIndex !== -1 ? item.values[imageIndex] : null;
+  const imageValue =
+    image && typeof image === "object" && image.value ? image.value : null;
+  const imagePreview =
+    image && typeof image === "object" && image.altText ? image.altText : null;
   const link = linkIndex !== -1 ? item.values[linkIndex] : null;
   const linkValue =
     link && typeof link === "object" && link.value ? link.value : null;
@@ -88,11 +99,95 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
     }
   };
 
+  function buildAccessibilityLabel(
+    attributes: AttributeDTO[],
+    values: any[],
+  ): string {
+    const parts: string[] = [];
+
+    const addedIndices = new Set<number>();
+
+    // Find all text attribute indices
+    const textIndices = attributes
+      .map((attr, idx) => ({ ...attr, idx }))
+      .filter((attr) => attr.type === "text");
+
+    if (textIndices.length > 0) {
+      const titleAttr = textIndices[0];
+      const titleVal = values[titleAttr.idx];
+      if (titleVal) {
+        parts.push(
+          `Label ${titleAttr.attributeLabel} with value ${titleVal}. `,
+        );
+        addedIndices.add(titleAttr.idx);
+      }
+
+      // Add remaining text fields (not title)
+      for (let i = 1; i < textIndices.length; i++) {
+        const attr = textIndices[i];
+        const val = values[attr.idx];
+        if (val) {
+          parts.push(`Label ${attr.attributeLabel} with value ${val}. `);
+          addedIndices.add(attr.idx);
+        }
+      }
+    }
+
+    // Helper for adding remaining types
+    const addByType = (type: string) => {
+      for (let i = 0; i < attributes.length; i++) {
+        if (attributes[i].type === type && !addedIndices.has(i)) {
+          const label = attributes[i].attributeLabel ?? type;
+          const val = values[i];
+
+          if (val === null || val === undefined || val === "") continue;
+
+          let readableValue = "";
+
+          if (type === "date") {
+            try {
+              readableValue = new Date(val).toLocaleDateString();
+            } catch {
+              readableValue = val.toString();
+            }
+          } else if (type === "multi-select" && Array.isArray(val)) {
+            readableValue = val.join(", ");
+          } else if (type === "link" && typeof val === "object") {
+            readableValue = val.displayText || val.value || "";
+          } else if (type === "image" && typeof val === "object") {
+            readableValue = val.altText
+              ? val.altText
+              : "No image description was provided";
+          } else {
+            readableValue = val.toString();
+          }
+
+          if (readableValue) {
+            parts.push(`Label ${label} with value ${readableValue}. `);
+            addedIndices.add(i);
+          }
+
+          break; // only one per type, as per order
+        }
+      }
+    };
+
+    addByType("image");
+    addByType("date");
+    addByType("rating");
+    addByType("link");
+    addByType("multi-select");
+
+    return parts.join(", ");
+  }
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
       onLongPress={handleLongPress}
+      accessible={true}
+      accessibilityLabel={`${title}. Item content: ${buildAccessibilityLabel(attributes, item.values)}.  Item ${index + 1} out of ${itemCountPerList} in collection list ${list}.`}
+      accessibilityHint="Activating navigates to the Collection Item Page. Longpress opens quick action modal"
     >
       <CollectionCardContainer colorScheme={colorScheme}>
         {image && (
@@ -107,7 +202,7 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             }}
           >
             <Image
-              source={{ uri: image }}
+              source={{ uri: imageValue }}
               style={{
                 width: "100%",
                 height: "100%",
@@ -194,7 +289,12 @@ const CollectionWidget: React.FC<CollectionWidgetProps> = ({
             </View>
           ) : null}
           {link && (
-            <TouchableOpacity onPress={handlePressLink}>
+            <TouchableOpacity
+              onPress={handlePressLink}
+              accessible={true}
+              accessibilityRole="link"
+              accessibilityLabel={linkPreview || linkValue}
+            >
               <View
                 style={{
                   flexDirection: "row",

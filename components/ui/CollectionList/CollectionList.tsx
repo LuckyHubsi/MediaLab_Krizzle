@@ -64,6 +64,9 @@ const CollectionList: React.FC<CollectionListProps> = ({
                   if (!isActive) handlePress(collectionList);
                 }}
                 activeOpacity={isActive ? 1 : 0.7}
+                accessible={true}
+                accessibilityLabel={`Collection list ${collectionList}`}
+                accessibilityState={{ selected: isActive }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   {isActive && (
@@ -90,6 +93,10 @@ const CollectionList: React.FC<CollectionListProps> = ({
             <TouchableOpacity
               onPress={goToEdit}
               style={{ marginLeft: 8, justifyContent: "center" }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="`Edit Collection lists"
+              accessibilityHint="Opens the Edit Collection Lists Page"
             >
               <MaterialIcons
                 name="edit"

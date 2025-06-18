@@ -50,7 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         returnKeyType="search"
         accessibilityRole="search"
         accessibilityLabel="Search"
-        accessibilityHint="Enter a title to filter your notes or collections"
+        accessibilityHint={`${placeholder.includes("widget") ? "Enter a title to search for your notes or collections" : placeholder.includes("folder") ? "Enter a title to search for your folders" : "Enter a name to search for your collection items."} `}
       />
       {query.length > 0 && (
         <TouchableOpacity
