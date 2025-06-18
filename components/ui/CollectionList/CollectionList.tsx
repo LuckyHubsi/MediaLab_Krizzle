@@ -45,7 +45,12 @@ const CollectionList: React.FC<CollectionListProps> = ({
   const shouldShowEditIcon = collectionLists.length <= 9 && !isArchived;
 
   return (
-    <View style={{ marginLeft: 20, marginRight: 20 }}>
+    <View
+      style={{ marginLeft: 20, marginRight: 20 }}
+      accessible={true}
+      accessibilityRole="tablist"
+      accessibilityLabel="Collection List Section"
+    >
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -67,6 +72,7 @@ const CollectionList: React.FC<CollectionListProps> = ({
                 accessible={true}
                 accessibilityLabel={`Collection list ${collectionList}`}
                 accessibilityState={{ selected: isActive }}
+                accessibilityRole="tab"
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   {isActive && (
