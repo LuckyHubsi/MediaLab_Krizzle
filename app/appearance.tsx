@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +14,10 @@ import {
   findNodeHandle,
 } from "react-native";
 import { useCallback, useRef } from "react";
+
+/**
+ * AppearanceScreen component allows users to select their preferred theme (light/dark/system).
+ */
 
 export default function AppearanceScreen() {
   const { userTheme, saveUserTheme, isLoading } = useUserTheme();
@@ -37,6 +41,7 @@ export default function AppearanceScreen() {
     }, []),
   );
 
+  // If the user theme is loading, show a loading indicator
   if (isLoading) {
     return (
       <SafeAreaView>
@@ -54,6 +59,14 @@ export default function AppearanceScreen() {
     );
   }
 
+  /**
+   * Components used:
+   * - CustomStyledHeader: A custom header component for the screen.
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - Card: A card component for displaying the theme selector.
+   * - ThemeSelector: A component that allows users to select their preferred theme.
+   */
   return (
     <SafeAreaView>
       <CustomStyledHeader

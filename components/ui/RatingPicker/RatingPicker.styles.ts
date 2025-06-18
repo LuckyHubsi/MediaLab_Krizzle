@@ -9,4 +9,6 @@ export const RatingPickerWrapper = styled.View`
   flex-direction: row;
   gap: 8px;
   align-items: center;
+  min-height: 48px;
+  min-width: 48px;
 `;

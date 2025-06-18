@@ -38,7 +38,7 @@ export const ItemCountContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 15px 0 5px 0;
+  padding: 5px 0 5px 0;
 `;
 
 export const ItemCount = styled.View<ColorSchemeProps>`

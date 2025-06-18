@@ -1,13 +1,18 @@
 import { Text, type TextProps } from "react-native";
-import { Lexend_400Regular } from "@expo-google-fonts/lexend/400Regular";
-import { Lexend_300Light } from "@expo-google-fonts/lexend/300Light";
-import { Lexend_600SemiBold } from "@expo-google-fonts/lexend/600SemiBold";
-import { Lexend_700Bold } from "@expo-google-fonts/lexend/700Bold";
-
 import { useThemeColor } from "@/hooks/useThemeColor";
-
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * ThemedText component that renders text with theming support.
+ * It allows customization of text color, font weight, font size, and alignment.
+ * @lightColor - Color for light theme.
+ * @darkColor - Color for dark theme.
+ * @fontWeight - Font weight of the text, can be "light", "regular", "semibold", or "bold".
+ * @fontSize - Size of the text, can be "regular", "xxl", "xl", "l", or "s".
+ * @colorVariant - Predefined color variants for the text.
+ * @textIsCentered - If true, centers the text.
+ */
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -30,27 +35,6 @@ export type ThemedTextProps = TextProps & {
   optionalRef?: any;
 };
 
-const colorVariants = {
-  default: (lightColor?: string, darkColor?: string) =>
-    useThemeColor({ light: lightColor, dark: darkColor }, "text"),
-  red: () =>
-    useActiveColorScheme() === "dark"
-      ? Colors.dark.negative
-      : Colors.light.negative,
-  grey: () => Colors.grey100,
-  lightGrey: () => Colors.grey50,
-  white: () => Colors.white,
-  primary: () =>
-    useActiveColorScheme() === "dark" ? Colors.primary : Colors.secondary,
-  black: () => Colors.black,
-  greyScale: () =>
-    useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
-  disabled: () =>
-    useActiveColorScheme() === "dark" ? Colors.grey100 : Colors.grey50,
-  cancel: () =>
-    useActiveColorScheme() === "dark" ? Colors.grey50 : Colors.grey100,
-};
-
 export function ThemedText({
   style,
   lightColor,
@@ -67,7 +51,7 @@ export function ThemedText({
   const themeColor = useThemeColor(
     { light: lightColor, dark: darkColor },
     "text",
-  ); // ✅ Always called
+  );
 
   const color = (() => {
     switch (colorVariant) {
@@ -91,9 +75,24 @@ export function ThemedText({
         return theme === "dark" ? Colors.grey50 : Colors.grey100;
       case "default":
       default:
-        return themeColor; // ✅ Use the hook result
+        return themeColor;
     }
   })();
+
+  const fontWeightStyles = {
+    light: { fontFamily: "Lexend_300Light" },
+    regular: { fontFamily: "Lexend_400Regular" },
+    semibold: { fontFamily: "Lexend_600SemiBold" },
+    bold: { fontFamily: "Lexend_700Bold" },
+  };
+
+  const fontSizeStyles = {
+    regular: { fontSize: 16 },
+    xxl: { fontSize: 32 },
+    xl: { fontSize: 28 },
+    l: { fontSize: 24 },
+    s: { fontSize: 14 },
+  };
 
   return (
     <Text
@@ -116,18 +115,3 @@ export function ThemedText({
     />
   );
 }
-
-const fontWeightStyles = {
-  light: { fontFamily: "Lexend_300Light" },
-  regular: { fontFamily: "Lexend_400Regular" },
-  semibold: { fontFamily: "Lexend_600SemiBold" },
-  bold: { fontFamily: "Lexend_700Bold" },
-};
-
-const fontSizeStyles = {
-  regular: { fontSize: 16 },
-  xxl: { fontSize: 32 },
-  xl: { fontSize: 28 },
-  l: { fontSize: 24 },
-  s: { fontSize: 14 },
-};

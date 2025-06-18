@@ -10,11 +10,21 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 
+/**
+ * TabLayout component that renders the main tab layout for the app.
+ * It includes three tabs: Home, Folders, and Settings and a FloatingAddButton.
+ */
+
 export default function TabLayout() {
   const colorScheme = useActiveColorScheme();
   const [isModalVisible, setModalVisible] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
+  /**
+   * Listens for keyboard show/hide events and updates `keyboardVisible` state.
+   * Adds event listeners when the component mounts and cleans them up on unmount.
+   * Helps track if the keyboard is currently open.
+   */
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardVisible(true),
@@ -29,8 +39,6 @@ export default function TabLayout() {
     };
   }, []);
 
-  const theme = colorScheme ?? "light";
-
   return (
     <View style={{ flex: 1 }}>
       <Tabs
@@ -44,8 +52,8 @@ export default function TabLayout() {
           </View>
         )}
         screenOptions={{
-          tabBarActiveTintColor: Colors[theme].tabBarActiveTintColor,
-          tabBarInactiveTintColor: Colors[theme].tabBarInactiveTintColor,
+          tabBarActiveTintColor: Colors[colorScheme].tabBarActiveTintColor,
+          tabBarInactiveTintColor: Colors[colorScheme].tabBarInactiveTintColor,
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarBackground: () =>
@@ -69,7 +77,7 @@ export default function TabLayout() {
             backgroundColor:
               Platform.OS === "android" && isKeyboardVisible
                 ? "transparent"
-                : Colors[theme].tabBarBackgroundColor,
+                : Colors[colorScheme].tabBarBackgroundColor,
             borderTopWidth: 0,
             paddingRight: 75,
           },

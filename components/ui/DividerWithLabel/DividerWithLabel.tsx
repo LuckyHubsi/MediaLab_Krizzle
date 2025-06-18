@@ -7,24 +7,28 @@ import {
 } from "./DividerWithLabel.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for rendering a divider with an optional label and icon.
+ * @param label - The text label to display in the center of the divider (defaults to optional).
+ * @param iconName - The name of the Material Icons icon to display.
+ */
 
 interface DividerProps {
   label?: string;
   iconName?: keyof typeof MaterialIcons.glyphMap;
-  iconSize?: number;
-  iconColor?: string;
 }
 
 export const DividerWithLabel = ({
   label = "optional",
   iconName,
-  iconSize = 16,
 }: DividerProps) => {
+  const colorScheme = useActiveColorScheme();
   return (
     <DividerContainer>
-      <DividerLine />
+      <DividerLine colorScheme={colorScheme} />
       <LabelWrapper>
         {iconName && (
           <View
@@ -35,12 +39,8 @@ export const DividerWithLabel = ({
           >
             <MaterialIcons
               name={iconName}
-              size={iconSize}
-              color={
-                useActiveColorScheme() === "dark"
-                  ? "#ABABAB" // light grey for dark mode
-                  : "#585858" // darker grey for light mode
-              }
+              size={16}
+              color={colorScheme === "dark" ? Colors.grey50 : Colors.grey100}
               style={{
                 marginBottom: label ? 10 : 0,
                 marginTop: label ? 4 : 0,
@@ -60,7 +60,7 @@ export const DividerWithLabel = ({
           </ThemedText>
         )}
       </LabelWrapper>
-      <DividerLine />
+      <DividerLine colorScheme={colorScheme} />
     </DividerContainer>
   );
 };

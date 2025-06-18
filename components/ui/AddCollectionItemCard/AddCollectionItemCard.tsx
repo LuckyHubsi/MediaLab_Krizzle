@@ -14,6 +14,18 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import LinkPicker from "../LinkPicker/LinkPicker";
 import ImagePickerField from "../ImagePickerField/ImagePickerField";
 
+/**
+ * Component for adding a new item to a collection, dynamically rendering
+ * input fields based on provided attributes.
+ * @param attributes - Array of attributes defining the input fields.
+ * @param lists (required) - Array of collection lists to choose from.
+ * @param attributeValues (required) - Object mapping attribute IDs to their current values.
+ * @param onInputChange (required) - Callback function to handle changes in input fields.
+ * @param hasNoInputError - Optional flag to indicate if there are input errors.
+ * @param onListChange (required) - Callback function to handle changes in the selected collection list.
+ * @param selectedCategoryID - ID of the currently selected category.
+ */
+
 interface AddCollectionItemProps {
   attributes?: AttributeDTO[];
   lists: CollectionCategoryDTO[];
@@ -41,9 +53,6 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
   const colorScheme = useActiveColorScheme();
   const [selectedList, setSelectedList] = useState("");
   const [listStrings, setListStrings] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>(
-    {},
-  );
 
   const [customLinkText, setCustomLinkText] = useState<{
     [id: number]: string;
@@ -60,6 +69,11 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
   const initializedRef = useRef(false);
 
+  /**
+   * Effect to initialize link attributes and their values
+   * based on the provided attributes and attribute values.
+   * This effect runs only once when the component mounts.
+   */
   useEffect(() => {
     if (!attributes || initializedRef.current) return;
 
@@ -115,21 +129,12 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     }
   }, [attributes]);
 
-  const handleTagSelect = (attributeLabel: string, tag: string) => {
-    setSelectedTags((prev) => {
-      const currentTags = prev[attributeLabel] || [];
-      const isAlreadySelected = currentTags.includes(tag);
-      const updatedTags = isAlreadySelected
-        ? currentTags.filter((t) => t !== tag)
-        : [...currentTags, tag];
-
-      return {
-        ...prev,
-        [attributeLabel]: updatedTags,
-      };
-    });
-  };
-
+  /**
+   * Function to handle changes in the selected collection list.
+   * It updates the selected list state and calls the onListChange callback
+   * with the corresponding category ID.
+   * @param value - The selected list name or ID.
+   */
   const handleSelectionChange = (value: string | number) => {
     setSelectedList(String(value));
 
@@ -150,6 +155,12 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
       }
     }
   };
+
+  /**
+   * Effect to initialize the collection list
+   * preselects based on the provided lists and selectedCategoryID,
+   * if none is provided - it defaults to the first list.
+   */
   useEffect(() => {
     if (!lists.length) return;
 
@@ -183,6 +194,11 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
     }
   }, [lists, selectedCategoryID]);
 
+  /**
+   * Function to render the input fields based on the provided attributes.
+   * It dynamically creates input components based on the attribute type.
+   * Returned will be an array of React nodes representing the input fields.
+   */
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];
 

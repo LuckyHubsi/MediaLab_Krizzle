@@ -1,13 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
-import { Alert, FlatList, TouchableOpacity } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Card } from "@/components/ui/Card/Card";
 import { AddButton } from "@/components/ui/AddButton/AddButton";
 import { ThemedText } from "@/components/ThemedText";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
-
 import { Colors } from "@/constants/Colors";
-
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import Textfield from "../Textfield/Textfield";
 import {
@@ -20,9 +18,17 @@ import {
   AddButtonWrapper,
   ListContent,
   RemoveButtonContainer,
-  RemoveButtonContent,
 } from "./EditCollectionLists.styles.";
 import RemoveButton from "../RemoveButton/RemoveButton";
+
+/**
+ * Component for editing collection lists.
+ * Allows users to add, remove, and edit titles of lists within a collection.
+ * @param data (required) - The collection data containing lists.
+ * @param setData (required) - Function to update the collection data.
+ * @param onBack - Optional callback for the back button.
+ * @param onNext - Optional callback for the next button.
+ */
 
 interface EditCollectionListProps {
   data: CollectionData;
@@ -38,10 +44,14 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
   onNext,
 }) => {
   const [hasClickedNext, setHasClickedNext] = useState(false);
+  const colorScheme = useActiveColorScheme();
 
   const [showHelp, setShowHelp] = useState(false);
   const cards = data.lists;
 
+  /**
+   * Function to add a new card to the collection lists.
+   */
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString(), title: "" };
     setData((prev) => ({
@@ -50,6 +60,10 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Function to remove a card from the collection lists.
+   * @param id - The ID of the card to be removed.
+   */
   const handleRemoveCard = (id: string) => {
     setData((prev) => ({
       ...prev,
@@ -57,6 +71,11 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Function to handle changes in the title of a card.
+   * @param id - The ID of the card whose title is being changed.
+   * @param text - The new title text.
+   */
   const handleTitleChange = (id: string, text: string) => {
     setData((prev) => ({
       ...prev,
@@ -66,16 +85,15 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Effect to initialize the collection with a default card if no lists exist.
+   */
   useEffect(() => {
     if (data.lists.length === 0) {
       const initialCard = { id: Date.now().toString(), title: "" };
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
-
-  const colorScheme = useActiveColorScheme();
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 
   return (
     <>

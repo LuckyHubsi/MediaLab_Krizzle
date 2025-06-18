@@ -116,7 +116,7 @@ export default function QuickActionModal({
               >
                 {items.map((item, index) => {
                   const textColorVariant = item.disabled
-                    ? "disabled"
+                    ? "greyScale"
                     : item.danger
                       ? "red"
                       : "default";

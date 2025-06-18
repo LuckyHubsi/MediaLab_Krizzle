@@ -32,6 +32,6 @@ export const StyledTextInput = styled.TextInput<
   `
       : `
     padding: 0 20px;
-    height: 50px; /* or 48px, depending on your design */
+    height: 50px; 
   `}
 `;

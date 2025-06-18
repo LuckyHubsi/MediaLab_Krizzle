@@ -1,4 +1,3 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
 import {
   AccessibilityInfo,
@@ -17,7 +16,6 @@ import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
-import { Button } from "@/components/ui/Button/Button";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { AttributeType } from "@/shared/enum/AttributeType";
@@ -25,7 +23,12 @@ import { useServices } from "@/context/ServiceContext";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * AddCollectionItem Screen component that allows users to add items to a collection.
+ */
+
 export default function AddCollectionItem() {
+  // Extracting parameters from the URL using useLocalSearchParams
   const { templateId, collectionId, pageId, routing } = useLocalSearchParams<{
     templateId?: string;
     collectionId?: string;
@@ -65,6 +68,11 @@ export default function AddCollectionItem() {
     }, []),
   );
 
+  /**
+   * Effect hook to fetch the item template and collection categories
+   * On success, sets attributes or lists and clears related errors.
+   * On failure, adds the corresponding error to the error list and shows the error message.
+   */
   useEffect(() => {
     (async () => {
       const numericTemplateID = Number(templateId);
@@ -127,6 +135,10 @@ export default function AddCollectionItem() {
     })();
   }, [templateId]);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   * This is necessary to adjust the layout when the keyboard is shown or hidden.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -142,6 +154,13 @@ export default function AddCollectionItem() {
     }
   }, []);
 
+  /**
+   * Function to handle input changes for attributes (updates based on user input).
+   * @param attributeID - The ID of the attribute being changed.
+   * @param value - The new value for the attribute.
+   * @param displayText - Optional display text for link attributes.
+   * @param altText - Optional alt text for image attributes.
+   */
   const handleInputChange = (
     attributeID: number,
     value: any,
@@ -177,10 +196,16 @@ export default function AddCollectionItem() {
     });
   };
 
+  /**
+   * Function to handle changes in the selected list (category).
+   */
   const handleListChange = (categoryID: number | null) => {
     setSelectedCategoryID(categoryID);
   };
 
+  /**
+   * Function to validate the fields of the collection item.
+   */
   const validateFields = () => {
     const firstTextAttribute = attributes.find(
       (attribute) => attribute.type === AttributeType.Text,
@@ -191,6 +216,10 @@ export default function AddCollectionItem() {
     return value && value.trim() !== "";
   };
 
+  /**
+   * Function to map attributes to an ItemDTO.
+   * This function transforms the attributes and their values into a format suitable for the ItemDTO.
+   */
   const mapToItemDTO = (attributes: AttributeDTO[]): ItemDTO => {
     const attributeValueDTOs: ItemAttributeValueDTO[] = attributes.map(
       (attribute) => {
@@ -229,6 +258,9 @@ export default function AddCollectionItem() {
     };
   };
 
+  /**
+   * Function to handle saving the collection item.
+   */
   const handleSaveItem = async () => {
     setHasClickedNext(true);
     const titleIsValid = validateFields();
@@ -281,13 +313,21 @@ export default function AddCollectionItem() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Components used:
+   * - GradientBackground: A background component with a gradient effect.
+   * - Header: A header component for the screen.
+   * - AddCollectionItemCard: A card component for adding collection items.
+   * - BottomButtons: A component for the bottom action buttons (Discard and Add).
+   * - ErrorPopup: A modal component for displaying errors.
+   */
   return (
     <GradientBackground
-      backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      backgroundCardTopOffset={Platform.select({ ios: 55, android: 60 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
@@ -329,7 +369,6 @@ export default function AddCollectionItem() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

@@ -34,11 +34,17 @@ import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderMod
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * CollectionScreen component displays a collection of items organized into lists.
+ */
+
 export default function CollectionScreen() {
   const { generalPageService, collectionService, itemTemplateService } =
     useServices();
 
   const router = useRouter();
+
+  // Using useLocalSearchParams to get the parameters passed to this screen
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
@@ -68,6 +74,10 @@ export default function CollectionScreen() {
   const headerRef = useRef<View | null>(null);
   const [announceKey, setAnnounceKey] = useState(0);
 
+  /**
+   * useFocusEffect hook to fetch collection data when the screen is focused.
+   * It retrieves the collection by pageId and fetches items associated with it.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -146,6 +156,7 @@ export default function CollectionScreen() {
     }, [pageId, shouldReload, routing]),
   );
 
+  // Function to navigate to the edit page for the corrisponding collection widget
   const goToEditPage = () => {
     const path = "/editWidget";
 
@@ -155,6 +166,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Function to navigate to the edit lists page for the collection
   const goToEditListsPage = () => {
     const path = "/editCollectionLists";
 
@@ -168,6 +180,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Memoized filtered items based on search query and selected list
   const filteredItems = useMemo(() => {
     if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
 
@@ -192,6 +205,19 @@ export default function CollectionScreen() {
     setAnnounceKey((prev) => prev + 1);
   }, [searchQuery, filteredItems.length, selectedList]);
 
+  /**
+   * Components used:
+   *
+   * - GradientBackgroundWrapper: A wrapper component that provides a gradient background.
+   * - CustomStyledHeader: A custom header component with a title and icons.
+   * - SearchBar: A search bar component for filtering items.
+   * - CollectionListCard: A card component that displays the collection lists and items.
+   * - QuickActionModal: A modal for quick actions on the collection or items.
+   * - DeleteModal: A modal for confirming deletion of the collection or items.
+   * - FloatingAddButton: A floating button to add new items to the collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the collection.
+   * - ErrorPopup: A popup for displaying errors.
+   */
   return (
     <>
       <SafeAreaView

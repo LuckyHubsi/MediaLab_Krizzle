@@ -123,7 +123,12 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
                   AccessibilityInfo.setAccessibilityFocus(reactTag);
                 }
               }}
-              style={{ marginLeft: 8, marginBottom: 12 }}
+              style={{
+                right: -10,
+                minHeight: 48,
+                minWidth: 48,
+                justifyContent: "center",
+              }}
               accessible={true}
               accessibilityRole="button"
               accessibilityLabel={`Remove selected custom link title for ${title}`}
@@ -131,7 +136,7 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
               <MaterialIcons
                 name="close"
                 size={24}
-                color={iconColor}
+                color={Colors[colorScheme ?? "light"].text}
                 accessible={false}
               />
             </TouchableOpacity>

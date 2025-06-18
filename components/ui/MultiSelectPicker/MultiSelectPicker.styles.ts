@@ -15,6 +15,13 @@ export const MultiSelectPicker = styled.View`
 export const IndividualSelect = styled.TouchableOpacity<{
   isSelected: boolean;
 }>`
+  min-height: 48px;
+  min-width: 48px;
+`;
+
+export const TagPill = styled.View<{
+  isSelected: boolean;
+}>`
   background-color: ${({ isSelected }: { isSelected: boolean }) =>
     isSelected ? Colors.primary : Colors.grey25};
   display: flex;

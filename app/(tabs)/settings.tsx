@@ -16,6 +16,11 @@ import { Button } from "@/components/ui/Button/Button";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
 
+/**
+ * TabThreeScreen component that renders the Settings screen.
+ * Links to various settings and information pages.
+ */
+
 export default function TabThreeScreen() {
   const headerRef = useRef<View | null>(null);
 

@@ -2,6 +2,12 @@ import CollapsibleCard from "./CollapsibleCard";
 import { ScrollView, Image, View } from "react-native";
 import { CardsContainer, ImageContainer } from "./FAQSection.styles";
 
+/**
+ * Const to render the FAQ section of the app.
+ * This section contains collapsible cards that explain various features of the app.
+ * Each card includes a title, question, content, and an example image.
+ */
+
 const FAQSection = () => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

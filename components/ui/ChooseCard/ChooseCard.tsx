@@ -6,6 +6,13 @@ import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
+/**
+ * Component for displaying chosen options of color and icon in widget creation.
+ * @param label (required) - The label for the card.
+ * @param selectedColor - Optional color for the circle background.
+ * @param selectedIcon - Optional icon name from MaterialIcons to display in the circle.
+ * @param onPress (required) - Callback function to handle card press events.
+ */
 interface ChooseCardProps {
   label: string;
   selectedColor?: string;
@@ -32,7 +39,6 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
             color={Colors[colorScheme].text}
           />
         </EditButton>
-
         {/* Center Circle with Color & Icon */}
         <Circle
           style={{ backgroundColor: selectedColor ?? "transparent" }}
@@ -46,7 +52,6 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
             />
           )}
         </Circle>
-
         {/* Label Below */}
         <ThemedText fontSize="s" fontWeight="regular" style={{ marginTop: 5 }}>
           {label}

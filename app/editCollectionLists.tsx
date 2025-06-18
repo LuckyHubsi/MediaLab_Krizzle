@@ -4,6 +4,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
@@ -62,7 +63,14 @@ export default function EditCollectionListsScreen() {
   const { showSnackbar } = useSnackbar();
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const [cardHeight, setCardHeight] = useState(0);
 
+  // Calculate screen dimensions and orientation
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isHighCard = cardHeight > height * 0.3;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
   /**
    * Effect to handle keyboard visibility on Android.
    */
@@ -340,138 +348,271 @@ export default function EditCollectionListsScreen() {
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
-      topPadding={Platform.select({ ios: 0, android: 15 })}
+      topPadding={Platform.select({ ios: 0, android: 0 })}
     >
-      <View style={{ flex: 1 }}>
-        <Card>
-          <CardText>
-            <CardHeader>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Edit Lists
-              </ThemedText>
-              <TouchableOpacity onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={
-                    colorScheme === "light" ? Colors.primary : Colors.secondary
-                  }
-                />
-              </TouchableOpacity>
-            </CardHeader>
-            <ThemedText
-              fontSize="s"
-              fontWeight="light"
-              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+      {isSmallScreen || isHighCard ? (
+        <View style={{ flex: 1 }}>
+          {!isLoading && (
+            <ScrollView
+              contentContainerStyle={{
+                ...ListContent,
+                paddingBottom: 80,
+                paddingTop: 12,
+              }}
+              showsVerticalScrollIndicator={false}
             >
-              Add Lists to organize your Collections better.
-            </ThemedText>
-          </CardText>
-        </Card>
-
-        <ItemCountContainer>
-          <ItemCount colorScheme={colorScheme}>
-            <ThemedText colorVariant={lists.length < 10 ? "primary" : "red"}>
-              {lists.length}
-            </ThemedText>
-            <ThemedText
-              colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-            >
-              /10 Lists
-            </ThemedText>
-          </ItemCount>
-        </ItemCountContainer>
-        {!isLoading && (
-          <ScrollView
-            contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
-            showsVerticalScrollIndicator={false}
-          >
-            {lists.map((item, index) => (
-              <Card key={item.id}>
-                <HorizontalTitleRow>
-                  <ThemedText fontSize="regular" fontWeight="regular">
-                    List {index + 1}
-                  </ThemedText>
-                  {index === 0 && (
-                    <ThemedText fontSize="s" colorVariant="red">
-                      * required
+              <Card>
+                <CardText>
+                  <CardHeader>
+                    <ThemedText fontSize="l" fontWeight="bold">
+                      Edit Lists
                     </ThemedText>
-                  )}
-                </HorizontalTitleRow>
-                <Textfield
-                  showTitle={false}
-                  textfieldIcon="text-fields"
-                  placeholderText="Add a title"
-                  title=""
-                  value={item.title}
-                  onChangeText={(text) => handleTitleChange(item.id, text)}
-                  hasNoInputError={hasClickedNext && !item.title}
-                  hasDuplicateTitle={
-                    hasClickedNext &&
-                    item.title.trim() !== "" &&
-                    lists.filter(
-                      (l) =>
-                        l.title.trim().toLowerCase() ===
-                        item.title.trim().toLowerCase(),
-                    ).length > 1
-                  }
-                  maxLength={30}
-                />
-                <RemoveButtonContainer>
-                  <RemoveButton onPress={() => handleRemoveCard(item.id)} />
-                </RemoveButtonContainer>
+                    <TouchableOpacity
+                      onPress={() => setShowHelp(true)}
+                      style={{
+                        minHeight: 48,
+                        minWidth: 48,
+                        alignSelf: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <MaterialIcons
+                        name="help-outline"
+                        size={26}
+                        color={
+                          colorScheme === "light"
+                            ? Colors.primary
+                            : Colors.secondary
+                        }
+                      />
+                    </TouchableOpacity>
+                  </CardHeader>
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="light"
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    Add Lists to organize your Collections better.
+                  </ThemedText>
+                </CardText>
               </Card>
-            ))}
 
-            {lists.length < 10 && (
-              <AddButtonWrapper>
-                <AddButton
-                  onPress={() => {
-                    handleAddCard();
-                    setHasClickedNext(false);
+              <ItemCountContainer>
+                <ItemCount colorScheme={colorScheme}>
+                  <ThemedText
+                    colorVariant={lists.length < 10 ? "primary" : "red"}
+                  >
+                    {lists.length}
+                  </ThemedText>
+                  <ThemedText
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    /10 Lists
+                  </ThemedText>
+                </ItemCount>
+              </ItemCountContainer>
+
+              {lists.map((item, index) => (
+                <Card key={item.id}>
+                  <HorizontalTitleRow>
+                    <ThemedText fontSize="regular" fontWeight="regular">
+                      List {index + 1}
+                    </ThemedText>
+                    {index === 0 && (
+                      <ThemedText fontSize="s" colorVariant="red">
+                        * required
+                      </ThemedText>
+                    )}
+                  </HorizontalTitleRow>
+                  <Textfield
+                    showTitle={false}
+                    textfieldIcon="text-fields"
+                    placeholderText="Add a title"
+                    title=""
+                    value={item.title}
+                    onChangeText={(text) => handleTitleChange(item.id, text)}
+                    hasNoInputError={hasClickedNext && !item.title}
+                    hasDuplicateTitle={
+                      hasClickedNext &&
+                      item.title.trim() !== "" &&
+                      lists.filter(
+                        (l) =>
+                          l.title.trim().toLowerCase() ===
+                          item.title.trim().toLowerCase(),
+                      ).length > 1
+                    }
+                    maxLength={30}
+                  />
+                  <RemoveButtonContainer>
+                    <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                  </RemoveButtonContainer>
+                </Card>
+              ))}
+
+              {lists.length < 10 && (
+                <AddButtonWrapper>
+                  <AddButton
+                    onPress={() => {
+                      handleAddCard();
+                      setHasClickedNext(false);
+                    }}
+                  />
+                </AddButtonWrapper>
+              )}
+            </ScrollView>
+          )}
+        </View>
+      ) : (
+        <View
+          style={{ flex: 1 }}
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            setCardHeight(height);
+          }}
+        >
+          <Card>
+            <CardText>
+              <CardHeader>
+                <ThemedText fontSize="l" fontWeight="bold">
+                  Edit Lists
+                </ThemedText>
+                <TouchableOpacity
+                  onPress={() => setShowHelp(true)}
+                  style={{
+                    minHeight: 48,
+                    minWidth: 48,
+                    alignSelf: "center",
+                    justifyContent: "center",
                   }}
-                />
-              </AddButtonWrapper>
-            )}
-          </ScrollView>
-        )}
+                >
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={
+                      colorScheme === "light"
+                        ? Colors.primary
+                        : Colors.secondary
+                    }
+                  />
+                </TouchableOpacity>
+              </CardHeader>
+              <ThemedText
+                fontSize="s"
+                fontWeight="light"
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                Add Lists to organize your Collections better.
+              </ThemedText>
+            </CardText>
+          </Card>
 
-        {(Platform.OS !== "android" || !keyboardVisible) && (
-          <View
-            style={{
-              paddingTop: 15,
-              paddingBottom: Platform.OS === "android" ? 8 : 24,
-            }}
-          >
-            <BottomButtons
-              titleLeftButton="Back"
-              titleRightButton="Save"
-              onDiscard={() => router.back()}
-              onNext={saveAllChanges}
-              variant="back"
-              hasProgressIndicator={false}
-              progressStep={2}
-            />
-          </View>
-        )}
-        <DeleteModal
-          visible={showDeleteModal}
-          title={listToDelete?.title}
-          extraInformation="Deleting this list will also remove all its items in the collection. This action cannot be undone."
-          onCancel={() => setShowDeleteModal(false)}
-          onConfirm={confirmDelete}
-          onClose={() => setShowDeleteModal(false)}
-        />
-        {showHelp && (
-          <InfoPopup
-            visible={showHelp}
-            onClose={() => setShowHelp(false)}
-            image={require("@/assets/images/list-guide.png")}
-            title="What is a Collection List?"
-            description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
+          <ItemCountContainer>
+            <ItemCount colorScheme={colorScheme}>
+              <ThemedText colorVariant={lists.length < 10 ? "primary" : "red"}>
+                {lists.length}
+              </ThemedText>
+              <ThemedText
+                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+              >
+                /10 Lists
+              </ThemedText>
+            </ItemCount>
+          </ItemCountContainer>
+          {!isLoading && (
+            <ScrollView
+              contentContainerStyle={{ ...ListContent, paddingBottom: 80 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {lists.map((item, index) => (
+                <Card key={item.id}>
+                  <HorizontalTitleRow>
+                    <ThemedText fontSize="regular" fontWeight="regular">
+                      List {index + 1}
+                    </ThemedText>
+                    {index === 0 && (
+                      <ThemedText fontSize="s" colorVariant="red">
+                        * required
+                      </ThemedText>
+                    )}
+                  </HorizontalTitleRow>
+                  <Textfield
+                    showTitle={false}
+                    textfieldIcon="text-fields"
+                    placeholderText="Add a title"
+                    title=""
+                    value={item.title}
+                    onChangeText={(text) => handleTitleChange(item.id, text)}
+                    hasNoInputError={hasClickedNext && !item.title}
+                    hasDuplicateTitle={
+                      hasClickedNext &&
+                      item.title.trim() !== "" &&
+                      lists.filter(
+                        (l) =>
+                          l.title.trim().toLowerCase() ===
+                          item.title.trim().toLowerCase(),
+                      ).length > 1
+                    }
+                    maxLength={30}
+                  />
+                  <RemoveButtonContainer>
+                    <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                  </RemoveButtonContainer>
+                </Card>
+              ))}
+
+              {lists.length < 10 && (
+                <AddButtonWrapper>
+                  <AddButton
+                    onPress={() => {
+                      handleAddCard();
+                      setHasClickedNext(false);
+                    }}
+                  />
+                </AddButtonWrapper>
+              )}
+            </ScrollView>
+          )}
+        </View>
+      )}
+      {(Platform.OS !== "android" || !keyboardVisible) && (
+        <View
+          style={{
+            paddingTop: 15,
+            paddingBottom: Platform.OS === "android" ? 8 : 24,
+          }}
+        >
+          <BottomButtons
+            titleLeftButton="Back"
+            titleRightButton="Save"
+            onDiscard={() => router.back()}
+            onNext={saveAllChanges}
+            variant="back"
+            hasProgressIndicator={false}
+            progressStep={2}
           />
-        )}
-      </View>
+        </View>
+      )}
+      <DeleteModal
+        visible={showDeleteModal}
+        title={listToDelete?.title}
+        extraInformation="Deleting this list will also remove all its items in the collection. This action cannot be undone."
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        onClose={() => setShowDeleteModal(false)}
+      />
+      {showHelp && (
+        <InfoPopup
+          visible={showHelp}
+          onClose={() => setShowHelp(false)}
+          image={require("@/assets/images/list-guide.png")}
+          title="What is a Collection List?"
+          description={`Create Lists to group together related Items from one category together.\n\nFor example, inside your Books Collection you could create Lists for “Read Books”, “Book Wishlist” or anything you’d like.\n\nMake it your own!`}
+        />
+      )}
 
       <ErrorPopup
         visible={showError && errors.some((e) => !e.hasBeenRead)}

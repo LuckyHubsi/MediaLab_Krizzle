@@ -95,20 +95,6 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   };
 
   /**
-   * Handles clearing the selected image and alt text.
-   */
-  const handleClearImage = () => {
-    onChange("");
-    onAltTextChange("");
-    setShowAltTextField(false);
-
-    const tag = findNodeHandle(titleRef.current);
-    if (tag) {
-      AccessibilityInfo.setAccessibilityFocus(tag);
-    }
-  };
-
-  /**
    * Effect to show the alt text field if altText is provided.
    */
   useEffect(() => {
@@ -179,7 +165,9 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             <MaterialIcons
               name="camera-alt"
               size={20}
-              color={Colors.primary}
+              color={
+                colorScheme === "light" ? Colors.primary : Colors.secondary
+              }
               accessible={false}
             />
             <ThemedText
@@ -202,7 +190,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             accessibilityLabel="Selected image preview"
           />
           <DeleteButton
-            onPress={handleClearImage}
+            onPress={() => {
+              onChange("");
+              const tag = findNodeHandle(titleRef.current);
+              if (tag) {
+                AccessibilityInfo.setAccessibilityFocus(tag);
+              }
+            }}
             colorScheme={colorScheme}
             accessible={true}
             accessibilityRole="button"
@@ -276,10 +270,15 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                     AccessibilityInfo.setAccessibilityFocus(tag);
                   }
                 }}
-                style={{ marginLeft: 8, marginBottom: 12 }}
                 accessible={true}
                 accessibilityRole="button"
                 accessibilityLabel={`Remove selected image description for ${title}`}
+                style={{
+                  right: -10,
+                  height: 48,
+                  width: 48,
+                  justifyContent: "center",
+                }}
               >
                 <MaterialIcons
                   name="close"

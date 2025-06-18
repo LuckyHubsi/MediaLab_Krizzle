@@ -31,4 +31,9 @@ export const CardPreview = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   gap: 5px;
+  padding: 10px;
+  min-height: 50px;
+  position: absolute;
+  right: 0px;
+  padding-right: 0px;
 `;
