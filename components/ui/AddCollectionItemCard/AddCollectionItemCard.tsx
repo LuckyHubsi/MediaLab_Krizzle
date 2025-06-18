@@ -201,6 +201,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
    */
   const renderRepresentation = () => {
     const elements: React.ReactNode[] = [];
+    let textfieldCount = 0;
 
     if (attributes) {
       attributes.forEach((attribute) => {
@@ -208,11 +209,14 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
 
         switch (attribute.type) {
           case AttributeType.Text:
+            const isFirstTextfield = textfieldCount === 0;
+            textfieldCount++;
+
             elements.push(
               <Textfield
                 key={attribute.attributeID}
                 title={attribute.attributeLabel}
-                placeholderText="Add text here"
+                placeholderText="Add text"
                 value={currentValue || ""}
                 onChangeText={(text) =>
                   onInputChange(Number(attribute.attributeID), text)
@@ -220,6 +224,7 @@ const AddCollectionItemCard: FC<AddCollectionItemProps> = ({
                 {...(!elements[0] && { hasNoInputError })}
                 maxLength={750}
                 multiline={elements[0] ? true : false}
+                isRequired={isFirstTextfield}
               />,
             );
             break;

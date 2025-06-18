@@ -8,7 +8,7 @@ import { FC, useEffect, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
-import { AccessibilityInfo, findNodeHandle } from "react-native";
+import { AccessibilityInfo, findNodeHandle, View } from "react-native";
 
 /**
  * Component for displaying a text input field with an optional title and icon.
@@ -24,6 +24,7 @@ import { AccessibilityInfo, findNodeHandle } from "react-native";
  * @param maxLength - Maximum length of the input text (default: no limit).
  * @param multiline - Whether the input field supports multiple lines (default: false).
  * @param hasDuplicateTitle - Whether to show an error message for duplicate titles (default: false).
+ * @param isRequired - Whether the input field is required (default: false).
  */
 
 interface TextfieldProps {
@@ -38,6 +39,7 @@ interface TextfieldProps {
   maxLength?: number;
   multiline?: boolean;
   hasDuplicateTitle?: boolean;
+  isRequired?: boolean;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -52,6 +54,7 @@ const Textfield: FC<TextfieldProps> = ({
   maxLength,
   hasDuplicateTitle,
   multiline = false,
+  isRequired = false,
 }) => {
   const colorScheme = useActiveColorScheme();
 
@@ -76,15 +79,45 @@ const Textfield: FC<TextfieldProps> = ({
 
   return (
     <TextfieldContainer>
-      {showTitle ? (
-        <ThemedText
-          fontWeight="regular"
-          accessibilityLabel={`label ${title}`}
-          nativeID={title}
-        >
-          {title}
-        </ThemedText>
-      ) : null}
+      <View accessible={true} accessibilityRole="none">
+        {showTitle ? (
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+            }}
+          >
+            <ThemedText
+              fontWeight="regular"
+              nativeID={title}
+              accessibilityLabel={`Label ${title}`}
+            >
+              {title}
+            </ThemedText>
+            {isRequired && (
+              <ThemedText
+                fontSize="s"
+                colorVariant="red"
+                accessibilityLabel={`Input required`}
+              >
+                * required
+              </ThemedText>
+            )}
+          </View>
+        ) : null}
+
+        {maxLength && (
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+          >
+            max. {maxLength} chars
+          </ThemedText>
+        )}
+      </View>
       <InputWrapper colorScheme={colorScheme}>
         <MaterialIcons
           name={textfieldIcon}

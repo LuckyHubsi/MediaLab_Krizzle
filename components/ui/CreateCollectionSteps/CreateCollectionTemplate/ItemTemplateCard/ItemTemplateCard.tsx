@@ -164,7 +164,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                   : "default"
             }
           >
-            Item Preview
+            Preview
           </ThemedText>
           {isPreview ? (
             <MaterialIcons

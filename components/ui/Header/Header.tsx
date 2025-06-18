@@ -41,7 +41,12 @@ export const Header: React.FC<HeaderProps> = ({
         accessibilityLabel="Back"
         accessibilityHint={`Goes back to the previous screen. Currently on Screen ${title}`}
         ref={headerRef}
-        style={{ flexDirection: "row", alignItems: "center", minHeight: 48 }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          minHeight: 48,
+          paddingTop: 10,
+        }}
       >
         <BackIcon name="chevron-back-outline" colorScheme={colorScheme} />
         <ThemedText fontSize="l" fontWeight="semibold">
