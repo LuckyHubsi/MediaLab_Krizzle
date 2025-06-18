@@ -66,7 +66,13 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {tags.length !== 0 && (
           <TagContainer onPress={onPress}>
-            <TagButton themeMode={colorScheme}>
+            <TagButton
+              themeMode={colorScheme}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Edit tags"
+              accessibilityHint="Opens the Tag Management page"
+            >
               <MaterialIcons
                 name="edit"
                 size={16}
@@ -76,37 +82,52 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
           </TagContainer>
         )}
 
-        {/* Mapped Tags */}
-        {tags.map((tag) => (
-          <TagContainer
-            onPress={() => handlePress(tag)}
-            key={tag.tagID}
-            activeOpacity={0.7}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={`Filter by tag ${tag.tag_label}`}
-            accessibilityState={{ selected: isActive(tag) }}
-          >
-            <TagButton active={isActive(tag)} themeMode={colorScheme}>
-              {isActive(tag) && (
-                <MaterialIcons
-                  name="check-circle"
-                  size={16}
-                  color={Colors.white}
-                  style={{ marginRight: 5 }}
-                />
-              )}
-              <TagText active={isActive(tag)} themeMode={colorScheme}>
-                {tag.tag_label}
-              </TagText>
-            </TagButton>
-          </TagContainer>
-        ))}
+        <View
+          accessible={true}
+          accessibilityRole="radiogroup"
+          accessibilityLabel="Tag Filtering Section"
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          {/* Mapped Tags */}
+          {tags.map((tag) => (
+            <TagContainer
+              onPress={() => handlePress(tag)}
+              key={tag.tagID}
+              activeOpacity={0.7}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`Filter by tag ${tag.tag_label}`}
+              accessibilityState={{ selected: isActive(tag) }}
+            >
+              <TagButton active={isActive(tag)} themeMode={colorScheme}>
+                {isActive(tag) && (
+                  <MaterialIcons
+                    name="check-circle"
+                    size={16}
+                    color={Colors.white}
+                    style={{ marginRight: 5 }}
+                  />
+                )}
+                <TagText active={isActive(tag)} themeMode={colorScheme}>
+                  {tag.tag_label}
+                </TagText>
+              </TagButton>
+            </TagContainer>
+          ))}
+        </View>
 
         {/* Fallback when empty */}
         {tags.length === 0 && (
           <TagContainer onPress={onPress}>
-            <TagButton themeMode={colorScheme}>
+            <TagButton
+              themeMode={colorScheme}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Edit tags"
+              accessibilityHint="Opens the Tag Management page"
+            >
               <MaterialIcons
                 name="edit"
                 size={16}

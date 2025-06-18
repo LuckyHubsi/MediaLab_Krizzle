@@ -475,7 +475,7 @@ export default function FolderScreen() {
                         marginBottom: 24,
                       }}
                     >
-                      {filteredPinnedWidgets.map((item) => (
+                      {filteredPinnedWidgets.map((item, index) => (
                         <Widget
                           key={item.id}
                           title={item.title}
@@ -488,6 +488,9 @@ export default function FolderScreen() {
                             setSelectedWidget(item);
                             setShowWidgetModal(true);
                           }}
+                          index={index + 1}
+                          widgetCount={filteredPinnedWidgets.length}
+                          state="folder"
                         />
                       ))}
                     </View>
@@ -557,7 +560,7 @@ export default function FolderScreen() {
                         rowGap: 16,
                       }}
                     >
-                      {filteredWidgets.map((item) => (
+                      {filteredWidgets.map((item, index) => (
                         <Widget
                           key={item.id}
                           title={item.title}
@@ -570,6 +573,9 @@ export default function FolderScreen() {
                             setSelectedWidget(item);
                             setShowWidgetModal(true);
                           }}
+                          index={index + 1}
+                          widgetCount={filteredWidgets.length}
+                          state="folder"
                         />
                       ))}
                     </View>

@@ -103,6 +103,9 @@ export default function HomeScreen() {
 
   const headerRef = useRef<View | null>(null);
 
+  const [sortAnnouncement, setSortAnnouncement] = useState("");
+  const [filterAnnouncement, setFilterAnnouncement] = useState("");
+
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -281,6 +284,73 @@ export default function HomeScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    const announce = filterAnnouncement;
+
+    if (announce) {
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(announce);
+      }
+
+      const timeout = setTimeout(() => {
+        setSortAnnouncement("");
+        setFilterAnnouncement("");
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [filterAnnouncement]);
+
+  /**
+   * effect to announce new sorting mode with screen reader.
+   */
+  useEffect(() => {
+    if (sortAnnouncement) {
+      // Android workaround
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(sortAnnouncement);
+      }
+
+      // Fallback live region announcement
+      const timeout = setTimeout(() => setSortAnnouncement(""), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [sortAnnouncement]);
+
+  /**
+   * effect to announce search result with screen reader.
+   */
+  useEffect(() => {
+    const tagText =
+      selectedTag !== "All" && typeof selectedTag === "object"
+        ? `tag "${selectedTag.tag_label}"`
+        : "";
+
+    const queryText = searchQuery ? `search query "${searchQuery}"` : "";
+    const connector = searchQuery ? "and" : "";
+
+    const filterInfo = [queryText, tagText].filter(Boolean).join(connector);
+
+    const pinnedMessage =
+      filteredPinnedWidgets.length > 0
+        ? `${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in pinned widgets.`
+        : `No entries found${filterInfo ? ` for ${filterInfo}` : ""} in pinned widgets.`;
+
+    const recentMessage =
+      filteredWidgets.length > 0
+        ? `${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in recent widgets.`
+        : `No entries found${filterInfo ? ` for ${filterInfo}` : ""} in recent widgets.`;
+
+    const fullAnnouncement = `${pinnedMessage} ${recentMessage}`;
+
+    setFilterAnnouncement(fullAnnouncement);
+  }, [
+    searchQuery,
+    selectedTag,
+    filteredWidgets.length,
+    filteredPinnedWidgets.length,
+  ]);
+
   return (
     <>
       <SafeAreaView>
@@ -329,6 +399,19 @@ export default function HomeScreen() {
                 placeholder="Search for widget title"
                 onSearch={setSearchQuery}
               />
+
+              <ThemedText
+                accessibilityLiveRegion="assertive"
+                accessible={true}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  height: 0,
+                  width: 0,
+                }}
+              >
+                {sortAnnouncement || filterAnnouncement}
+              </ThemedText>
               <TagList
                 tags={tags}
                 onSelect={(tag) => setSelectedTag(tag)}
@@ -353,7 +436,7 @@ export default function HomeScreen() {
                         fontSize="regular"
                         fontWeight="regular"
                         style={{ marginBottom: 8 }}
-                        accessibilityRole="text"
+                        accessibilityRole="header"
                         accessibilityLabel="Pinned widgets"
                       >
                         Pinned
@@ -376,7 +459,7 @@ export default function HomeScreen() {
                         marginBottom: 24,
                       }}
                     >
-                      {filteredPinnedWidgets.map((item) => (
+                      {filteredPinnedWidgets.map((item, index) => (
                         <Widget
                           key={item.id}
                           title={item.title}
@@ -389,6 +472,9 @@ export default function HomeScreen() {
                             setSelectedWidget(item);
                             setShowModal(true);
                           }}
+                          index={index + 1}
+                          widgetCount={filteredPinnedWidgets.length}
+                          state="pinned"
                         />
                       ))}
                     </View>
@@ -404,10 +490,21 @@ export default function HomeScreen() {
                       marginBottom: 8,
                     }}
                   >
-                    <ThemedText fontSize="regular" fontWeight="regular">
+                    <ThemedText
+                      fontSize="regular"
+                      fontWeight="regular"
+                      accessibilityRole="header"
+                      accessibilityLabel="Recent widgets"
+                    >
                       Recent
                     </ThemedText>
-                    <Pressable onPress={() => setShowSortModal(true)}>
+                    <Pressable
+                      onPress={() => setShowSortModal(true)}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel="Sorting modes"
+                      accessibilityHint={`Opens a menu for changing between widget sorting modes. Currently selected sorting mode ${sortingMode}`}
+                    >
                       <View
                         style={{
                           flexDirection: "row",
@@ -421,6 +518,7 @@ export default function HomeScreen() {
                         >
                           Sort by
                         </ThemedText>
+
                         <MaterialIcons
                           name="filter-list"
                           size={20}
@@ -439,7 +537,7 @@ export default function HomeScreen() {
                       rowGap: 16,
                     }}
                   >
-                    {filteredWidgets.map((item) => (
+                    {filteredWidgets.map((item, index) => (
                       <Widget
                         key={item.id}
                         title={item.title}
@@ -452,6 +550,9 @@ export default function HomeScreen() {
                           setSelectedWidget(item);
                           setShowModal(true);
                         }}
+                        index={index + 1}
+                        widgetCount={filteredWidgets.length}
+                        state="recent"
                       />
                     ))}
                   </View>
@@ -488,6 +589,9 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralModfied);
               setShowSortModal(false);
+              setSortAnnouncement(
+                "Sorting changed to: Last modified descending",
+              );
             },
           },
           {
@@ -497,6 +601,9 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralAlphabet);
               setShowSortModal(false);
+              setSortAnnouncement(
+                "Sorting changed to: Last modified descending",
+              );
             },
           },
           {
@@ -506,6 +613,9 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralCreated);
               setShowSortModal(false);
+              setSortAnnouncement(
+                "Sorting changed to: Last modified descending",
+              );
             },
           },
         ]}

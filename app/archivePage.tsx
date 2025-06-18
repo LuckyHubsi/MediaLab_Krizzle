@@ -283,7 +283,7 @@ export default function ArchiveScreen() {
                       justifyContent: "space-between",
                       marginBottom: 16,
                     }}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                       <Widget
                         title={item.title}
                         label={item.tag}
@@ -297,6 +297,9 @@ export default function ArchiveScreen() {
                           setSelectedWidget(item);
                           setShowModal(true);
                         }}
+                        index={index + 1}
+                        widgetCount={filteredWidgets.length}
+                        state="archive"
                       />
                     )}
                   />

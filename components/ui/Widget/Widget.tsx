@@ -41,6 +41,9 @@ type Props = {
   onPress?: () => void;
   onLongPress?: () => void;
   isPreview?: boolean;
+  index?: number;
+  widgetCount?: number;
+  state?: "pinned" | "recent" | "folder" | "archive";
 };
 
 const Widget: React.FC<Props> = ({
@@ -52,6 +55,9 @@ const Widget: React.FC<Props> = ({
   onPress,
   onLongPress,
   isPreview,
+  index,
+  widgetCount,
+  state,
 }) => {
   const { width } = useWindowDimensions();
   const columns = width >= 768 ? 3 : 2;
@@ -97,9 +103,9 @@ const Widget: React.FC<Props> = ({
       activeOpacity={0.85}
       onPress={onPress}
       onLongPress={handleLongPress}
-      accessibilityRole="button"
-      accessibilityLabel={`Open ${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
-      accessibilityHint="Activate to open to open. Long press for more options."
+      accessibilityRole="none"
+      accessibilityLabel={`${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
+      accessibilityHint={`${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open. Long press for more options.`}
     >
       <CardWrapper {...cardProps}>
         {isGradient && (
