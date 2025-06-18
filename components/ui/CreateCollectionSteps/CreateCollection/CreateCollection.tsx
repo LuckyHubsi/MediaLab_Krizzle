@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Keyboard, Platform, View } from "react-native";
+import { Keyboard, Platform, useWindowDimensions, View } from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import Widget from "@/components/ui/Widget/Widget";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
@@ -106,6 +106,14 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const [cardHeight, setCardHeight] = useState(0);
+
+  // Calculate screen dimensions and orientation
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isHighCard = cardHeight > height * 0.4;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
 
   // Generate color options for the ChoosePopup
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => ({
@@ -210,112 +218,251 @@ const CreateCollection: FC<CreateCollectionProps> = ({
 
   return (
     <>
-      <View style={{ marginBottom: 8 }}>
-        <Card>
-          <IconTopRight onPress={() => setShowHelp(true)}>
-            <MaterialIcons
-              name="help-outline"
-              size={26}
-              color={
-                colorScheme === "light" ? Colors.primary : Colors.secondary
-              }
-            />
-          </IconTopRight>
-          <View style={{ alignItems: "center", gap: 20 }}>
-            <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Create Collection
-              </ThemedText>
-              <ThemedText
-                fontSize="s"
-                fontWeight="light"
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                Design your new collection's widget
-              </ThemedText>
+      {isSmallScreen || isHighCard ? (
+        <>
+          <ScrollContainer showsVerticalScrollIndicator={false}>
+            <View style={{ marginBottom: 20 }}>
+              <Card>
+                <IconTopRight onPress={() => setShowHelp(true)}>
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={
+                      colorScheme === "light"
+                        ? Colors.primary
+                        : Colors.secondary
+                    }
+                  />
+                </IconTopRight>
+                <View style={{ alignItems: "center", gap: 20 }}>
+                  <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+                    <ThemedText fontSize="l" fontWeight="bold">
+                      Create Collection
+                    </ThemedText>
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="light"
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      Design your new collection's widget
+                    </ThemedText>
+                  </View>
+                  <Widget
+                    title={title || "Title"}
+                    label={selectedTag?.tag_label?.trim() || ""}
+                    pageType={PageType.Collection}
+                    icon={
+                      selectedIcon ? (
+                        <MaterialIcons
+                          name={selectedIcon}
+                          size={22}
+                          color="black"
+                        />
+                      ) : undefined
+                    }
+                    color={getWidgetColorKey(selectedColor) ?? "blue"}
+                    isPreview={true}
+                  />
+                </View>
+              </Card>
             </View>
-            <Widget
-              title={title || "Title"}
-              label={selectedTag?.tag_label?.trim() || ""}
-              pageType={PageType.Collection}
-              icon={
-                selectedIcon ? (
-                  <MaterialIcons name={selectedIcon} size={22} color="black" />
-                ) : undefined
-              }
-              color={getWidgetColorKey(selectedColor) ?? "blue"}
-              isPreview={true}
-            />
+
+            <ContentWrapper>
+              <Card>
+                <TitleCard
+                  placeholder="Add a title"
+                  value={title}
+                  onChangeText={(text) => {
+                    setData((prev: any) => ({ ...prev, title: text }));
+                  }}
+                  hasNoInputError={
+                    hasClickedNext && (!data.title || data.title.trim() === "")
+                  }
+                />
+                {/* Display error message if title is empty or only whitespace */}
+                {titleError && (
+                  <ThemedText
+                    fontSize="s"
+                    colorVariant="red"
+                    style={{ marginTop: 5 }}
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
+              </Card>
+
+              <DividerWithLabel label="optional" iconName="arrow-back" />
+
+              <Card>
+                <TagPicker
+                  tags={tags}
+                  selectedTag={selectedTag}
+                  onSelectTag={(tag) => {
+                    setData((prev: any) => ({
+                      ...prev,
+                      selectedTag:
+                        tag && prev.selectedTag?.tagID === tag.tagID
+                          ? null
+                          : tag,
+                    }));
+                  }}
+                  onViewAllPress={() => router.navigate("/tagManagement")}
+                />
+              </Card>
+
+              <TwoColumnRow>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedColorLabel}
+                    selectedColor={selectedColor}
+                    onPress={() => {
+                      setPopupType("color");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedIconLabel}
+                    selectedColor={Colors[colorScheme].cardBackground}
+                    selectedIcon={selectedIcon}
+                    onPress={() => {
+                      setPopupType("icon");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
+              </TwoColumnRow>
+            </ContentWrapper>
+          </ScrollContainer>
+        </>
+      ) : (
+        <>
+          <View
+            style={{ marginBottom: 8 }}
+            onLayout={(event) => {
+              const { height } = event.nativeEvent.layout;
+              setCardHeight(height);
+            }}
+          >
+            <Card>
+              <IconTopRight onPress={() => setShowHelp(true)}>
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={
+                    colorScheme === "light" ? Colors.primary : Colors.secondary
+                  }
+                />
+              </IconTopRight>
+              <View style={{ alignItems: "center", gap: 20 }}>
+                <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+                  <ThemedText fontSize="l" fontWeight="bold">
+                    Create Collection
+                  </ThemedText>
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="light"
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    Design your new collection's widget
+                  </ThemedText>
+                </View>
+                <Widget
+                  title={title || "Title"}
+                  label={selectedTag?.tag_label?.trim() || ""}
+                  pageType={PageType.Collection}
+                  icon={
+                    selectedIcon ? (
+                      <MaterialIcons
+                        name={selectedIcon}
+                        size={22}
+                        color="black"
+                      />
+                    ) : undefined
+                  }
+                  color={getWidgetColorKey(selectedColor) ?? "blue"}
+                  isPreview={true}
+                />
+              </View>
+            </Card>
           </View>
-        </Card>
-      </View>
-      <ScrollContainer showsVerticalScrollIndicator={false}>
-        <ContentWrapper>
-          <Card>
-            <TitleCard
-              placeholder="Add a title"
-              value={title}
-              onChangeText={(text) => {
-                setData((prev: any) => ({ ...prev, title: text }));
-              }}
-              hasNoInputError={
-                hasClickedNext && (!data.title || data.title.trim() === "")
-              }
-            />
-            {/* Display error message if title is empty or only whitespace */}
-            {titleError && (
-              <ThemedText
-                fontSize="s"
-                colorVariant="red"
-                style={{ marginTop: 5 }}
-              >
-                {titleError}
-              </ThemedText>
-            )}
-          </Card>
+          <ScrollContainer showsVerticalScrollIndicator={false}>
+            <ContentWrapper>
+              <Card>
+                <TitleCard
+                  placeholder="Add a title"
+                  value={title}
+                  onChangeText={(text) => {
+                    setData((prev: any) => ({ ...prev, title: text }));
+                  }}
+                  hasNoInputError={
+                    hasClickedNext && (!data.title || data.title.trim() === "")
+                  }
+                />
+                {/* Display error message if title is empty or only whitespace */}
+                {titleError && (
+                  <ThemedText
+                    fontSize="s"
+                    colorVariant="red"
+                    style={{ marginTop: 5 }}
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
+              </Card>
 
-          <DividerWithLabel label="optional" iconName="arrow-back" />
+              <DividerWithLabel label="optional" iconName="arrow-back" />
 
-          <Card>
-            <TagPicker
-              tags={tags}
-              selectedTag={selectedTag}
-              onSelectTag={(tag) => {
-                setData((prev: any) => ({
-                  ...prev,
-                  selectedTag:
-                    tag && prev.selectedTag?.tagID === tag.tagID ? null : tag,
-                }));
-              }}
-              onViewAllPress={() => router.navigate("/tagManagement")}
-            />
-          </Card>
+              <Card>
+                <TagPicker
+                  tags={tags}
+                  selectedTag={selectedTag}
+                  onSelectTag={(tag) => {
+                    setData((prev: any) => ({
+                      ...prev,
+                      selectedTag:
+                        tag && prev.selectedTag?.tagID === tag.tagID
+                          ? null
+                          : tag,
+                    }));
+                  }}
+                  onViewAllPress={() => router.navigate("/tagManagement")}
+                />
+              </Card>
 
-          <TwoColumnRow>
-            <View style={{ flex: 1 }}>
-              <ChooseCard
-                label={selectedColorLabel}
-                selectedColor={selectedColor}
-                onPress={() => {
-                  setPopupType("color");
-                  setPopupVisible(true);
-                }}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <ChooseCard
-                label={selectedIconLabel}
-                selectedColor={Colors[colorScheme].cardBackground}
-                selectedIcon={selectedIcon}
-                onPress={() => {
-                  setPopupType("icon");
-                  setPopupVisible(true);
-                }}
-              />
-            </View>
-          </TwoColumnRow>
-        </ContentWrapper>
-      </ScrollContainer>
+              <TwoColumnRow>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedColorLabel}
+                    selectedColor={selectedColor}
+                    onPress={() => {
+                      setPopupType("color");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedIconLabel}
+                    selectedColor={Colors[colorScheme].cardBackground}
+                    selectedIcon={selectedIcon}
+                    onPress={() => {
+                      setPopupType("icon");
+                      setPopupVisible(true);
+                    }}
+                  />
+                </View>
+              </TwoColumnRow>
+            </ContentWrapper>
+          </ScrollContainer>
+        </>
+      )}
+
       {/* Render the lists and templates if they exist */}
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View
