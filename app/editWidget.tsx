@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { View, ScrollView, Keyboard } from "react-native";
+import { View, ScrollView, Keyboard, useWindowDimensions } from "react-native";
 import Widget from "@/components/ui/Widget/Widget";
 import { Card } from "@/components/ui/Card/Card";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
@@ -51,12 +51,17 @@ export default function EditWidgetScreen() {
   const { showSnackbar } = useSnackbar();
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const [cardHeight, setCardHeight] = useState(0);
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isHighCard = cardHeight > height * 0.4;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
     : "Choose Icon";
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => {
     const label = colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key;
-
     /**
      * Maps widget colors to a standardized format for the color picker.
      */
@@ -312,113 +317,252 @@ export default function EditWidgetScreen() {
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
       topPadding={Platform.select({ ios: 0, android: 15 })}
     >
-      <View style={{ marginBottom: 8 }}>
-        <Card>
-          <View style={{ alignItems: "center", gap: 20 }}>
-            <View style={{ alignItems: "center" }}>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Edit Widget
-              </ThemedText>
-              <ThemedText
-                fontSize="s"
-                fontWeight="light"
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                Change the appearance of your widget
-              </ThemedText>
+      {isSmallScreen || isHighCard ? (
+        <>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 75 }}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={{ marginBottom: 20 }}>
+              <Card>
+                <View style={{ alignItems: "center", gap: 20 }}>
+                  <View style={{ alignItems: "center" }}>
+                    <ThemedText fontSize="l" fontWeight="bold">
+                      Edit Widget
+                    </ThemedText>
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="light"
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      Change the appearance of your widget
+                    </ThemedText>
+                  </View>
+                  <Widget
+                    title={title || "Title"}
+                    label={selectedTag?.tag_label?.trim() || ""}
+                    pageType={pageType}
+                    icon={
+                      selectedIcon ? (
+                        <MaterialIcons
+                          name={selectedIcon}
+                          size={22}
+                          color="black"
+                        />
+                      ) : undefined
+                    }
+                    color={
+                      (getWidgetColorKey(
+                        selectedColor,
+                      ) as keyof typeof Colors.widget) || Colors.primary
+                    }
+                    isPreview={true}
+                  />
+                </View>
+              </Card>
             </View>
-            <Widget
-              title={title || "Title"}
-              label={selectedTag?.tag_label?.trim() || ""}
-              pageType={pageType}
-              icon={
-                selectedIcon ? (
-                  <MaterialIcons name={selectedIcon} size={22} color="black" />
-                ) : undefined
-              }
-              color={
-                (getWidgetColorKey(
-                  selectedColor,
-                ) as keyof typeof Colors.widget) || Colors.primary
-              }
-              isPreview={true}
-            />
-          </View>
-        </Card>
-      </View>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 75 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
-          <View style={{ width: "100%", gap: 20 }}>
-            <Card>
-              <TitleCard
-                placeholder="Add a title"
-                value={title}
-                onChangeText={(text) => {
-                  setTitle(text);
-                  if (text.trim().length > 0) setTitleError(null); // clear error while typing
-                }}
-              />
-              {titleError && (
-                <ThemedText
+
+            <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+              <View style={{ width: "100%", gap: 20 }}>
+                <Card>
+                  <TitleCard
+                    placeholder="Add a title"
+                    value={title}
+                    onChangeText={(text) => {
+                      setTitle(text);
+                      if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                    }}
+                  />
+                  {titleError && (
+                    <ThemedText
+                      style={{
+                        marginTop: 5,
+                      }}
+                      fontSize="s"
+                      colorVariant="red"
+                    >
+                      {titleError}
+                    </ThemedText>
+                  )}
+                </Card>
+                <DividerWithLabel label="optional" iconName="arrow-back" />
+                <Card>
+                  <TagPicker
+                    tags={tags}
+                    selectedTag={selectedTag}
+                    onSelectTag={(tag) => {
+                      setSelectedTag((prevTag) =>
+                        prevTag === tag ? null : tag,
+                      );
+                    }}
+                    onViewAllPress={() => router.navigate("/tagManagement")}
+                  />
+                </Card>
+
+                <View
                   style={{
-                    marginTop: 5,
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    gap: 15,
                   }}
-                  fontSize="s"
-                  colorVariant="red"
                 >
-                  {titleError}
-                </ThemedText>
-              )}
-            </Card>
-            <DividerWithLabel label="optional" iconName="arrow-back" />
-            <Card>
-              <TagPicker
-                tags={tags}
-                selectedTag={selectedTag}
-                onSelectTag={(tag) => {
-                  setSelectedTag((prevTag) => (prevTag === tag ? null : tag));
-                }}
-                onViewAllPress={() => router.navigate("/tagManagement")}
-              />
-            </Card>
+                  <View style={{ flex: 1 }}>
+                    <ChooseCard
+                      label={selectedColorLabel}
+                      selectedColor={selectedColor}
+                      onPress={() => {
+                        setPopupType("color");
+                        setPopupVisible(true);
+                      }}
+                    />
+                  </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                gap: 15,
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <ChooseCard
-                  label={selectedColorLabel}
-                  selectedColor={selectedColor}
-                  onPress={() => {
-                    setPopupType("color");
-                    setPopupVisible(true);
-                  }}
-                />
-              </View>
-
-              <View style={{ flex: 1 }}>
-                <ChooseCard
-                  label={selectedIconLabel}
-                  selectedColor={Colors[colorScheme].cardBackground}
-                  selectedIcon={selectedIcon ?? undefined}
-                  onPress={() => {
-                    setPopupType("icon");
-                    setPopupVisible(true);
-                  }}
-                />
+                  <View style={{ flex: 1 }}>
+                    <ChooseCard
+                      label={selectedIconLabel}
+                      selectedColor={Colors[colorScheme].cardBackground}
+                      selectedIcon={selectedIcon ?? undefined}
+                      onPress={() => {
+                        setPopupType("icon");
+                        setPopupVisible(true);
+                      }}
+                    />
+                  </View>
+                </View>
               </View>
             </View>
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          <View
+            style={{ marginBottom: 8 }}
+            onLayout={(event) => {
+              const { height } = event.nativeEvent.layout;
+              setCardHeight(height);
+            }}
+          >
+            <Card>
+              <View style={{ alignItems: "center", gap: 20 }}>
+                <View style={{ alignItems: "center" }}>
+                  <ThemedText fontSize="l" fontWeight="bold">
+                    Edit Widget
+                  </ThemedText>
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="light"
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    Change the appearance of your widget
+                  </ThemedText>
+                </View>
+                <Widget
+                  title={title || "Title"}
+                  label={selectedTag?.tag_label?.trim() || ""}
+                  pageType={pageType}
+                  icon={
+                    selectedIcon ? (
+                      <MaterialIcons
+                        name={selectedIcon}
+                        size={22}
+                        color="black"
+                      />
+                    ) : undefined
+                  }
+                  color={
+                    (getWidgetColorKey(
+                      selectedColor,
+                    ) as keyof typeof Colors.widget) || Colors.primary
+                  }
+                  isPreview={true}
+                />
+              </View>
+            </Card>
           </View>
-        </View>
-      </ScrollView>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 75 }}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={{ flex: 1, alignItems: "center", gap: 20 }}>
+              <View style={{ width: "100%", gap: 20 }}>
+                <Card>
+                  <TitleCard
+                    placeholder="Add a title"
+                    value={title}
+                    onChangeText={(text) => {
+                      setTitle(text);
+                      if (text.trim().length > 0) setTitleError(null); // clear error while typing
+                    }}
+                  />
+                  {titleError && (
+                    <ThemedText
+                      style={{
+                        marginTop: 5,
+                      }}
+                      fontSize="s"
+                      colorVariant="red"
+                    >
+                      {titleError}
+                    </ThemedText>
+                  )}
+                </Card>
+                <DividerWithLabel label="optional" iconName="arrow-back" />
+                <Card>
+                  <TagPicker
+                    tags={tags}
+                    selectedTag={selectedTag}
+                    onSelectTag={(tag) => {
+                      setSelectedTag((prevTag) =>
+                        prevTag === tag ? null : tag,
+                      );
+                    }}
+                    onViewAllPress={() => router.navigate("/tagManagement")}
+                  />
+                </Card>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    gap: 15,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <ChooseCard
+                      label={selectedColorLabel}
+                      selectedColor={selectedColor}
+                      onPress={() => {
+                        setPopupType("color");
+                        setPopupVisible(true);
+                      }}
+                    />
+                  </View>
+
+                  <View style={{ flex: 1 }}>
+                    <ChooseCard
+                      label={selectedIconLabel}
+                      selectedColor={Colors[colorScheme].cardBackground}
+                      selectedIcon={selectedIcon ?? undefined}
+                      onPress={() => {
+                        setPopupType("icon");
+                        setPopupVisible(true);
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </>
+      )}
+
+      {/* Bottom buttons are only shown if the keyboard is not visible on Android */}
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View
           style={{
