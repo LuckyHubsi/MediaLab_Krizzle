@@ -74,15 +74,6 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   };
 
   /**
-   * Handles clearing the selected image and alt text.
-   */
-  const handleClearImage = () => {
-    onChange("");
-    onAltTextChange("");
-    setShowAltTextField(false);
-  };
-
-  /**
    * Effect to show the alt text field if altText is provided.
    */
   useEffect(() => {
@@ -136,7 +127,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
       ) : (
         <>
           <ImagePreview source={{ uri: value }} resizeMode="cover" />
-          <DeleteButton onPress={handleClearImage} colorScheme={colorScheme}>
+          <DeleteButton onPress={() => onChange("")} colorScheme={colorScheme}>
             <MaterialIcons
               name="delete"
               size={20}
