@@ -42,7 +42,7 @@ export const Colors = {
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
     textFieldBorder: "#585858",
     placeholder: "#585858",
-    disabled: "#ABABAB",
+    disabled: "#585858",
     negative: "#DF0534",
   },
   dark: {
@@ -68,7 +68,7 @@ export const Colors = {
     ToolbarBarButtonBackgroundDisabled: "#FBFBFB",
     textFieldBorder: "#ffffff",
     placeholder: "#ABABAB",
-    disabled: "#585858",
+    disabled: "#ABABAB",
     negative: "#FF4949",
   },
   widget: {

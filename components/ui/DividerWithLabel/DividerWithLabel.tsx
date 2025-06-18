@@ -7,8 +7,8 @@ import {
 } from "./DividerWithLabel.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+import { Colors } from "@/constants/Colors";
 
 /**
  * Component for rendering a divider with an optional label and icon.
@@ -28,7 +28,7 @@ export const DividerWithLabel = ({
   const colorScheme = useActiveColorScheme();
   return (
     <DividerContainer>
-      <DividerLine />
+      <DividerLine colorScheme={colorScheme} />
       <LabelWrapper>
         {iconName && (
           <View
@@ -58,7 +58,7 @@ export const DividerWithLabel = ({
           </ThemedText>
         )}
       </LabelWrapper>
-      <DividerLine />
+      <DividerLine colorScheme={colorScheme} />
     </DividerContainer>
   );
 };

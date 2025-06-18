@@ -108,7 +108,7 @@ export default function QuickActionModal({
               <ModalBox colorScheme={colorScheme}>
                 {items.map((item, index) => {
                   const textColorVariant = item.disabled
-                    ? "disabled"
+                    ? "greyScale"
                     : item.danger
                       ? "red"
                       : "default";

@@ -64,7 +64,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                 <StyledTextInput
                   colorScheme={colorScheme}
                   placeholder={placeholderText}
-                  placeholderTextColor="#999"
+                  placeholderTextColor={Colors[colorScheme].disabled}
                   value={value}
                   onChangeText={onChangeText}
                   onSubmitEditing={onSubmit}
@@ -86,7 +86,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                   <MaterialIcons
                     name="arrow-upward"
                     size={24}
-                    color={Colors[colorScheme].text}
+                    color={Colors[colorScheme].disabled}
                   />
                 </TouchableOpacity>
               </ModalContent>
