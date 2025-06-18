@@ -126,7 +126,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
       <TouchableOpacity
         onPress={handleBackPress}
         accessibilityRole="button"
-        accessibilityLabel={`Back Navigation Button. Currently on page ${title} ${subtitle ? `in list ${subtitle}` : ""}`}
+        accessibilityLabel={`Back. Currently on page ${title} ${subtitle ? `in list ${subtitle}` : ""}`}
         accessibilityHint={getAccessibilityHint()}
         ref={headerRef}
         style={{

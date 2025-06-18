@@ -104,8 +104,8 @@ const Widget: React.FC<Props> = ({
       onPress={onPress}
       onLongPress={handleLongPress}
       accessibilityRole="none"
-      accessibilityLabel={`${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
-      accessibilityHint={`${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open. Long press for more options.`}
+      accessibilityLabel={`${pageType} ${title}. ${label != "" ? "tag " + label : ""}, ${iconName != "unknown icon" ? iconName + " icon" : ""}, color ${color}`}
+      accessibilityHint={`${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open.`}
       style={{ overflow: "hidden" }}
     >
       <CardWrapper {...cardProps}>

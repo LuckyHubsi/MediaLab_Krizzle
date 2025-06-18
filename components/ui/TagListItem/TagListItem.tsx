@@ -35,24 +35,16 @@ export const TagListItem: React.FC<Props> = ({
 
   return (
     <Row>
-      <Column
-        style={{ marginLeft: 14 }}
-        accessible={true}
-        accessibilityLabel={`Tag labelled ${tag}.`}
-        accessibilityHint={
-          tagCount !== undefined && tagCount > 0
-            ? `Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`
-            : "Unused"
-        }
-        accessibilityRole="text"
-        importantForAccessibility="yes"
-      >
+      <Column style={{ marginLeft: 14 }}>
         <ThemedText
           style={{
             flexWrap: "wrap",
             flexShrink: 1,
           }}
-          accessible={false}
+          accessible={true}
+          accessibilityLabel={`Tag labelled ${tag}.`}
+          accessibilityRole="text"
+          importantForAccessibility="yes"
         >
           {tag}
         </ThemedText>
@@ -61,15 +53,9 @@ export const TagListItem: React.FC<Props> = ({
             fontSize="s"
             fontWeight="light"
             colorVariant="greyScale"
-            accessible={false}
           >{`Used in ${tagCount} ${tagCount === 1 ? "Widget" : "Widgets"}`}</ThemedText>
         ) : !tagCountLoading ? null : (
-          <ThemedText
-            fontSize="s"
-            fontWeight="light"
-            colorVariant="greyScale"
-            accessible={false}
-          >
+          <ThemedText fontSize="s" fontWeight="light" colorVariant="greyScale">
             Unused
           </ThemedText>
         )}

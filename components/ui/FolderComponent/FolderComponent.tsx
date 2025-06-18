@@ -51,8 +51,8 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       style={{ overflow: "hidden" }}
       accessible={true}
       accessibilityRole="none"
-      accessibilityLabel={`Folder named ${title}`}
-      accessibilityHint={`Folder currently holds ${itemCount === 0 ? "no widgets" : itemCount === 1 ? "one widget" : `${itemCount} widgets`}. Activate to open or long press for more options.`}
+      accessibilityLabel={`Folder: ${title}`}
+      accessibilityHint={`Currently holds ${itemCount === 0 ? "no widgets" : itemCount === 1 ? "one widget" : `${itemCount} widgets`}. Activate to open.`}
     >
       <FolderContainer cardWidth={cardWidth}>
         <FolderShape />

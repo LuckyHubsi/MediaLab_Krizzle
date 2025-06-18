@@ -19,7 +19,7 @@ const FAQSection = () => {
             accessible={true}
             accessibilityRole="text"
             accessibilityLabel="FAQ page"
-            accessibilityHint="This page containes answers to the most frequently asked questions about Krizzle!"
+            accessibilityHint="Here are all my answers to the most frequently asked questions about Krizzle!"
           />
         </ImageContainer>
         <CardsContainer>
