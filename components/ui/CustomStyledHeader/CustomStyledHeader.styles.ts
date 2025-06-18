@@ -48,9 +48,9 @@ export const BackIcon = styled(Ionicons)<{
 
 export const Icon = styled(Ionicons)<ColorSchemeProps>`
   font-size: 24px;
+  padding: 12px;
   color: ${({ colorScheme }: ColorSchemeProps) =>
     colorScheme === "light" ? Colors.black : Colors.white};
-  margin: 6px;
 `;
 export const IconContainer = styled.View`
   flex-direction: row;

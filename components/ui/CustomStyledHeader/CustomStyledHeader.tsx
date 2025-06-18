@@ -176,6 +176,9 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
             borderRadius: 8,
             padding: 2,
           }}
+          accessibilityRole="none"
+          accessibilityLabel={`Widget Icon ${leftIconName}`}
+          accessibilityHint="Opens a modal for actions available on this page"
         />
       )}
       {/* Optional right icon */}
@@ -183,6 +186,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         {iconName && onIconPress && (
           <Icon
             onPress={onIconPress}
+            accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Page Menu"
             accessibilityHint="Opens a modal for actions available on this page"
@@ -195,12 +199,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           </Icon>
         )}
         {iconName2 && onIconMenuPress && (
-          <Icon
-            onPress={onIconMenuPress}
-            accessibilityRole="button"
-            accessibilityLabel="Page Menu"
-            accessibilityHint="Opens a modal for actions available on this page"
-          >
+          <Icon onPress={onIconMenuPress}>
             <MaterialIcons
               name={iconName2}
               size={24}
