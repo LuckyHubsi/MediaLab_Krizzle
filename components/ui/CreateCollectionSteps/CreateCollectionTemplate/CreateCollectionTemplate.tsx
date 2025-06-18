@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import {
@@ -53,6 +54,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [cardHeight, setCardHeight] = useState(0);
 
   const cards = data.templates;
   const titleCard = cards[0];
@@ -61,6 +63,12 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   const maxPreviewCount = 2;
   const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
 
+  // Calculate screen dimensions and orientation
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isHighCard = cardHeight > height * 0.3;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
   /**
    * Effect to hide and show the keyboard visibility state on Android.
    */
@@ -289,149 +297,341 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
 
   return (
     <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
-      >
-        <View style={{ gap: 10, paddingBottom: 10 }}>
-          <Card>
-            <IconTopRight onPress={() => setShowHelp(true)}>
-              <MaterialIcons
-                name="help-outline"
-                size={26}
-                color={
-                  colorScheme === "light" ? Colors.primary : Colors.secondary
-                }
-              />
-            </IconTopRight>
-            <CardText>
-              <CardHeader>
-                <ThemedText fontSize="l" fontWeight="bold">
-                  Add Template
-                </ThemedText>
-              </CardHeader>
-              <ThemedText
-                fontSize="s"
-                fontWeight="light"
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                Create a Template for your Collection Items.
-              </ThemedText>
-            </CardText>
-          </Card>
-
-          <ItemCountContainer>
-            <ItemCount colorScheme={colorScheme}>
-              <ThemedText colorVariant={cards.length < 10 ? "primary" : "red"}>
-                {otherCards.length + 1}
-              </ThemedText>
-              <ThemedText
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                /10 Fields
-              </ThemedText>
-            </ItemCount>
-            <ItemCount colorScheme={colorScheme}>
-              <ThemedText colorVariant={previewCount <= 2 ? "primary" : "red"}>
-                {Math.min(previewCount, 3)}
-              </ThemedText>
-              <ThemedText
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                /3 Preview
-              </ThemedText>
-            </ItemCount>
-          </ItemCountContainer>
-        </View>
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {titleCard && (
-            <ItemTemplateCard
-              isTitleCard
-              itemType={titleCard.itemType}
-              textfieldIcon={getIconForType(titleCard.itemType)}
-              isPreview
-              title={titleCard.title}
-              onTitleChange={(text) => handleTitleChange(titleCard.id, text)}
-              hasNoInputError={
-                hasClickedNext &&
-                (!titleCard.title || titleCard.title.trim() === "")
-              }
-            />
-          )}
-
-          <ThemedText
-            colorVariant="greyScale"
-            style={{ marginLeft: 10, marginTop: 10 }}
+      {isSmallScreen || isHighCard ? (
+        <>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
           >
-            Your Additional Fields:
-          </ThemedText>
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={{ gap: 10, paddingBottom: 10 }}>
+                <Card>
+                  <IconTopRight onPress={() => setShowHelp(true)}>
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                    />
+                  </IconTopRight>
+                  <CardText>
+                    <CardHeader>
+                      <ThemedText fontSize="l" fontWeight="bold">
+                        Add Template
+                      </ThemedText>
+                    </CardHeader>
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="light"
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      Create a Template for your Collection Items.
+                    </ThemedText>
+                  </CardText>
+                </Card>
 
-          {otherCards.map((card, index) => {
-            const trimmedOptions = (card.options ?? []).map((o) => o.trim());
-            const lowerTrimmedOptions = trimmedOptions
-              .map((o) => o.toLowerCase())
-              .filter((o) => o !== "");
+                <ItemCountContainer>
+                  <ItemCount colorScheme={colorScheme}>
+                    <ThemedText
+                      colorVariant={cards.length < 10 ? "primary" : "red"}
+                    >
+                      {otherCards.length + 1}
+                    </ThemedText>
+                    <ThemedText
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      /10 Fields
+                    </ThemedText>
+                  </ItemCount>
+                  <ItemCount colorScheme={colorScheme}>
+                    <ThemedText
+                      colorVariant={previewCount <= 2 ? "primary" : "red"}
+                    >
+                      {Math.min(previewCount, 3)}
+                    </ThemedText>
+                    <ThemedText
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      /3 Preview
+                    </ThemedText>
+                  </ItemCount>
+                </ItemCountContainer>
+              </View>
 
-            const hasEmptyOption =
-              card.itemType === "multi-select" &&
-              (trimmedOptions.length === 0 ||
-                trimmedOptions.some((o) => o === ""));
+              {titleCard && (
+                <ItemTemplateCard
+                  isTitleCard
+                  itemType={titleCard.itemType}
+                  textfieldIcon={getIconForType(titleCard.itemType)}
+                  isPreview
+                  title={titleCard.title}
+                  onTitleChange={(text) =>
+                    handleTitleChange(titleCard.id, text)
+                  }
+                  hasNoInputError={
+                    hasClickedNext &&
+                    (!titleCard.title || titleCard.title.trim() === "")
+                  }
+                />
+              )}
 
-            const hasDuplicates =
-              card.itemType === "multi-select" &&
-              new Set(lowerTrimmedOptions).size !== lowerTrimmedOptions.length;
+              <ThemedText
+                colorVariant="greyScale"
+                style={{ marginLeft: 10, marginTop: 10 }}
+              >
+                Your Additional Fields:
+              </ThemedText>
 
-            const noSelectables =
-              card.itemType === "multi-select" && trimmedOptions.length === 0;
+              {otherCards.map((card, index) => {
+                const trimmedOptions = (card.options ?? []).map((o) =>
+                  o.trim(),
+                );
+                const lowerTrimmedOptions = trimmedOptions
+                  .map((o) => o.toLowerCase())
+                  .filter((o) => o !== "");
 
-            return (
-              <ItemTemplateCard
-                key={card.id}
-                isTitleCard={false}
-                isPreview={card.isPreview}
-                itemType={card.itemType}
-                textfieldIcon={getIconForType(card.itemType)}
-                title={card.title}
-                rating={card.rating}
-                options={card.options}
-                onTypeChange={(newType) => handleTypeChange(card.id, newType)}
-                onTitleChange={(text) => handleTitleChange(card.id, text)}
-                onRatingChange={(newRating) =>
-                  handleRatingChange(card.id, newRating)
-                }
-                onOptionsChange={(newOptions) =>
-                  handleOptionsChange(card.id, newOptions)
-                }
-                onRemove={() => handleRemoveCard(card.id)}
-                onPreviewToggle={() => handlePreviewToggle(card.id)}
-                hasNoInputError={
-                  hasClickedNext && (!card.title || card.title.trim() === "")
-                }
-                hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
-                noSelectablesError={hasClickedNext && noSelectables}
-                hasClickedNext={hasClickedNext} // ← 🔥 THIS IS THE CRUCIAL PART
-                previewCount={previewCount}
-                fieldCount={index + 2}
-              />
-            );
-          })}
+                const hasEmptyOption =
+                  card.itemType === "multi-select" &&
+                  (trimmedOptions.length === 0 ||
+                    trimmedOptions.some((o) => o === ""));
 
-          <View style={{ paddingTop: 10 }}>
-            <AddButton
-              onPress={() => {
-                handleAddCard();
-                setHasClickedNext(false);
+                const hasDuplicates =
+                  card.itemType === "multi-select" &&
+                  new Set(lowerTrimmedOptions).size !==
+                    lowerTrimmedOptions.length;
+
+                const noSelectables =
+                  card.itemType === "multi-select" &&
+                  trimmedOptions.length === 0;
+
+                return (
+                  <ItemTemplateCard
+                    key={card.id}
+                    isTitleCard={false}
+                    isPreview={card.isPreview}
+                    itemType={card.itemType}
+                    textfieldIcon={getIconForType(card.itemType)}
+                    title={card.title}
+                    rating={card.rating}
+                    options={card.options}
+                    onTypeChange={(newType) =>
+                      handleTypeChange(card.id, newType)
+                    }
+                    onTitleChange={(text) => handleTitleChange(card.id, text)}
+                    onRatingChange={(newRating) =>
+                      handleRatingChange(card.id, newRating)
+                    }
+                    onOptionsChange={(newOptions) =>
+                      handleOptionsChange(card.id, newOptions)
+                    }
+                    onRemove={() => handleRemoveCard(card.id)}
+                    onPreviewToggle={() => handlePreviewToggle(card.id)}
+                    hasNoInputError={
+                      hasClickedNext &&
+                      (!card.title || card.title.trim() === "")
+                    }
+                    hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
+                    noSelectablesError={hasClickedNext && noSelectables}
+                    hasClickedNext={hasClickedNext} // ← 🔥 THIS IS THE CRUCIAL PART
+                    previewCount={previewCount}
+                    fieldCount={index + 2}
+                  />
+                );
+              })}
+
+              <View style={{ paddingTop: 10 }}>
+                <AddButton
+                  onPress={() => {
+                    handleAddCard();
+                    setHasClickedNext(false);
+                  }}
+                  isDisabled={otherCards.length >= 9}
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </>
+      ) : (
+        <>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
+          >
+            <View
+              style={{ gap: 10, paddingBottom: 10 }}
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                setCardHeight(height);
               }}
-              isDisabled={otherCards.length >= 9}
-            />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            >
+              <Card>
+                <IconTopRight onPress={() => setShowHelp(true)}>
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={
+                      colorScheme === "light"
+                        ? Colors.primary
+                        : Colors.secondary
+                    }
+                  />
+                </IconTopRight>
+                <CardText>
+                  <CardHeader>
+                    <ThemedText fontSize="l" fontWeight="bold">
+                      Add Template
+                    </ThemedText>
+                  </CardHeader>
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="light"
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    Create a Template for your Collection Items.
+                  </ThemedText>
+                </CardText>
+              </Card>
 
+              <ItemCountContainer>
+                <ItemCount colorScheme={colorScheme}>
+                  <ThemedText
+                    colorVariant={cards.length < 10 ? "primary" : "red"}
+                  >
+                    {otherCards.length + 1}
+                  </ThemedText>
+                  <ThemedText
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    /10 Fields
+                  </ThemedText>
+                </ItemCount>
+                <ItemCount colorScheme={colorScheme}>
+                  <ThemedText
+                    colorVariant={previewCount <= 2 ? "primary" : "red"}
+                  >
+                    {Math.min(previewCount, 3)}
+                  </ThemedText>
+                  <ThemedText
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    /3 Preview
+                  </ThemedText>
+                </ItemCount>
+              </ItemCountContainer>
+            </View>
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 80, gap: 10 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {titleCard && (
+                <ItemTemplateCard
+                  isTitleCard
+                  itemType={titleCard.itemType}
+                  textfieldIcon={getIconForType(titleCard.itemType)}
+                  isPreview
+                  title={titleCard.title}
+                  onTitleChange={(text) =>
+                    handleTitleChange(titleCard.id, text)
+                  }
+                  hasNoInputError={
+                    hasClickedNext &&
+                    (!titleCard.title || titleCard.title.trim() === "")
+                  }
+                />
+              )}
+
+              <ThemedText
+                colorVariant="greyScale"
+                style={{ marginLeft: 10, marginTop: 10 }}
+              >
+                Your Additional Fields:
+              </ThemedText>
+
+              {otherCards.map((card, index) => {
+                const trimmedOptions = (card.options ?? []).map((o) =>
+                  o.trim(),
+                );
+                const lowerTrimmedOptions = trimmedOptions
+                  .map((o) => o.toLowerCase())
+                  .filter((o) => o !== "");
+
+                const hasEmptyOption =
+                  card.itemType === "multi-select" &&
+                  (trimmedOptions.length === 0 ||
+                    trimmedOptions.some((o) => o === ""));
+
+                const noSelectables =
+                  card.itemType === "multi-select" &&
+                  trimmedOptions.length === 0;
+
+                return (
+                  <ItemTemplateCard
+                    key={card.id}
+                    isTitleCard={false}
+                    isPreview={card.isPreview}
+                    itemType={card.itemType}
+                    textfieldIcon={getIconForType(card.itemType)}
+                    title={card.title}
+                    rating={card.rating}
+                    options={card.options}
+                    onTypeChange={(newType) =>
+                      handleTypeChange(card.id, newType)
+                    }
+                    onTitleChange={(text) => handleTitleChange(card.id, text)}
+                    onRatingChange={(newRating) =>
+                      handleRatingChange(card.id, newRating)
+                    }
+                    onOptionsChange={(newOptions) =>
+                      handleOptionsChange(card.id, newOptions)
+                    }
+                    onRemove={() => handleRemoveCard(card.id)}
+                    onPreviewToggle={() => handlePreviewToggle(card.id)}
+                    hasNoInputError={
+                      hasClickedNext &&
+                      (!card.title || card.title.trim() === "")
+                    }
+                    hasNoMultiSelectableError={hasClickedNext && hasEmptyOption}
+                    noSelectablesError={hasClickedNext && noSelectables}
+                    hasClickedNext={hasClickedNext}
+                    previewCount={previewCount}
+                    fieldCount={index + 2}
+                  />
+                );
+              })}
+
+              <View style={{ paddingTop: 10 }}>
+                <AddButton
+                  onPress={() => {
+                    handleAddCard();
+                    setHasClickedNext(false);
+                  }}
+                  isDisabled={otherCards.length >= 9}
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </>
+      )}
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View style={{ paddingBottom: Platform.OS === "android" ? 8 : 24 }}>
           <BottomButtons
