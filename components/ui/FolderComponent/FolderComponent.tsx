@@ -48,6 +48,7 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       onPress={onPress}
       activeOpacity={0.9}
       onLongPress={handleLongPress}
+      style={{ overflow: "hidden" }}
       accessible={true}
       accessibilityRole="none"
       accessibilityLabel={`Folder named ${title}`}
