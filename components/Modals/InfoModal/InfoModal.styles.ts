@@ -49,6 +49,7 @@ export const CTAButton = styled.TouchableOpacity`
   background-color: ${Colors.primary};
   padding: 12px 32px;
   border-radius: 99px;
+  min-height: 48px;
 `;
 
 export const CTAButtonText = styled.Text`
