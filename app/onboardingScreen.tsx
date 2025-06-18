@@ -6,7 +6,7 @@ import {
   AccessibilityInfo,
   findNodeHandle,
 } from "react-native";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import Step1 from "@/components/ui/OnboardingSteps/OnboardingStep1";
@@ -39,10 +39,6 @@ export default function OnboardingScreen() {
     if (currentStep < steps.length - 1) {
       const nextStep = currentStep + 1;
       flatListRef.current?.scrollToIndex({ index: nextStep });
-      setCurrentStep(nextStep);
-      AccessibilityInfo.announceForAccessibility(
-        `Step ${nextStep + 1} of ${steps.length}`,
-      );
     } else {
       AsyncStorage.setItem("hasOnboarded", "true");
       router.replace("/(tabs)");
@@ -57,10 +53,6 @@ export default function OnboardingScreen() {
     if (currentStep > 0) {
       const prevStep = currentStep - 1;
       flatListRef.current?.scrollToIndex({ index: prevStep });
-      setCurrentStep(prevStep);
-      AccessibilityInfo.announceForAccessibility(
-        `Step ${prevStep + 1} of ${steps.length}`,
-      );
     }
   };
 
@@ -72,6 +64,12 @@ export default function OnboardingScreen() {
     AsyncStorage.setItem("hasOnboarded", "true");
     router.replace("/(tabs)");
   };
+
+  useEffect(() => {
+    AccessibilityInfo.announceForAccessibility(
+      `Step ${currentStep + 1} of ${steps.length}`,
+    );
+  }, [currentStep]);
 
   /**
    * Components used:
@@ -121,13 +119,14 @@ export default function OnboardingScreen() {
               </View>
             );
           }}
-          onMomentumScrollEnd={(e) => {
-            const index = Math.round(e.nativeEvent.contentOffset.x / width);
-            setCurrentStep(index);
-            AccessibilityInfo.announceForAccessibility(
-              `Step ${index + 1} of ${steps.length}`,
-            );
+          onScroll={(e) => {
+            const offsetX = e.nativeEvent.contentOffset.x;
+            const newIndex = Math.round(offsetX / width);
+            if (newIndex !== currentStep) {
+              setCurrentStep(newIndex);
+            }
           }}
+          scrollEventThrottle={100}
           getItemLayout={(_, index) => ({
             length: width,
             offset: width * index,
@@ -144,6 +143,7 @@ export default function OnboardingScreen() {
       >
         <BottomButtons
           titleLeftButton="Back"
+          // titleRightButton={`1
           titleRightButton="Next"
           onDiscard={handleBack}
           onNext={handleNext}
