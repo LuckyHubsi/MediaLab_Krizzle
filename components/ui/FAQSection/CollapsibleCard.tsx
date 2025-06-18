@@ -52,8 +52,8 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
           accessibilityLabel={`Question ${itemNumber} out of ${numberofQuestions}: ${faqQuestion} ${faqTitle}`}
           accessibilityHint={
             expanded
-              ? "Double tap to collapse the answer."
-              : "Double tap to expand and read the answer."
+              ? "Activate to collapse the answer."
+              : "Activate to expand and read the answer."
           }
           accessibilityState={accessibilityState}
         >

@@ -98,7 +98,7 @@ export default function QuickActionModal({
         onPress={handleFadeOut}
         accessible={true}
         accessibilityRole="button"
-        accessibilityLabel="Close quick actions or swipe right to explore available actions."
+        accessibilityLabel="Close quick actions or move to next items to explore available actions."
         accessibilityHint="Closes the quick action menu when activated."
         importantForAccessibility="yes"
       >

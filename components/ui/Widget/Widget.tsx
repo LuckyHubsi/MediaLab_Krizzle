@@ -99,7 +99,7 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
       accessibilityRole="button"
       accessibilityLabel={`Open ${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
-      accessibilityHint="Double tap to open. Long press for more options."
+      accessibilityHint="Activate to open to open. Long press for more options."
     >
       <CardWrapper {...cardProps}>
         {isGradient && (
