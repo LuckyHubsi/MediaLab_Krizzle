@@ -1,14 +1,6 @@
-import {
-  ScrollView,
-  View,
-  Image,
-  Pressable,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { ScrollView, View, Image, Pressable, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -19,7 +11,6 @@ import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
 import React, { useState, useMemo, useCallback } from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
@@ -36,10 +27,17 @@ import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderMod
 import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * HomeScreen component that serves as the main screen of the app (with widgets, search and filter by tag functionality).
+ */
+
+// Return a Material icon component based on the provided name, size, and color (defaulting to 22px and black).
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
+// Get the appropriate icon for a page type (note vs collection),
+// returning a Material icon component based on the type.
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
@@ -55,9 +53,6 @@ export default function HomeScreen() {
   const { generalPageService, tagService } = useServices();
 
   const colorScheme = useActiveColorScheme();
-  const color = Colors[colorScheme || "light"].tint;
-  const { width } = useWindowDimensions();
-  const columns = width >= 768 ? 3 : 2;
   const router = useRouter();
 
   interface Widget {
@@ -93,6 +88,10 @@ export default function HomeScreen() {
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
 
+  /**
+   * Returns the key from Colors.widget that matches the given value.
+   * Matches by key name, string value, or array inclusion.
+   */
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -107,6 +106,10 @@ export default function HomeScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
+  /**
+   * Maps an array of GeneralPageDTO objects to an array of enriched Widget objects (with added properties).
+   * @param data - Array of GeneralPageDTO objects or null.
+   */
   const mapToEnrichedWidgets = (data: GeneralPageDTO[] | null): Widget[] => {
     if (!data) return [];
     return data.map((widget) => ({
@@ -123,6 +126,9 @@ export default function HomeScreen() {
     }));
   };
 
+  /**
+   * Focus effect to fetch widgets and tags when the screen is focused or when shouldReload changes.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchWidgets = async () => {
@@ -188,6 +194,9 @@ export default function HomeScreen() {
     }, [shouldReload, sortingMode]),
   );
 
+  /**
+   * Focus effect to fetch tags when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
@@ -223,6 +232,7 @@ export default function HomeScreen() {
     }, []),
   );
 
+  // Filter function to filter widgets based on the selected tag and search query
   const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
@@ -237,15 +247,21 @@ export default function HomeScreen() {
     });
   };
 
+  // Memoized filtered widgets based on the selected tag and search query
   const filteredWidgets = useMemo(
     () => filter(widgets),
     [widgets, selectedTag, searchQuery],
   );
+  // Memoized filtered pinned widgets based on the selected tag and search query
   const filteredPinnedWidgets = useMemo(
     () => filter(pinnedWidgets),
     [pinnedWidgets, selectedTag, searchQuery],
   );
 
+  /**
+   * Navigates to the page of the given widget.
+   * @param widget - The widget to navigate to.
+   */
   const goToPage = (widget: Widget) => {
     const path =
       widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
@@ -255,12 +271,30 @@ export default function HomeScreen() {
     });
   };
 
+  /**
+   * Navigates to the edit page of the given widget.
+   * @param widget - The widget to navigate to the edit page.
+   */
   const goToEditPage = (widget: Widget) => {
     router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Components used:
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - EmptyHome: A component that displays an empty state when no widgets are present.
+   * - SearchBar: A search bar component for filtering widgets by title.
+   * - TagList: A component that displays a list of tags for filtering widgets.
+   * - Widget: A component that represents a single widget with title, label, icon,
+   * - QuickActionModal: A modal for quick actions on widgets (like pinning, editing, archiving, etc.).
+   * - ModalSelection: A modal for selecting a new note or collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the widget to.
+   * - DeleteModal: A modal for confirming the deletion of a widget.
+   * - ErrorPopup: A modal for displaying errors that occurred during operations.
+   */
   return (
     <>
       <SafeAreaView>

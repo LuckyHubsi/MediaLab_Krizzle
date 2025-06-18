@@ -1,4 +1,7 @@
-import { blue } from "react-native-reanimated/lib/typescript/Colors";
+/**
+ * This file contains the color constants used throughout the application.
+ * It defines both light and dark themes, as well as specific colors for various UI elements, like widgets.
+ */
 
 const tintColorLight = "#176BBA";
 const tintColorDark = "#4599E8";
@@ -16,6 +19,7 @@ export const Colors = {
   black: "#111111",
   tintColor: "#1A78D1",
   light: {
+    primary: "#176BBA",
     text: "#11181C",
     background: "#FBFBFB",
     semiTransparentBackground: "#FBFBFB52",
@@ -42,6 +46,7 @@ export const Colors = {
     negative: "#DF0534",
   },
   dark: {
+    primary: "#4599E8",
     text: "#ECEDEE",
     background: "#111111",
     semiTransparentBackground: "#11111152",

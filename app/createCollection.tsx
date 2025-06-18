@@ -20,6 +20,11 @@ import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 
+/**
+ * CollectionTemplateScreen is a screen that allows users to create a new collection
+ * (Step 1: Create Widget, Step 2: Create Template).
+ */
+
 export default function CollectionTemplateScreen() {
   const { collectionService } = useServices();
 
@@ -30,6 +35,7 @@ export default function CollectionTemplateScreen() {
 
   const { showSnackbar } = useSnackbar();
 
+  // Initial state for collection data
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
     selectedTag: null,
@@ -39,6 +45,8 @@ export default function CollectionTemplateScreen() {
     templates: [],
   });
 
+  // Function to prepare DTOs for collection and template creation
+  // This function maps the collection data to the DTOs required by the service
   const prepareDTOs = (): {
     collection: CollectionDTO;
     template: ItemTemplateDTO;
@@ -56,6 +64,10 @@ export default function CollectionTemplateScreen() {
       parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
+    /**
+     * Maps template data into an array of AttributeDTO objects.
+     * Extracts and formats fields like label, type, preview, options, and symbol from each template.
+     */
     const attributes: AttributeDTO[] = collectionData.templates.map(
       (attribute) => {
         return {
@@ -76,6 +88,7 @@ export default function CollectionTemplateScreen() {
     return { collection, template };
   };
 
+  // Function to create a new collection
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
@@ -123,6 +136,14 @@ export default function CollectionTemplateScreen() {
     }
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - CreateCollection: Step 1 component for creating a collection (widget).
+   * - CreateCollectionTemplate: Step 2 component for creating a template for the collection.
+   * - ErrorPopup: Displays errors that occur during the collection creation process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}

@@ -18,6 +18,18 @@ import {
   ModalOverlay,
 } from "./CustomPicker.styles";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for a custom picker that works on both Android and iOS.
+ * It uses a modal for Android to display options in a bottom sheet style.
+ * This component is designed to be used in a form where users can select from a list of items.
+ * @param value (required) - The currently selected value.
+ * @param onValueChange (required) - Callback function to handle value changes.
+ * @param items (required) - An array of items to display in the picker, each with a label and value.
+ * @param placeholder - Optional placeholder text for the picker.
+ * @param colorScheme (required) - The color scheme of the app, either "light" or "dark".
+ */
 
 interface CustomPickerProps {
   value: string | number | null;
@@ -31,17 +43,23 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
   value,
   onValueChange,
   items,
-  placeholder,
   colorScheme,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [shouldRenderSheet, setShouldRenderSheet] = useState(false);
+  const selectedLabel = items.find((i) => i.value === value)?.label;
+
+  /**
+   * Function to handle the slide animation for the modal.
+   */
   const slideAnim = useRef(
     new Animated.Value(Dimensions.get("window").height),
   ).current;
 
-  const selectedLabel = items.find((i) => i.value === value)?.label;
-
+  /**
+   * Effect to handle the visibility of the modal and animate the slide in/out.
+   * Animation from the bottom of the screen when the modal is opened.
+   */
   useEffect(() => {
     if (isModalVisible) {
       setShouldRenderSheet(true);
@@ -64,6 +82,9 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
     }
   }, [isModalVisible]);
 
+  /**
+   * Function to close the modal and animate it sliding out.
+   */
   const closeModal = () => {
     Animated.timing(slideAnim, {
       toValue: Dimensions.get("window").height,
@@ -73,6 +94,10 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
     }).start(() => setIsModalVisible(false));
   };
 
+  /*
+   * Render the picker component based on the platform.
+   * For iOS, it uses RNPickerSelect for a native picker.
+   */
   if (Platform.OS === "ios") {
     return (
       <RNPickerSelect
@@ -85,13 +110,16 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
           <MaterialIcons
             name="arrow-drop-down"
             size={30}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
+            color={Colors[colorScheme].text}
           />
         )}
       />
     );
   }
 
+  /**
+   * Render the custom Android picker component.
+   */
   return (
     <>
       <AndroidPickerTouchable
@@ -104,7 +132,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         <MaterialIcons
           name="arrow-drop-down"
           size={24}
-          color={colorScheme === "dark" ? "#fff" : "#000"}
+          color={Colors[colorScheme].text}
         />
       </AndroidPickerTouchable>
 
@@ -120,7 +148,7 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
             <Animated.View
               style={{
                 transform: [{ translateY: slideAnim }],
-                backgroundColor: colorScheme === "dark" ? "#1c1c1e" : "#fff",
+                backgroundColor: Colors[colorScheme].text,
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
                 overflow: "hidden",

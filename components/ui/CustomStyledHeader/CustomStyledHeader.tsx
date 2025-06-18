@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   StyledHeader,
   BackIcon,
@@ -8,10 +8,28 @@ import {
   TitleContainer,
 } from "./CustomStyledHeader.styles";
 import { ThemedText } from "@/components/ThemedText";
-import { useNavigation, usePathname, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Compontent for a custom styled header with various functionalities.
+ * It includes a back button, title, optional subtitle, and icons for additional actions.
+ * @param title (required) - The title of the header.
+ * @param subtitle - Optional subtitle for the header.
+ * @param iconName - Optional icon name for the first icon (left).
+ * @param iconName2 - Optional icon name for the second icon (right).
+ * @param onIconPress - Optional Callback function for the first icon press (left).
+ * @param onIconMenuPress - Optional Callback function for the second icon press (right).
+ * @param backBehavior - Optional behavior for the back button, can be "goHome", "goArchive", "goSettings", "goCollection", or "goBackWithParams".
+ * @param otherBackBehavior - Optional function to execute on back press before the default behavior.
+ * @param param - Optional parameter to pass when navigating to a specific route.
+ * @param routing - Optional routing parameter to pass when navigating to a specific route.
+ * @param leftIconName - Optional icon name for the left icon.
+ * @param isTransparent - Optional boolean to determine if the header should be transparent.
+ * @param borderRadiusTop - Optional number to set the top border radius of the header.
+ */
 
 interface HeaderProps {
   title: string;
@@ -45,9 +63,13 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
   borderRadiusTop,
 }) => {
   const router = useRouter();
-  const colorScheme = useActiveColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme();
   const navigation = useNavigation();
 
+  /**
+   * Function to handle the back button press.
+   * It executes the specified back behavior or navigates to a default route based on the backBehavior prop.
+   */
   const handleBackPress = () => {
     if (otherBackBehavior) {
       otherBackBehavior();
@@ -129,10 +151,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           color={Colors[colorScheme].text}
           style={{
             marginRight: 8,
-            backgroundColor:
-              colorScheme === "light"
-                ? Colors.light.searchBarBackground
-                : Colors.dark.searchBarBackground,
+            backgroundColor: Colors[colorScheme].searchBarBackground,
             borderRadius: 8,
             padding: 2,
           }}
@@ -145,7 +164,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
             <MaterialIcons
               name={iconName}
               size={24}
-              color={colorScheme === "light" ? "black" : "white"}
+              color={colorScheme === "light" ? Colors.black : Colors.white}
             />
           </Icon>
         )}
@@ -156,10 +175,10 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
               size={24}
               color={
                 isTransparent
-                  ? "white"
+                  ? Colors.white
                   : colorScheme === "light"
-                    ? "black"
-                    : "white"
+                    ? Colors.black
+                    : Colors.white
               }
             />
           </Icon>

@@ -2,11 +2,14 @@ import { ThemedText } from "@/components/ThemedText";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, ScrollView, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import { SettingsLink } from "@/components/ui/SettingsLink/SettingsLink";
-import { resetDatabase } from "@/backend/service/DatabaseReset";
-import { Button } from "@/components/ui/Button/Button";
 import { router } from "expo-router";
+
+/**
+ * TabThreeScreen component that renders the Settings screen.
+ * Links to various settings and information pages.
+ */
 
 export default function TabThreeScreen() {
   return (

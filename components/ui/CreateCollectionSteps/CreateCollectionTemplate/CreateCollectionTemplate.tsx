@@ -25,6 +25,15 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 
+/**
+ * Component for creating a template for a collection.
+ * Allows users to add fields with different types (text, date, multi-select, rating, image, link)
+ * @param data (required) - The collection data containing templates.
+ * @param setData (required) - Function to update the collection data.
+ * @param onBack - Optional callback for the back button.
+ * @param onNext - Optional callback for the next button.
+ */
+
 interface CreateCollectionTemplateProps {
   data: CollectionData;
   setData: React.Dispatch<React.SetStateAction<CollectionData>>;
@@ -38,17 +47,23 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   onBack,
   onNext,
 }) => {
-  const maxPreviewCount = 2;
   const colorScheme = useActiveColorScheme();
-  const cards = data.templates;
+  const { showSnackbar } = useSnackbar();
 
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
+  const cards = data.templates;
   const titleCard = cards[0];
   const otherCards = cards.slice(1);
 
+  const maxPreviewCount = 2;
+  const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
+
+  /**
+   * Effect to hide and show the keyboard visibility state on Android.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -64,6 +79,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }
   }, []);
 
+  /**
+   * Effect to add a preview text template to the top of the `templates` array on mount (only if `titleCard` is not set).
+   * This ensures that the first card is always a preview card for the title.
+   */
   useEffect(() => {
     if (!titleCard) {
       setData((prev) => ({
@@ -83,6 +102,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }
   }, []);
 
+  // Function to get the icon for a specific item type
   const getIconForType = (type: string) => {
     switch (type) {
       case "text":
@@ -102,8 +122,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }
   };
 
-  const previewCount = otherCards.filter((card) => card.isPreview).length + 1;
-
+  /**
+   * Function to handle adding a new card to the templates.
+   * It checks if the number of other cards is less than 9 before adding a new card.
+   * If the limit is reached, it does nothing.
+   */
   const handleAddCard = () => {
     if (otherCards.length >= 9) return;
     setData((prev) => ({
@@ -122,6 +145,10 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  /**
+   * Function to handle removing a card from the templates.
+   * @param id - The ID of the card to be removed.
+   */
   const handleRemoveCard = (id: number) => {
     setData((prev) => ({
       ...prev,
@@ -129,6 +156,12 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  /**
+   * Function to handle changing the type of a card.
+   * It checks if the new type is different from the current type and if the card is a preview.
+   * @param id - The ID of the card to change.
+   * @param newType - The new type to set for the card.
+   */
   const handleTypeChange = (id: number, newType: string) => {
     setData((prev) => {
       const updatedTemplates = prev.templates.map((card) => {
@@ -162,6 +195,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     });
   };
 
+  /**
+   * Function to handle changing the title of a card.
+   * @param id - The ID of the card to change.
+   * @param text - The new title text to set for the card.
+   */
   const handleTitleChange = (id: number, text: string) => {
     setData((prev) => ({
       ...prev,
@@ -171,6 +209,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  /**
+   * Function to handle changing the rating of a card.
+   * @param id - The ID of the card to change.
+   * @param ratingValue - The new rating value to set for the card.
+   */
   const handleRatingChange = (
     id: number,
     ratingValue: keyof typeof MaterialIcons.glyphMap,
@@ -183,6 +226,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
+  /**
+   * Function to handle changing the options of a multi-select card.
+   * @param id - The ID of the card to change.
+   * @param newOptions - The new options array to set for the card.
+   */
   const handleOptionsChange = (id: number, newOptions: string[]) => {
     setData((prev) => ({
       ...prev,
@@ -192,8 +240,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
     }));
   };
 
-  const { showSnackbar } = useSnackbar();
-
+  /**
+   * Function to handle toggling the preview state of a card.
+   * It checks if the new preview state is valid (not exceeding max count of 3 and type uniqueness).
+   * @param id - The ID of the card to toggle preview for.
+   */
   const handlePreviewToggle = (id: number) => {
     const currentCard = otherCards.find((c) => c.id === id);
     if (!currentCard) return;
@@ -235,9 +286,6 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
       ),
     }));
   };
-
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
 
   return (
     <>

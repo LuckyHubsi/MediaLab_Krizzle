@@ -4,7 +4,7 @@ import styled from "styled-components/native";
 
 interface DateTextProps {
   placeholder: boolean | undefined;
-  colorScheme: "light" | "dark";
+  colorScheme: ColorSchemeProps["colorScheme"];
 }
 
 export const DateFieldContainer = styled.View`
@@ -34,9 +34,14 @@ export const DateText = styled.Text<DateTextProps>`
   color: ${({ placeholder, colorScheme }: DateTextProps) =>
     placeholder
       ? colorScheme === "light"
-        ? "#585858"
-        : "#ABABAB"
-      : colorScheme === "light"
-        ? Colors["light"].text
-        : Colors.white};
+        ? Colors.grey100
+        : Colors.grey50
+      : Colors[colorScheme].text};
+`;
+
+export const StyledClearButton = styled.Pressable`
+  padding: 8px;
+  margin-left: 8px;
+  justify-content: center;
+  align-items: center;
 `;

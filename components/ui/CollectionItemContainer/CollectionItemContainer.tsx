@@ -1,10 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { format } from "date-fns";
 import {
   ItemContainer,
   SelectableContainer,
   AltTextContainer,
+  ImageContainer,
+  ImageOverlay,
 } from "./CollectionItemContainer.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
@@ -13,11 +15,26 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  ScrollView,
   Dimensions,
 } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for displaying a collection item with various properties such as:
+ * - multiselect, date, title, text, icon, link (with optional title), and image (with alt text).
+ * @param type - Optional type of the item (string or number).
+ * @param multiselectArray - Optional array of strings for multiselect options.
+ * @param date - Optional date for the item.
+ * @param title - Optional title for the item.
+ * @param subtitle - Optional subtitle for the item.
+ * @param icon - Optional icon name from MaterialIcons.
+ * @param iconColor - Optional color for the icon.
+ * @param link - Optional link for the item.
+ * @param linkPreview - Optional preview text for the link.
+ * @param imageUri - Optional URI for an image to display.
+ * @param altText - Optional alt text for the image.
+ */
 
 interface CollectionItemContainerProps {
   type?: string | number;
@@ -39,23 +56,32 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
   title,
   subtitle,
   icon,
-  iconColor,
   link,
   linkPreview,
   imageUri,
   altText,
 }) => {
+  const colorScheme = useActiveColorScheme();
+  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const screenWidth = Dimensions.get("window").width;
+
+  /**
+   * Function to ensure the URL is valid by adding "https://"
+   * (if it doesn't already start with "http://" or "https://")
+   * Returns the valid URL.
+   */
   const getValidUrl = (url: string): string => {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       return "https://" + url;
     }
     return url;
   };
-  const themeMode = useActiveColorScheme() ?? "light";
-  const colorScheme = useActiveColorScheme();
-  const greyColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
-  const screenWidth = Dimensions.get("window").width;
 
+  /**
+   * Function to handle the link press event.
+   * It checks if the link is valid and supported, then opens it.
+   * If the link cannot be opened, it shows an alert.
+   */
   const handlePressLink = async () => {
     if (!link) return;
     const validUrl = getValidUrl(link);
@@ -66,6 +92,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
       Alert.alert("Can't open this URL:", validUrl);
     }
   };
+
   return (
     <ItemContainer>
       <ThemedText
@@ -76,28 +103,14 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         {subtitle}
       </ThemedText>
 
+      {/* Display the image if imageUri is provided */}
       {imageUri && (
-        <View
+        <ImageContainer
           style={{
-            height: 400,
             width: screenWidth - 40,
-            borderRadius: 16,
-            backgroundColor: "#EAEAEA",
-            marginTop: 8,
-            overflow: "hidden",
-            gap: 8,
           }}
         >
-          <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: themeMode === "dark" ? "#3d3d3d" : "#EAEAEA",
-            }}
-          />
+          <ImageOverlay colorScheme={colorScheme} />
           <Image
             source={{ uri: imageUri }}
             style={{
@@ -108,16 +121,18 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             accessible={true}
             accessibilityLabel={altText}
           />
+          {/* Display alt text if provided */}
           {altText && (
-            <AltTextContainer themeMode={themeMode}>
+            <AltTextContainer colorScheme={colorScheme}>
               <ThemedText fontWeight="regular" fontSize="s">
                 {altText}
               </ThemedText>
             </AltTextContainer>
           )}
-        </View>
+        </ImageContainer>
       )}
 
+      {/* Display the title if provided */}
       {title && (
         <View style={{ marginTop: -8 }}>
           <ThemedText fontWeight="semibold" fontSize="l">
@@ -127,19 +142,23 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: colorScheme === "dark" ? "#3d3d3d" : "#EAEAEA",
+              backgroundColor:
+                colorScheme === "dark"
+                  ? Colors.dark.pillBackground
+                  : Colors.grey25,
               marginTop: 8,
             }}
           />
         </View>
       )}
 
+      {/* Display the icon, type, and date if provided */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
         {icon && (
           <MaterialIcons
             name={icon}
             size={24}
-            color={colorScheme === "light" ? "#176BBA" : "#4599E8"}
+            color={colorScheme === "light" ? Colors.primary : Colors.secondary}
           />
         )}
         {type && (
@@ -154,6 +173,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         )}
       </View>
 
+      {/* Display the multiselect array if provided */}
       {multiselectArray && (
         <View
           style={{
@@ -166,7 +186,7 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
           {multiselectArray.map((multiselectArray, index) => (
             <SelectableContainer
               key={`${multiselectArray}-${index}`}
-              themeMode={themeMode}
+              colorScheme={colorScheme}
               style={{ border: `1px solid ${greyColor}` }}
             >
               <ThemedText fontWeight="regular" fontSize="s">
@@ -177,13 +197,15 @@ const CollectionItemContainer: FC<CollectionItemContainerProps> = ({
         </View>
       )}
 
+      {/* Display the link if provided */}
       {link && (
         <TouchableOpacity onPress={handlePressLink} style={{ minHeight: 48 }}>
           <ThemedText
             fontWeight="semibold"
             fontSize="regular"
             style={{
-              color: colorScheme === "light" ? "#176BBA" : "#4599E8",
+              color:
+                colorScheme === "light" ? Colors.primary : Colors.secondary,
               textDecorationLine: "underline",
             }}
           >

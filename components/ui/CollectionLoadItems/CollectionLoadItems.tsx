@@ -1,54 +1,44 @@
 import { useState } from "react";
-import Textfield from "../Textfield/Textfield";
-import DateField from "../DateField/DateField";
-import { StyledCardWrapper } from "./CollectionLoadItems.stlyle";
-import MultiSelectPicker from "../MultiSelectPicker/MultiSelectPicker";
-import RatingPicker from "../RatingPicker/RatingPicker";
-import { useRouter } from "expo-router";
 import { ScrollView, View, Dimensions } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { ListCOntainer } from "./CollectionLoadItems.stlyle";
-import { ThemedText } from "@/components/ThemedText";
-import CollectionTextfield from "../CollectionTextField/CollectionTextField";
 import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { parseISO } from "date-fns";
-import { useActiveColorScheme } from "@/context/ThemeContext";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import CollectionItemContainer from "../CollectionItemContainer/CollectionItemContainer";
-import { date } from "zod";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for displaying a collection item with various optional attributes.
+ * It supports images (with alt text), titles, multiselect options, dates, ratings, links, and text.
+ * @param attributeValues - An array of item attribute values to display.
+ */
 
 interface CollectionLoadItemProps {
   attributeValues?: ItemAttributeValueDTO[];
-  listName?: string;
 }
 
 export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
   attributeValues,
-  listName,
 }) => {
-  const router = useRouter();
-  const colorScheme = useActiveColorScheme();
-  const [selectedList, setSelectedList] = useState("");
   const screenWidth = Dimensions.get("window").width;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleSelectionChange = (value: string) => {
-    setSelectedList(value);
-  };
-
+  /**
+   * Function to render the collection item representation based on the provided attributes
+   * (images, titles, multiselects, dates, ratings, links, and text attributes.
+   */
   const renderRepresentation = () => {
     if (!attributeValues || attributeValues.length === 0) return null;
 
     const elements: React.ReactNode[] = [];
 
+    // Filter and render image attributes
     const imageAttribute = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Image &&
         "valueString" in attr &&
         attr.valueString,
     );
-
     if (imageAttribute.length > 0) {
       elements.push(
         <View
@@ -112,6 +102,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     }
 
+    // Filter and render title attribute
     const titleAttribute = attributeValues.find(
       (attr) => "valueString" in attr && attr.valueString,
     );
@@ -127,6 +118,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     }
 
+    // Filter and render multiselect attributes
     const multiSelect = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Multiselect &&
@@ -134,7 +126,6 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
         Array.isArray(attr.valueMultiselect) &&
         attr.valueMultiselect.length > 0,
     );
-
     multiSelect.forEach((multi) => {
       elements.push(
         <CollectionItemContainer
@@ -149,6 +140,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     });
 
+    // Filter and render date and rating attributes
     const dateAttr = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Date &&
@@ -161,7 +153,6 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
         "valueNumber" in attr &&
         attr.valueNumber,
     );
-
     if (dateAttr || ratingAttr) {
       elements.push(
         <View
@@ -198,13 +189,13 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     }
 
+    // Filter and render link attributes
     const linkAttributes = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Link &&
         "valueString" in attr &&
         attr.valueString,
     );
-
     linkAttributes.forEach((link) => {
       elements.push(
         <CollectionItemContainer
@@ -216,6 +207,7 @@ export const CollectionLoadItem: React.FC<CollectionLoadItemProps> = ({
       );
     });
 
+    // Filter and render text attributes
     const descriptionTexts = attributeValues.filter(
       (attr) =>
         attr.type === AttributeType.Text &&

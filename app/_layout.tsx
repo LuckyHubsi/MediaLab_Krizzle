@@ -4,10 +4,10 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useNavigation } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "react-native-reanimated";
 
 import {
@@ -16,7 +16,6 @@ import {
   Lexend_600SemiBold,
   Lexend_700Bold,
 } from "@expo-google-fonts/lexend";
-import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SQLiteProvider } from "expo-sqlite";
 import { UserThemeProvider } from "@/context/ThemeContext";
@@ -24,12 +23,18 @@ import { SnackbarProvider } from "@/components/ui/Snackbar/Snackbar";
 import { RepositoryProvider } from "@/context/RepositoryContext";
 import { ServiceProvider } from "@/context/ServiceContext";
 import * as ImagePicker from "expo-image-picker";
-import { View } from "react-native";
+
+/**
+ * RootLayout component that sets up the main layout of the app.
+ * It includes theme management, font loading, and permission requests.
+ */
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  // Load custom fonts
   const [loaded] = useFonts({
     Lexend_300Light,
     Lexend_400Regular,
@@ -38,12 +43,14 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  //Hides the splash screen once the app has finished loading.
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
 
+  // Request permissions for camera and media library access
   useEffect(() => {
     (async () => {
       await ImagePicker.requestCameraPermissionsAsync();

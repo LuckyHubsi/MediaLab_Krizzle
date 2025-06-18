@@ -8,10 +8,6 @@ export const CollectionListContainer = styled.View`
   gap: 8px;
 `;
 
-export interface PickerStyleProps {
-  colorScheme: "light" | "dark";
-}
-
 export const AndroidPickerWrapper = styled.View<ColorSchemeProps>(
   ({ colorScheme }: ColorSchemeProps) => ({
     ...(Platform.OS === "android" && {
@@ -27,7 +23,7 @@ export const AndroidPickerWrapper = styled.View<ColorSchemeProps>(
 
 export const getPickerStyles = ({
   colorScheme,
-}: PickerStyleProps): {
+}: ColorSchemeProps): {
   inputIOS: StyleProp<TextStyle>;
   inputIOSContainer: StyleProp<ViewStyle>;
   inputAndroid: StyleProp<TextStyle>;

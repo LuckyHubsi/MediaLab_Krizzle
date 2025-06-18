@@ -10,7 +10,20 @@ import ProgressIndicator from "../CreateCollectionSteps/ProgressionIndicator/Pro
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
-import { useWindowDimensions, Animated, Easing, View } from "react-native";
+import { Animated, View } from "react-native";
+
+/** Component for two or one buttons at the bottom of the screen.
+ * It can be used in the note/creation/onboarding process to navigate between steps.
+ * @param titleLeftButton - The title of the left button.
+ * @param titleRightButton - The title of the right button.
+ * @param singleButtonText - The text for the single button when only one is displayed.
+ * @param onDiscard - Callback function for the left button (discard).
+ * @param onNext - Callback function for the right button (next).
+ * @param variant - The variant of the buttons, can be "discard" or "back" (different styling).
+ * @param hasProgressIndicator - Whether to show a progress indicator above the buttons.
+ * @param progressStep - The current step in the progress indicator.
+ * @param enableAnimation - Whether to enable the animation for button transitions.
+ **/
 
 interface BottomButtonsProps {
   titleLeftButton?: string;
@@ -36,13 +49,16 @@ const BottomButtons: FC<BottomButtonsProps> = ({
   enableAnimation = false,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
-  const window = useWindowDimensions();
   const buttonTextVariants =
     variant === "discard" ? "red" : colorScheme === "dark" ? "white" : "grey";
 
   const singleButtonOpacity = useRef(new Animated.Value(1)).current;
   const dualButtonsOpacity = useRef(new Animated.Value(0)).current;
 
+  /**
+   * Effect to control fade-in/fade-out animations when switching
+   * between a single button (for progressStep === 1) and dual buttons (for all other steps).
+   */
   useEffect(() => {
     if (!enableAnimation) {
       singleButtonOpacity.setValue(progressStep === 1 ? 1 : 0);

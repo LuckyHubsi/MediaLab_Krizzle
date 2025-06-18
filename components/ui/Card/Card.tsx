@@ -1,7 +1,12 @@
 import React, { FC, PropsWithChildren } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyledCard } from "./Card.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/** Component for displaying a card-like container with customizable width and height.
+ * It can be used to wrap content in a visually distinct area.
+ * @param width - Optional width of the card (default: "100%).
+ * @param height - Optional height of the card (default: "auto).
+ */
 
 interface CardProps {
   width?: string;
