@@ -217,7 +217,7 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
       onLongPress={handleLongPress}
       accessible={true}
       accessibilityLabel={`${title}. Item content: ${buildAccessibilityLabel(attributes, item.values)}.  Item ${index + 1} out of ${itemCountPerList} in collection list ${list}.`}
-      accessibilityHint="Activating navigates to the Collection Item Page. Longpress opens quick action modal"
+      accessibilityHint="Activating navigates to the Collection Item Page."
     >
       <CollectionCardContainer colorScheme={colorScheme}>
         {/* Display image if available */}

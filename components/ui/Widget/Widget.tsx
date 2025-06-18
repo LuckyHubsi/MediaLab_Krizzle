@@ -106,6 +106,7 @@ const Widget: React.FC<Props> = ({
       accessibilityRole="none"
       accessibilityLabel={`${pageType} titled ${title} with ${label != "uncategorized" ? "tag " + label : "no tag"}, ${iconName != "unknown icon" ? iconName + " icon" : "no icon selected"} and color ${color} selected`}
       accessibilityHint={`${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open. Long press for more options.`}
+      style={{ overflow: "hidden" }}
     >
       <CardWrapper {...cardProps}>
         {isGradient && (
@@ -136,7 +137,13 @@ const Widget: React.FC<Props> = ({
 
         {/* Page Type */}
         {pageType && !isPreview && (
-          <ThemedText fontSize="s" fontWeight="light" colorVariant="white">
+          <ThemedText
+            fontSize="s"
+            fontWeight="light"
+            colorVariant="white"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {pageType === PageType.Collection ? "collection" : "note"}
           </ThemedText>
         )}

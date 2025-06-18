@@ -350,7 +350,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const tagText =
       selectedTag !== "All" && typeof selectedTag === "object"
-        ? `tag "${selectedTag.tag_label}"`
+        ? `tag labelled "${selectedTag.tag_label}"`
         : "";
 
     const queryText = searchQuery ? `search query "${searchQuery}"` : "";
@@ -361,16 +361,18 @@ export default function HomeScreen() {
     const pinnedMessage =
       filteredPinnedWidgets.length > 0
         ? `${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in pinned widgets.`
-        : `No entries found${filterInfo ? ` for ${filterInfo}` : ""} in pinned widgets.`;
+        : "";
 
     const recentMessage =
       filteredWidgets.length > 0
         ? `${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in recent widgets.`
-        : `No entries found${filterInfo ? ` for ${filterInfo}` : ""} in recent widgets.`;
+        : "";
 
     const fullAnnouncement = `${pinnedMessage} ${recentMessage}`;
 
-    setFilterAnnouncement(fullAnnouncement);
+    if (fullAnnouncement.length! <= 0) {
+      setFilterAnnouncement(fullAnnouncement);
+    }
   }, [
     searchQuery,
     selectedTag,

@@ -45,11 +45,12 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         <ThemedText fontSize="regular" fontWeight="regular">
           Choose a Tag
         </ThemedText>
-        <EditTextContainer onPress={onViewAllPress}>
+        <EditTextContainer>
           <ThemedText
             fontSize="s"
             fontWeight="regular"
             colorVariant="greyScale"
+            onPress={onViewAllPress}
           >
             Edit Tags
             <BackIcon

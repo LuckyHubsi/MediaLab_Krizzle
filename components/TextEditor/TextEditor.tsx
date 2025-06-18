@@ -189,7 +189,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
           editor={editor}
           accessible={true}
           accessibilityLabel="Note Editor"
-          accessibilityHint="Activate to edit the note or move to the second next item to read out the note content. Be aware that editing the note with TalkBack can lead to unexpected behaviour."
+          accessibilityHint="Activate to edit the note or move to the second next item to read out the note content."
           accessibilityRole="button"
         />
       </ScrollView>
