@@ -881,7 +881,7 @@ export default function HomeScreen() {
               setSortingMode(GeneralPageState.GeneralAlphabet);
               setShowSortModal(false);
               setSortAnnouncement(
-                "Sorting changed to: Last modified descending",
+                "Sorting changed to: Last alphabet ascending",
               );
             },
           },
@@ -892,9 +892,7 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralCreated);
               setShowSortModal(false);
-              setSortAnnouncement(
-                "Sorting changed to: Last modified descending",
-              );
+              setSortAnnouncement("Sorting changed to: Last created ascending");
             },
           },
         ]}
