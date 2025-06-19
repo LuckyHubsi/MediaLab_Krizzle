@@ -223,6 +223,60 @@ export default function NotesScreen() {
         onClose={() => setShowModal(false)}
         items={
           [
+            noteData && !noteData.archived && noteData.parentID !== null
+              ? {
+                  label: "Move back Home",
+                  icon: "home",
+                  onPress: async () => {
+                    if (noteData) {
+                      try {
+                        const updateResult =
+                          await generalPageService.updateFolderID(
+                            Number(noteData.pageID),
+                            null,
+                          );
+
+                        if (updateResult.success) {
+                          showSnackbar(
+                            "Moved back to home",
+                            "bottom",
+                            "success",
+                          );
+                          setShouldReload(true);
+
+                          // remove all prior errors from the widget move source if service call succeeded
+                          setErrors((prev) =>
+                            prev.filter(
+                              (error) => error.source !== "widget:move",
+                            ),
+                          );
+                        } else {
+                          // set all errors to the previous errors plus add the new error
+                          // define the id and the source and set its read status to false
+                          setErrors((prev) => [
+                            ...prev,
+                            {
+                              ...updateResult.error,
+                              hasBeenRead: false,
+                              id: `${Date.now()}-${Math.random()}`,
+                              source: "widget:move",
+                            },
+                          ]);
+                          setShowError(true);
+                          showSnackbar(
+                            "Failed to move widget",
+                            "bottom",
+                            "error",
+                          );
+                        }
+                      } catch (error) {
+                        console.error("Error moving back home:", error);
+                        showSnackbar("Error moving widget", "top", "error");
+                      }
+                    }
+                  },
+                }
+              : null,
             noteData && !noteData.archived
               ? {
                   label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
@@ -327,7 +381,10 @@ export default function NotesScreen() {
             },
             noteData && !noteData.archived
               ? {
-                  label: "Move to Folder",
+                  label:
+                    noteData && noteData.parentID === null
+                      ? "Move to Folder"
+                      : "Move to another Folder",
                   icon: "folder",
                   onPress: async () => {
                     setShowFolderSelectionModal(true);
