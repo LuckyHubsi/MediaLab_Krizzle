@@ -924,6 +924,10 @@ export default function HomeScreen() {
                   setErrors((prev) =>
                     prev.filter((error) => error.source !== "pinning"),
                   );
+
+                  AccessibilityInfo.announceForAccessibility(
+                    `${selectedWidget?.pinned ? "Unpinned widget" : "Pinned widget"}`,
+                  );
                 } else {
                   // set the errors to the previous errors plus add the new error
                   // define the id and the source and set its read status to false
@@ -1049,6 +1053,7 @@ export default function HomeScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
+                AccessibilityInfo.announceForAccessibility("Widget Deleted");
               } else {
                 // set all errors to the previous errors plus add the new error
                 // define the id and the source and set its read status to false
