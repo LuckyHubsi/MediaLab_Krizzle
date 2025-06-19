@@ -306,7 +306,7 @@ export default function CollectionScreen() {
         }
       };
       fetchData();
-    }, [pageId, setShouldReloadParentFolder, routing]),
+    }, [pageId, shouldReloadParentFolder, routing]),
   );
 
   // Function to navigate to the edit page for the corrisponding collection widget
