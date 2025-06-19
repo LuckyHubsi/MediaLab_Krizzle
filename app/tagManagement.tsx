@@ -129,7 +129,10 @@ export default function TagManagementScreen() {
         }
       }
 
-      if (success) setShouldRefetch(true);
+      if (success) {
+        setShouldRefetch(true);
+        AccessibilityInfo.announceForAccessibility("Tag successfully saved");
+      }
     } catch (error) {
       console.error("Error saving tag:", error);
     } finally {
@@ -149,6 +152,7 @@ export default function TagManagementScreen() {
     try {
       const deleteResult = await tagService.deleteTagByID(tagID);
       if (deleteResult.success) {
+        AccessibilityInfo.announceForAccessibility("Tag successfully deleted");
         setShouldRefetch(true);
 
         // remove all prior errors from the tag delete source if service call succeeded
