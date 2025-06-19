@@ -6,6 +6,7 @@ import {
   Keyboard,
   Platform,
   useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import {
@@ -313,15 +314,22 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               <View style={{ gap: 10, paddingBottom: 10 }}>
                 <Card>
                   <IconTopRight onPress={() => setShowHelp(true)}>
-                    <MaterialIcons
-                      name="help-outline"
-                      size={26}
-                      color={
-                        colorScheme === "light"
-                          ? Colors.primary
-                          : Colors.secondary
-                      }
-                    />
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel="Help"
+                      accessibilityHint="Opens a help modal"
+                    >
+                      <MaterialIcons
+                        name="help-outline"
+                        size={26}
+                        color={
+                          colorScheme === "light"
+                            ? Colors.primary
+                            : Colors.secondary
+                        }
+                        accessible={false}
+                      />
+                    </TouchableOpacity>
                   </IconTopRight>
                   <CardText>
                     <CardHeader>
@@ -495,15 +503,22 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
             >
               <Card>
                 <IconTopRight onPress={() => setShowHelp(true)}>
-                  <MaterialIcons
-                    name="help-outline"
-                    size={26}
-                    color={
-                      colorScheme === "light"
-                        ? Colors.primary
-                        : Colors.secondary
-                    }
-                  />
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Help"
+                    accessibilityHint="Opens a help modal"
+                  >
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
                 </IconTopRight>
                 <CardText>
                   <CardHeader>

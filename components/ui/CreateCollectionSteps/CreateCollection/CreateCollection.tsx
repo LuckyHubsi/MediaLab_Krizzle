@@ -1,6 +1,12 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Keyboard, Platform, useWindowDimensions, View } from "react-native";
+import {
+  Keyboard,
+  Platform,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Card } from "@/components/ui/Card/Card";
 import Widget from "@/components/ui/Widget/Widget";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
@@ -226,15 +232,23 @@ const CreateCollection: FC<CreateCollectionProps> = ({
             <View style={{ marginBottom: 20 }}>
               <Card>
                 <IconTopRight onPress={() => setShowHelp(true)}>
-                  <MaterialIcons
-                    name="help-outline"
-                    size={26}
-                    color={
-                      colorScheme === "light"
-                        ? Colors.primary
-                        : Colors.secondary
-                    }
-                  />
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Help"
+                    accessibilityHint="Opens a help modal"
+                    onPress={() => setShowHelp(true)}
+                  >
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
                 </IconTopRight>
                 <View style={{ alignItems: "center", gap: 20 }}>
                   <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
@@ -366,13 +380,23 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           >
             <Card>
               <IconTopRight onPress={() => setShowHelp(true)}>
-                <MaterialIcons
-                  name="help-outline"
-                  size={26}
-                  color={
-                    colorScheme === "light" ? Colors.primary : Colors.secondary
-                  }
-                />
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Help"
+                  accessibilityHint="Opens a help modal"
+                  onPress={() => setShowHelp(true)}
+                >
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={
+                      colorScheme === "light"
+                        ? Colors.primary
+                        : Colors.secondary
+                    }
+                    accessible={false}
+                  />
+                </TouchableOpacity>
               </IconTopRight>
               <View style={{ alignItems: "center", gap: 20 }}>
                 <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
