@@ -121,7 +121,7 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
           accessibilityLabel="switch for using the system default theme preference"
           accessibilityHint={
             isSystemSelected
-              ? `Turning the switch off will change the selected theme option to ${systemColorScheme === "light" ? "light mode" : "dark mode"} until changed.`
+              ? `Turning the switch off will change the selected theme option to lightmode until changed.`
               : "Turning the switch on will reset your manually selected theme preference to use the system default."
           }
         />
