@@ -6,6 +6,7 @@ import {
   ScrollView,
   Keyboard,
   useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useServices } from "@/context/ServiceContext";
@@ -471,22 +472,41 @@ export default function EditCollectionTemplateScreen() {
                   <View style={{ marginBottom: 10 }}>
                     <Card>
                       <IconTopRight onPress={() => setShowHelp(true)}>
-                        <MaterialIcons
-                          name="help-outline"
-                          size={26}
-                          color={
-                            colorScheme === "light"
-                              ? Colors.primary
-                              : Colors.secondary
-                          }
-                        />
+                        <TouchableOpacity
+                          accessibilityRole="button"
+                          accessibilityLabel="Help"
+                          accessibilityHint="Opens a help modal"
+                          onPress={() => setShowHelp(true)}
+                        >
+                          <MaterialIcons
+                            name="help-outline"
+                            size={26}
+                            color={
+                              colorScheme === "light"
+                                ? Colors.primary
+                                : Colors.secondary
+                            }
+                            accessible={false}
+                          />
+                        </TouchableOpacity>
                       </IconTopRight>
                       <CardText>
                         <CardHeader>
-                          <Header
-                            title="Edit Template"
-                            onIconPress={() => alert("Popup!")}
-                          />
+                          <View
+                            accessible={true}
+                            accessibilityRole="header"
+                            accessibilityLabel="Edit Template. Edit your Template for your Collection Items."
+                            importantForAccessibility="yes"
+                          >
+                            <ThemedText
+                              fontSize="l"
+                              fontWeight="bold"
+                              accessibilityElementsHidden
+                              importantForAccessibility="no-hide-descendants"
+                            >
+                              Edit Template
+                            </ThemedText>
+                          </View>
                         </CardHeader>
                         <ThemedText
                           fontSize="s"
@@ -499,6 +519,7 @@ export default function EditCollectionTemplateScreen() {
                         </ThemedText>
                       </CardText>
                     </Card>
+
                     <View style={{ paddingTop: 10 }}>
                       <ItemCountContainer>
                         <ItemCount
@@ -622,22 +643,41 @@ export default function EditCollectionTemplateScreen() {
             >
               <Card>
                 <IconTopRight onPress={() => setShowHelp(true)}>
-                  <MaterialIcons
-                    name="help-outline"
-                    size={26}
-                    color={
-                      colorScheme === "light"
-                        ? Colors.primary
-                        : Colors.secondary
-                    }
-                  />
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Help"
+                    accessibilityHint="Opens a help modal"
+                    onPress={() => setShowHelp(true)}
+                  >
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
                 </IconTopRight>
                 <CardText>
                   <CardHeader>
-                    <Header
-                      title="Edit Template"
-                      onIconPress={() => alert("Popup!")}
-                    />
+                    <View
+                      accessible={true}
+                      accessibilityRole="header"
+                      accessibilityLabel="Edit Template. Edit your Template for your Collection Items."
+                      importantForAccessibility="yes"
+                    >
+                      <ThemedText
+                        fontSize="l"
+                        fontWeight="bold"
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                      >
+                        Edit Template
+                      </ThemedText>
+                    </View>
                   </CardHeader>
                   <ThemedText
                     fontSize="s"
