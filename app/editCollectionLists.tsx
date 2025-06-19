@@ -474,7 +474,10 @@ export default function EditCollectionListsScreen() {
                     extraInfo="for your list title"
                   />
                   <RemoveButtonContainer>
-                    <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                    <RemoveButton
+                      onPress={() => handleRemoveCard(item.id)}
+                      label={` List${item.title}`}
+                    />
                   </RemoveButtonContainer>
                 </Card>
               ))}
@@ -594,7 +597,10 @@ export default function EditCollectionListsScreen() {
                     maxLength={30}
                   />
                   <RemoveButtonContainer>
-                    <RemoveButton onPress={() => handleRemoveCard(item.id)} />
+                    <RemoveButton
+                      onPress={() => handleRemoveCard(item.id)}
+                      label={`List ${item.title}`}
+                    />
                   </RemoveButtonContainer>
                 </Card>
               ))}
