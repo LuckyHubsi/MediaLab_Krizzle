@@ -185,9 +185,9 @@ const CollectionWidget: FC<CollectionWidgetProps> = ({
           } else if (type === "link" && typeof val === "object") {
             readableValue = val.displayText || val.value || "";
           } else if (type === "image" && typeof val === "object") {
-            readableValue = val.altText
-              ? val.altText
-              : "No image description was provided";
+            readableValue = val.altText ? val.altText : "";
+          } else if (type === "rating") {
+            readableValue = "rating" + val.toString() + "out of 5";
           } else {
             readableValue = val.toString();
           }

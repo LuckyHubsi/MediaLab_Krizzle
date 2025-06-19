@@ -74,7 +74,7 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                   textColor={Colors[colorScheme].text}
                   autoFocus
                   maxLength={30}
-                  accessibilityHint="Enter or edit a name and press the arrow to submit"
+                  accessibilityHint="Enter or edit a name"
                   accessible={true}
                 />
                 <TouchableOpacity
