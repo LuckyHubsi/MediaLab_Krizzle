@@ -105,7 +105,7 @@ const Widget: React.FC<Props> = ({
       onLongPress={handleLongPress}
       accessibilityRole="none"
       accessibilityLabel={`${isPreview ? "Widget Preview." : ""} ${pageType} ${title}. ${label != "" ? "tag " + label : ""}, ${iconName != "unknown icon" ? iconName + " icon" : ""}, color ${color}`}
-      accessibilityHint={`${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open.`}
+      accessibilityHint={`${isPreview ? "" : `${index && widgetCount ? `Widget ${index} out of ${widgetCount} ${state ? `in ${state} widgets` : ""}` : ""} Activate to open.`}`}
       style={{ overflow: "hidden" }}
     >
       <CardWrapper {...cardProps}>
