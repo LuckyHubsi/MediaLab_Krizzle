@@ -1,4 +1,12 @@
-import { FlatList, Image, Platform, TouchableOpacity } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  FlatList,
+  Image,
+  Platform,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -8,7 +16,7 @@ import SearchBar from "@/components/ui/SearchBar/SearchBar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useRouter } from "expo-router";
@@ -22,10 +30,18 @@ import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInp
 import { useLocalSearchParams } from "expo-router";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+
+/**
+ * FoldersScreen component that displays a list of folders.
+ */
+
+// Return a Material icon component based on the provided name, size, and color (defaulting to 22px and black).
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
+// Get the appropriate icon for a page type (note vs collection),
+// returning a Material icon component based on the type.
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
@@ -63,11 +79,22 @@ export default function FoldersScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
+
+  const { showSnackbar } = useSnackbar();
+
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
 
   const filteredFolders = folders.filter((folder) =>
     folder.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  /**
+   * Function to handle folder adding a new folder.
+   * Edit mode updates the folder name, otherwise it creates a new folder.
+   * Checks for duplicate folder names and validates the input length.
+   * If successful, updates the folder list and shows a success message.
+   */
   const handleFolderSubmit = async () => {
     const trimmedName = folderNameInput.trim();
     if (!trimmedName || !editingFolder) return;
@@ -135,6 +162,9 @@ export default function FoldersScreen() {
     itemCount: number;
   }
 
+  /**
+   * useFocusEffect hook to fetch folders when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchFolders = async () => {
@@ -169,16 +199,32 @@ export default function FoldersScreen() {
 
       setShouldReload(false);
       fetchFolders();
+
+      // sets the screenreader focus to the header after mount
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [shouldReload, params.reload]),
   );
 
+  /**
+   * useEffect hook to handle reloading the folders when the `params.reload` changes.
+   */
   useEffect(() => {
     if (params.reload) {
-      // Clear the reload param to allow future reloads to work
       router.replace("/folders");
     }
   }, [params.reload]);
 
+  /**
+   * Converts an array of FolderDTO objects into a simplified Folder shape.
+   * Sorts folders in descending order by folderID, then maps them to objects with `id`, `title`, and `itemCount`.
+   */
   const mapToFolderShape = (data: FolderDTO[] | null): Folder[] => {
     if (data == null) {
       return [];
@@ -193,33 +239,116 @@ export default function FoldersScreen() {
     }
   };
 
-  const { showSnackbar } = useSnackbar();
+  // for screenreader compatibility
+  const [announceKey, setAnnounceKey] = useState(0);
+  const [shouldAnnounceEmpty, setShouldAnnounceEmpty] = useState(false);
+  // update key to force re-render when searchQuery or results change to have screenreader announce results of search
+  useEffect(() => {
+    setAnnounceKey((prev) => prev + 1);
+  }, [searchQuery, filteredFolders.length]);
 
-  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  useEffect(() => {
+    if (folders.length === 0) {
+      const timeout = setTimeout(() => {
+        setShouldAnnounceEmpty(true);
+      }, 1200); // allow screen to settle, screenreader to be ready
 
+      return () => clearTimeout(timeout);
+    } else {
+      setShouldAnnounceEmpty(false);
+    }
+  }, [folders]);
+
+  /**
+   * Components used:
+   *
+   * - IconTopRight: A component for the top right icon that navigates to the FAQ page.
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - SearchBar: A search bar component for filtering folders by name.
+   * - EmptyHome: A component that displays a message when no folders are present.
+   * - FolderComponent: A component that displays individual folder details.
+   * - QuickActionModal: A modal for quick actions on folders (edit/delete).
+   * - DeleteModal: A modal for confirming folder deletion.
+   * - BottomInputModal: A modal for inputting folder names when creating or editing folders.
+   * - ErrorPopup: A modal that displays errors related to folder operations.
+   */
   return (
     <>
       <SafeAreaView>
         <ThemedView>
           <IconTopRight onPress={() => router.push({ pathname: "/faq" })}>
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
+            <TouchableOpacity
+              accessibilityRole="imagebutton"
+              accessibilityLabel="Help and FAQ"
+              accessibilityHint="Opens the Frequently Asked Questions page"
+              onPress={() => {
+                router.push({
+                  pathname: "/faq",
+                });
+              }}
+            >
+              <Image
+                source={require("@/assets/images/kriz.png")}
+                style={{ width: 30, height: 32 }}
+              />
+            </TouchableOpacity>
           </IconTopRight>
 
-          <ThemedText fontSize="xl" fontWeight="bold">
+          <ThemedText
+            fontSize="xl"
+            fontWeight="bold"
+            accessible={true}
+            accessibilityRole="header"
+            accessibilityLiveRegion="polite"
+            optionalRef={headerRef}
+          >
             Folders
           </ThemedText>
 
           {folders.length === 0 ? (
-            <EmptyHome text="No folders yet" showButton={false} />
+            <>
+              {shouldAnnounceEmpty && (
+                <ThemedText
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    height: 0,
+                    width: 0,
+                    opacity: 0,
+                    position: "absolute",
+                  }}
+                >
+                  No folders yet
+                </ThemedText>
+              )}
+              <EmptyHome text="No folders yet" showButton={false} />
+            </>
           ) : (
             <>
               <SearchBar
                 placeholder="Search for folder name"
                 onSearch={(query) => setSearchQuery(query)}
               />
+
+              <ThemedText
+                key={`announce-${announceKey}`}
+                accessible={true}
+                accessibilityLiveRegion="polite"
+                style={{
+                  position: "absolute",
+                  height: 0,
+                  width: 0,
+                  opacity: 0,
+                }}
+              >
+                {searchQuery
+                  ? filteredFolders.length > 0
+                    ? `${filteredFolders.length} result${filteredFolders.length > 1 ? "s" : ""} found for ${searchQuery}`
+                    : `No folders found for ${searchQuery}`
+                  : ""}
+              </ThemedText>
 
               {filteredFolders.length === 0 ? (
                 <ThemedView
@@ -251,7 +380,11 @@ export default function FoldersScreen() {
                       onPress={() => {
                         router.push({
                           pathname: "/folderPage",
-                          params: { folderId: item.id, title: item.title },
+                          params: {
+                            folderId: item.id,
+                            title: item.title,
+                            routing: "goFolder",
+                          },
                         });
                       }}
                       onLongPress={() => {
@@ -308,6 +441,9 @@ export default function FoldersScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "folder:delete"),
                 );
+                AccessibilityInfo.announceForAccessibility(
+                  "Successfully deleted folder",
+                );
               } else {
                 // set all errors to the previous errors plus add the new error
                 // define the id and the source and set its read status to false
@@ -331,7 +467,7 @@ export default function FoldersScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
       <BottomInputModal
         visible={editMode}

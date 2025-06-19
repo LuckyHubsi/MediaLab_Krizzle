@@ -23,3 +23,9 @@ export const IconWrapper = styled.View`
 export const ArrowWrapper = styled.View`
   margin-left: auto;
 `;
+
+export const LabelWrapper = styled.View`
+  flex: 1;
+  overflow: hidden;
+  justify-content: center;
+`;

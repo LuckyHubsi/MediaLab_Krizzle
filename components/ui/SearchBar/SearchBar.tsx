@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { SearchContainer, SearchIcon, SearchInput } from "./SearchBar.styles";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+
+/**
+ * Component for a search bar that allows users to input a search query.
+ *
+ * @param placeholder - Optional placeholder text for the search input.
+ * @param onSearch (required) - Callback function to handle search queries.
+ */
 
 interface SearchBarProps {
   placeholder?: string;
@@ -16,26 +23,34 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const [query, setQuery] = useState("");
   const colorScheme = useActiveColorScheme() ?? "light";
-  const themeColors = Colors[colorScheme];
+  const colors = Colors[colorScheme];
 
+  /**
+   * Effect to trigger the search callback whenever the query changes for live search functionality.
+   */
   useEffect(() => {
     onSearch(query);
   }, [query]);
 
   return (
-    <SearchContainer
-      style={{ backgroundColor: themeColors.searchBarBackground }}
-    >
-      <SearchIcon name="magnify" size={20} color={themeColors.text} />
+    <SearchContainer style={{ backgroundColor: colors.searchBarBackground }}>
+      <SearchIcon
+        name="magnify"
+        size={20}
+        color={colors.text}
+        accessible={false}
+        importantForAccessibility="no"
+      />
       <SearchInput
-        style={{ color: themeColors.text }}
+        style={{ color: colors.text }}
         placeholder={placeholder}
-        placeholderTextColor={themeColors.searchBarPlaceholder}
+        placeholderTextColor={colors.searchBarPlaceholder}
         value={query}
         onChangeText={setQuery}
         returnKeyType="search"
         accessibilityRole="search"
-        accessibilityHint="Type to search"
+        accessibilityLabel="Search"
+        accessibilityHint={`${placeholder.includes("widget") ? "Enter a title to search for your notes or collections" : placeholder.includes("folder") ? "Enter a title to search for your folders" : "Enter a name to search for your collection items."} `}
       />
       {query.length > 0 && (
         <TouchableOpacity
@@ -50,7 +65,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           accessibilityRole="button"
           accessibilityLabel="Clear search input"
         >
-          <MaterialIcons name="close" size={20} color={themeColors.text} />
+          <MaterialIcons name="close" size={20} color={colors.text} />
         </TouchableOpacity>
       )}
     </SearchContainer>

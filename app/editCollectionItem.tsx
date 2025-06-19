@@ -1,9 +1,16 @@
 import { Header } from "@/components/ui/Header/Header";
-import { Keyboard, Platform, ScrollView, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Keyboard,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
@@ -15,6 +22,14 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * Page for editing a collection item.
+ * This page allows users to modify the attributes of an existing item in a collection.
+ *
+ * @param itemId (required) - The ID of the item to be edited.
+ * @param routing - Routing parameter to handle navigation after saving.
+ */
+
 export default function EditCollectionItem() {
   const { itemId, routing } = useLocalSearchParams<{
     itemId: string;
@@ -22,7 +37,6 @@ export default function EditCollectionItem() {
   }>();
 
   const { collectionService, itemTemplateService } = useServices();
-
   const [attributes, setAttributes] = useState<AttributeDTO[]>([]);
   const [attributeValues, setAttributeValues] = useState<Record<number, any>>(
     {},
@@ -37,10 +51,29 @@ export default function EditCollectionItem() {
   const [error, setError] = useState<string | null>(null);
   const [hasClickedSave, setHasClickedSave] = useState(false);
   const { showSnackbar } = useSnackbar();
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
+  /**
+   * Effect to fetch the item and its attributes when the component mounts.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -114,10 +147,14 @@ export default function EditCollectionItem() {
                     break;
 
                   case AttributeType.Image:
-                    mappedValues[attrID] =
-                      "valueString" in attrValue
-                        ? (attrValue.valueString ?? "")
-                        : "";
+                    mappedValues[attrID] = {
+                      value:
+                        "valueString" in attrValue
+                          ? (attrValue.valueString ?? "")
+                          : "",
+                      altText:
+                        "altText" in attrValue ? (attrValue.altText ?? "") : "",
+                    };
                     break;
 
                   case AttributeType.Text:
@@ -173,6 +210,10 @@ export default function EditCollectionItem() {
     })();
   }, [itemId]);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   * This is necessary to adjust the layout when the keyboard is shown or hidden.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -188,34 +229,63 @@ export default function EditCollectionItem() {
     }
   }, []);
 
+  /**
+   * Effect to reset the hasClickedSave state when the component mounts.
+   */
+
   const handleInputChange = (
     attributeID: number,
     value: any,
     displayText?: string,
+    altText?: string,
   ) => {
-    setAttributeValues((prevValues) => {
-      const isLink =
-        attributes.find((a) => a.attributeID === attributeID)?.type ===
-        AttributeType.Link;
+    const attributeType = attributes.find(
+      (a) => a.attributeID === attributeID,
+    )?.type;
 
-      return {
-        ...prevValues,
-        [attributeID]: isLink
-          ? {
+    setAttributeValues((prevValues) => {
+      const current = prevValues[attributeID] || {};
+
+      switch (attributeType) {
+        case AttributeType.Link:
+          return {
+            ...prevValues,
+            [attributeID]: {
               value: value?.trim() || null,
               displayText: displayText?.trim() || null,
-            }
-          : value,
-      };
+            },
+          };
+
+        case AttributeType.Image:
+          return {
+            ...prevValues,
+            [attributeID]: {
+              value: value?.trim() || null,
+              altText: altText?.trim() || null,
+            },
+          };
+
+        default:
+          return {
+            ...prevValues,
+            [attributeID]: value,
+          };
+      }
     });
   };
-
+  /**
+   * Handles the change of the selected category from the list.
+   * Converts the categoryID to a number if it is not null, and updates the selectedCategoryID state.
+   */
   const handleListChange = (categoryID: number | null) => {
     const numericCategoryID = categoryID !== null ? Number(categoryID) : null;
-
     setSelectedCategoryID(numericCategoryID);
   };
 
+  /**
+   * Validates the title attribute of the collection item.
+   * Checks if the title attribute exists and if its value is a non-empty string.
+   */
   const validateTitle = () => {
     const titleAttr = attributes.find((a) => a.type === AttributeType.Text);
     if (!titleAttr) return true;
@@ -223,6 +293,9 @@ export default function EditCollectionItem() {
     return typeof val === "string" && val.trim().length > 0;
   };
 
+  /**
+   * Handles the saving of the collection item.
+   */
   const handleSaveItem = async (itemId: string) => {
     const firstKey = Object.keys(attributeValues)[0];
     const firstValueRaw = firstKey
@@ -243,16 +316,26 @@ export default function EditCollectionItem() {
     });
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the page.
+   * - Header: Displays the title and an icon for the page.
+   * - AddCollectionItemCard: A card component for editing the collection item attributes.
+   * - BottomButtons: Contains the Cancel and Save buttons for the page.
+   * - ErrorPopup: Displays any errors that occur during the item retrieval or update process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
           <Header
             title="Edit Collection Item"
             onIconPress={() => alert("Popup!")}
+            headerRef={headerRef}
           />
         </View>
         <ScrollView
@@ -337,7 +420,10 @@ export default function EditCollectionItem() {
                             newValue?.displayText?.trim() || null;
                           break;
                         case AttributeType.Image:
-                          updatedValue.valueString = newValue || null;
+                          updatedValue.valueString =
+                            newValue?.value?.trim() || null;
+                          updatedValue.altText =
+                            newValue?.altText?.trim() || null;
                           break;
                       }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, TouchableWithoutFeedback } from "react-native";
+import { Modal, ScrollView, TouchableWithoutFeedback } from "react-native";
 import {
   PopupBackdrop,
   PopupContainer,
@@ -11,6 +11,18 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { View } from "react-native";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * Component for displaying an informational popup with an image, title, description, and optional call-to-action button.
+ *
+ * @param visible (required) - Controls the visibility of the popup.
+ * @param onClose (required) - Callback function to handle closing the popup.
+ * @param image (required) - Image to display in the popup.
+ * @param title (required) - Title of the popup.
+ * @param description (required) - Description text to display in the popup.
+ * @param ctaText - Text for the call-to-action button (default is "Got it").
+ * @param onConfirm - Optional callback function to handle confirmation action when the button is pressed.
+ */
 
 interface InfoPopupProps {
   visible: boolean;
@@ -35,9 +47,17 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <TouchableWithoutFeedback onPress={onClose}>
-        <PopupBackdrop>
-          <PopupImage source={image} />
+      <PopupBackdrop>
+        <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+            flexGrow: 1,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <PopupImage source={image} accessible={false} accessibilityLabel="" />
+
           <PopupContainer colorScheme={colorScheme}>
             <View style={{ marginBottom: 10 }}>
               <ThemedText fontSize="regular" fontWeight="bold">
@@ -53,8 +73,8 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
               <CTAButtonText>{ctaText}</CTAButtonText>
             </CTAButton>
           </PopupContainer>
-        </PopupBackdrop>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+      </PopupBackdrop>
     </Modal>
   );
 };

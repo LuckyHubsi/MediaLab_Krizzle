@@ -11,7 +11,7 @@ export const Backdrop = styled.View`
 
 export const Content = styled.View<ColorSchemeProps>`
   background-color: ${({ colorScheme }: ColorSchemeProps) =>
-    colorScheme === "light" ? "#fff" : "#1A1A1A"};
+    colorScheme === "light" ? Colors.white : "#1A1A1A"};
   width: 80%;
   height: auto;
   max-height: 600px;
@@ -33,11 +33,12 @@ export const ItemsGrid = styled.View`
 export const ItemWrapper = styled.TouchableOpacity<{
   isSelected: boolean;
   colorScheme: "light" | "dark";
+  hitSlop?: { top: 10; bottom: 10; left: 10; right: 10 };
 }>`
   flex-direction: row;
   align-items: center;
-  padding: 5px;
-  border-radius: 33px;
+  padding: 9px;
+  border-radius: 12px;
   background-color: ${({
     isSelected,
     colorScheme,
@@ -47,11 +48,11 @@ export const ItemWrapper = styled.TouchableOpacity<{
   }) =>
     isSelected
       ? colorScheme === "light"
-        ? "#176BBA"
-        : "#4599E8"
+        ? Colors.primary
+        : Colors.secondary
       : colorScheme === "light"
-        ? "#EAEAEA"
-        : "#3D3D3D"};
+        ? Colors.grey25
+        : Colors.dark.pillBackground};
 `;
 
 export const ItemCircle = styled.View<{
@@ -60,9 +61,9 @@ export const ItemCircle = styled.View<{
   colorScheme: "light" | "dark";
   showBorder: boolean;
 }>`
-  width: 24px;
-  height: 24px;
-  border-radius: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 18px;
   justify-content: center;
   align-items: center;
   background-color: ${({ backgroundColor }: { backgroundColor: string }) =>
@@ -70,14 +71,13 @@ export const ItemCircle = styled.View<{
   border: ${({
     showBorder,
     isSelected,
-    colorScheme,
   }: {
     showBorder: boolean;
     isSelected: boolean;
     colorScheme: "light" | "dark";
   }) =>
     showBorder && isSelected
-      ? `1px solid ${colorScheme === "light" ? "#fff" : "#000"}`
+      ? `1px solid ${Colors.white}`
       : "1px solid transparent"};
 `;
 
@@ -85,16 +85,6 @@ export const ColorLabel = styled.Text<{
   isSelected: boolean;
   colorScheme: "light" | "dark";
 }>`
-  color: {
-    color: ${({
-      isSelected,
-      colorScheme,
-    }: {
-      isSelected: boolean;
-      colorScheme: "light" | "dark";
-    }) =>
-      isSelected ? "#FBFBFB" : colorScheme === "light" ? "#585858" : "#EAEAEA"};
-  }
   margin-left: 4px;
 `;
 

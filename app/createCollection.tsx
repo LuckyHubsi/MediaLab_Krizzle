@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import CreateCollection, {
@@ -11,7 +11,7 @@ import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
-import { Platform } from "react-native";
+import { findNodeHandle, Platform, View } from "react-native";
 import { PageType } from "@/shared/enum/PageType";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
@@ -19,6 +19,12 @@ import { Colors } from "@/constants/Colors";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { AccessibilityInfo } from "react-native";
+
+/**
+ * CollectionTemplateScreen is a screen that allows users to create a new collection
+ * (Step 1: Create Widget, Step 2: Create Template).
+ */
 
 export default function CollectionTemplateScreen() {
   const { collectionService } = useServices();
@@ -27,9 +33,32 @@ export default function CollectionTemplateScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const templateHeaderRef = useRef(null);
+  const widgetHeaderRef = useRef(null);
 
   const { showSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    if (step === "template") {
+      const delay = setTimeout(() => {
+        const node = findNodeHandle(templateHeaderRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300); // give the DOM time to render first
+      return () => clearTimeout(delay);
+    } else if (step === "create") {
+      const delay = setTimeout(() => {
+        const node = findNodeHandle(widgetHeaderRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300); // give the DOM time to render first
+      return () => clearTimeout(delay);
+    }
+  }, [step]);
+
+  // Initial state for collection data
   const [collectionData, setCollectionData] = useState<CollectionData>({
     title: "",
     selectedTag: null,
@@ -39,6 +68,8 @@ export default function CollectionTemplateScreen() {
     templates: [],
   });
 
+  // Function to prepare DTOs for collection and template creation
+  // This function maps the collection data to the DTOs required by the service
   const prepareDTOs = (): {
     collection: CollectionDTO;
     template: ItemTemplateDTO;
@@ -56,6 +87,10 @@ export default function CollectionTemplateScreen() {
       parentID: null, // TODO - pass the correct folderID if screen accessed from a folder page
     };
 
+    /**
+     * Maps template data into an array of AttributeDTO objects.
+     * Extracts and formats fields like label, type, preview, options, and symbol from each template.
+     */
     const attributes: AttributeDTO[] = collectionData.templates.map(
       (attribute) => {
         return {
@@ -76,6 +111,7 @@ export default function CollectionTemplateScreen() {
     return { collection, template };
   };
 
+  // Function to create a new collection
   const createCollection = async () => {
     const dtos: { collection: CollectionDTO; template: ItemTemplateDTO } =
       prepareDTOs();
@@ -123,6 +159,14 @@ export default function CollectionTemplateScreen() {
     }
   };
 
+  /**
+   * Components used:
+   *
+   * - GradientBackground: Provides a gradient background for the screen.
+   * - CreateCollection: Step 1 component for creating a collection (widget).
+   * - CreateCollectionTemplate: Step 2 component for creating a template for the collection.
+   * - ErrorPopup: Displays errors that occur during the collection creation process.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 100, android: 95 })}
@@ -133,6 +177,7 @@ export default function CollectionTemplateScreen() {
           data={collectionData}
           setData={setCollectionData}
           onNext={() => setStep("template")}
+          headerRef={widgetHeaderRef}
         />
       )}
       {step === "template" && (
@@ -141,6 +186,7 @@ export default function CollectionTemplateScreen() {
           setData={setCollectionData}
           onBack={() => setStep("create")}
           onNext={createCollection}
+          headerRef={templateHeaderRef}
         />
       )}
 

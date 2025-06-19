@@ -1,14 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import Textfield from "../Textfield/Textfield";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
-import { Link } from "expo-router";
 import { LinkPickerContainer, LinkTitleButton } from "./LinkPicker.styles";
 
-// Inside the component
+/**
+ * Component for selecting a link with an optional custom title.
+ *
+ * @param title (required) - The title of the link picker.
+ * @param value - The current link value.
+ * @param onChange (required) - Callback function to handle link value changes.
+ * @param linkText - The custom link title.
+ * @param onLinkTextChange (required) - Callback function to handle changes to the custom link title.
+ */
 
 interface LinkPickerProps {
   title: string;
@@ -28,12 +40,19 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
   const [showCustomTextfield, setShowCustomTextfield] = useState(!!linkText);
   const colorScheme = useColorScheme();
   const iconColor = colorScheme === "dark" ? Colors.grey50 : Colors.grey100;
+  const titleRef = useRef(null);
 
+  /**
+   * Handles the removal of custom text for the link title.
+   */
   const handleRemoveCustomText = () => {
     setShowCustomTextfield(false);
     onLinkTextChange("");
   };
 
+  /**
+   * Effect to show the custom text field if a link title is provided.
+   */
   useEffect(() => {
     if (linkText) {
       setShowCustomTextfield(true);
@@ -42,7 +61,13 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
 
   return (
     <>
-      <ThemedText fontWeight="regular" fontSize="regular">
+      <ThemedText
+        fontWeight="regular"
+        fontSize="regular"
+        accessibilityLabel={`label ${title}`}
+        nativeID={title}
+        optionalRef={titleRef}
+      >
         {title}
       </ThemedText>
       <LinkPickerContainer>
@@ -56,9 +81,22 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
         />
 
         {!showCustomTextfield ? (
-          <TouchableOpacity onPress={() => setShowCustomTextfield(true)}>
+          <TouchableOpacity
+            onPress={() => setShowCustomTextfield(true)}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Add a custom link title or display text for ${title}`}
+            accessibilityHint="Opens a new text input field"
+          >
             <LinkTitleButton>
-              <MaterialIcons name="add" size={20} color={Colors.primary} />
+              <MaterialIcons
+                name="add"
+                size={20}
+                color={
+                  colorScheme === "dark" ? Colors.secondary : Colors.primary
+                }
+                accessible={false}
+              />
               <ThemedText fontWeight="bold" fontSize="s" colorVariant="primary">
                 Add custom link title
               </ThemedText>
@@ -78,10 +116,29 @@ const LinkPicker: React.FC<LinkPickerProps> = ({
               />
             </View>
             <TouchableOpacity
-              onPress={handleRemoveCustomText}
-              style={{ marginLeft: 8, marginBottom: 12 }}
+              onPress={() => {
+                handleRemoveCustomText();
+                const reactTag = findNodeHandle(titleRef.current);
+                if (reactTag) {
+                  AccessibilityInfo.setAccessibilityFocus(reactTag);
+                }
+              }}
+              style={{
+                right: -10,
+                minHeight: 48,
+                minWidth: 48,
+                justifyContent: "center",
+              }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove selected custom link title for ${title}`}
             >
-              <MaterialIcons name="close" size={24} color={iconColor} />
+              <MaterialIcons
+                name="close"
+                size={24}
+                color={Colors[colorScheme ?? "light"].text}
+                accessible={false}
+              />
             </TouchableOpacity>
           </View>
         )}

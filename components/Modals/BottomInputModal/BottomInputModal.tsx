@@ -12,6 +12,18 @@ import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ModalContent, StyledTextInput } from "./BottomInputModal.styles";
 
+/**
+ * Component for displaying a modal with a text input at the bottom of the screen.
+ * It allows users to enter text and submit it, used for adding tags or folder names.
+ *
+ * @param visible (required) - Controls the visibility of the modal.
+ * @param value (required) - The current text input value.
+ * @param onChangeText (required) - Callback function to handle text changes.
+ * @param onSubmit (required) - Callback function to handle submission of the text input.
+ * @param onClose (required) - Callback function to close the modal.
+ * @param placeholderText (required) - Placeholder text for the input field.
+ */
+
 type TagInputModalProps = {
   visible: boolean;
   value: string;
@@ -30,40 +42,39 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
   placeholderText,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
-
   return (
     <Modal
       visible={visible}
-      animationType="fade"
       transparent
+      animationType="fade"
       onRequestClose={onClose}
+      accessible={true}
+      accessibilityViewIsModal={true}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback onPress={onClose}>
-          <LinearGradient
-            colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.7)"]}
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              alignItems: "center",
-              padding: 20,
-            }}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <LinearGradient
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.7)"]}
+          style={{ flex: 1, justifyContent: "flex-end", padding: 20 }}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ width: "100%" }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
           >
             <TouchableWithoutFeedback>
               <ModalContent colorScheme={colorScheme}>
                 <StyledTextInput
                   colorScheme={colorScheme}
                   placeholder={placeholderText}
-                  placeholderTextColor="#999"
+                  placeholderTextColor={Colors[colorScheme].disabled}
                   value={value}
                   onChangeText={onChangeText}
                   onSubmitEditing={onSubmit}
                   textColor={Colors[colorScheme].text}
                   autoFocus
                   maxLength={30}
+                  accessibilityHint="Enter or edit a name with up to 30 characters"
+                  accessible={true}
                 />
                 <TouchableOpacity
                   onPress={onSubmit}
@@ -75,18 +86,26 @@ export const BottomInputModal: React.FC<TagInputModalProps> = ({
                     justifyContent: "center",
                     alignItems: "center",
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Submit"
+                  accessibilityHint={
+                    placeholderText.includes("tag")
+                      ? "Saves the tag"
+                      : "Saves the folder"
+                  }
                 >
                   <MaterialIcons
                     name="arrow-upward"
                     size={24}
-                    color={Colors[colorScheme].text}
+                    accessible={false}
+                    color={Colors[colorScheme].disabled}
                   />
                 </TouchableOpacity>
               </ModalContent>
             </TouchableWithoutFeedback>
-          </LinearGradient>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </LinearGradient>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };

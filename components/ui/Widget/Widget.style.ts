@@ -4,14 +4,18 @@ type CardProps = { cardWidth: number };
 
 export const CardSolid = styled.View<CardProps>`
   width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
+  padding: ${({ padding }: { padding: number }) => `${padding}px`};
   aspect-ratio: 1;
   border-radius: 33px;
-  padding: 20px;
   justify-content: flex-end;
 `;
 
-export const CardGradient = styled(LinearGradient)<{ cardWidth: number }>`
+export const CardGradient = styled(LinearGradient)<{
+  cardWidth: number;
+  padding: number;
+}>`
   width: ${({ cardWidth }: CardProps) => `${cardWidth}px`};
+  padding: ${({ padding }: { padding: number }) => `${padding}px`};
   aspect-ratio: 1;
   border-radius: 33px;
   padding: 20px;
@@ -33,17 +37,6 @@ export const Icon = styled.View`
   background-color: rgba(255, 255, 255, 0.7);
   justify-content: center;
   align-items: center;
-`;
-
-export const Title = styled.Text.attrs({
-  numberOfLines: 1,
-  ellipsizeMode: "tail",
-})`
-  font-family: Lexend_400Regular;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  max-width: 90%;
 `;
 
 export const Tag = styled.Text`

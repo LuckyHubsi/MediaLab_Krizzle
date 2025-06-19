@@ -39,10 +39,3 @@ export const Action = styled.Pressable<ColorSchemeProps>`
   border-color: ${({ colorScheme }: ColorSchemeProps) =>
     Colors[colorScheme].pillBackground};
 `;
-
-export const ActionText = styled.Text<{ color?: string }>`
-  font-family: Lexend_400Regular;
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ color }: { color?: string }) => color || "#000"};
-`;

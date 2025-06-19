@@ -1,6 +1,17 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Platform } from "react-native";
+import {
+  View,
+  Platform,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -23,11 +34,17 @@ import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderMod
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * CollectionScreen component displays a collection of items organized into lists.
+ */
+
 export default function CollectionScreen() {
   const { generalPageService, collectionService, itemTemplateService } =
     useServices();
 
   const router = useRouter();
+
+  // Using useLocalSearchParams to get the parameters passed to this screen
   const { pageId, title, selectedIcon, routing } = useLocalSearchParams<{
     pageId: string;
     title?: string;
@@ -45,6 +62,13 @@ export default function CollectionScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
   const [shouldReload, setShouldReload] = useState<boolean>();
+  const [shouldReloadArchiveState, setShouldReloadArchiveState] =
+    useState<boolean>();
+  const [shouldReloadPinnedState, setShouldReloadPinnedState] =
+    useState<boolean>();
+  const [shouldReloadParentFolder, setShouldReloadParentFolder] =
+    useState<boolean>();
+  const [shouldReloadItems, setShouldReloadItems] = useState<boolean>();
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,7 +78,12 @@ export default function CollectionScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * useFocusEffect hook to fetch collection data when the screen is focused.
+   * It retrieves the collection by pageId and fetches items associated with it.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -121,9 +150,166 @@ export default function CollectionScreen() {
         }
       };
       fetchData();
+
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, [pageId, shouldReload, routing]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.archived = collectionResult.value.archived;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadArchiveState(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadArchiveState, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.pinned = collectionResult.value.pinned;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadPinnedState(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadPinnedState, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const retrievedItemsResult =
+            await collectionService.getItemsByPageId(numericID);
+
+          if (retrievedItemsResult.success) {
+            setItems(retrievedItemsResult.value);
+
+            // remove all prior errors from the items retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "items:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...retrievedItemsResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "items:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadItems(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadItems, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.parentID = collectionResult.value.parentID;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadParentFolder(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadParentFolder, routing]),
+  );
+
+  // Function to navigate to the edit page for the corrisponding collection widget
   const goToEditPage = () => {
     const path = "/editWidget";
 
@@ -133,6 +319,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Function to navigate to the edit lists page for the collection
   const goToEditListsPage = () => {
     const path = "/editCollectionLists";
 
@@ -146,6 +333,7 @@ export default function CollectionScreen() {
     });
   };
 
+  // Memoized filtered items based on search query and selected list
   const filteredItems = useMemo(() => {
     if (!items || !items.items || !items.attributes) return []; // Return an empty array if items or attributes are undefined
 
@@ -165,6 +353,30 @@ export default function CollectionScreen() {
     });
   }, [items, selectedList, searchQuery]);
 
+  // update key to force re-render when searchQuery or results change to have screenreader announce results of search
+  useEffect(() => {
+    const message = searchQuery
+      ? filteredItems.length > 0
+        ? `${filteredItems.length} collection items${filteredItems.length > 1 ? "s" : ""} ${searchQuery ? `found for` + searchQuery : ""} inside collection list ${selectedList}`
+        : `No collection items ${searchQuery ? `found for` + searchQuery : ""} inside Collection list ${selectedList}`
+      : "";
+
+    AccessibilityInfo.announceForAccessibility(message);
+  }, [searchQuery, filteredItems.length, selectedList]);
+
+  /**
+   * Components used:
+   *
+   * - GradientBackgroundWrapper: A wrapper component that provides a gradient background.
+   * - CustomStyledHeader: A custom header component with a title and icons.
+   * - SearchBar: A search bar component for filtering items.
+   * - CollectionListCard: A card component that displays the collection lists and items.
+   * - QuickActionModal: A modal for quick actions on the collection or items.
+   * - DeleteModal: A modal for confirming deletion of the collection or items.
+   * - FloatingAddButton: A floating button to add new items to the collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the collection.
+   * - ErrorPopup: A popup for displaying errors.
+   */
   return (
     <>
       <SafeAreaView
@@ -183,7 +395,13 @@ export default function CollectionScreen() {
         />
         <CustomStyledHeader
           title={collectionTitle || "Collection"}
-          backBehavior={routing === "goArchive" ? "goArchive" : "goHome"}
+          backBehavior={
+            routing === "goArchive"
+              ? "goArchive"
+              : collection?.parentID === null
+                ? "goHome"
+                : "goFolder"
+          }
           iconName={selectedIcon || undefined}
           onIconPress={() => {}}
           iconName2="more-horiz"
@@ -192,6 +410,8 @@ export default function CollectionScreen() {
             collection?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
           isTransparent={true}
+          headerRef={headerRef}
+          param={`${collection?.parentID}`}
         />
 
         <View style={{ paddingHorizontal: 20 }}>
@@ -229,7 +449,61 @@ export default function CollectionScreen() {
         onClose={() => setShowModal(false)}
         items={
           [
-            collection && !collection.archived
+            collection && !collection.archived && collection.parentID !== null
+              ? {
+                  label: "Move back Home",
+                  icon: "home",
+                  onPress: async () => {
+                    if (collection) {
+                      try {
+                        const updateResult =
+                          await generalPageService.updateFolderID(
+                            Number(collection.pageID),
+                            null,
+                          );
+
+                        if (updateResult.success) {
+                          showSnackbar(
+                            "Moved back to home",
+                            "bottom",
+                            "success",
+                          );
+                          setShouldReload(true);
+
+                          // remove all prior errors from the widget move source if service call succeeded
+                          setErrors((prev) =>
+                            prev.filter(
+                              (error) => error.source !== "widget:move",
+                            ),
+                          );
+                        } else {
+                          // set all errors to the previous errors plus add the new error
+                          // define the id and the source and set its read status to false
+                          setErrors((prev) => [
+                            ...prev,
+                            {
+                              ...updateResult.error,
+                              hasBeenRead: false,
+                              id: `${Date.now()}-${Math.random()}`,
+                              source: "widget:move",
+                            },
+                          ]);
+                          setShowError(true);
+                          showSnackbar(
+                            "Failed to move widget",
+                            "bottom",
+                            "error",
+                          );
+                        }
+                      } catch (error) {
+                        console.error("Error moving back home:", error);
+                        showSnackbar("Error moving widget", "top", "error");
+                      }
+                    }
+                  },
+                }
+              : null,
+            collection && !collection.archived && collection.parentID === null
               ? {
                   label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
                   icon: "push-pin",
@@ -248,11 +522,15 @@ export default function CollectionScreen() {
                         collection.pinned,
                       );
                       if (pinResult.success) {
-                        setShouldReload(true);
+                        setShouldReloadPinnedState(true);
 
                         // remove all prior errors from the pinning source if service call succeeded
                         setErrors((prev) =>
                           prev.filter((error) => error.source !== "pinning"),
+                        );
+
+                        AccessibilityInfo.announceForAccessibility(
+                          `${collection?.pinned ? "Unpinned Collection Widget" : "Pinned Collection Widget"}`,
                         );
                       } else {
                         // set all errors to the previous errors plus add the new error
@@ -333,7 +611,7 @@ export default function CollectionScreen() {
                       "bottom",
                       "success",
                     );
-                    setShouldReload(true);
+                    setShouldReloadArchiveState(true);
 
                     // remove all prior errors from the archiving source if service call succeeded
                     setErrors((prev) =>
@@ -365,7 +643,10 @@ export default function CollectionScreen() {
             },
             collection && !collection.archived
               ? {
-                  label: "Move to Folder",
+                  label:
+                    collection && collection.parentID === null
+                      ? "Move to Folder"
+                      : "Move to another Folder",
                   icon: "folder",
                   onPress: () => {
                     setShowFolderSelectionModal(true);
@@ -438,6 +719,9 @@ export default function CollectionScreen() {
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
 
+                AccessibilityInfo.announceForAccessibility(
+                  "Collection Deleted",
+                );
                 router.replace("/");
               } else {
                 // set all errors to the previous errors plus add the new error
@@ -460,7 +744,7 @@ export default function CollectionScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
       <DeleteModal
         visible={showItemDeleteModal}
@@ -475,7 +759,7 @@ export default function CollectionScreen() {
 
               if (deleteResult.success) {
                 setShowItemDeleteModal(false);
-                setShouldReload(true);
+                setShouldReloadItems(true);
                 showSnackbar("Successfully deleted Item.", "bottom", "success");
               } else {
                 setErrors((prev) => [
@@ -501,7 +785,7 @@ export default function CollectionScreen() {
             }
           }
         }}
-        onclose={() => setShowItemDeleteModal(false)}
+        onClose={() => setShowItemDeleteModal(false)}
       />
 
       {!collection?.archived && (
@@ -524,6 +808,9 @@ export default function CollectionScreen() {
       <SelectFolderModal
         widgetTitle={title}
         widgetId={pageId}
+        initialSelectedFolderId={
+          collection?.parentID ? collection.parentID : undefined
+        }
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
         onMoved={(success: boolean) => {
@@ -533,7 +820,7 @@ export default function CollectionScreen() {
               "bottom",
               "success",
             );
-            setShouldReload(true);
+            setShouldReloadParentFolder(true);
           } else {
             showSnackbar("Failed to move note to folder.", "bottom", "error");
           }

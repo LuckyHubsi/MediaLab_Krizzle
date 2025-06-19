@@ -10,8 +10,8 @@ export const Container = styled.View`
 export const HeaderRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  margin-top: 4px;
   margin-bottom: 2px;
 `;
 
@@ -34,6 +34,7 @@ export const ViewAllText = styled.Text<ColorSchemeProps>`
 
 export const TagScrollView = styled.ScrollView`
   flex-direction: row;
+  margin-top: 8px;
 `;
 
 export const TagPill = styled.View<{
@@ -45,6 +46,7 @@ export const TagPill = styled.View<{
   justify-content: center;
   padding: 8px 12px;
   border-radius: 20px;
+  min-width: 48px;
   background-color: ${({
     isSelected,
     colorScheme,
@@ -60,8 +62,7 @@ export const TagPill = styled.View<{
 `;
 
 export const EditTextContainer = styled.TouchableOpacity`
-  height: 48;
-  position: absolute;
-  right: 0;
-  top: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;

@@ -6,11 +6,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { Colors } from "@/constants/Colors";
 
+/**
+ * Component for displaying chosen options of color and icon in widget creation.
+ * @param label (required) - The label for the card.
+ * @param selectedColor - Optional color for the circle background.
+ * @param selectedIcon - Optional icon name from MaterialIcons to display in the circle.
+ * @param onPress (required) - Callback function to handle card press events.
+ */
 interface ChooseCardProps {
   label: string;
   selectedColor?: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
+  type?: "color" | "icon";
 }
 
 export const ChooseCard: React.FC<ChooseCardProps> = ({
@@ -18,11 +26,18 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
   selectedColor,
   selectedIcon,
   onPress,
+  type,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={onPress}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={`${type === "icon" ? "Choose an icon" : "Choose a color"}`}
+      accessibilityHint={`opens a modal with different options. ${label.includes("choose") ? "" : `Currently chosen: ${label}`}`}
+    >
       <StyledChooseCard colorScheme={colorScheme}>
         {/* Edit Button (Pencil Icon) */}
         <EditButton>
@@ -32,7 +47,6 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
             color={Colors[colorScheme].text}
           />
         </EditButton>
-
         {/* Center Circle with Color & Icon */}
         <Circle
           style={{ backgroundColor: selectedColor ?? "transparent" }}
@@ -46,7 +60,6 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
             />
           )}
         </Circle>
-
         {/* Label Below */}
         <ThemedText fontSize="s" fontWeight="regular" style={{ marginTop: 5 }}>
           {label}

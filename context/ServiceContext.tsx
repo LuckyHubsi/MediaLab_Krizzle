@@ -54,6 +54,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   const generalPageService = new GeneralPageService(
     generalPageRepository,
     baseRepository,
+    itemRepository,
   );
   const noteService = new NoteService(noteRepository);
   const itemTemplateService = new ItemTemplateService(

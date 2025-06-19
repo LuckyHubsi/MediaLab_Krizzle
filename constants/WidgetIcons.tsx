@@ -1,6 +1,11 @@
-// constants/Icons.tsx
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+/**
+ * This file contains a mapping of widget types to their corresponding icons.
+ * Each widget type is represented by a MaterialCommunityIcons icon,
+ * example: "note: file-document".
+ */
 
 export const WidgetIcons = {
   note: <MaterialCommunityIcons name="file-document" size={20} color="black" />,

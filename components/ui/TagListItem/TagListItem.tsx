@@ -4,6 +4,17 @@ import { Row, Column, IconRow } from "./TagListItem.styles";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for displaying a tag in the Tag Management with options to edit or delete it.
+ *
+ * @param tag (required) - The name of the tag to display.
+ * @param onEdit (required) - Callback function to handle editing the tag.
+ * @param onDelete (required) - Callback function to handle deleting the tag.
+ * @param tagCount - Count of how many widgets use this tag.
+ * @param tagCountLoading - Boolean to indicate if the tag count is still loading.
+ */
 
 interface Props {
   tag: string;
@@ -30,6 +41,10 @@ export const TagListItem: React.FC<Props> = ({
             flexWrap: "wrap",
             flexShrink: 1,
           }}
+          accessible={true}
+          accessibilityLabel={`Tag labelled ${tag}.`}
+          accessibilityRole="text"
+          importantForAccessibility="yes"
         >
           {tag}
         </ThemedText>
@@ -58,7 +73,10 @@ export const TagListItem: React.FC<Props> = ({
           <MaterialIcons
             name="edit"
             size={24}
-            color={colorScheme === "light" ? "#000" : "#fff"}
+            color={colorScheme === "light" ? Colors.black : Colors.white}
+            accessibilityLabel="Edit tag"
+            accessibilityHint={`Edit the tag name of tag labelled ${tag}`}
+            accessibilityRole="button"
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -73,7 +91,10 @@ export const TagListItem: React.FC<Props> = ({
           <MaterialIcons
             name="delete"
             size={24}
-            color={colorScheme === "light" ? "#d00" : "#f66"}
+            color={Colors[colorScheme].negative}
+            accessibilityLabel="Delete tag"
+            accessibilityHint={`Delete the tag labelled ${tag}`}
+            accessibilityRole="button"
           />
         </TouchableOpacity>
       </IconRow>

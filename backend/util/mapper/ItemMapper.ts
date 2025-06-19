@@ -64,6 +64,7 @@ export class ItemMapper {
       | number
       | string[]
       | { value: string; displayText: string | null }
+      | { value: string; altText: string | null }
       | null
     )[] = entity.values.map((value, index) => {
       const attr = attributes[index];
@@ -92,14 +93,30 @@ export class ItemMapper {
             : null;
         case "image":
           // image values are expected to be strings
-          return typeof value === "string" ? value : null;
+          // return typeof value === "string" ? value : null;
+
+          if (
+            typeof value === "object" &&
+            value !== null &&
+            !Array.isArray(value) &&
+            "value" in value &&
+            typeof (value as any).value === "string" &&
+            "altText" in value
+          ) {
+            return {
+              value: value.value,
+              altText: typeof value.altText === "string" ? value.altText : null,
+            };
+          }
+          return null;
         case "link":
           if (
             typeof value === "object" &&
             value !== null &&
             !Array.isArray(value) &&
             "value" in value &&
-            typeof (value as any).value === "string"
+            typeof (value as any).value === "string" &&
+            "displayText" in value
           ) {
             return {
               value: value.value,
@@ -222,6 +239,7 @@ export class ItemMapper {
             return {
               ...base,
               valueString: attr.value ?? null,
+              altText: attr.alt_text ?? null,
             };
           case "link":
             return {
@@ -303,7 +321,13 @@ export class ItemMapper {
               const parsed = JSON.parse(raw);
               return Array.isArray(parsed) ? parsed : null;
             case "image":
-              return typeof raw === "string" ? raw : null;
+              // return typeof raw === "string" ? raw : null;
+              if (typeof raw !== "string") return null;
+              const altText =
+                typeof previewValue.alt_text === "string"
+                  ? previewValue.alt_text
+                  : null;
+              return raw ? { value: raw, altText } : null;
             case "link":
               if (typeof raw !== "string") return null;
               const displayText =
@@ -328,7 +352,6 @@ export class ItemMapper {
           continue;
         }
       }
-
       return items;
     } catch (error) {
       console.error(error);

@@ -1,15 +1,13 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import {
-  Alert,
   Keyboard,
   Platform,
   TouchableOpacity,
-  useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Card } from "@/components/ui/Card/Card";
-import { Header } from "@/components/ui/Header/Header";
 import Widget from "@/components/ui/Widget/Widget";
 import { TitleCard } from "@/components/ui/TitleCard/TitleCard";
 import { TagPicker } from "@/components/ui/TagPicker/TagPicker";
@@ -25,7 +23,6 @@ import {
   ScrollContainer,
   ContentWrapper,
   TwoColumnRow,
-  ButtonContainer,
 } from "./CreateCollection.styles";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
@@ -36,8 +33,23 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { PageType } from "@/shared/enum/PageType";
 import { useServices } from "@/context/ServiceContext";
-import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+
+/**
+ * Component for creating a collection widget with customizable options.
+ * Allows users to set a title, select a tag, choose a color and icon for the note/collection widget.
+ * @param title (required) - The title of the collection.
+ * @param selectedTag - The tag selected for the collection.
+ * @param selectedColor - The color selected for the collection widget.
+ * @param selectedIcon - The icon selected for the collection widget.
+ * @param lists - The lists associated with the collection.
+ * @param templates - The templates associated with the collection.
+ * @param data (required) - The data object containing all the collection properties.
+ * @param setData (required) - Function to update the collection data.
+ * @param onNext - Callback function to handle the next step in the creation process.
+ * @param onBack - Callback function to handle going back.
+ */
 
 interface CreateCollectionProps {
   data: {
@@ -51,6 +63,7 @@ interface CreateCollectionProps {
   setData: React.Dispatch<React.SetStateAction<any>>;
   onNext?: () => void;
   onBack?: () => void;
+  headerRef?: React.RefObject<View>;
 }
 export type CollectionData = {
   title: string;
@@ -72,29 +85,45 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   setData,
   onBack,
   onNext,
+  headerRef,
 }) => {
+  // Services and hooks
   const { tagService } = useServices();
   const { lastCreatedTag: lastCreatedTagParam } = useLocalSearchParams();
 
   const colorScheme = useActiveColorScheme();
+
+  // Destructure data properties for easier access
   const title = data.title;
   const selectedTag = data.selectedTag;
   const selectedColor = data.selectedColor;
   const selectedIcon = data.selectedIcon;
 
+  // State management for the component
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupType, setPopupType] = useState<"color" | "icon">("color");
   const [showHelp, setShowHelp] = useState(false);
   const [tags, setTags] = useState<TagDTO[]>([]);
-  const iconColor =
-    colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
   const selectedColorLabel = colorLabelMap[selectedColor] || "Choose Color";
   const selectedIconLabel = selectedIcon
     ? iconLabelMap[selectedIcon]
     : "Choose Icon";
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [errors, setErrors] = useState<EnrichedError[]>([]);
+  const [showError, setShowError] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const [cardHeight, setCardHeight] = useState(0);
+
+  // Calculate screen dimensions and orientation
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isHighCard = cardHeight > height * 0.4;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
+
+  // Generate color options for the ChoosePopup
   const colorOptions = Object.entries(Colors.widget).map(([key, value]) => ({
     id: key,
     color: value,
@@ -102,9 +131,11 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     label: colorLabelMap[Array.isArray(value) ? value[0] : value] ?? key,
   }));
 
-  const [errors, setErrors] = useState<EnrichedError[]>([]);
-  const [showError, setShowError] = useState(false);
-
+  /**
+   * Function to get the key of the widget color based on the value.
+   * This is used to map the selected color value to its corresponding key in the Colors.widget
+   * @param value - The color value to find the key for.
+   */
   const getWidgetColorKey = (
     value: string,
   ): keyof typeof Colors.widget | undefined =>
@@ -116,6 +147,10 @@ const CreateCollection: FC<CreateCollectionProps> = ({
           Colors.widget[key as keyof typeof Colors.widget].includes(value)),
     ) as keyof typeof Colors.widget | undefined;
 
+  /**
+   * Focus effect to fetch tags when the component is focused.
+   * This effect runs when the component is focused and retrieves all tags from the tag service.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
@@ -151,6 +186,9 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     }, []),
   );
 
+  /**
+   * Effect to add listeners for keyboard show and hide events to update the keyboardVisible state.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -166,6 +204,10 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     }
   }, []);
 
+  /**
+   * Effect to check the lastCreatedTag param for a valid JSON string.
+   * If the param is a valid JSON string representing a tag, it sets the selectedTag
+   */
   useEffect(() => {
     if (lastCreatedTagParam && typeof lastCreatedTagParam === "string") {
       try {
@@ -182,115 +224,288 @@ const CreateCollection: FC<CreateCollectionProps> = ({
     }
   }, [lastCreatedTagParam]);
 
-  const { showSnackbar } = useSnackbar();
-
   return (
     <>
-      <View style={{ marginBottom: 8 }}>
-        <Card>
-          <IconTopRight onPress={() => setShowHelp(true)}>
-            <MaterialIcons
-              name="help-outline"
-              size={26}
-              color={
-                colorScheme === "light" ? Colors.primary : Colors.secondary
-              }
-            />
-          </IconTopRight>
-          <View style={{ alignItems: "center", gap: 20 }}>
-            <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
-              <ThemedText fontSize="l" fontWeight="bold">
-                Create Collection
-              </ThemedText>
-              <ThemedText
-                fontSize="s"
-                fontWeight="light"
-                colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
-              >
-                Design your new collection's widget
-              </ThemedText>
+      {isSmallScreen || isHighCard ? (
+        <>
+          <ScrollContainer showsVerticalScrollIndicator={false}>
+            <View style={{ marginBottom: 20 }}>
+              <Card>
+                <IconTopRight onPress={() => setShowHelp(true)}>
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Help"
+                    accessibilityHint="Opens a help modal"
+                    onPress={() => setShowHelp(true)}
+                  >
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
+                </IconTopRight>
+                <View style={{ alignItems: "center", gap: 20 }}>
+                  <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+                    <View
+                      ref={headerRef}
+                      accessible={true}
+                      accessibilityRole="header"
+                    >
+                      <ThemedText fontSize="l" fontWeight="bold">
+                        Create Collection
+                      </ThemedText>
+                    </View>
+                    <ThemedText
+                      fontSize="s"
+                      fontWeight="light"
+                      colorVariant={
+                        colorScheme === "light" ? "grey" : "lightGrey"
+                      }
+                    >
+                      Design your new collection's widget
+                    </ThemedText>
+                  </View>
+                  <Widget
+                    title={title || "Title"}
+                    label={selectedTag?.tag_label?.trim() || ""}
+                    pageType={PageType.Collection}
+                    icon={
+                      selectedIcon ? (
+                        <MaterialIcons
+                          name={selectedIcon}
+                          size={22}
+                          color="black"
+                        />
+                      ) : undefined
+                    }
+                    color={getWidgetColorKey(selectedColor) ?? "blue"}
+                    isPreview={true}
+                  />
+                </View>
+              </Card>
             </View>
-            <Widget
-              title={title || "Title"}
-              label={selectedTag?.tag_label?.trim() || ""}
-              pageType={PageType.Collection}
-              icon={
-                selectedIcon ? (
-                  <MaterialIcons name={selectedIcon} size={22} color="black" />
-                ) : undefined
-              }
-              color={getWidgetColorKey(selectedColor) ?? "blue"}
-              isPreview={true}
-            />
+
+            <ContentWrapper>
+              <Card>
+                <TitleCard
+                  placeholder="Add a title"
+                  value={title}
+                  onChangeText={(text) => {
+                    setData((prev: any) => ({ ...prev, title: text }));
+                  }}
+                  hasNoInputError={
+                    hasClickedNext && (!data.title || data.title.trim() === "")
+                  }
+                />
+                {/* Display error message if title is empty or only whitespace */}
+                {titleError && (
+                  <ThemedText
+                    fontSize="s"
+                    colorVariant="red"
+                    style={{ marginTop: 5 }}
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
+              </Card>
+
+              <DividerWithLabel label="optional" iconName="arrow-back" />
+
+              <Card>
+                <TagPicker
+                  tags={tags}
+                  selectedTag={selectedTag}
+                  onSelectTag={(tag) => {
+                    setData((prev: any) => ({
+                      ...prev,
+                      selectedTag:
+                        tag && prev.selectedTag?.tagID === tag.tagID
+                          ? null
+                          : tag,
+                    }));
+                  }}
+                  onViewAllPress={() => router.navigate("/tagManagement")}
+                />
+              </Card>
+
+              <TwoColumnRow>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedColorLabel}
+                    selectedColor={selectedColor}
+                    onPress={() => {
+                      setPopupType("color");
+                      setPopupVisible(true);
+                    }}
+                    type="color"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedIconLabel}
+                    selectedColor={Colors[colorScheme].cardBackground}
+                    selectedIcon={selectedIcon}
+                    onPress={() => {
+                      setPopupType("icon");
+                      setPopupVisible(true);
+                    }}
+                    type="icon"
+                  />
+                </View>
+              </TwoColumnRow>
+            </ContentWrapper>
+          </ScrollContainer>
+        </>
+      ) : (
+        <>
+          <View
+            style={{ marginBottom: 8 }}
+            onLayout={(event) => {
+              const { height } = event.nativeEvent.layout;
+              setCardHeight(height);
+            }}
+          >
+            <Card>
+              <IconTopRight onPress={() => setShowHelp(true)}>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Help"
+                  accessibilityHint="Opens a help modal"
+                  onPress={() => setShowHelp(true)}
+                >
+                  <MaterialIcons
+                    name="help-outline"
+                    size={26}
+                    color={
+                      colorScheme === "light"
+                        ? Colors.primary
+                        : Colors.secondary
+                    }
+                    accessible={false}
+                  />
+                </TouchableOpacity>
+              </IconTopRight>
+              <View style={{ alignItems: "center", gap: 20 }}>
+                <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
+                  <View
+                    ref={headerRef}
+                    accessible={true}
+                    accessibilityRole="header"
+                  >
+                    <ThemedText fontSize="l" fontWeight="bold">
+                      Create Collection
+                    </ThemedText>
+                  </View>
+                  <ThemedText
+                    fontSize="s"
+                    fontWeight="light"
+                    colorVariant={
+                      colorScheme === "light" ? "grey" : "lightGrey"
+                    }
+                  >
+                    Design your new collection's widget
+                  </ThemedText>
+                </View>
+                <Widget
+                  title={title || "Title"}
+                  label={selectedTag?.tag_label?.trim() || ""}
+                  pageType={PageType.Collection}
+                  icon={
+                    selectedIcon ? (
+                      <MaterialIcons
+                        name={selectedIcon}
+                        size={22}
+                        color="black"
+                      />
+                    ) : undefined
+                  }
+                  color={getWidgetColorKey(selectedColor) ?? "blue"}
+                  isPreview={true}
+                />
+              </View>
+            </Card>
           </View>
-        </Card>
-      </View>
-      <ScrollContainer showsVerticalScrollIndicator={false}>
-        <ContentWrapper>
-          <Card>
-            <TitleCard
-              placeholder="Add a title"
-              value={title}
-              onChangeText={(text) => {
-                setData((prev: any) => ({ ...prev, title: text }));
-              }}
-              hasNoInputError={
-                hasClickedNext && (!data.title || data.title.trim() === "")
-              }
-            />
-            {titleError && (
-              <ThemedText
-                fontSize="s"
-                colorVariant="red"
-                style={{ marginTop: 5 }}
-              >
-                {titleError}
-              </ThemedText>
-            )}
-          </Card>
+          <ScrollContainer showsVerticalScrollIndicator={false}>
+            <ContentWrapper>
+              <Card>
+                <TitleCard
+                  placeholder="Add a title"
+                  value={title}
+                  onChangeText={(text) => {
+                    setData((prev: any) => ({ ...prev, title: text }));
+                  }}
+                  hasNoInputError={
+                    hasClickedNext && (!data.title || data.title.trim() === "")
+                  }
+                />
+                {/* Display error message if title is empty or only whitespace */}
+                {titleError && (
+                  <ThemedText
+                    fontSize="s"
+                    colorVariant="red"
+                    style={{ marginTop: 5 }}
+                  >
+                    {titleError}
+                  </ThemedText>
+                )}
+              </Card>
 
-          <DividerWithLabel label="optional" iconName="arrow-back" />
+              <DividerWithLabel label="optional" iconName="arrow-back" />
 
-          <Card>
-            <TagPicker
-              tags={tags}
-              selectedTag={selectedTag}
-              onSelectTag={(tag) => {
-                setData((prev: any) => ({
-                  ...prev,
-                  selectedTag:
-                    tag && prev.selectedTag?.tagID === tag.tagID ? null : tag,
-                }));
-              }}
-              onViewAllPress={() => router.navigate("/tagManagement")}
-            />
-          </Card>
+              <Card>
+                <TagPicker
+                  tags={tags}
+                  selectedTag={selectedTag}
+                  onSelectTag={(tag) => {
+                    setData((prev: any) => ({
+                      ...prev,
+                      selectedTag:
+                        tag && prev.selectedTag?.tagID === tag.tagID
+                          ? null
+                          : tag,
+                    }));
+                  }}
+                  onViewAllPress={() => router.navigate("/tagManagement")}
+                />
+              </Card>
 
-          <TwoColumnRow>
-            <View style={{ flex: 1 }}>
-              <ChooseCard
-                label={selectedColorLabel}
-                selectedColor={selectedColor}
-                onPress={() => {
-                  setPopupType("color");
-                  setPopupVisible(true);
-                }}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <ChooseCard
-                label={selectedIconLabel}
-                selectedColor={Colors[colorScheme].cardBackground}
-                selectedIcon={selectedIcon}
-                onPress={() => {
-                  setPopupType("icon");
-                  setPopupVisible(true);
-                }}
-              />
-            </View>
-          </TwoColumnRow>
-        </ContentWrapper>
-      </ScrollContainer>
+              <TwoColumnRow>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedColorLabel}
+                    selectedColor={selectedColor}
+                    onPress={() => {
+                      setPopupType("color");
+                      setPopupVisible(true);
+                    }}
+                    type="color"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <ChooseCard
+                    label={selectedIconLabel}
+                    selectedColor={Colors[colorScheme].cardBackground}
+                    selectedIcon={selectedIcon}
+                    onPress={() => {
+                      setPopupType("icon");
+                      setPopupVisible(true);
+                    }}
+                    type="icon"
+                  />
+                </View>
+              </TwoColumnRow>
+            </ContentWrapper>
+          </ScrollContainer>
+        </>
+      )}
+
+      {/* Render the lists and templates if they exist */}
       {(Platform.OS !== "android" || !keyboardVisible) && (
         <View
           style={{
@@ -304,7 +519,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               if (onBack) {
                 onBack();
               } else {
-                router.back(); // fallback
+                router.back();
               }
             }}
             onNext={() => {
@@ -389,6 +604,3 @@ const CreateCollection: FC<CreateCollectionProps> = ({
 };
 
 export default CreateCollection;
-function setKeyboardVisible(arg0: boolean): void {
-  throw new Error("Function not implemented.");
-}

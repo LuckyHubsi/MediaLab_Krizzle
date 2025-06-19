@@ -122,7 +122,7 @@ export class GeneralPageMapper {
           : null,
         createdAt: new Date(model.date_created),
         updatedAt: new Date(model.date_modified),
-        parentID: model.parentID,
+        parentID: model.parent_folderID,
       });
     } catch (error) {
       console.error(error);

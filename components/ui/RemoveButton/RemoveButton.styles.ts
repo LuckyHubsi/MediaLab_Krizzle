@@ -7,6 +7,7 @@ export const StyledButtonContainer = styled.TouchableOpacity<ColorSchemeProps>`
   border-radius: 33px;
   width: 50%;
   gap: 10px;
+  min-height: 48px;
   flex-direction: row;
   align-items: center;
   justify-content: center;

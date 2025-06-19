@@ -5,11 +5,16 @@ import {
   FolderShape,
   FolderTab,
 } from "./FolderComponent.styles";
-import {
-  TouchableNativeFeedback,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
+
+/**
+ * Component for displaying a UI element styled like a folder.
+ * @param title (required) - The title of the folder.
+ * @param itemCount (required) - The number of items in the folder.
+ * @param cardWidth - Optional width for the folder card.
+ * @param onPress (required) - Callback function to handle press events.
+ * @param onLongPress - Optional callback function to handle long press events.
+ */
 
 interface FolderComponentProps {
   title: string;
@@ -26,6 +31,10 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
   onPress,
   onLongPress,
 }) => {
+  /**
+   * Function to handle long press events.
+   * If an onLongPress callback is provided, it will be called.
+   */
   const handleLongPress = () => {
     if (onLongPress) {
       onLongPress();
@@ -39,6 +48,11 @@ const FolderComponent: React.FC<FolderComponentProps> = ({
       onPress={onPress}
       activeOpacity={0.9}
       onLongPress={handleLongPress}
+      style={{ overflow: "hidden" }}
+      accessible={true}
+      accessibilityRole="none"
+      accessibilityLabel={`Folder: ${title}`}
+      accessibilityHint={`Currently holds ${itemCount === 0 ? "no widgets" : itemCount === 1 ? "one widget" : `${itemCount} widgets`}. Activate to open.`}
     >
       <FolderContainer cardWidth={cardWidth}>
         <FolderShape />

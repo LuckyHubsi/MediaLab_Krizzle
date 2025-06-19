@@ -1,35 +1,57 @@
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { ThemedText } from "@/components/ThemedText";
-import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import { Button } from "@/components/ui/Button/Button";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { resetDatabase } from "@/backend/service/DatabaseReset";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
-  useColorScheme,
   SafeAreaView,
   View,
   Platform,
   StatusBar,
-  Alert,
+  AccessibilityInfo,
+  findNodeHandle,
 } from "react-native";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
+/**
+ * ResetDatabaseScreen that allows users to reset their database.
+ */
 export default function ResetDatabaseScreen() {
-  const colorScheme = useColorScheme() ?? "light";
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
-  const resetOnboarding = async () => {
-    await AsyncStorage.removeItem("hasOnboarded");
-    console.log("✅ hasOnboarded removed");
-    Alert.alert("Onboarding Reset", "Restart the app to see onboarding again.");
-  };
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title.
+   * - ThemedView: A themed view component that applies the current theme.
+   * - ThemedText: A themed text component that applies the current theme.
+   * - Button: A button component that triggers the reset action.
+   * - DeleteModal: A modal that confirms the deletion of all data.
+   * - ErrorPopup: A popup that displays errors that occurred during the reset process.
+   */
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -37,10 +59,14 @@ export default function ResetDatabaseScreen() {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
-        <CustomStyledHeader title="Reset Data" />
+        <CustomStyledHeader title="Reset Data" headerRef={headerRef} />
       </View>
       <ThemedView>
-        <ThemedText fontWeight="bold" colorVariant="red">
+        <ThemedText
+          fontWeight="bold"
+          colorVariant="red"
+          accessibilityRole="header"
+        >
           Erase All Data and Start Fresh
         </ThemedText>
         <ThemedText>
@@ -57,6 +83,7 @@ export default function ResetDatabaseScreen() {
             setShowDeleteModal(true);
           }}
           isRed={true}
+          accessibilityLabel="Reset All Data"
         >
           Reset all Data
         </Button>
@@ -84,16 +111,15 @@ export default function ResetDatabaseScreen() {
             setShowError(true);
           }
 
-          setShowDeleteModal(false); // ✅ only close modal on success
+          setShowDeleteModal(false);
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

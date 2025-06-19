@@ -6,7 +6,17 @@ import {
   IconContainer,
   RatingIconsContainer,
 } from "../CreateCollectionTemplate.styles";
+import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * Component for displaying a rating selection using Material Icons.
+ * It allows users to select a rating from a predefined set of icons.
+ * @param title (required) - The title of the rating section.
+ * @param rating (required) - The currently selected rating icon.
+ * @param onRatingChange (required) - Callback function to handle changes in the selected rating icon.
+ */
+
+// Array of icon names from MaterialIcons to be used in the rating component
 const iconArray: (keyof typeof MaterialIcons.glyphMap)[] = [
   "star",
   "coffee",
@@ -45,17 +55,32 @@ const TemplateRating: React.FC<TemplateRatingProps> = ({
   rating,
   onRatingChange,
 }) => {
+  const colorScheme = useActiveColorScheme() ?? "light";
   return (
     <RatingIconsContainer>
       <ThemedText>{title}</ThemedText>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <IconContainer>
           {iconArray.map((icon) => (
-            <TouchableOpacity key={icon} onPress={() => onRatingChange(icon)}>
+            <TouchableOpacity
+              key={icon}
+              onPress={() => onRatingChange(icon)}
+              accessibilityRole="radio"
+              accessibilityLabel={`${icon}`}
+              accessibilityState={{ selected: rating === icon }}
+            >
               <MaterialIcons
                 name={icon}
                 size={28}
-                color={rating === icon ? Colors.primary : Colors.grey100}
+                color={
+                  rating === icon
+                    ? colorScheme === "light"
+                      ? Colors.primary
+                      : Colors.secondary
+                    : colorScheme === "light"
+                      ? Colors.grey100
+                      : Colors.grey50
+                }
                 style={{ marginRight: 10 }}
               />
             </TouchableOpacity>

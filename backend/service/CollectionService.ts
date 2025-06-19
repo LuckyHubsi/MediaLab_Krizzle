@@ -339,6 +339,7 @@ export class CollectionService {
         await this.categoryRepo.deleteCategory(brandedCategoryID, txn);
         await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
+      await this.deleteCollectionCategoryImages(brandedCategoryID);
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -365,6 +366,30 @@ export class CollectionService {
   }
 
   /**
+   * Deletes all image files from the file system tied to a collection category.
+   *
+   * @param categoryId - the collection category ID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteCollectionCategoryImages(categoryId: number): Promise<void> {
+    try {
+      const brandedCategoryID = collectionCategoryID.parse(categoryId);
+
+      const imageValues =
+        await this.itemRepo.getImageValuesByCategoryID(brandedCategoryID);
+
+      for (const imgValue of imageValues) {
+        if (imgValue) {
+          await this.deleteImageFile(imgValue);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Deletes an image file from the file system.
    *
    * @param imageUri - URI of the image to delete.
@@ -384,44 +409,6 @@ export class CollectionService {
       }
 
       return false;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Deletes all image files from the file system tied to a collection.
-   *
-   * @param pageId - the collection pageID to be deleted.
-   * @returns Promise resolving to void.
-   * @throws Rethrows error
-   */
-  async deleteCollectionImages(pageId: number): Promise<void> {
-    try {
-      const brandedPageID = pageID.parse(pageId);
-
-      const attributes =
-        await this.attributeRepo.getPreviewAttributes(brandedPageID);
-      const imageAttributeIds: number[] = [];
-
-      attributes.forEach((attr) => {
-        if (attr.type === AttributeType.Image) {
-          imageAttributeIds.push(attr.attributeID);
-        }
-      });
-
-      if (imageAttributeIds.length === 0) return;
-
-      const imageValues = await this.baseRepo.fetchAll<{ value: string }>(
-        selectImageValuesByPageIdQuery,
-        [pageId],
-      );
-
-      for (const imgValue of imageValues) {
-        if (imgValue.value) {
-          await this.deleteImageFile(imgValue.value);
-        }
-      }
     } catch (error) {
       throw error;
     }
@@ -704,6 +691,7 @@ export class CollectionService {
                     itemId,
                     value.attributeID,
                     value.valueString ?? null,
+                    value.altText ?? null,
                     txn,
                   );
                 }

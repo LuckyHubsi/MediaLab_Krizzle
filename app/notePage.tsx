@@ -1,11 +1,16 @@
 import TextEditor from "@/components/TextEditor/TextEditor";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppState, AppStateStatus, Platform, View } from "react-native";
+import {
+  AccessibilityInfo,
+  AppState,
+  AppStateStatus,
+  findNodeHandle,
+  Platform,
+  View,
+} from "react-native";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef } from "react";
 import { NoteDTO } from "@/shared/dto/NoteDTO";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { useState } from "react";
@@ -13,7 +18,6 @@ import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 import QuickActionModal, {
   QuickActionItem,
 } from "@/components/Modals/QuickActionModal/QuickActionModal";
-import { set } from "date-fns";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { useServices } from "@/context/ServiceContext";
@@ -23,6 +27,13 @@ import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
+/**
+ * NotesScreen screen that displays a note with rich text editing capabilities.
+ *
+ * @params pageId - The ID of the note to display.
+ * @params title - The title of the note.
+ * @params routing - The routing behavior for the back button.
+ */
 export default function NotesScreen() {
   const { pageId, title, routing } = useLocalSearchParams<{
     pageId?: string;
@@ -30,7 +41,6 @@ export default function NotesScreen() {
     routing?: string;
   }>();
   const { generalPageService, noteService } = useServices();
-
   const router = useRouter();
   const [noteContent, setNoteContent] = useState<string>("");
   const latestNoteContentRef = useRef<string>("");
@@ -44,10 +54,30 @@ export default function NotesScreen() {
   const [appState, setAppState] = useState<AppStateStatus>(
     AppState.currentState,
   );
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
+  /**
+   * Fetches the note data by page ID when the component mounts or when the pageId changes.
+   */
   useEffect(() => {
     if (pageId) {
       const numericID = Number(pageId);
@@ -88,6 +118,9 @@ export default function NotesScreen() {
     }
   }, [pageId, shouldReload, colorScheme]);
 
+  /**
+   * Saves the note content to the server when the content changes.
+   */
   const saveNote = async (html: string) => {
     if (!pageId) return;
     const updateResult = await noteService.updateNoteContent(
@@ -115,6 +148,9 @@ export default function NotesScreen() {
     }
   };
 
+  /**
+   * Debounced save function that saves the note content after a delay of 1000ms.
+   */
   const debouncedSave = useDebouncedCallback(saveNote, 1000);
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -143,8 +179,16 @@ export default function NotesScreen() {
     });
   };
 
-  const { showSnackbar } = useSnackbar();
-
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title and actions.
+   * - TextEditor: A rich text editor for editing the note content.
+   * - QuickActionModal: A modal for quick actions on the note.
+   * - DeleteModal: A modal for confirming deletion of the note.
+   * - SelectFolderModal: A modal for selecting a folder to move the note.
+   * - ErrorPopup: A modal for displaying errors.
+   */
   return (
     <>
       <SafeAreaView
@@ -164,6 +208,7 @@ export default function NotesScreen() {
           leftIconName={
             noteData?.page_icon as keyof typeof MaterialIcons.glyphMap
           }
+          headerRef={headerRef}
         />
         <TextEditor
           initialContent={noteContent}
@@ -178,6 +223,60 @@ export default function NotesScreen() {
         onClose={() => setShowModal(false)}
         items={
           [
+            noteData && !noteData.archived && noteData.parentID !== null
+              ? {
+                  label: "Move back Home",
+                  icon: "home",
+                  onPress: async () => {
+                    if (noteData) {
+                      try {
+                        const updateResult =
+                          await generalPageService.updateFolderID(
+                            Number(noteData.pageID),
+                            null,
+                          );
+
+                        if (updateResult.success) {
+                          showSnackbar(
+                            "Moved back to home",
+                            "bottom",
+                            "success",
+                          );
+                          setShouldReload(true);
+
+                          // remove all prior errors from the widget move source if service call succeeded
+                          setErrors((prev) =>
+                            prev.filter(
+                              (error) => error.source !== "widget:move",
+                            ),
+                          );
+                        } else {
+                          // set all errors to the previous errors plus add the new error
+                          // define the id and the source and set its read status to false
+                          setErrors((prev) => [
+                            ...prev,
+                            {
+                              ...updateResult.error,
+                              hasBeenRead: false,
+                              id: `${Date.now()}-${Math.random()}`,
+                              source: "widget:move",
+                            },
+                          ]);
+                          setShowError(true);
+                          showSnackbar(
+                            "Failed to move widget",
+                            "bottom",
+                            "error",
+                          );
+                        }
+                      } catch (error) {
+                        console.error("Error moving back home:", error);
+                        showSnackbar("Error moving widget", "top", "error");
+                      }
+                    }
+                  },
+                }
+              : null,
             noteData && !noteData.archived
               ? {
                   label: noteData?.pinned ? "Unpin Widget" : "Pin Widget",
@@ -204,6 +303,10 @@ export default function NotesScreen() {
                         // remove all prior errors from the pinning source if service call succeeded
                         setErrors((prev) =>
                           prev.filter((error) => error.source !== "pinning"),
+                        );
+
+                        AccessibilityInfo.announceForAccessibility(
+                          `${noteData?.pinned ? "Unpinned Note Widget" : "Pinned Note Widget"}`,
                         );
                       } else {
                         // set all errors to the previous errors plus add the new error
@@ -282,7 +385,10 @@ export default function NotesScreen() {
             },
             noteData && !noteData.archived
               ? {
-                  label: "Move to Folder",
+                  label:
+                    noteData && noteData.parentID === null
+                      ? "Move to Folder"
+                      : "Move to another Folder",
                   icon: "folder",
                   onPress: async () => {
                     setShowFolderSelectionModal(true);
@@ -317,6 +423,8 @@ export default function NotesScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
+
+                AccessibilityInfo.announceForAccessibility("Note Deleted");
                 router.replace("/");
               } else {
                 // set all errors to the previous errors plus add the new error
@@ -338,12 +446,15 @@ export default function NotesScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <SelectFolderModal
         widgetTitle={title}
         widgetId={pageId}
+        initialSelectedFolderId={
+          noteData?.parentID ? noteData.parentID : undefined
+        }
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
         onMoved={(success: boolean) => {
@@ -365,7 +476,6 @@ export default function NotesScreen() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

@@ -69,6 +69,7 @@ const multiselectValue = itemAttributeBase.extend({
 const imageValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Image),
   valueString: common.string750.optional().nullable(),
+  altText: z.string().optional().nullable(),
 });
 
 /**
@@ -76,8 +77,8 @@ const imageValue = itemAttributeBase.extend({
  */
 const linkValue = itemAttributeBase.extend({
   type: z.literal(AttributeType.Link),
-  valueString: common.string750.optional().nullable(),
-  displayText: common.string750.optional().nullable(),
+  valueString: z.string().optional().nullable(),
+  displayText: z.string().optional().nullable(),
 });
 
 /**

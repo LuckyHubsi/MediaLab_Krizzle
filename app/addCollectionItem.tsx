@@ -1,16 +1,21 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Header } from "@/components/ui/Header/Header";
-import { Keyboard, Platform, ScrollView, View } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Keyboard,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 import BottomButtons from "@/components/ui/BottomButtons/BottomButtons";
 import AddCollectionItemCard from "@/components/ui/AddCollectionItemCard/AddCollectionItemCard";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemAttributeValueDTO } from "@/shared/dto/ItemAttributeValueDTO";
 import { ItemDTO } from "@/shared/dto/ItemDTO";
-import { Button } from "@/components/ui/Button/Button";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { AttributeType } from "@/shared/enum/AttributeType";
@@ -18,7 +23,12 @@ import { useServices } from "@/context/ServiceContext";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 
+/**
+ * AddCollectionItem Screen component that allows users to add items to a collection.
+ */
+
 export default function AddCollectionItem() {
+  // Extracting parameters from the URL using useLocalSearchParams
   const { templateId, collectionId, pageId, routing } = useLocalSearchParams<{
     templateId?: string;
     collectionId?: string;
@@ -40,7 +50,29 @@ export default function AddCollectionItem() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
+  /**
+   * Effect hook to fetch the item template and collection categories
+   * On success, sets attributes or lists and clears related errors.
+   * On failure, adds the corresponding error to the error list and shows the error message.
+   */
   useEffect(() => {
     (async () => {
       const numericTemplateID = Number(templateId);
@@ -103,6 +135,10 @@ export default function AddCollectionItem() {
     })();
   }, [templateId]);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   * This is necessary to adjust the layout when the keyboard is shown or hidden.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -118,32 +154,58 @@ export default function AddCollectionItem() {
     }
   }, []);
 
+  /**
+   * Function to handle input changes for attributes (updates based on user input).
+   * @param attributeID - The ID of the attribute being changed.
+   * @param value - The new value for the attribute.
+   * @param displayText - Optional display text for link attributes.
+   * @param altText - Optional alt text for image attributes.
+   */
   const handleInputChange = (
     attributeID: number,
     value: any,
     displayText?: string,
+    altText?: string,
   ) => {
     setAttributeValues((prevValues) => {
-      const isLink =
-        attributes.find((a) => a.attributeID === attributeID)?.type ===
-        AttributeType.Link;
+      const attribute = attributes.find((a) => a.attributeID === attributeID);
+      if (!attribute) return prevValues;
+
+      const isLink = attribute.type === AttributeType.Link;
+      const isImage = attribute.type === AttributeType.Image;
+
+      let newValue;
+      if (isLink) {
+        newValue = {
+          value: value?.trim() || null,
+          displayText: displayText?.trim() || null,
+        };
+      } else if (isImage) {
+        newValue = {
+          uri: typeof value === "string" ? value : value?.uri || null,
+          altText: altText?.trim() || null,
+        };
+      } else {
+        newValue = value;
+      }
 
       return {
         ...prevValues,
-        [attributeID]: isLink
-          ? {
-              value: value?.trim() || null,
-              displayText: displayText?.trim() || null,
-            }
-          : value,
+        [attributeID]: newValue,
       };
     });
   };
 
+  /**
+   * Function to handle changes in the selected list (category).
+   */
   const handleListChange = (categoryID: number | null) => {
     setSelectedCategoryID(categoryID);
   };
 
+  /**
+   * Function to validate the fields of the collection item.
+   */
   const validateFields = () => {
     const firstTextAttribute = attributes.find(
       (attribute) => attribute.type === AttributeType.Text,
@@ -154,6 +216,10 @@ export default function AddCollectionItem() {
     return value && value.trim() !== "";
   };
 
+  /**
+   * Function to map attributes to an ItemDTO.
+   * This function transforms the attributes and their values into a format suitable for the ItemDTO.
+   */
   const mapToItemDTO = (attributes: AttributeDTO[]): ItemDTO => {
     const attributeValueDTOs: ItemAttributeValueDTO[] = attributes.map(
       (attribute) => {
@@ -174,7 +240,11 @@ export default function AddCollectionItem() {
               displayText: value?.displayText?.trim() || null,
             };
           case AttributeType.Image:
-            return { ...attribute, valueString: value };
+            return {
+              ...attribute,
+              valueString: typeof value === "string" ? value : value?.uri || "",
+              altText: value?.altText?.trim?.() || null,
+            };
           default:
             return { ...attribute };
         }
@@ -188,6 +258,9 @@ export default function AddCollectionItem() {
     };
   };
 
+  /**
+   * Function to handle saving the collection item.
+   */
   const handleSaveItem = async () => {
     setHasClickedNext(true);
     const titleIsValid = validateFields();
@@ -240,16 +313,25 @@ export default function AddCollectionItem() {
 
   const { showSnackbar } = useSnackbar();
 
+  /**
+   * Components used:
+   * - GradientBackground: A background component with a gradient effect.
+   * - Header: A header component for the screen.
+   * - AddCollectionItemCard: A card component for adding collection items.
+   * - BottomButtons: A component for the bottom action buttons (Discard and Add).
+   * - ErrorPopup: A modal component for displaying errors.
+   */
   return (
     <GradientBackground
       backgroundCardTopOffset={Platform.select({ ios: 55, android: 45 })}
-      topPadding={Platform.select({ ios: 20, android: 30 })}
+      topPadding={Platform.select({ ios: 20, android: 10 })}
     >
       <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
           <Header
             title="Add Collection Item"
             onIconPress={() => alert("Popup!")}
+            headerRef={headerRef}
           />
         </View>
         <ScrollView
@@ -287,7 +369,6 @@ export default function AddCollectionItem() {
         visible={showError && errors.some((e) => !e.hasBeenRead)}
         errors={errors.filter((e) => !e.hasBeenRead) || []}
         onClose={(updatedErrors) => {
-          // all current errors get tagged as hasBeenRead true on close of the modal (dimiss or click outside)
           const updatedIds = updatedErrors.map((e) => e.id);
           const newCombined = errors.map((e) =>
             updatedIds.includes(e.id) ? { ...e, hasBeenRead: true } : e,

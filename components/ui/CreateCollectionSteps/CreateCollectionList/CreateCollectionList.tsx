@@ -1,10 +1,8 @@
 import React, { FC, useEffect, useState } from "react";
 import {
-  Alert,
   Keyboard,
   Platform,
   ScrollView,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -15,7 +13,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { InfoPopup } from "@/components/Modals/InfoModal/InfoModal";
 import BottomButtons from "../../BottomButtons/BottomButtons";
 import Textfield from "../../Textfield/Textfield";
-
 import { Colors } from "@/constants/Colors";
 import {
   AddButtonWrapper,
@@ -23,10 +20,8 @@ import {
   ItemCountContainer,
   ListContent,
   RemoveButtonContainer,
-  RemoveButtonContent,
   HorizontalTitleRow,
 } from "./CreateCollectionList.styles";
-
 import type { CollectionData } from "../CreateCollection/CreateCollection";
 import {
   CardText,
@@ -36,6 +31,15 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 import { useSnackbar } from "../../Snackbar/Snackbar";
 import { IconTopRight } from "../../IconTopRight/IconTopRight";
 import RemoveButton from "../../RemoveButton/RemoveButton";
+
+/**
+ * Component for creating a list of collections.
+ * This component allows users to add, remove, and edit collection lists.
+ * @param data (required) - The current collection data containing lists.
+ * @param setData (required) - Function to update the collection data.
+ * @param onBack - Optional callback for the back button.
+ * @param onNext - Optional callback for the next button.
+ */
 
 interface CreateCollectionListProps {
   data: CollectionData;
@@ -53,20 +57,29 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
   const [hasClickedNext, setHasClickedNext] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+
   const colorScheme = useActiveColorScheme();
+  const { showSnackbar } = useSnackbar();
+
   const cards = data.lists;
   const titleMap: Record<string, number[]> = {};
+
+  const Wrapper =
+    Platform.OS === "ios" ? TouchableWithoutFeedback : React.Fragment;
+
+  /**
+   * Effect to initialize the first card if no lists exist.
+   */
   useEffect(() => {
     if (data.lists.length === 0) {
       const initialCard = { id: Date.now().toString(), title: "" };
       setData((prev) => ({ ...prev, lists: [initialCard] }));
     }
   }, []);
-  const Wrapper =
-    Platform.OS === "ios" ? TouchableWithoutFeedback : React.Fragment;
 
-  const { showSnackbar } = useSnackbar();
-
+  /**
+   * Effect to add listeners for keyboard show and hide events to update the keyboardVisible state.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const keyboardDidShow = Keyboard.addListener("keyboardDidShow", () =>
@@ -82,6 +95,10 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }
   }, []);
 
+  /**
+   * Function to handle adding a new card to the list.
+   * A new card is created with a unique ID and an empty title.
+   */
   const handleAddCard = () => {
     const newCard = { id: Date.now().toString(), title: "" };
     setData((prev) => ({
@@ -90,6 +107,10 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Function to handle removing a card from the list.
+   * @param id - The ID of the card to be removed.
+   */
   const handleRemoveCard = (id: string) => {
     setData((prev) => ({
       ...prev,
@@ -97,6 +118,11 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Function to handle changes to the title of a card.
+   * @param id - The ID of the card whose title is being changed.
+   * @param text - The new title text.
+   */
   const handleTitleChange = (id: string, text: string) => {
     setData((prev) => ({
       ...prev,
@@ -106,6 +132,10 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     }));
   };
 
+  /**
+   * Maps normalized card titles to their indexes in the `cards` array.
+   * Titles are trimmed and lowercased to catch duplicates regardless of formatting.
+   */
   cards.forEach((card, index) => {
     const key = card.title.trim().toLowerCase();
     if (!titleMap[key]) {
@@ -114,6 +144,10 @@ const CreateCollectionList: FC<CreateCollectionListProps> = ({
     titleMap[key].push(index);
   });
 
+  /**
+   * Collects IDs of cards with duplicate titles from `titleMap`.
+   * Uses a Set to avoid duplicate entries.
+   */
   const duplicateTitleIds = new Set<string>();
   Object.values(titleMap).forEach((indexes) => {
     if (indexes.length > 1) {

@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
-import {
-  Switch,
-  Touchable,
-  TouchableOpacity,
-  useColorScheme,
-} from "react-native";
+import { Switch, TouchableOpacity, useColorScheme } from "react-native";
 import {
   Container,
   Card,
@@ -16,13 +11,16 @@ import {
   ModeContainer,
   ResetContainer,
 } from "./ThemeSelector.styles";
-import {
-  ColorSchemeOption,
-  useActiveColorScheme,
-} from "@/context/ThemeContext";
+import { ColorSchemeOption } from "@/context/ThemeContext";
 import { useUserTheme } from "@/context/ThemeContext";
-import { Button } from "../Button/Button";
 import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a color scheme theme in the settings.
+ *
+ * @param selected (required) - The currently selected color scheme option.
+ * @param onSelect (required) - Callback function to handle theme selection.
+ */
 
 type ThemeSelectorProps = {
   selected: ColorSchemeOption;
@@ -36,6 +34,7 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
   const [systemDefaultIsEnabled, setSystemDefaultIsEnabled] = useState(false);
   const [lastManualTheme, setLastManualTheme] =
     useState<ColorSchemeOption>("light");
+  const [accessibleAnnouncement, setAccessibleAnnouncement] = useState("");
 
   const isSystemSelected = userTheme === "system";
 
@@ -61,6 +60,15 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
           <TouchableOpacity
             onPress={() => handleThemeSelect(option)}
             key={option}
+            accessible={true}
+            accessibilityRole="radio"
+            accessibilityLabel={`${option} mode option`}
+            accessibilityState={{ selected: selected === option }}
+            accessibilityHint={
+              isSystemSelected && systemColorScheme === option
+                ? `System Default is enabled and matches this theme option. Select ${option} mode to override the system default theme preference.`
+                : `Select ${option} mode to override the system default theme preference.`
+            }
           >
             <ModeContainer>
               <Card
@@ -97,7 +105,7 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
       </Container>
 
       <ResetContainer>
-        <ThemedText>Use System Default</ThemedText>
+        <ThemedText accessibilityRole="header">Use System Default</ThemedText>
         <Switch
           value={isSystemSelected}
           onValueChange={toggleSwitch}
@@ -108,6 +116,14 @@ export const ThemeSelector = ({ selected, onSelect }: ThemeSelectorProps) => {
           thumbColor={Colors.grey25}
           ios_backgroundColor="#3e3e3e"
           style={{ transform: [{ scaleX: 1.1 }, { scaleY: 1.1 }] }}
+          accessible={true}
+          accessibilityRole="switch"
+          accessibilityLabel="switch for using the system default theme preference"
+          accessibilityHint={
+            isSystemSelected
+              ? `Turning the switch off will change the selected theme option to lightmode until changed.`
+              : "Turning the switch on will reset your manually selected theme preference to use the system default."
+          }
         />
       </ResetContainer>
     </>

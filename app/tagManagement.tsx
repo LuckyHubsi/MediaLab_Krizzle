@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, FlatList, Keyboard, Platform } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  Keyboard,
+  Platform,
+  AccessibilityInfo,
+  findNodeHandle,
+} from "react-native";
 import { TagListItem } from "@/components/ui/TagListItem/TagListItem";
 import { ThemedText } from "@/components/ThemedText";
 import { CustomStyledHeader } from "@/components/ui/CustomStyledHeader/CustomStyledHeader";
@@ -13,12 +21,15 @@ import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
 import { BottomInputModal } from "@/components/Modals/BottomInputModal/BottomInputModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { useServices } from "@/context/ServiceContext";
-import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
+import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { useFocusEffect } from "expo-router";
 
+/**
+ * TagManagementScreen that allows users to manage their tags.
+ */
 export default function TagManagementScreen() {
   const { tagService } = useServices();
-
   const colorScheme = useActiveColorScheme() ?? "light";
   const [tags, setTags] = useState<TagDTO[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,12 +40,14 @@ export default function TagManagementScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagtoDelete, setTagToDelete] = useState<TagDTO | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-
   const { showSnackbar } = useSnackbar();
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const headerRef = useRef<View | null>(null);
 
+  /**
+   * Handles the submission of a new or edited tag.
+   */
   const handleTagSubmit = async () => {
     const trimmedTag = newTag.trim();
 
@@ -116,7 +129,10 @@ export default function TagManagementScreen() {
         }
       }
 
-      if (success) setShouldRefetch(true);
+      if (success) {
+        setShouldRefetch(true);
+        AccessibilityInfo.announceForAccessibility("Tag successfully saved");
+      }
     } catch (error) {
       console.error("Error saving tag:", error);
     } finally {
@@ -128,10 +144,15 @@ export default function TagManagementScreen() {
     }
   };
 
+  /**
+   * Deletes a tag by its ID.
+   * @param tagID - The ID of the tag to delete.
+   */
   const deleteTag = async (tagID: number) => {
     try {
       const deleteResult = await tagService.deleteTagByID(tagID);
       if (deleteResult.success) {
+        AccessibilityInfo.announceForAccessibility("Tag successfully deleted");
         setShouldRefetch(true);
 
         // remove all prior errors from the tag delete source if service call succeeded
@@ -157,6 +178,10 @@ export default function TagManagementScreen() {
     }
   };
 
+  /**
+   * Edits an existing tag by setting it to the modal with its current label.
+   * @param tagDTO - The TagDTO object containing the tag details to edit.
+   */
   const editTag = (tagDTO: TagDTO) => {
     setNewTag(tagDTO.tag_label);
     setEditingTag(tagDTO);
@@ -164,6 +189,10 @@ export default function TagManagementScreen() {
     setModalVisible(true);
   };
 
+  /**
+   * Fetches all tags from the tag service when the component mounts.
+   * If the fetch is successful, it updates the tags state.
+   */
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -197,6 +226,9 @@ export default function TagManagementScreen() {
     fetchTags();
   }, []);
 
+  /**
+   * Effect to refetch tags when `shouldRefetch` is true.
+   */
   useEffect(() => {
     if (!shouldRefetch) return;
 
@@ -233,6 +265,9 @@ export default function TagManagementScreen() {
     fetchUpdatedTags();
   }, [shouldRefetch]);
 
+  /**
+   * Effect to handle keyboard visibility on Android.
+   */
   useEffect(() => {
     if (Platform.OS === "android") {
       const showSub = Keyboard.addListener("keyboardDidShow", () =>
@@ -248,6 +283,31 @@ export default function TagManagementScreen() {
     }
   }, []);
 
+  /**
+   * sets the screenreader focus to the header after mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    }, []),
+  );
+
+  /**
+   * Components used:
+   *
+   * - CustomStyledHeader: A custom header component with a title and back navigation.
+   * - TagListItem: A component that displays each tag with options to delete or edit.
+   * - BottomInputModal: A modal for entering new tags or editing existing ones.
+   * - DeleteModal: A modal that confirms the deletion of a tag.
+   * - ErrorPopup: A popup that displays errors that occurred during tag operations.
+   */
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -259,6 +319,7 @@ export default function TagManagementScreen() {
           title="Tags"
           backBehavior="goBackWithParams"
           param={JSON.stringify(tags.length > 0 ? tags[tags.length - 1] : null)}
+          headerRef={headerRef}
         />
       </View>
 
@@ -309,7 +370,13 @@ export default function TagManagementScreen() {
                 paddingTop: 35,
               }}
             >
-              <Button onPress={() => setModalVisible(true)}>Add</Button>
+              <Button
+                onPress={() => setModalVisible(true)}
+                accessibilityLabel="Add Tag Button"
+                accessibilityHint="Opens the input modal for adding a new tag"
+              >
+                Add
+              </Button>
             </LinearGradient>
           </View>
         )}
@@ -323,7 +390,7 @@ export default function TagManagementScreen() {
           Keyboard.dismiss();
           setModalVisible(false);
         }}
-        placeholderText="Enter a new tag"
+        placeholderText="Edit or Enter a new tag"
       />
       <DeleteModal
         visible={showDeleteModal}
@@ -343,7 +410,7 @@ export default function TagManagementScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup
@@ -361,7 +428,4 @@ export default function TagManagementScreen() {
       />
     </SafeAreaView>
   );
-}
-function setKeyboardVisible(arg0: boolean): void {
-  throw new Error("Function not implemented.");
 }

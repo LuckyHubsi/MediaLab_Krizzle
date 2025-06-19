@@ -98,7 +98,7 @@ describe("GeneralPage Schema Validation", () => {
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect parentID", () => {
-      invalidGeneralPage.parentID = -1;
+      invalidGeneralPage.parent_folderID = -1;
       const result = generalPageSchema.safeParse(invalidGeneralPage);
       expect(result.success).toBe(false);
     });
@@ -147,7 +147,7 @@ describe("GeneralPage Schema Validation", () => {
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect parentID", () => {
-      invalidNewGeneralPage.parentID = -1;
+      invalidNewGeneralPage.parent_folderID = -1;
       const result = createNewGeneralPage.safeParse(invalidNewGeneralPage);
       expect(result.success).toBe(false);
     });

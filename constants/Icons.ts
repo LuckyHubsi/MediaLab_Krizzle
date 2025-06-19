@@ -1,3 +1,7 @@
+/**
+ * MatorialIcon names used in the widget creation process.
+ */
+
 export const Icons = [
   "coffee",
   "restaurant",

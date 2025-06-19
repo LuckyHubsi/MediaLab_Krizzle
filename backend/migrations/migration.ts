@@ -1,6 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite";
 
-export const SCHEMA_VERSION = 3; // add 1 to this when adding new migrations
+export const SCHEMA_VERSION = 4; // add 1 to this when adding new migrations
 
 // migration functions to go from version n to n+1
 export const migrations: {
@@ -1160,6 +1160,66 @@ export const migrations: {
             ["#157E54", page.pageID],
           );
         }
+        // _____________________________________________________________________
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // IMAGE VALUE
+        // check if table 'image_value' exists - create new one if not/migrate if it does
+        const imageValueCheck = await txn.getFirstAsync<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name='image_value';`,
+        );
+        if (imageValueCheck) {
+          await txn.execAsync(`
+            ALTER TABLE image_value RENAME TO old_image_value;
+
+            CREATE TABLE image_value (
+              image_valueID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+              itemID INTEGER NOT NULL,
+              attributeID INTEGER NOT NULL,
+              value TEXT,
+              alt_text TEXT,
+              FOREIGN KEY(attributeID) REFERENCES attribute(attributeID) ON DELETE CASCADE,
+              FOREIGN KEY(itemID) REFERENCES item(itemID) ON DELETE CASCADE
+            );
+
+            INSERT INTO image_value (image_valueID, itemID, attributeID, value, alt_text)
+            SELECT image_valueID, itemID, attributeID, value, NULL FROM old_image_value;
+
+            DROP TABLE IF EXISTS old_image_value;
+          `);
+        }
+        // _____________________________________________________________________
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // reenable FKs
+        await txn.execAsync(`
+          PRAGMA foreign_keys = ON;
+        `);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    });
+  },
+  4: async (db) => {
+    // REDO THE IMAGE_VALUE BCS THE DB IN ASSETS WAS MISSING THE ALT_TEXT COLUMN
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      try {
+        // disable FKs temporarily
+        await txn.execAsync(`
+          -- disable foreign key constraints temporarily
+          PRAGMA foreign_keys = OFF;
+        `);
         // _____________________________________________________________________
       } catch (error) {
         console.log(error);

@@ -43,6 +43,7 @@ export const AddMultiSelectableButton = styled.TouchableOpacity`
   justify-content: center;
   border-radius: 33px;
   padding: 10px 0;
+  min-height: 48px;
   border: 1px solid ${Colors.primary};
 `;
 
@@ -50,10 +51,11 @@ export const SelectablesContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  min-height: fit-content;
 `;
 
 export const TextfieldWrapper = styled.View`
-  width: 90%;
+  flex: 1;
 `;
 
 export const CardHeader = styled.View`

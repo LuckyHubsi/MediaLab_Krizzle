@@ -5,19 +5,29 @@ import {
   ModalBox,
   ButtonRow,
   Action,
-  ActionText,
   OverlayTextBox,
 } from "./DeleteModal.styles";
-import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
+
+/**
+ * Component for rendering a modal that confirms deletion of an item.
+ *
+ * @param visible (required) - Controls the visibility of the modal.
+ * @param title - The title of the item to be deleted.
+ * @param onCancel (required) - Callback function to handle cancellation of the deletion.
+ * @param onConfirm (required) - Callback function to handle confirmation of the deletion.
+ * @param onClose (required) - Callback function to close the modal.
+ * @param titleHasApostrophes - Flag to determine if the title has apostrophes.
+ * @param extraInformation - Additional information to display in the modal.
+ */
 
 interface DeleteModalProps {
   visible: boolean;
   title?: string;
   onCancel: () => void;
   onConfirm: () => void;
-  onclose: () => void;
+  onClose: () => void;
   titleHasApostrophes?: boolean;
   extraInformation?: string;
 }
@@ -27,12 +37,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   title,
   onCancel,
   onConfirm,
-  onclose,
+  onClose,
   titleHasApostrophes = true,
   extraInformation,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
-  const themeColors = Colors[colorScheme];
 
   return (
     <Modal
@@ -40,12 +49,27 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       transparent
       animationType="fade"
       onRequestClose={onCancel}
+      accessibilityViewIsModal={true}
+      accessible={true}
     >
-      <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onclose}>
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        activeOpacity={1}
+        onPress={onClose}
+        accessible={false}
+        importantForAccessibility="no"
+        accessibilityElementsHidden={true}
+      >
         <Overlay>
           <ModalBox colorScheme={colorScheme}>
             <OverlayTextBox>
-              <ThemedText fontSize="regular" fontWeight="semibold">
+              <ThemedText
+                fontSize="regular"
+                fontWeight="semibold"
+                textIsCentered
+                accessibilityRole="header"
+                accessibilityLabel={`Delete confirmation for ${title}`}
+              >
                 {titleHasApostrophes
                   ? `Do you want to delete "${title}"?`
                   : `Do you want to delete ${title}?`}
@@ -55,15 +79,27 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                   {extraInformation}
                 </ThemedText>
               )}
-              <ThemedText fontSize="s" fontWeight="regular">
+              <ThemedText fontSize="s" fontWeight="regular" textIsCentered>
                 You cannot undo this action
               </ThemedText>
             </OverlayTextBox>
             <ButtonRow>
-              <Action onPress={onConfirm} colorScheme={colorScheme}>
+              <Action
+                onPress={onConfirm}
+                colorScheme={colorScheme}
+                accessibilityRole="button"
+                accessibilityLabel="Confirm deletion"
+                accessibilityHint="Deletes this item permanently"
+              >
                 <ThemedText colorVariant="red">Delete</ThemedText>
               </Action>
-              <Action onPress={onCancel} colorScheme={colorScheme}>
+              <Action
+                onPress={onCancel}
+                colorScheme={colorScheme}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel deletion"
+                accessibilityHint="Closes the dialog without deleting"
+              >
                 <ThemedText colorVariant="primary">Cancel</ThemedText>
               </Action>
             </ButtonRow>

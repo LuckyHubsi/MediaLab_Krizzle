@@ -18,6 +18,29 @@ import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import CustomPicker from "@/components/ui/CustomPicker/CustomPicker";
+import { View } from "react-native";
+
+/**
+ * Component for rendering a card in the item template creation process.
+ * It allows users to select item types: text, ratings, date, multi-select, image, and link.
+ * Each item type includes a specific text field to input relevant information.
+ * @param isTitleCard - Indicates if this is a title card (used for the first field, always there).
+ * @param itemType - The type of item being created (text, rating, date, multi-select, image, link).
+ * @param textfieldIcon - The icon to display in the text field.
+ * @param isPreview - Indicates if the card is in preview mode. (maximum 3 cards can be previewed)
+ * @param title - The title of the item.
+ * @param rating - The rating icon for the item, if applicable.
+ * @param options - The options for multi-select items.
+ * @param onTypeChange - Callback function to handle changes in item type selection.
+ * @param onTitleChange - Callback function to handle changes in the title input.
+ * @param onRatingChange - Callback function to handle changes in the rating selection.
+ * @param onOptionsChange - Callback function to handle changes in multi-select options.
+ * @param onRemove - Callback function to handle the removal of the item.
+ * @param onPreviewToggle - Callback function to toggle the preview mode.
+ * @param hasNoInputError - Indicates if there is an error due to no input in the text field.
+ * @param previewCount - The number of items currently in preview mode.
+ * @param isExisting - Indicates if the item is an existing card field (used in edit mode).
+ */
 
 interface ItemTemplateCardProps {
   isTitleCard?: boolean;
@@ -75,9 +98,12 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
     "image",
     "link",
   ];
-  const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
   let errorMessage = undefined;
 
+  /**
+   * Validates the options for multi-select items when the user has clicked next.
+   * Checks for empty options, duplicates, and ensures at least one option is provided.
+   */
   if (hasClickedNext && itemType === "multi-select") {
     const trimmedOptions = (options ?? []).map((o) => o.trim());
     const lowerTrimmed = trimmedOptions
@@ -104,13 +130,24 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
   return (
     <TemplateSelectCard colorScheme={colorScheme}>
       <CardTitleRow>
+        {/* Titles for each item card:
+         * Title card (1st field) has "required" label,
+         * already existing fields (in Edit Mode) show the field count and item type,
+         * and new fields show only the field count. */}
         <CardTitle>
           {isTitleCard ? (
             <>
-              <ThemedText>Field 1 </ThemedText>
-              <ThemedText fontSize="s" colorVariant="red">
-                * required
-              </ThemedText>
+              <View
+                accessible={true}
+                accessibilityLabel="Field 1. Input required"
+                accessibilityRole="text"
+                style={{ display: "flex", flexDirection: "row" }}
+              >
+                <ThemedText>Field 1 </ThemedText>
+                <ThemedText fontSize="s" colorVariant="red">
+                  * required
+                </ThemedText>
+              </View>
             </>
           ) : isExisting ? (
             <>
@@ -123,7 +160,15 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             <ThemedText>Field {fieldCount}</ThemedText>
           )}
         </CardTitle>
-        <CardPreview onPress={onPreviewToggle}>
+
+        {/* Preview toggle button */}
+        <CardPreview
+          onPress={onPreviewToggle}
+          accessible={true}
+          accessibilityRole="togglebutton"
+          accessibilityLabel="field in item preview"
+          accessibilityState={{ checked: isPreview }}
+        >
           <ThemedText
             colorVariant={
               isPreview
@@ -133,7 +178,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
                   : "default"
             }
           >
-            Item Preview
+            Preview
           </ThemedText>
           {isPreview ? (
             <MaterialIcons
@@ -158,6 +203,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           )}
         </CardPreview>
       </CardTitleRow>
+
+      {/* Other cards (not title card/or already existing cards in edit mode) show the item type picker */}
       {!isTitleCard && !isExisting && (
         <AndroidPickerWrapper colorScheme={colorScheme}>
           <CustomPicker
@@ -173,10 +220,13 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               }))}
             placeholder={{ label: "Select item", value: "" }}
             colorScheme={colorScheme}
+            accessibilityLabel="Field type dropdown menu"
+            accessibilityLabelledBy={`Field ${fieldCount}`}
           />
         </AndroidPickerWrapper>
       )}
 
+      {/* Text field for title input */}
       <Textfield
         showTitle={false}
         textfieldIcon={
@@ -191,15 +241,17 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         placeholderText={
           isTitleCard
             ? `E.g. "Title" or "Name"`
-            : `Add a label to your ${itemType}`
+            : `Add a label for your ${itemType} field`
         }
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
         hasNoInputError={hasNoInputError}
         maxLength={30}
+        extraInfo="for your field label"
       />
 
+      {/* Show rating icons if item type is rating */}
       {itemType === "rating" && rating !== undefined && onRatingChange && (
         <TemplateRating
           title={"Rating Icon"}
@@ -208,6 +260,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         />
       )}
 
+      {/* Show multi-select adding buttons if item type is multi-select */}
       {itemType === "multi-select" &&
         options !== undefined &&
         onOptionsChange && (
@@ -221,7 +274,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           </>
         )}
 
-      {!isTitleCard && <RemoveButton onPress={onRemove} />}
+      {!isTitleCard && (
+        <RemoveButton onPress={onRemove} label={`Field ${fieldCount}`} />
+      )}
     </TemplateSelectCard>
   );
 };

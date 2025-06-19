@@ -1,15 +1,20 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   AndroidPickerWrapper,
   CollectionListContainer,
-  getPickerStyles,
 } from "./CollectionListDropdown.styles";
-import RNPickerSelect from "react-native-picker-select";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import CustomPicker from "../CustomPicker/CustomPicker";
+
+/**
+ * Component for displaying a dropdown to select a collection list.
+ * It allows users to choose from a list of collections and triggers a callback on selection change.
+ * @param title (required) - The title of the dropdown.
+ * @param collectionList (required) - An array of collection list names to display in the dropdown.
+ * @param selectedList (required) - The currently selected collection list name.
+ * @param onSelectionChange (required) - Callback function to handle changes in selection.
+ */
 
 interface CollectionListDropdownProps {
   title: string;
@@ -25,7 +30,8 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
   onSelectionChange,
 }) => {
   const colorScheme = useActiveColorScheme();
-  const pickerStyles = getPickerStyles({ colorScheme: colorScheme ?? "light" });
+
+  // Convert collectionList to dropdown items
   const dropdownItems = collectionList.map((item) => ({
     label: item,
     value: item,
@@ -33,7 +39,9 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
 
   return (
     <CollectionListContainer>
-      <ThemedText>{title}</ThemedText>
+      <ThemedText accessibilityLabel={`label ${title}`} nativeID={title}>
+        {title}
+      </ThemedText>
       <AndroidPickerWrapper colorScheme={colorScheme}>
         <CustomPicker
           placeholder={{}}
@@ -41,6 +49,9 @@ const CollectionListDropdown: FC<CollectionListDropdownProps> = ({
           value={selectedList}
           onValueChange={onSelectionChange}
           colorScheme={colorScheme}
+          accessibilityRole="combobox"
+          accessibilityLabel="Collection List Dropdown"
+          accessibilityLabelledBy={title}
         />
       </AndroidPickerWrapper>
     </CollectionListContainer>

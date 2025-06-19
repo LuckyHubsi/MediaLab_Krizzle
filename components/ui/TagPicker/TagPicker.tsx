@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import {
   Container,
   HeaderRow,
@@ -12,6 +12,17 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { TagDTO } from "@/shared/dto/TagDTO";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Component for selecting a tag from a list of available tags in the create/edit widget flow.
+ *
+ * @param tags (required) - Array of TagDTO objects to display.
+ * @param selectedTag (required) - The currently selected tag, or null if none is selected.
+ * @param onSelectTag (required) - Callback function to handle tag selection.
+ * @param onViewAllPress (required) - Callback function for when the "Edit Tags" button is pressed.
+ *
+ */
 
 interface TagPickerProps {
   tags: TagDTO[];
@@ -26,27 +37,53 @@ export const TagPicker: React.FC<TagPickerProps> = ({
   onSelectTag,
   onViewAllPress,
 }) => {
-  const themeMode = useActiveColorScheme() ?? "light";
+  const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
     <Container>
       <HeaderRow>
-        <ThemedText fontSize="regular" fontWeight="regular">
+        <ThemedText
+          fontSize="regular"
+          fontWeight="regular"
+          accessibilityRole="header"
+        >
           Choose a Tag
         </ThemedText>
-        <EditTextContainer onPress={onViewAllPress}>
-          <ThemedText
-            fontSize="s"
-            fontWeight="regular"
-            colorVariant="greyScale"
+        <EditTextContainer>
+          <TouchableOpacity
+            style={{
+              minHeight: 48,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+            onPress={onViewAllPress}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Edit Tags"
+            accessibilityHint="Opens the Tag Management page"
           >
-            Edit Tags
-            <BackIcon name="chevron-forward-outline" colorScheme={themeMode} />
-          </ThemedText>
+            <ThemedText
+              fontSize="s"
+              fontWeight="regular"
+              colorVariant="greyScale"
+            >
+              Edit Tags
+              <BackIcon
+                name="chevron-forward-outline"
+                colorScheme={colorScheme}
+              />
+            </ThemedText>
+          </TouchableOpacity>
         </EditTextContainer>
       </HeaderRow>
 
-      <TagScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <TagScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        accessible={true}
+        accessibilityRole="radiogroup"
+        accessibilityLabel="Tag Selection Section"
+      >
         {tags.map((tag) => {
           const isSelected = selectedTag?.tagID === tag.tagID;
           return (
@@ -54,9 +91,9 @@ export const TagPicker: React.FC<TagPickerProps> = ({
               key={tag.tagID}
               onPress={() => {
                 if (isSelected) {
-                  onSelectTag(null); // Deselect
+                  onSelectTag(null);
                 } else {
-                  onSelectTag(tag); // Select
+                  onSelectTag(tag);
                 }
               }}
               style={{
@@ -65,13 +102,17 @@ export const TagPicker: React.FC<TagPickerProps> = ({
                 marginRight: 4,
                 justifyContent: "center",
               }}
+              accessible={true}
+              accessibilityRole="radio"
+              accessibilityLabel={`Tag ${tag.tag_label}`}
+              accessibilityState={{ selected: isSelected }}
             >
-              <TagPill isSelected={isSelected} colorScheme={themeMode}>
+              <TagPill isSelected={isSelected} colorScheme={colorScheme}>
                 {isSelected && (
                   <MaterialIcons
                     name="check-circle"
                     size={16}
-                    color="#FBFBFB"
+                    color={Colors.white}
                     style={{ marginRight: 10 }}
                   />
                 )}
@@ -87,15 +128,23 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           );
         })}
         {tags.length === 0 && (
-          <TouchableOpacity onPress={() => onViewAllPress()}>
-            <TagPill onPress={onViewAllPress} colorScheme={themeMode}>
+          <TouchableOpacity
+            onPress={() => onViewAllPress()}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit Tags`}
+            accessibilityHint="Opens the Tag Management page for adding your first tag."
+          >
+            <TagPill onPress={onViewAllPress} colorScheme={colorScheme}>
               <MaterialIcons
                 name="edit"
                 size={16}
-                color={themeMode === "dark" ? "#FBFBFB" : "#000"}
+                color={colorScheme === "dark" ? Colors.white : Colors.black}
                 style={{ marginRight: 5 }}
               />
-              <ThemedText>Edit Tags</ThemedText>
+              <ThemedText fontSize="s" fontWeight="regular">
+                Edit Tags
+              </ThemedText>
             </TagPill>
           </TouchableOpacity>
         )}

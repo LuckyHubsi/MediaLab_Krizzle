@@ -2,7 +2,16 @@ import React from "react";
 import { Container, TextAlignRight } from "./TitleCard.styles";
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "../Textfield/Textfield";
-import { useActiveColorScheme } from "@/context/ThemeContext";
+import { View } from "react-native";
+
+/**
+ * Component for displaying a title input card in the create/edit widget flow.
+ *
+ * @param value (required) - The current value of the title input.
+ * @param onChangeText (required) - Callback function to handle text changes.
+ * @param placeholder - Placeholder text for the input field (default: "Add a title...").
+ * @param hasNoInputError - Whether to show an error message for empty input (default: false).
+ */
 
 interface TitleCardProps {
   value: string;
@@ -14,28 +23,33 @@ interface TitleCardProps {
 export const TitleCard: React.FC<TitleCardProps> = ({
   value,
   onChangeText,
-  placeholder = "Add title...",
+  placeholder = "Add a title...",
   hasNoInputError,
 }) => {
-  const colorScheme = useActiveColorScheme() ?? "light";
-
   return (
     <Container>
-      <ThemedText fontSize="regular">Title</ThemedText>
-      <TextAlignRight>
-        <ThemedText fontSize="s" colorVariant="red">
-          * required
-        </ThemedText>
-      </TextAlignRight>
+      <View
+        accessible={true}
+        accessibilityLabel="Title. Input required."
+        nativeID="Title"
+      >
+        <ThemedText fontSize="regular">Title</ThemedText>
+        <TextAlignRight>
+          <ThemedText fontSize="s" colorVariant="red">
+            * required
+          </ThemedText>
+        </TextAlignRight>
+      </View>
       <Textfield
         showTitle={false}
         textfieldIcon="text-fields"
-        placeholderText={`Add a title`}
+        placeholderText={placeholder}
         title={""}
         value={value}
         onChangeText={onChangeText}
         hasNoInputError={hasNoInputError}
         maxLength={30}
+        optNativeID="Title"
       />
     </Container>
   );

@@ -5,10 +5,10 @@ import {
   Pressable,
   TouchableOpacity,
   Platform,
+  findNodeHandle,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "@/components/ui/SearchBar/SearchBar";
@@ -17,9 +17,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import TagList from "@/components/ui/TagList/TagList";
 import { EmptyHome } from "@/components/emptyHome/emptyHome";
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
-
 import { useFocusEffect } from "@react-navigation/native";
 import DeleteModal from "@/components/Modals/DeleteModal/DeleteModal";
 import { GeneralPageDTO } from "@/shared/dto/GeneralPageDTO";
@@ -35,11 +40,19 @@ import { useServices } from "@/context/ServiceContext";
 import SelectFolderModal from "@/components/ui/SelectFolderModal/SelectFolderModal";
 import { EnrichedError, ServiceErrorType } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { AccessibilityInfo } from "react-native";
 
+/**
+ * HomeScreen component that serves as the main screen of the app (with widgets, search and filter by tag functionality).
+ */
+
+// Return a Material icon component based on the provided name, size, and color (defaulting to 22px and black).
 export const getMaterialIcon = (name: string, size = 22, color = "black") => {
   return <MaterialIcons name={name as any} size={size} color={color} />;
 };
 
+// Get the appropriate icon for a page type (note vs collection),
+// returning a Material icon component based on the type.
 export const getIconForPageType = (type: string) => {
   switch (type) {
     case "note":
@@ -55,9 +68,6 @@ export default function HomeScreen() {
   const { generalPageService, tagService } = useServices();
 
   const colorScheme = useActiveColorScheme();
-  const color = Colors[colorScheme || "light"].tint;
-  const { width } = useWindowDimensions();
-  const columns = width >= 768 ? 3 : 2;
   const router = useRouter();
 
   interface Widget {
@@ -93,6 +103,21 @@ export default function HomeScreen() {
   const [showFolderSelectionModal, setShowFolderSelectionModal] =
     useState(false);
 
+  const headerRef = useRef<View | null>(null);
+
+  const [sortAnnouncement, setSortAnnouncement] = useState("");
+  const [filterAnnouncement, setFilterAnnouncement] = useState("");
+
+  // Calculate screen dimensions and orientation
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const screenSize = isLandscape ? width : height;
+  const isSmallScreen = screenSize < (isLandscape ? 1500 : 600);
+  /**
+  /**
+   * Returns the key from Colors.widget that matches the given value.
+   * Matches by key name, string value, or array inclusion.
+   */
   const getColorKeyFromValue = (
     value: string,
   ): keyof typeof Colors.widget | undefined => {
@@ -107,6 +132,10 @@ export default function HomeScreen() {
     }) as keyof typeof Colors.widget | undefined;
   };
 
+  /**
+   * Maps an array of GeneralPageDTO objects to an array of enriched Widget objects (with added properties).
+   * @param data - Array of GeneralPageDTO objects or null.
+   */
   const mapToEnrichedWidgets = (data: GeneralPageDTO[] | null): Widget[] => {
     if (!data) return [];
     return data.map((widget) => ({
@@ -123,6 +152,9 @@ export default function HomeScreen() {
     }));
   };
 
+  /**
+   * Focus effect to fetch widgets and tags when the screen is focused or when shouldReload changes.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchWidgets = async () => {
@@ -188,6 +220,9 @@ export default function HomeScreen() {
     }, [shouldReload, sortingMode]),
   );
 
+  /**
+   * Focus effect to fetch tags when the screen is focused.
+   */
   useFocusEffect(
     useCallback(() => {
       const fetchTags = async () => {
@@ -220,9 +255,20 @@ export default function HomeScreen() {
       };
 
       fetchTags();
+
+      // sets the screenreader focus to the header after mount
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(headerRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }, []),
   );
 
+  // Filter function to filter widgets based on the selected tag and search query
   const filter = (widgets: Widget[]) => {
     const lowerQuery = searchQuery.toLowerCase();
     return widgets.filter((widget) => {
@@ -237,15 +283,21 @@ export default function HomeScreen() {
     });
   };
 
+  // Memoized filtered widgets based on the selected tag and search query
   const filteredWidgets = useMemo(
     () => filter(widgets),
     [widgets, selectedTag, searchQuery],
   );
+  // Memoized filtered pinned widgets based on the selected tag and search query
   const filteredPinnedWidgets = useMemo(
     () => filter(pinnedWidgets),
     [pinnedWidgets, selectedTag, searchQuery],
   );
 
+  /**
+   * Navigates to the page of the given widget.
+   * @param widget - The widget to navigate to.
+   */
   const goToPage = (widget: Widget) => {
     const path =
       widget.page_type === PageType.Note ? "/notePage" : "/collectionPage";
@@ -255,177 +307,553 @@ export default function HomeScreen() {
     });
   };
 
+  /**
+   * Navigates to the edit page of the given widget.
+   * @param widget - The widget to navigate to the edit page.
+   */
   const goToEditPage = (widget: Widget) => {
     router.push({ pathname: "/editWidget", params: { widgetID: widget.id } });
   };
 
   const { showSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    const announce = filterAnnouncement;
+
+    if (announce) {
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(announce);
+      }
+
+      const timeout = setTimeout(() => {
+        setSortAnnouncement("");
+        setFilterAnnouncement("");
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [filterAnnouncement]);
+
+  /**
+   * effect to announce new sorting mode with screen reader.
+   */
+  useEffect(() => {
+    if (sortAnnouncement) {
+      // Android workaround
+      if (Platform.OS === "android") {
+        AccessibilityInfo.announceForAccessibility(sortAnnouncement);
+      }
+
+      // Fallback live region announcement
+      const timeout = setTimeout(() => setSortAnnouncement(""), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [sortAnnouncement]);
+
+  /**
+   * effect to announce search result with screen reader.
+   */
+  useEffect(() => {
+    const tagText =
+      selectedTag !== "All" && typeof selectedTag === "object"
+        ? `tag "${selectedTag.tag_label}"`
+        : "";
+
+    const queryText = searchQuery ? `search query "${searchQuery}"` : "";
+    const connector = searchQuery ? "and" : "";
+
+    const filterInfo = [queryText, tagText].filter(Boolean).join(connector);
+
+    const pinnedMessage =
+      pinnedWidgets.length <= 0
+        ? ""
+        : filteredPinnedWidgets.length > 0
+          ? `Pinned Widgets: ${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in.`
+          : `Pinned Widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}.`;
+
+    const recentMessage =
+      filteredWidgets.length > 0
+        ? `Recent widgets: ${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""}.`
+        : `Recent widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}`;
+
+    const fullAnnouncement = `${pinnedMessage} ${recentMessage}`;
+
+    setFilterAnnouncement(fullAnnouncement);
+  }, [
+    searchQuery,
+    selectedTag,
+    filteredWidgets.length,
+    filteredPinnedWidgets.length,
+  ]);
+
+  /**
+   * Components used:
+   * - ThemedView: A themed view component that adapts to the current theme.
+   * - ThemedText: A themed text component that adapts to the current theme.
+   * - EmptyHome: A component that displays an empty state when no widgets are present.
+   * - SearchBar: A search bar component for filtering widgets by title.
+   * - TagList: A component that displays a list of tags for filtering widgets.
+   * - Widget: A component that represents a single widget with title, label, icon,
+   * - QuickActionModal: A modal for quick actions on widgets (like pinning, editing, archiving, etc.).
+   * - ModalSelection: A modal for selecting a new note or collection.
+   * - SelectFolderModal: A modal for selecting a folder to move the widget to.
+   * - DeleteModal: A modal for confirming the deletion of a widget.
+   * - ErrorPopup: A modal for displaying errors that occurred during operations.
+   */
   return (
     <>
       <SafeAreaView>
         <ThemedView>
-          <IconTopRight onPress={() => router.push({ pathname: "/faq" })}>
-            <Image
-              source={require("@/assets/images/kriz.png")}
-              style={{ width: 30, height: 32 }}
-            />
-          </IconTopRight>
-
-          <ThemedText fontSize="xl" fontWeight="bold">
-            Home
-          </ThemedText>
-
-          {widgets.length === 0 &&
-          pinnedWidgets.length === 0 &&
-          !completedWithError ? (
-            <EmptyHome
-              text="Add your first note/collection"
-              buttonLabel="Start"
-              useModal={false}
-              onButtonPress={() => setModalVisible(true)}
-            />
-          ) : (
+          {isSmallScreen ? (
             <>
-              <SearchBar
-                placeholder="Search for title"
-                onSearch={setSearchQuery}
-              />
-              <TagList
-                tags={tags}
-                onSelect={(tag) => setSelectedTag(tag)}
-                onPress={() => router.push("/tagManagement")}
-              />
-
-              <ScrollView
-                contentContainerStyle={{ paddingBottom: 40 }}
-                showsVerticalScrollIndicator={false}
+              <IconTopRight>
+                <TouchableOpacity
+                  accessibilityRole="imagebutton"
+                  accessibilityLabel="Help and FAQ"
+                  accessibilityHint="Opens the Frequently Asked Questions page"
+                  onPress={() => {
+                    router.push({
+                      pathname: "/faq",
+                    });
+                  }}
+                >
+                  <Image
+                    source={require("@/assets/images/kriz.png")}
+                    style={{ width: 30, height: 32 }}
+                  />
+                </TouchableOpacity>
+              </IconTopRight>
+              <ThemedText
+                fontSize="xl"
+                fontWeight="bold"
+                accessible={true}
+                accessibilityRole="header"
+                accessibilityLiveRegion="polite"
+                optionalRef={headerRef}
               >
-                {filteredPinnedWidgets.length > 0 && (
-                  <>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 8,
-                      }}
-                    >
-                      <ThemedText fontSize="regular" fontWeight="regular">
-                        Pinned
-                      </ThemedText>
-                      <ThemedText
-                        fontSize="s"
-                        fontWeight="regular"
-                        colorVariant="greyScale"
-                      >
-                        {pinnedWidgets.length} out of 4
-                      </ThemedText>
-                    </View>
+                Home
+              </ThemedText>
 
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        flexWrap: "wrap",
-                        justifyContent: "space-between",
-                        rowGap: 16,
-                        marginBottom: 24,
-                      }}
-                    >
-                      {filteredPinnedWidgets.map((item) => (
-                        <Widget
-                          key={item.id}
-                          title={item.title}
-                          label={item.tag.tag_label}
-                          icon={item.icon}
-                          color={item.color as keyof typeof Colors.widget}
-                          pageType={item.page_type}
-                          onPress={() => goToPage(item)}
-                          onLongPress={() => {
-                            setSelectedWidget(item);
-                            setShowModal(true);
-                          }}
-                        />
-                      ))}
-                    </View>
-                  </>
-                )}
-
+              {widgets.length === 0 &&
+              pinnedWidgets.length === 0 &&
+              !completedWithError ? (
+                <EmptyHome
+                  text="Add your first note/collection"
+                  buttonLabel="Start"
+                  useModal={false}
+                  onButtonPress={() => setModalVisible(true)}
+                />
+              ) : (
                 <>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 8,
-                    }}
+                  <ScrollView
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    showsVerticalScrollIndicator={false}
                   >
-                    <ThemedText fontSize="regular" fontWeight="regular">
-                      Recent
+                    <View style={{ marginBottom: 8 }}>
+                      <SearchBar
+                        placeholder="Search for widget title"
+                        onSearch={setSearchQuery}
+                      />
+                    </View>
+                    <ThemedText
+                      accessibilityLiveRegion="assertive"
+                      accessible={true}
+                      style={{
+                        position: "absolute",
+                        opacity: 0,
+                        height: 0,
+                        width: 0,
+                      }}
+                    >
+                      {sortAnnouncement || filterAnnouncement}
                     </ThemedText>
-                    <Pressable onPress={() => setShowSortModal(true)}>
+                    <TagList
+                      tags={tags}
+                      onSelect={(tag) => setSelectedTag(tag)}
+                      onPress={() => router.push("/tagManagement")}
+                    />
+
+                    {filteredPinnedWidgets.length > 0 && (
+                      <>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <ThemedText
+                            fontSize="regular"
+                            fontWeight="regular"
+                            style={{ marginBottom: 8 }}
+                            accessibilityRole="header"
+                            accessibilityLabel="Pinned widgets"
+                          >
+                            Pinned
+                          </ThemedText>
+                          <ThemedText
+                            fontSize="s"
+                            fontWeight="regular"
+                            colorVariant="greyScale"
+                          >
+                            {pinnedWidgets.length} out of 4
+                          </ThemedText>
+                        </View>
+
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                            rowGap: 16,
+                            marginBottom: 24,
+                          }}
+                        >
+                          {filteredPinnedWidgets.map((item, index) => (
+                            <Widget
+                              key={item.id}
+                              title={item.title}
+                              label={item.tag.tag_label}
+                              icon={item.icon}
+                              color={item.color as keyof typeof Colors.widget}
+                              pageType={item.page_type}
+                              onPress={() => goToPage(item)}
+                              onLongPress={() => {
+                                setSelectedWidget(item);
+                                setShowModal(true);
+                              }}
+                              index={index + 1}
+                              widgetCount={filteredPinnedWidgets.length}
+                              state="pinned"
+                            />
+                          ))}
+                        </View>
+                      </>
+                    )}
+
+                    <>
                       <View
                         style={{
                           flexDirection: "row",
-                          gap: 6,
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 8,
                         }}
                       >
                         <ThemedText
-                          fontSize="s"
+                          fontSize="regular"
                           fontWeight="regular"
-                          colorVariant="greyScale"
+                          accessibilityRole="header"
+                          accessibilityLabel="Recent widgets"
                         >
-                          Sort by
+                          Recent
                         </ThemedText>
-                        <MaterialIcons
-                          name="filter-list"
-                          size={20}
-                          color={
-                            Colors[colorScheme || "light"].searchBarPlaceholder
-                          }
-                        />
+                        <Pressable
+                          onPress={() => setShowSortModal(true)}
+                          accessible={true}
+                          accessibilityRole="button"
+                          accessibilityLabel="Sorting modes"
+                          accessibilityHint={`Opens a menu for changing between widget sorting modes. Currently selected sorting mode ${sortingMode}`}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              gap: 6,
+                              minHeight: 48,
+                              alignItems: "center",
+                            }}
+                          >
+                            <ThemedText
+                              fontSize="s"
+                              fontWeight="regular"
+                              colorVariant="greyScale"
+                            >
+                              Sort by
+                            </ThemedText>
+
+                            <MaterialIcons
+                              name="filter-list"
+                              size={20}
+                              color={
+                                Colors[colorScheme || "light"]
+                                  .searchBarPlaceholder
+                              }
+                            />
+                          </View>
+                        </Pressable>
                       </View>
-                    </Pressable>
-                  </View>
-                  <View
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                          justifyContent: "space-between",
+                          rowGap: 16,
+                        }}
+                      >
+                        {filteredWidgets.map((item, index) => (
+                          <Widget
+                            key={item.id}
+                            title={item.title}
+                            label={item.tag.tag_label}
+                            icon={item.icon}
+                            color={item.color as keyof typeof Colors.widget}
+                            pageType={item.page_type}
+                            onPress={() => goToPage(item)}
+                            onLongPress={() => {
+                              setSelectedWidget(item);
+                              setShowModal(true);
+                            }}
+                            index={index + 1}
+                            widgetCount={filteredWidgets.length}
+                            state="recent"
+                          />
+                        ))}
+                      </View>
+                    </>
+
+                    {filteredPinnedWidgets.length <= 0 &&
+                      filteredWidgets.length <= 0 && (
+                        <ThemedText
+                          fontSize="regular"
+                          fontWeight="regular"
+                          style={{ textAlign: "center", marginTop: 25 }}
+                          accessibilityRole="text"
+                          accessibilityLiveRegion="polite"
+                        >
+                          {selectedTag === "All" && !searchQuery
+                            ? "No entries found."
+                            : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
+                        </ThemedText>
+                      )}
+                  </ScrollView>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <IconTopRight>
+                <TouchableOpacity
+                  accessibilityRole="imagebutton"
+                  accessibilityLabel="Help and FAQ"
+                  accessibilityHint="Opens the Frequently Asked Questions page"
+                  onPress={() => {
+                    router.push({
+                      pathname: "/faq",
+                    });
+                  }}
+                >
+                  <Image
+                    source={require("@/assets/images/kriz.png")}
+                    style={{ width: 30, height: 32 }}
+                  />
+                </TouchableOpacity>
+              </IconTopRight>
+              <ThemedText
+                fontSize="xl"
+                fontWeight="bold"
+                accessible={true}
+                accessibilityRole="header"
+                accessibilityLiveRegion="polite"
+                optionalRef={headerRef}
+              >
+                Home
+              </ThemedText>
+
+              {widgets.length === 0 &&
+              pinnedWidgets.length === 0 &&
+              !completedWithError ? (
+                <EmptyHome
+                  text="Add your first note/collection"
+                  buttonLabel="Start"
+                  useModal={false}
+                  onButtonPress={() => setModalVisible(true)}
+                />
+              ) : (
+                <>
+                  <SearchBar
+                    placeholder="Search for widget title"
+                    onSearch={setSearchQuery}
+                  />
+
+                  <ThemedText
+                    accessibilityLiveRegion="assertive"
+                    accessible={true}
                     style={{
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                      justifyContent: "space-between",
-                      rowGap: 16,
+                      position: "absolute",
+                      opacity: 0,
+                      height: 0,
+                      width: 0,
                     }}
                   >
-                    {filteredWidgets.map((item) => (
-                      <Widget
-                        key={item.id}
-                        title={item.title}
-                        label={item.tag.tag_label}
-                        icon={item.icon}
-                        color={item.color as keyof typeof Colors.widget}
-                        pageType={item.page_type}
-                        onPress={() => goToPage(item)}
-                        onLongPress={() => {
-                          setSelectedWidget(item);
-                          setShowModal(true);
-                        }}
-                      />
-                    ))}
-                  </View>
-                </>
+                    {sortAnnouncement || filterAnnouncement}
+                  </ThemedText>
+                  <TagList
+                    tags={tags}
+                    onSelect={(tag) => setSelectedTag(tag)}
+                    onPress={() => router.push("/tagManagement")}
+                  />
 
-                {filteredPinnedWidgets.length <= 0 &&
-                  filteredWidgets.length <= 0 && (
-                    <ThemedText
-                      fontSize="regular"
-                      fontWeight="regular"
-                      style={{ textAlign: "center", marginTop: 25 }}
-                    >
-                      {selectedTag === "All" && !searchQuery
-                        ? "No entries found."
-                        : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
-                    </ThemedText>
-                  )}
-              </ScrollView>
+                  <ScrollView
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {filteredPinnedWidgets.length > 0 && (
+                      <>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <ThemedText
+                            fontSize="regular"
+                            fontWeight="regular"
+                            style={{ marginBottom: 8 }}
+                            accessibilityRole="header"
+                            accessibilityLabel="Pinned widgets"
+                          >
+                            Pinned
+                          </ThemedText>
+                          <ThemedText
+                            fontSize="s"
+                            fontWeight="regular"
+                            colorVariant="greyScale"
+                          >
+                            {pinnedWidgets.length} out of 4
+                          </ThemedText>
+                        </View>
+
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                            rowGap: 16,
+                            marginBottom: 24,
+                          }}
+                        >
+                          {filteredPinnedWidgets.map((item, index) => (
+                            <Widget
+                              key={item.id}
+                              title={item.title}
+                              label={item.tag.tag_label}
+                              icon={item.icon}
+                              color={item.color as keyof typeof Colors.widget}
+                              pageType={item.page_type}
+                              onPress={() => goToPage(item)}
+                              onLongPress={() => {
+                                setSelectedWidget(item);
+                                setShowModal(true);
+                              }}
+                              index={index + 1}
+                              widgetCount={filteredPinnedWidgets.length}
+                              state="pinned"
+                            />
+                          ))}
+                        </View>
+                      </>
+                    )}
+
+                    <>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        <ThemedText
+                          fontSize="regular"
+                          fontWeight="regular"
+                          accessibilityRole="header"
+                          accessibilityLabel="Recent widgets"
+                        >
+                          Recent
+                        </ThemedText>
+                        <Pressable
+                          onPress={() => setShowSortModal(true)}
+                          accessible={true}
+                          accessibilityRole="button"
+                          accessibilityLabel="Sorting modes"
+                          accessibilityHint={`Opens a menu for changing between widget sorting modes. Currently selected sorting mode ${sortingMode}`}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              gap: 6,
+                              minHeight: 48,
+                              alignItems: "center",
+                            }}
+                          >
+                            <ThemedText
+                              fontSize="s"
+                              fontWeight="regular"
+                              colorVariant="greyScale"
+                            >
+                              Sort by
+                            </ThemedText>
+
+                            <MaterialIcons
+                              name="filter-list"
+                              size={20}
+                              color={
+                                Colors[colorScheme || "light"]
+                                  .searchBarPlaceholder
+                              }
+                            />
+                          </View>
+                        </Pressable>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                          justifyContent: "space-between",
+                          rowGap: 16,
+                        }}
+                      >
+                        {filteredWidgets.map((item, index) => (
+                          <Widget
+                            key={item.id}
+                            title={item.title}
+                            label={item.tag.tag_label}
+                            icon={item.icon}
+                            color={item.color as keyof typeof Colors.widget}
+                            pageType={item.page_type}
+                            onPress={() => goToPage(item)}
+                            onLongPress={() => {
+                              setSelectedWidget(item);
+                              setShowModal(true);
+                            }}
+                            index={index + 1}
+                            widgetCount={filteredWidgets.length}
+                            state="recent"
+                          />
+                        ))}
+                      </View>
+                    </>
+
+                    {filteredPinnedWidgets.length <= 0 &&
+                      filteredWidgets.length <= 0 && (
+                        <ThemedText
+                          fontSize="regular"
+                          fontWeight="regular"
+                          style={{ textAlign: "center", marginTop: 25 }}
+                          accessibilityRole="text"
+                          accessibilityLiveRegion="polite"
+                        >
+                          {selectedTag === "All" && !searchQuery
+                            ? "No entries found."
+                            : `No entries for "${selectedTag !== "All" ? selectedTag.tag_label : searchQuery}"`}
+                        </ThemedText>
+                      )}
+                  </ScrollView>
+                </>
+              )}
             </>
           )}
         </ThemedView>
@@ -442,6 +870,9 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralModfied);
               setShowSortModal(false);
+              setSortAnnouncement(
+                "Sorting changed to: Last modified descending",
+              );
             },
           },
           {
@@ -451,6 +882,7 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralAlphabet);
               setShowSortModal(false);
+              setSortAnnouncement("Sorting changed to: Alphabet ascending");
             },
           },
           {
@@ -460,6 +892,7 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralCreated);
               setShowSortModal(false);
+              setSortAnnouncement("Sorting changed to: Created ascending");
             },
           },
         ]}
@@ -490,6 +923,10 @@ export default function HomeScreen() {
                   // remove all prior errors from the pinning source
                   setErrors((prev) =>
                     prev.filter((error) => error.source !== "pinning"),
+                  );
+
+                  AccessibilityInfo.announceForAccessibility(
+                    `${selectedWidget?.pinned ? "Unpinned widget" : "Pinned widget"}`,
                   );
                 } else {
                   // set the errors to the previous errors plus add the new error
@@ -616,6 +1053,7 @@ export default function HomeScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
+                AccessibilityInfo.announceForAccessibility("Widget Deleted");
               } else {
                 // set all errors to the previous errors plus add the new error
                 // define the id and the source and set its read status to false
@@ -637,7 +1075,7 @@ export default function HomeScreen() {
             }
           }
         }}
-        onclose={() => setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
       />
 
       <ErrorPopup

@@ -23,13 +23,18 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedText } from "@/components/ThemedText";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { BottomInputModal } from "../BottomInputModal/BottomInputModal";
-import { set } from "date-fns";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
-import { TagDTO } from "@/shared/dto/TagDTO";
 import { FolderDTO } from "@/shared/dto/FolderDTO";
 import { useServices } from "@/context/ServiceContext";
 import { ErrorPopup } from "../ErrorModal/ErrorModal";
 import { EnrichedError } from "@/shared/error/ServiceError";
+
+/**
+ * Component for displaying a modal selection sheet with options to create notes, collections, or folders.
+ *
+ * @param isVisible (required) - Controls the visibility of the modal.
+ * @param onClose (required) - Callback function to handle closing the modal.
+ */
 
 type ModalSelectionProps = {
   isVisible: boolean;
@@ -40,39 +45,37 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
   isVisible,
   onClose,
 }) => {
-  const { folderService, tagService } = useServices();
-
+  const { folderService } = useServices();
   const colorScheme = useActiveColorScheme() ?? "light";
   const router = useRouter();
-
   const slideAnim = useRef(
     new Animated.Value(Dimensions.get("window").height),
   ).current;
-
   const { showSnackbar } = useSnackbar();
-
   const [shouldRenderSheet, setShouldRenderSheet] = React.useState(false);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
-
   const [isFolderModalVisible, setFolderModalVisible] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [editMode, setEditMode] = useState(false);
-
   const [editingFolder, setEditingFolder] = useState<FolderDTO | null>(null);
   const [folders, setFolders] = useState<FolderDTO[]>([]);
-
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
 
+  /**
+   * Handles the submission of a new folder name.
+   */
   const handleFolderSubmit = async () => {
     const trimmedFolder = newFolderName.trim();
 
+    // Check if the folder name is empty or exceeds the character limit
     if (!trimmedFolder) {
       showSnackbar("Please enter a folder name.", "top", "error");
       return;
     }
 
+    // Check if the folder name exceeds 30 characters
     if (trimmedFolder.length > 30) {
       showSnackbar(
         "Folder name must be less than 30 characters.",
@@ -82,6 +85,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
       return;
     }
 
+    // Check for duplicate folder names
     const isDuplicate = folders.some(
       (folder) =>
         folder.folderName.trim().toLowerCase() ===
@@ -170,6 +174,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
     }
   };
 
+  /**
+   * Effect to fetch folders when the modal becomes visible.
+   */
   useEffect(() => {
     const fetchFolders = async () => {
       try {
@@ -186,11 +193,10 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
 
     if (isVisible) {
       fetchFolders();
-
       setIsModalVisible(true);
       setShouldRenderSheet(true);
       slideAnim.setValue(Dimensions.get("window").height);
-
+      // Animate the bottom sheet to slide up
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 400,
@@ -198,6 +204,7 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
         useNativeDriver: true,
       }).start();
     } else {
+      // Animate the bottom sheet to slide down
       Animated.timing(slideAnim, {
         toValue: Dimensions.get("window").height,
         duration: 400,
@@ -212,11 +219,17 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
 
   return (
     <>
-      <Modal transparent visible={isModalVisible}>
+      <Modal
+        transparent
+        visible={isModalVisible}
+        accessibilityViewIsModal={true}
+      >
         <TouchableOpacity
           style={{ flex: 1 }}
           activeOpacity={1}
           onPress={onClose}
+          accessible={false}
+          importantForAccessibility="no"
         >
           <Overlay animationType="fade">
             {shouldRenderSheet && (
@@ -231,6 +244,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           router.push("/createNote");
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a note"
+                        accessibilityHint="Opens the screen to create a new note"
                       >
                         <OptionIcon>
                           <MaterialIcons
@@ -252,6 +268,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           router.push("/createCollection");
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a collection"
+                        accessibilityHint="Opens the screen to create a new collection"
                       >
                         <OptionIcon>
                           <MaterialIcons
@@ -274,6 +293,9 @@ export const ModalSelection: React.FC<ModalSelectionProps> = ({
                           onClose();
                         }}
                         colorScheme={colorScheme}
+                        accessibilityRole="button"
+                        accessibilityLabel="Create a folder"
+                        accessibilityHint="Opens the screen to create a new folder"
                       >
                         <OptionIcon>
                           <MaterialIcons
