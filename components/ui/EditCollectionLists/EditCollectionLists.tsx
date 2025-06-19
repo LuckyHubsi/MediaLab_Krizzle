@@ -164,6 +164,7 @@ const EditCollectionLists: FC<EditCollectionListProps> = ({
                   handleAddCard();
                   setHasClickedNext(false);
                 }}
+                label="Add A List"
               />
             </AddButtonWrapper>
           ) : null

@@ -626,6 +626,7 @@ export default function EditCollectionTemplateScreen() {
                     <AddButton
                       onPress={handleAddCard}
                       isDisabled={templates.length >= 10}
+                      label="Add A Field"
                     />
                   </View>
                 </ScrollView>

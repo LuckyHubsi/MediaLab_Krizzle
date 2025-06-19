@@ -493,6 +493,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     setHasClickedNext(false);
                   }}
                   isDisabled={otherCards.length >= 9}
+                  label="Add A Field"
                 />
               </View>
             </ScrollView>

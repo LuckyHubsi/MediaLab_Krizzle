@@ -489,6 +489,7 @@ export default function EditCollectionListsScreen() {
                       handleAddCard();
                       setHasClickedNext(false);
                     }}
+                    label="Add A List"
                   />
                 </AddButtonWrapper>
               )}
@@ -612,6 +613,7 @@ export default function EditCollectionListsScreen() {
                       handleAddCard();
                       setHasClickedNext(false);
                     }}
+                    label="Add A List"
                   />
                 </AddButtonWrapper>
               )}
