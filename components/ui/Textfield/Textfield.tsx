@@ -23,6 +23,7 @@ import { useSnackbar } from "../Snackbar/Snackbar";
  * @param value - The current value of the input field.
  * @param hasNoInputError - Whether to show an error message for empty input (default: false).
  * @param maxLength - Maximum length of the input text (default: no limit).
+ * @param showMaxLength - Whether to display the maximum length of the input text (default: true).
  * @param multiline - Whether the input field supports multiple lines (default: false).
  * @param hasDuplicateTitle - Whether to show an error message for duplicate titles (default: false).
  * @param isRequired - Whether the input field is required (default: false).
@@ -39,6 +40,7 @@ interface TextfieldProps {
   value?: string;
   hasNoInputError?: boolean;
   maxLength?: number;
+  showMaxLength?: boolean;
   multiline?: boolean;
   hasDuplicateTitle?: boolean;
   isRequired?: boolean;
@@ -57,6 +59,7 @@ const Textfield: FC<TextfieldProps> = ({
   value,
   hasNoInputError,
   maxLength,
+  showMaxLength = true,
   hasDuplicateTitle,
   multiline = false,
   isRequired = false,
@@ -110,14 +113,14 @@ const Textfield: FC<TextfieldProps> = ({
           </View>
         ) : null}
 
-        {maxLength && (
+        {maxLength && showMaxLength && (
           <ThemedText
             fontSize="s"
             fontWeight="light"
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
             accessibilityLabel={`max. ${maxLength} characters ${extraInfo}`}
           >
-            max. {maxLength} chars
+            max. {maxLength} characters
           </ThemedText>
         )}
       </View>

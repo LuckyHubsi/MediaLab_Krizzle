@@ -92,6 +92,14 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   return (
     <AddMultiSelectablesContainer>
       <ThemedText>Add up to 20 Selectables</ThemedText>
+      <ThemedText
+        fontSize="s"
+        fontWeight="light"
+        colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+        accessibilityLabel={`max. 30 characters per selectable`}
+      >
+        max. 30 characters per selectable
+      </ThemedText>
       {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
           <TextfieldWrapper>
@@ -103,6 +111,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
               value={textfieldValue}
               onChangeText={(text) => handleInputChange(index, text)}
               maxLength={30}
+              showMaxLength={false}
               optionalRef={(input: any) => {
                 textfieldRefs.current[index] = input; // keep list in sync
               }}
