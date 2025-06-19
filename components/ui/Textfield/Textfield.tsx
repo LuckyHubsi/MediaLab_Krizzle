@@ -9,6 +9,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import { AccessibilityInfo, findNodeHandle, View } from "react-native";
+import { useSnackbar } from "../Snackbar/Snackbar";
 
 /**
  * Component for displaying a text input field with an optional title and icon.
@@ -57,25 +58,19 @@ const Textfield: FC<TextfieldProps> = ({
   isRequired = false,
 }) => {
   const colorScheme = useActiveColorScheme();
+  const { whenSnackbarComplete } = useSnackbar();
 
   const errorMessageRef = useRef(null);
   useEffect(() => {
-    if (hasNoInputError) {
-      const node = findNodeHandle(errorMessageRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
+    if (hasNoInputError || hasDuplicateTitle) {
+      whenSnackbarComplete(() => {
+        const node = findNodeHandle(errorMessageRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      });
     }
-  }, [hasNoInputError]);
-
-  useEffect(() => {
-    if (hasNoInputError) {
-      const node = findNodeHandle(errorMessageRef.current);
-      if (node) {
-        AccessibilityInfo.setAccessibilityFocus(node);
-      }
-    }
-  }, [hasDuplicateTitle]);
+  }, [hasNoInputError, hasDuplicateTitle]);
 
   return (
     <TextfieldContainer>
@@ -145,8 +140,8 @@ const Textfield: FC<TextfieldProps> = ({
         <ThemedText
           fontSize="s"
           colorVariant="red"
-          accessibilityLiveRegion="assertive"
           accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
           accessible={true}
           optionalRef={errorMessageRef}
         >

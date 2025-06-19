@@ -1,9 +1,10 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode, useRef } from "react";
 import Toast from "react-native-toast-message";
 import { ToastContainer } from "./Snackbar.styles";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AccessibilityInfo } from "react-native";
 
 type SnackbarType = "success" | "error" | "info";
 type SnackbarPosition = "top" | "bottom";
@@ -22,6 +23,7 @@ interface SnackbarContextType {
     position?: SnackbarPosition,
     type?: SnackbarType,
   ) => void;
+  whenSnackbarComplete: (callback: () => void) => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextType | undefined>(
@@ -40,17 +42,42 @@ interface Props {
 }
 
 export const SnackbarProvider: React.FC<Props> = ({ children }) => {
+  const isSnackbarActive = useRef(false);
+  const focusQueue = useRef<(() => void)[]>([]);
+
   const showSnackbar = (
     message: string,
     position: SnackbarPosition = "bottom",
     type: SnackbarType = "info",
   ) => {
+    isSnackbarActive.current = true;
+
     Toast.show({
       type,
       text1: message,
       position,
       visibilityTime: 3000,
+      onShow: () => {
+        setTimeout(() => {
+          AccessibilityInfo.announceForAccessibility(message);
+        }, 50);
+      },
+      onHide: () => {
+        isSnackbarActive.current = false;
+        setTimeout(() => {
+          focusQueue.current.forEach((cb) => cb());
+          focusQueue.current = [];
+        }, 150);
+      },
     });
+  };
+
+  const whenSnackbarComplete = (callback: () => void) => {
+    if (!isSnackbarActive.current) {
+      callback();
+    } else {
+      focusQueue.current.push(callback);
+    }
   };
 
   const toastConfig = {
@@ -81,7 +108,7 @@ export const SnackbarProvider: React.FC<Props> = ({ children }) => {
   };
 
   return (
-    <SnackbarContext.Provider value={{ showSnackbar }}>
+    <SnackbarContext.Provider value={{ showSnackbar, whenSnackbarComplete }}>
       {children}
       <Toast config={toastConfig} />
     </SnackbarContext.Provider>

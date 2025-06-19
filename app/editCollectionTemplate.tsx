@@ -382,13 +382,6 @@ export default function EditCollectionTemplateScreen() {
       (template) => template.isExisting === false,
     );
 
-    const updateResult = await itemTemplateService.updateTemplate(
-      Number(templateId),
-      existingAttributes,
-      newAttributes,
-      Number(pageId),
-    );
-
     const hasMultiSelectDuplicates = templates.some((card) => {
       if (card.type !== "multi-select" || !card.options) return false;
 
@@ -408,6 +401,13 @@ export default function EditCollectionTemplateScreen() {
       );
       return;
     }
+
+    const updateResult = await itemTemplateService.updateTemplate(
+      Number(templateId),
+      existingAttributes,
+      newAttributes,
+      Number(pageId),
+    );
 
     if (updateResult.success) {
       showSnackbar("Template updated successfully.", "bottom", "success");

@@ -123,10 +123,11 @@ export default function EditCollectionListsScreen() {
             },
           ]);
           setShowError(true);
+
+          showSnackbar("Failed to load lists.", "top", "error");
         }
       } catch (err) {
         console.error("Failed to load lists:", err);
-        showSnackbar("Failed to load lists.", "top", "error");
       } finally {
         setIsLoading(false);
       }
