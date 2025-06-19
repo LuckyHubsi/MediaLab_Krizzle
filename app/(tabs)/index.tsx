@@ -880,9 +880,7 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralAlphabet);
               setShowSortModal(false);
-              setSortAnnouncement(
-                "Sorting changed to: Last alphabet ascending",
-              );
+              setSortAnnouncement("Sorting changed to: Alphabet ascending");
             },
           },
           {
@@ -892,7 +890,7 @@ export default function HomeScreen() {
             onPress: () => {
               setSortingMode(GeneralPageState.GeneralCreated);
               setShowSortModal(false);
-              setSortAnnouncement("Sorting changed to: Last created ascending");
+              setSortAnnouncement("Sorting changed to: Created ascending");
             },
           },
         ]}
