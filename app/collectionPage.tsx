@@ -503,7 +503,7 @@ export default function CollectionScreen() {
                   },
                 }
               : null,
-            collection && !collection.archived
+            collection && !collection.archived && collection.parentID === null
               ? {
                   label: collection?.pinned ? "Unpin Widget" : "Pin Widget",
                   icon: "push-pin",
