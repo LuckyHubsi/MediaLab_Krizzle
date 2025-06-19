@@ -80,29 +80,31 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <TouchableOpacity
-          onPress={handleSkip}
-          style={{
-            position: "absolute",
-            top: 5,
-            right: 5,
-            zIndex: 100,
-            minHeight: 48,
-            minWidth: 48,
-            justifyContent: "center",
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Skip onboarding"
-          accessibilityHint="Skips onboarding and takes you to the main screen"
-        >
-          <ThemedText
-            colorVariant="black"
-            fontSize="s"
-            style={{ textDecorationLine: "underline" }}
+        {currentStep !== steps.length - 1 && (
+          <TouchableOpacity
+            onPress={handleSkip}
+            style={{
+              position: "absolute",
+              top: 5,
+              right: 5,
+              zIndex: 100,
+              minHeight: 48,
+              minWidth: 48,
+              justifyContent: "center",
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Skip onboarding"
+            accessibilityHint="Skips onboarding and takes you to the main screen"
           >
-            Skip
-          </ThemedText>
-        </TouchableOpacity>
+            <ThemedText
+              colorVariant="black"
+              fontSize="s"
+              style={{ textDecorationLine: "underline" }}
+            >
+              Skip
+            </ThemedText>
+          </TouchableOpacity>
+        )}
         <FlatList
           ref={flatListRef}
           data={steps}
