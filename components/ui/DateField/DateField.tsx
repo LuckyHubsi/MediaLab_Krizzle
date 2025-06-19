@@ -92,7 +92,7 @@ const DateField: FC<DateFieldProps> = ({
             <StyledClearButton onPress={() => onChange?.(null)}>
               <MaterialIcons
                 name="close"
-                size={20}
+                size={26}
                 color={Colors[colorScheme].negative}
                 onPress={() => onChange?.(null)}
                 style={{ marginLeft: 8 }}
