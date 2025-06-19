@@ -438,13 +438,14 @@ export default function ArchiveScreen() {
                     source: "widget:delete",
                   },
                 ]);
+
+                setShowError(true);
+                showSnackbar(
+                  `Failed to delete ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
+                  "bottom",
+                  "error",
+                );
               }
-              setShowError(true);
-              showSnackbar(
-                `Failed to delete ${selectedWidget.page_type === "note" ? "Note" : "Collection"}.`,
-                "bottom",
-                "error",
-              );
               setSelectedWidget(null);
               setShowDeleteModal(false);
             } catch (error) {
