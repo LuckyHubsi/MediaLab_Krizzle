@@ -441,6 +441,9 @@ export default function FoldersScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "folder:delete"),
                 );
+                AccessibilityInfo.announceForAccessibility(
+                  "Successfully deleted folder",
+                );
               } else {
                 // set all errors to the previous errors plus add the new error
                 // define the id and the source and set its read status to false
