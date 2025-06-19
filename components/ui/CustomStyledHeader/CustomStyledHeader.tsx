@@ -128,6 +128,7 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         accessibilityRole="button"
         accessibilityLabel={`Back. Currently on page ${title} ${subtitle ? `in list ${subtitle}` : ""}`}
         accessibilityHint={getAccessibilityHint()}
+        accessibilityLiveRegion="polite"
         ref={headerRef}
         style={{
           flexDirection: "row",
