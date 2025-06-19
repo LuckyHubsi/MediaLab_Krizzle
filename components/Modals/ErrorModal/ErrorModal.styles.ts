@@ -23,7 +23,7 @@ export const PopupContainer = styled.View<ColorSchemeProps>`
 
 export const TopContentContainer = styled.View`
   width: 100%;
-  height: 200px;
+  height: 250px;
   align-items: center;
 `;
 

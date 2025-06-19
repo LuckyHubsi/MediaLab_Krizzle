@@ -67,7 +67,7 @@ export const PageErrorMessages = {
   notFound:
     "The system does not recognize the widget you tried to access or had trouble reading its data. Some widget details and functionalities may be unavailable or outdated.",
   validatePageToUpdate:
-    "The system either does not recognize the widget you want to update, your input data is invalid or the action you want to perform cannot be executed right now. Please try again. If the error persists, consider changing your input or trying again after reopening the application.",
+    "The system either does not recognize the widget you want to update, your input data is invalid or the action you want to perform cannot be executed right now. If the error persists, consider trying again after reopening the application.",
   updatePage:
     "There was a problem updating your widget. Please try again. If the error persists, consider trying again after changing your input or reopening the application.",
   updatePagePin:
@@ -144,7 +144,7 @@ export const CategoryErrorMessages = {
   insertNewCollectionCat:
     "There was a problem adding one of your new collection lists. Please try again. If the error persists, consider changing your list names. Creation or other updates may have succeeded.",
   validateCategoryToUpdate:
-    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application. Creation or other updates may have succeeded.",
+    "The system either does not recognize one of the lists you want to update or the list label is invalid. Please try again. If the error persists, consider renaming your list or trying again after reopening the application.",
   updateCategory:
     "There was a problem updating one of your lists. Please try again. If the error persists, consider trying again after renaming the lists or reopening the application. Creation or other updates may have succeeded.",
   validateCategoryToDelete:
