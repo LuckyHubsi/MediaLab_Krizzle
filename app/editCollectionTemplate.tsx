@@ -501,7 +501,11 @@ export default function EditCollectionTemplateScreen() {
                     </Card>
                     <View style={{ paddingTop: 10 }}>
                       <ItemCountContainer>
-                        <ItemCount colorScheme={colorScheme}>
+                        <ItemCount
+                          colorScheme={colorScheme}
+                          accessible={true}
+                          accessibilityRole="none"
+                        >
                           <ThemedText
                             colorVariant={cards.length < 10 ? "primary" : "red"}
                           >
@@ -511,11 +515,16 @@ export default function EditCollectionTemplateScreen() {
                             colorVariant={
                               colorScheme === "light" ? "grey" : "lightGrey"
                             }
+                            accessibilityLabel="out of 10 possible fields"
                           >
                             /10 Fields
                           </ThemedText>
                         </ItemCount>
-                        <ItemCount colorScheme={colorScheme}>
+                        <ItemCount
+                          colorScheme={colorScheme}
+                          accessible={true}
+                          accessibilityRole="none"
+                        >
                           <ThemedText
                             colorVariant={previewCount <= 2 ? "primary" : "red"}
                           >
@@ -525,6 +534,7 @@ export default function EditCollectionTemplateScreen() {
                             colorVariant={
                               colorScheme === "light" ? "grey" : "lightGrey"
                             }
+                            accessibilityLabel="out of 3 possible preview fields"
                           >
                             /3 Preview
                           </ThemedText>
@@ -642,7 +652,11 @@ export default function EditCollectionTemplateScreen() {
               </Card>
               <View style={{ paddingTop: 10 }}>
                 <ItemCountContainer>
-                  <ItemCount colorScheme={colorScheme}>
+                  <ItemCount
+                    colorScheme={colorScheme}
+                    accessible={true}
+                    accessibilityRole="none"
+                  >
                     <ThemedText
                       colorVariant={cards.length < 10 ? "primary" : "red"}
                     >
@@ -652,11 +666,16 @@ export default function EditCollectionTemplateScreen() {
                       colorVariant={
                         colorScheme === "light" ? "grey" : "lightGrey"
                       }
+                      accessibilityLabel="out of 10 possible fields"
                     >
                       /10 Fields
                     </ThemedText>
                   </ItemCount>
-                  <ItemCount colorScheme={colorScheme}>
+                  <ItemCount
+                    colorScheme={colorScheme}
+                    accessible={true}
+                    accessibilityRole="none"
+                  >
                     <ThemedText
                       colorVariant={previewCount <= 2 ? "primary" : "red"}
                     >
@@ -666,6 +685,7 @@ export default function EditCollectionTemplateScreen() {
                       colorVariant={
                         colorScheme === "light" ? "grey" : "lightGrey"
                       }
+                      accessibilityLabel="out of 3 possible preview fields"
                     >
                       /3 Preview
                     </ThemedText>
@@ -745,6 +765,7 @@ export default function EditCollectionTemplateScreen() {
                     <AddButton
                       onPress={handleAddCard}
                       isDisabled={templates.length >= 10}
+                      label="Add A Field"
                     />
                   </View>
                 </ScrollView>
