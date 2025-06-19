@@ -129,7 +129,12 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
               <BottomContentContainer>
                 <NavigationContainer>
                   {index > 0 && (
-                    <LeftChevronButton onPress={goBack}>
+                    <LeftChevronButton
+                      onPress={goBack}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel="Previous Error"
+                    >
                       <MaterialIcons
                         name="chevron-left"
                         size={30}
@@ -139,11 +144,19 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
                       />
                     </LeftChevronButton>
                   )}
-                  <IndicatorText colorScheme={colorScheme}>
+                  <IndicatorText
+                    colorScheme={colorScheme}
+                    accessibilityLabel={`Error ${index + 1} of ${errors.length}`}
+                  >
                     {index + 1} of {errors.length}
                   </IndicatorText>
                   {index < errors.length - 1 && (
-                    <RightChevronButton onPress={goNext}>
+                    <RightChevronButton
+                      onPress={goNext}
+                      accessible={true}
+                      accessibilityRole="button"
+                      accessibilityLabel="Next Error"
+                    >
                       <MaterialIcons
                         name="chevron-right"
                         size={30}
@@ -158,6 +171,9 @@ export const ErrorPopup: React.FC<ErrorPopupProps> = ({
                   isRed
                   colorScheme={colorScheme}
                   onPress={handleConfirm}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss errors"
                 >
                   <CTAButtonText>Dismiss</CTAButtonText>
                 </CTAButton>
