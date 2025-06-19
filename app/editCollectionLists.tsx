@@ -36,6 +36,7 @@ import { useServices } from "@/context/ServiceContext";
 import RemoveButton from "@/components/ui/RemoveButton/RemoveButton";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
+import { IconTopRight } from "@/components/ui/IconTopRight/IconTopRight";
 
 /**
  * Screen for editing collection lists.
@@ -363,30 +364,42 @@ export default function EditCollectionListsScreen() {
               showsVerticalScrollIndicator={false}
             >
               <Card>
+                <IconTopRight onPress={() => setShowHelp(true)}>
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Help"
+                    accessibilityHint="Opens a help modal"
+                    onPress={() => setShowHelp(true)}
+                  >
+                    <MaterialIcons
+                      name="help-outline"
+                      size={26}
+                      color={
+                        colorScheme === "light"
+                          ? Colors.primary
+                          : Colors.secondary
+                      }
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
+                </IconTopRight>
                 <CardText>
                   <CardHeader>
-                    <ThemedText fontSize="l" fontWeight="bold">
-                      Edit Lists
-                    </ThemedText>
-                    <TouchableOpacity
-                      onPress={() => setShowHelp(true)}
-                      style={{
-                        minHeight: 48,
-                        minWidth: 48,
-                        alignSelf: "center",
-                        justifyContent: "center",
-                      }}
+                    <View
+                      accessible={true}
+                      accessibilityRole="header"
+                      accessibilityLabel="Edit Lists. Add Lists to organize your Collections better."
+                      importantForAccessibility="yes"
                     >
-                      <MaterialIcons
-                        name="help-outline"
-                        size={26}
-                        color={
-                          colorScheme === "light"
-                            ? Colors.primary
-                            : Colors.secondary
-                        }
-                      />
-                    </TouchableOpacity>
+                      <ThemedText
+                        fontSize="l"
+                        fontWeight="bold"
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                      >
+                        Edit Lists
+                      </ThemedText>
+                    </View>
                   </CardHeader>
                   <ThemedText
                     fontSize="s"
@@ -488,30 +501,40 @@ export default function EditCollectionListsScreen() {
           }}
         >
           <Card>
+            <IconTopRight onPress={() => setShowHelp(true)}>
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Help"
+                accessibilityHint="Opens a help modal"
+                onPress={() => setShowHelp(true)}
+              >
+                <MaterialIcons
+                  name="help-outline"
+                  size={26}
+                  color={
+                    colorScheme === "light" ? Colors.primary : Colors.secondary
+                  }
+                  accessible={false}
+                />
+              </TouchableOpacity>
+            </IconTopRight>
             <CardText>
               <CardHeader>
-                <ThemedText fontSize="l" fontWeight="bold">
-                  Edit Lists
-                </ThemedText>
-                <TouchableOpacity
-                  onPress={() => setShowHelp(true)}
-                  style={{
-                    minHeight: 48,
-                    minWidth: 48,
-                    alignSelf: "center",
-                    justifyContent: "center",
-                  }}
+                <View
+                  accessible={true}
+                  accessibilityRole="header"
+                  accessibilityLabel="Edit Lists. Add Lists to organize your Collections better."
+                  importantForAccessibility="yes"
                 >
-                  <MaterialIcons
-                    name="help-outline"
-                    size={26}
-                    color={
-                      colorScheme === "light"
-                        ? Colors.primary
-                        : Colors.secondary
-                    }
-                  />
-                </TouchableOpacity>
+                  <ThemedText
+                    fontSize="l"
+                    fontWeight="bold"
+                    accessibilityElementsHidden
+                    importantForAccessibility="no-hide-descendants"
+                  >
+                    Edit Lists
+                  </ThemedText>
+                </View>
               </CardHeader>
               <ThemedText
                 fontSize="s"
@@ -522,7 +545,6 @@ export default function EditCollectionListsScreen() {
               </ThemedText>
             </CardText>
           </Card>
-
           <ItemCountContainer>
             <ItemCount colorScheme={colorScheme}>
               <ThemedText colorVariant={lists.length < 10 ? "primary" : "red"}>

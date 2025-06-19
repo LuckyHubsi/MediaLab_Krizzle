@@ -318,6 +318,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                       accessibilityRole="button"
                       accessibilityLabel="Help"
                       accessibilityHint="Opens a help modal"
+                      onPress={() => setShowHelp(true)}
                     >
                       <MaterialIcons
                         name="help-outline"
@@ -517,6 +518,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     accessibilityRole="button"
                     accessibilityLabel="Help"
                     accessibilityHint="Opens a help modal"
+                    onPress={() => setShowHelp(true)}
                   >
                     <MaterialIcons
                       name="help-outline"
