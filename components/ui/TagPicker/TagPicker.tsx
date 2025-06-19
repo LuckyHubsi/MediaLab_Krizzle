@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import {
   Container,
   HeaderRow,
@@ -50,22 +50,30 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           Choose a Tag
         </ThemedText>
         <EditTextContainer>
-          <ThemedText
-            fontSize="s"
-            fontWeight="regular"
-            colorVariant="greyScale"
+          <TouchableOpacity
+            style={{
+              minHeight: 48,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
             onPress={onViewAllPress}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Edit Tags"
             accessibilityHint="Opens the Tag Management page"
           >
-            Edit Tags
-            <BackIcon
-              name="chevron-forward-outline"
-              colorScheme={colorScheme}
-            />
-          </ThemedText>
+            <ThemedText
+              fontSize="s"
+              fontWeight="regular"
+              colorVariant="greyScale"
+            >
+              Edit Tags
+              <BackIcon
+                name="chevron-forward-outline"
+                colorScheme={colorScheme}
+              />
+            </ThemedText>
+          </TouchableOpacity>
         </EditTextContainer>
       </HeaderRow>
 

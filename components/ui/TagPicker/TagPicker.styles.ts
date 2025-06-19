@@ -62,7 +62,6 @@ export const TagPill = styled.View<{
 `;
 
 export const EditTextContainer = styled.TouchableOpacity`
-  min-height: 48;
   flex-direction: row;
   align-items: center;
   justify-content: center;
