@@ -56,7 +56,7 @@ export const InfoPopup: React.FC<InfoPopupProps> = ({
           }}
           showsVerticalScrollIndicator={false}
         >
-          <PopupImage source={image} />
+          <PopupImage source={image} accessible={false} accessibilityLabel="" />
 
           <PopupContainer colorScheme={colorScheme}>
             <View style={{ marginBottom: 10 }}>

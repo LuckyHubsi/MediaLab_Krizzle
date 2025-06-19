@@ -401,7 +401,11 @@ export default function EditCollectionListsScreen() {
               </Card>
 
               <ItemCountContainer>
-                <ItemCount colorScheme={colorScheme}>
+                <ItemCount
+                  colorScheme={colorScheme}
+                  accessible={true}
+                  accessibilityRole="none"
+                >
                   <ThemedText
                     colorVariant={lists.length < 10 ? "primary" : "red"}
                   >
@@ -419,12 +423,19 @@ export default function EditCollectionListsScreen() {
 
               {lists.map((item, index) => (
                 <Card key={item.id}>
-                  <HorizontalTitleRow>
+                  <HorizontalTitleRow
+                    accessible={true}
+                    accessibilityRole="text"
+                  >
                     <ThemedText fontSize="regular" fontWeight="regular">
                       List {index + 1}
                     </ThemedText>
                     {index === 0 && (
-                      <ThemedText fontSize="s" colorVariant="red">
+                      <ThemedText
+                        fontSize="s"
+                        colorVariant="red"
+                        accessibilityLabel="input required"
+                      >
                         * required
                       </ThemedText>
                     )}
@@ -447,6 +458,7 @@ export default function EditCollectionListsScreen() {
                       ).length > 1
                     }
                     maxLength={30}
+                    extraInfo="for your list title"
                   />
                   <RemoveButtonContainer>
                     <RemoveButton onPress={() => handleRemoveCard(item.id)} />
