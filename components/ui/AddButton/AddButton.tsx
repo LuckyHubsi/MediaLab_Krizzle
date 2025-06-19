@@ -30,6 +30,7 @@ export const AddButton: React.FC<AddButtonProps> = ({
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={label}
+      disabled={isDisabled}
     >
       <MaterialIcons name="add" size={40} color={Colors.white} />
     </StyledButtonContainer>
