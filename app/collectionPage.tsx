@@ -62,6 +62,13 @@ export default function CollectionScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showItemDeleteModal, setShowItemDeleteModal] = useState(false);
   const [shouldReload, setShouldReload] = useState<boolean>();
+  const [shouldReloadArchiveState, setShouldReloadArchiveState] =
+    useState<boolean>();
+  const [shouldReloadPinnedState, setShouldReloadPinnedState] =
+    useState<boolean>();
+  const [shouldReloadParentFolder, setShouldReloadParentFolder] =
+    useState<boolean>();
+  const [shouldReloadItems, setShouldReloadItems] = useState<boolean>();
   const [selectedItem, setSelectedItem] = useState<PreviewItemDTO>();
   const [selectedList, setSelectedList] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +79,6 @@ export default function CollectionScreen() {
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
   const headerRef = useRef<View | null>(null);
-  const [announceKey, setAnnounceKey] = useState(0);
 
   /**
    * useFocusEffect hook to fetch collection data when the screen is focused.
@@ -156,6 +162,153 @@ export default function CollectionScreen() {
     }, [pageId, shouldReload, routing]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.archived = collectionResult.value.archived;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadArchiveState(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadArchiveState, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.pinned = collectionResult.value.pinned;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadPinnedState(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadPinnedState, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const retrievedItemsResult =
+            await collectionService.getItemsByPageId(numericID);
+
+          if (retrievedItemsResult.success) {
+            setItems(retrievedItemsResult.value);
+
+            // remove all prior errors from the items retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "items:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...retrievedItemsResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "items:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadItems(false);
+        }
+      };
+      fetchData();
+    }, [pageId, shouldReloadItems, routing]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const numericID = Number(pageId);
+        if (!isNaN(numericID)) {
+          const collectionResult =
+            await collectionService.getCollectionByPageId(numericID);
+          if (collectionResult.success) {
+            if (collection) {
+              collection.parentID = collectionResult.value.parentID;
+            }
+
+            // remove all prior errors from the collection retrieval source if service call succeeded
+            setErrors((prev) =>
+              prev.filter((error) => error.source !== "collection:retrieval"),
+            );
+          } else {
+            // set all errors to the previous errors plus add the new error
+            // define the id and the source and set its read status to false
+            setErrors((prev) => [
+              ...prev,
+              {
+                ...collectionResult.error,
+                hasBeenRead: false,
+                id: `${Date.now()}-${Math.random()}`,
+                source: "collection:retrieval",
+              },
+            ]);
+            setShowError(true);
+          }
+          setShouldReloadParentFolder(false);
+        }
+      };
+      fetchData();
+    }, [pageId, setShouldReloadParentFolder, routing]),
+  );
+
   // Function to navigate to the edit page for the corrisponding collection widget
   const goToEditPage = () => {
     const path = "/editWidget";
@@ -202,7 +355,13 @@ export default function CollectionScreen() {
 
   // update key to force re-render when searchQuery or results change to have screenreader announce results of search
   useEffect(() => {
-    setAnnounceKey((prev) => prev + 1);
+    const message = searchQuery
+      ? filteredItems.length > 0
+        ? `${filteredItems.length} collection items${filteredItems.length > 1 ? "s" : ""} ${searchQuery ? `found for` + searchQuery : ""} inside collection list ${selectedList}`
+        : `No collection items ${searchQuery ? `found for` + searchQuery : ""} inside Collection list ${selectedList}`
+      : "";
+
+    AccessibilityInfo.announceForAccessibility(message);
   }, [searchQuery, filteredItems.length, selectedList]);
 
   /**
@@ -253,24 +412,6 @@ export default function CollectionScreen() {
             placeholder="Search for item name"
             onSearch={(text) => setSearchQuery(text)}
           />
-
-          <ThemedText
-            key={`announce-${announceKey}`}
-            accessible={true}
-            accessibilityLiveRegion="polite"
-            style={{
-              position: "absolute",
-              height: 0,
-              width: 0,
-              opacity: 0,
-            }}
-          >
-            {searchQuery
-              ? filteredItems.length > 0
-                ? `${filteredItems.length} result${filteredItems.length > 1 ? "s" : ""} found for ${searchQuery} inside collection list ${selectedList}`
-                : `No results found for ${searchQuery} inside Collection list ${selectedList}`
-              : ""}
-          </ThemedText>
         </View>
 
         <CollectionListCard
@@ -320,7 +461,7 @@ export default function CollectionScreen() {
                         collection.pinned,
                       );
                       if (pinResult.success) {
-                        setShouldReload(true);
+                        setShouldReloadPinnedState(true);
 
                         // remove all prior errors from the pinning source if service call succeeded
                         setErrors((prev) =>
@@ -405,7 +546,7 @@ export default function CollectionScreen() {
                       "bottom",
                       "success",
                     );
-                    setShouldReload(true);
+                    setShouldReloadArchiveState(true);
 
                     // remove all prior errors from the archiving source if service call succeeded
                     setErrors((prev) =>
@@ -547,7 +688,7 @@ export default function CollectionScreen() {
 
               if (deleteResult.success) {
                 setShowItemDeleteModal(false);
-                setShouldReload(true);
+                setShouldReloadItems(true);
                 showSnackbar("Successfully deleted Item.", "bottom", "success");
               } else {
                 setErrors((prev) => [
@@ -605,7 +746,7 @@ export default function CollectionScreen() {
               "bottom",
               "success",
             );
-            setShouldReload(true);
+            setShouldReloadParentFolder(true);
           } else {
             showSnackbar("Failed to move note to folder.", "bottom", "error");
           }
