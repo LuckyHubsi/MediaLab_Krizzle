@@ -13,6 +13,7 @@ Table of Contents
 - [App Screenshots](#app-screenshots)
 - [Technology Stack](#technology-stack)
 - [Architecture Overview](#architecture-overview)
+- [Cloning the Repository](#cloning-the-repository)
 - [Development & Testing](#development-and-testing)
 - [App Behavior & Permissions](#app-behavior-and-permissions)
 - [Deployment](#deployment)
@@ -215,6 +216,21 @@ The repo is organized into distinct sections, each serving specific functions:
   - `service/`: Implements business logic and communication of the frontend with repositories.
   - `util/`: Contains mapper classes and error definitions.
 - `shared/`: DTOs, enums, and error handling types used in both backend and UI views.
+
+## Cloning the Repository
+
+To get started with Krizzle locally, clone the repository using Git:
+
+1. Install Git (if you haven’t yet): https://git-scm.com/downloads
+
+2. Open a terminal (or Git Bash on Windows), then run:
+
+```bash
+git clone https://github.com/LuckyHubsi/MediaLab_Krizzle
+cd krizzle
+```
+
+Alternatively, you can click the green Code button at the top of this page and choose Download ZIP, then unzip it and open the folder in your code editor.
 
 ## Development and Testing
 
