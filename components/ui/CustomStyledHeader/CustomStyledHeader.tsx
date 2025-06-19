@@ -188,7 +188,6 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
           }}
           accessibilityRole="none"
           accessibilityLabel={`Widget Icon ${leftIconName}`}
-          accessibilityHint="Opens a modal for actions available on this page"
         />
       )}
       {/* Optional right icon */}
