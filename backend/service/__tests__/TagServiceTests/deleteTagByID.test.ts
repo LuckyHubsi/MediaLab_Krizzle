@@ -1,11 +1,10 @@
-import { TagRepository } from "@/backend/repository/interfaces/TagRepository.interface";
-import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagService } from "../../TagService";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
 import { ZodError } from "zod";
 import { tagID } from "@/backend/domain/common/IDs";
+import { mockTagRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/domain/common/IDs", () => ({
   tagID: {
@@ -15,22 +14,13 @@ jest.mock("@/backend/domain/common/IDs", () => ({
 
 describe("TagService - deleteTagByID", () => {
   let tagService: TagService;
-  let mockTagRepository: jest.Mocked<TagRepository>;
+
+  beforeAll(() => {
+    tagService = new TagService(mockTagRepository);
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockTagRepository = {
-      getAllTags: jest.fn(),
-      insertTag: jest.fn(),
-      deleteTag: jest.fn(),
-      updateTag: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    tagService = new TagService(mockTagRepository);
   });
 
   it("should return success Result containing true", async () => {
@@ -62,11 +52,11 @@ describe("TagService - deleteTagByID", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Delete Failed') is thrown", async () => {
     const mockBrandedId = 1 as any;
     (tagID.parse as jest.Mock).mockReturnValue(mockBrandedId);
     mockTagRepository.deleteTag.mockRejectedValue(
-      new RepositoryErrorNew("Delete Failed"),
+      new RepositoryError("Delete Failed"),
     );
 
     const result = await tagService.deleteTagByID(1);
@@ -81,7 +71,7 @@ describe("TagService - deleteTagByID", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Delete Failed') is thrown", async () => {
     const mockBrandedId = 1 as any;
     (tagID.parse as jest.Mock).mockReturnValue(mockBrandedId);
     mockTagRepository.deleteTag.mockRejectedValue(new Error());

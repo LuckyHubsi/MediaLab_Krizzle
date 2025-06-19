@@ -37,7 +37,7 @@ describe("Tag Schema Validation", () => {
       expect(result.success).toBe(false);
     });
     it("should invalidate when incorrect itemCount", () => {
-      invalidTag.itemCount = -1;
+      invalidTag.usageCount = "";
       const result = tagSchema.safeParse(invalidTag);
       expect(result.success).toBe(false);
     });

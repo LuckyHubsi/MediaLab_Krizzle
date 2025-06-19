@@ -13,7 +13,7 @@ import {
   updateRatingSymbolQuery,
 } from "../query/AttributeQuery";
 import { AttributeMapper } from "@/backend/util/mapper/AttributeMapper";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import {
   attributeID,
   AttributeID,
@@ -43,7 +43,7 @@ export class AttributeRepositoryImpl
    * @param templateID - A `TemplateID` object representing the template ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an `AttributeID` if insertion succeeded.
-   * @throws RepositoryErrorNew if the insertion fails.
+   * @throws RepositoryError if the insertion fails.
    */
   async insertAttribute(
     newAttribute: NewAttribute,
@@ -68,7 +68,7 @@ export class AttributeRepositoryImpl
       });
       return attributeID.parse(attributeId);
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -79,7 +79,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insertion fails.
+   * @throws RepositoryError if the insertion fails.
    */
   async insertMultiselectOptions(
     options: string[],
@@ -93,7 +93,7 @@ export class AttributeRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -104,7 +104,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the insertion fails.
+   * @throws RepositoryError if the insertion fails.
    */
   async insertRatingSymbol(
     symbol: string,
@@ -118,7 +118,7 @@ export class AttributeRepositoryImpl
         txn,
       );
     } catch (error) {
-      throw new RepositoryErrorNew("Insert Failed");
+      throw new RepositoryError("Insert Failed");
     }
   }
 
@@ -128,7 +128,7 @@ export class AttributeRepositoryImpl
    * @param attribute - An `Attribute` object.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateAttribute(
     attribute: Attribute,
@@ -146,7 +146,7 @@ export class AttributeRepositoryImpl
       );
     } catch (error) {
       console.log(error);
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -157,7 +157,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateMultiselectOptions(
     options: string[],
@@ -172,7 +172,7 @@ export class AttributeRepositoryImpl
       );
     } catch (error) {
       console.log(error);
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -183,7 +183,7 @@ export class AttributeRepositoryImpl
    * @param attributeID - An `AttributeID` object representing the attribute ID.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to void.
-   * @throws RepositoryErrorNew if the update fails.
+   * @throws RepositoryError if the update fails.
    */
   async updateRatingSymbol(
     symbol: string,
@@ -198,7 +198,7 @@ export class AttributeRepositoryImpl
       );
     } catch (error) {
       console.log(error);
-      throw new RepositoryErrorNew("Update Failed");
+      throw new RepositoryError("Update Failed");
     }
   }
 
@@ -208,7 +208,7 @@ export class AttributeRepositoryImpl
    * @param pageId - An `PageID` object representing the page ID the attribute belongs to.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an array of `Attribute` entities.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async getPreviewAttributes(
     pageId: PageID,
@@ -223,7 +223,7 @@ export class AttributeRepositoryImpl
 
       return attributes.map(AttributeMapper.toEntity);
     } catch (error) {
-      throw new RepositoryErrorNew("Fetch Failed");
+      throw new RepositoryError("Fetch Failed");
     }
   }
 
@@ -233,7 +233,7 @@ export class AttributeRepositoryImpl
    * @param attributeId - An `AttributeID` object representing theattribute to be deleted.
    * @param txn - The DB instance the operation should be executed on if a transaction is ongoing.
    * @returns A Promise resolving to an true on success.
-   * @throws RepositoryErrorNew if the fetch fails.
+   * @throws RepositoryError if the fetch fails.
    */
   async deleteAttribute(
     attributeId: AttributeID,
@@ -243,7 +243,7 @@ export class AttributeRepositoryImpl
       await this.executeQuery(deleteAttributeQuery, [attributeId], txn);
       return true;
     } catch (error) {
-      throw new RepositoryErrorNew("Delete Failed");
+      throw new RepositoryError("Delete Failed");
     }
   }
 }

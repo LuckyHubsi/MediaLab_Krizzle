@@ -9,10 +9,11 @@ import { ZodError } from "zod";
 import { FolderState } from "@/shared/enum/FolderState";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
 import { BaseRepository } from "../repository/interfaces/BaseRepository.interface";
-// import { collectionService } from "./CollectionService";
+import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
+import * as FileSystem from "expo-file-system";
 
 /**
  * GeneralPageService encapsulates all general-page-related application logic.
@@ -27,6 +28,7 @@ export class GeneralPageService {
   constructor(
     private generalPageRepo: GeneralPageRepository,
     private baseRepo: BaseRepository,
+    private itemRepo: ItemRepository,
   ) {}
 
   /**
@@ -42,7 +44,7 @@ export class GeneralPageService {
       let pages: GeneralPage[] = [];
       switch (pageState) {
         case GeneralPageState.GeneralModfied:
-          // throw new RepositoryErrorNew("Fetch Failed");
+          // throw new RepositoryError("Fetch Failed");
           pages = await this.generalPageRepo.getAllPagesSortedByModified();
           break;
         case GeneralPageState.GeneralCreated:
@@ -62,10 +64,7 @@ export class GeneralPageService {
       }
       return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         let errorMessage: string = "";
         switch (pageState) {
           case GeneralPageState.GeneralModfied:
@@ -139,10 +138,7 @@ export class GeneralPageService {
       }
       return success(pages.map(GeneralPageMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         let errorMessage: string = "";
         switch (sortingMode) {
           case FolderState.GeneralModfied:
@@ -189,14 +185,14 @@ export class GeneralPageService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: PageErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -236,7 +232,7 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Update Failed"
       ) {
         return failure({
@@ -282,9 +278,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -330,9 +325,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -360,6 +354,7 @@ export class GeneralPageService {
     try {
       const brandedPageID = pageID.parse(pageId);
       await this.generalPageRepo.deletePage(brandedPageID);
+      await this.deleteCollectionImages(brandedPageID);
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -368,7 +363,7 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Delete Failed"
       ) {
         return failure({
@@ -381,6 +376,55 @@ export class GeneralPageService {
           message: PageErrorMessages.unknown,
         });
       }
+    }
+  }
+
+  /**
+   * Deletes an image file from the file system.
+   *
+   * @param imageUri - URI of the image to delete.
+   * @returns Promise resolving to true on success.
+   * @throws Rethrows error
+   */
+  private async deleteImageFile(imageUri: string): Promise<boolean> {
+    if (!imageUri) return false;
+
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(imageUri, { idempotent: true });
+        // console.log("Deleted image file:", imageUri);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Deletes all image files from the file system tied to a collection.
+   *
+   * @param pageId - the collection pageID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteCollectionImages(pageId: number): Promise<void> {
+    try {
+      const brandedPageID = pageID.parse(pageId);
+
+      const imageValues =
+        await this.itemRepo.getmageValuesByPageID(brandedPageID);
+
+      for (const imgValue of imageValues) {
+        if (imgValue) {
+          await this.deleteImageFile(imgValue);
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -416,9 +460,8 @@ export class GeneralPageService {
           message: PageErrorMessages.validatePageToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({

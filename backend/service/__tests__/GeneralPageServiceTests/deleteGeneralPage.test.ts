@@ -1,10 +1,13 @@
-import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { GeneralPageService } from "../../GeneralPageService";
 import { pageID } from "@/backend/domain/common/IDs";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  mockGeneralPageRepository,
+  mockBaseRepository,
+} from "../ServiceTest.setup";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -18,34 +21,16 @@ jest.mock("@/backend/domain/common/IDs", () => {
 
 describe("GeneralPageService - deleteGeneralPage", () => {
   let generalPageService: GeneralPageService;
-  let mockGeneralPageRepository: jest.Mocked<GeneralPageRepository>;
+
+  beforeAll(() => {
+    generalPageService = new GeneralPageService(
+      mockGeneralPageRepository,
+      mockBaseRepository,
+    );
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGeneralPageRepository = {
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    generalPageService = new GeneralPageService(mockGeneralPageRepository);
   });
 
   it("should return a success Result containing true", async () => {
@@ -78,10 +63,10 @@ describe("GeneralPageService - deleteGeneralPage", () => {
     expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Delete Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(
-      new RepositoryErrorNew("Delete Failed"),
+      new RepositoryError("Delete Failed"),
     );
 
     const result = await generalPageService.deleteGeneralPage(1);
@@ -98,7 +83,7 @@ describe("GeneralPageService - deleteGeneralPage", () => {
     expect(mockGeneralPageRepository.deletePage).toHaveBeenCalledTimes(1);
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Delete Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Delete Failed') is thrown", async () => {
     (pageID.parse as jest.Mock).mockImplementation(() => 1 as any);
     mockGeneralPageRepository.deletePage.mockRejectedValue(new Error());
 

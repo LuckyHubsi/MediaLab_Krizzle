@@ -4,7 +4,7 @@ import { TagMapper } from "../util/mapper/TagMapper";
 import { NewTag, Tag } from "../domain/entity/Tag";
 import { tagID, TagID } from "../domain/common/IDs";
 import { failure, Result, success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { ZodError } from "zod";
@@ -28,14 +28,11 @@ export class TagService {
    */
   async getAllTags(): Promise<Result<TagDTO[], ServiceErrorType>> {
     try {
-      // throw new RepositoryErrorNew("Fetch Failed");
+      // throw new RepositoryError("Fetch Failed");
       const tags = await this.tagRepo.getAllTags();
       return success(tags.map(TagMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: TagErrorMessages.loadingAllTags,
@@ -57,7 +54,7 @@ export class TagService {
    */
   async insertTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
-      // throw new RepositoryErrorNew("Insert Failed");
+      // throw new RepositoryError("Insert Failed");
 
       const tag: NewTag = TagMapper.toNewEntity(tagDTO);
       await this.tagRepo.insertTag(tag);
@@ -69,7 +66,7 @@ export class TagService {
           message: TagErrorMessages.validateNewTag,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Insert Failed"
       ) {
         return failure({
@@ -97,7 +94,7 @@ export class TagService {
     tagId: number,
   ): Promise<Result<boolean, ServiceErrorType>> {
     try {
-      // throw new RepositoryErrorNew("Delete Failed");
+      // throw new RepositoryError("Delete Failed");
 
       const brandedId: TagID = tagID.parse(tagId);
       await this.tagRepo.deleteTag(brandedId);
@@ -109,7 +106,7 @@ export class TagService {
           message: TagErrorMessages.validateTagToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Delete Failed"
       ) {
         return failure({
@@ -133,7 +130,7 @@ export class TagService {
    */
   async updateTag(tagDTO: TagDTO): Promise<Result<boolean, ServiceErrorType>> {
     try {
-      // throw new RepositoryErrorNew("Update Failed");
+      // throw new RepositoryError("Update Failed");
 
       const tag: Tag = TagMapper.toUpdatedEntity(tagDTO);
 
@@ -146,7 +143,7 @@ export class TagService {
           message: TagErrorMessages.validateTagToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Update Failed"
       ) {
         return failure({

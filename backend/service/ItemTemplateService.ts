@@ -11,7 +11,7 @@ import {
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
 import { ZodError } from "zod";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { TemplateErrorMessages } from "@/shared/error/ErrorMessages";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { AttributeMapper } from "../util/mapper/AttributeMapper";
@@ -21,6 +21,7 @@ import { AttributeType } from "@/shared/enum/AttributeType";
 import { ItemRepository } from "../repository/interfaces/ItemRepository.interface";
 import { ItemAttributeValue } from "../domain/entity/Item";
 import { GeneralPageRepository } from "../repository/interfaces/GeneralPageRepository.interface";
+import * as FileSystem from "expo-file-system";
 
 /**
  * ItemTemplateService encapsulates item-template-related application logic.
@@ -55,14 +56,14 @@ export class ItemTemplateService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: TemplateErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -271,11 +272,9 @@ export class ItemTemplateService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -309,6 +308,11 @@ export class ItemTemplateService {
         await this.attributeRepo.deleteAttribute(brandedAttributeID, txn);
         await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
+      try {
+        await this.deleteAttributeImages(brandedAttributeID);
+      } catch (error) {
+        // not critical, let it continue
+      }
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -317,9 +321,8 @@ export class ItemTemplateService {
           message: TemplateErrorMessages.validateAttributeToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -332,6 +335,55 @@ export class ItemTemplateService {
           message: TemplateErrorMessages.unknown,
         });
       }
+    }
+  }
+
+  /**
+   * Deletes an image file from the file system.
+   *
+   * @param imageUri - URI of the image to delete.
+   * @returns Promise resolving to true on success.
+   * @throws Rethrows error
+   */
+  private async deleteImageFile(imageUri: string): Promise<boolean> {
+    if (!imageUri) return false;
+
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(imageUri, { idempotent: true });
+        console.log("Deleted image file:", imageUri);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Deletes all image files from the file system tied to an attribute.
+   *
+   * @param pageId - the collection pageID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteAttributeImages(attributeId: number): Promise<void> {
+    try {
+      const brandedAttributeID = attributeID.parse(attributeId);
+
+      const imageValues =
+        await this.itemRepo.getImageValuesByAttributeID(brandedAttributeID);
+
+      for (const imgValue of imageValues) {
+        if (imgValue) {
+          await this.deleteImageFile(imgValue);
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 }

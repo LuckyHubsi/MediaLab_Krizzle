@@ -1,9 +1,9 @@
-import { TagRepository } from "@/backend/repository/interfaces/TagRepository.interface";
 import { TagMapper } from "@/backend/util/mapper/TagMapper";
 import { TagService } from "../../TagService";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { TagErrorMessages } from "@/shared/error/ErrorMessages";
+import { mockTagRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/TagMapper", () => ({
   TagMapper: {
@@ -30,22 +30,13 @@ describe("TagService - getAllTags", () => {
   } as any;
 
   let tagService: TagService;
-  let mockTagRepository: jest.Mocked<TagRepository>;
+
+  beforeAll(() => {
+    tagService = new TagService(mockTagRepository);
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockTagRepository = {
-      getAllTags: jest.fn(),
-      insertTag: jest.fn(),
-      deleteTag: jest.fn(),
-      updateTag: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    tagService = new TagService(mockTagRepository);
   });
 
   it("should return a success Result containing an array of TagDTOs", async () => {
@@ -61,9 +52,9 @@ describe("TagService - getAllTags", () => {
     );
   });
 
-  it("should return failure Result if RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Fetch Failed') is thrown", async () => {
     mockTagRepository.getAllTags.mockRejectedValue(
-      new RepositoryErrorNew("Fetch Failed"),
+      new RepositoryError("Fetch Failed"),
     );
 
     const result = await tagService.getAllTags();
@@ -80,7 +71,7 @@ describe("TagService - getAllTags", () => {
     expect(mockTagRepository.getAllTags).toHaveBeenCalled();
   });
 
-  it("should return failure Result if any Error besides RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if any Error besides RepositoryError('Fetch Failed') is thrown", async () => {
     mockTagRepository.getAllTags.mockRejectedValue(new Error());
 
     const result = await tagService.getAllTags();

@@ -1,10 +1,13 @@
 import { GeneralPageMapper } from "@/backend/util/mapper/GeneralPageMapper";
 import { GeneralPageService } from "../../GeneralPageService";
-import { GeneralPageRepository } from "@/backend/repository/interfaces/GeneralPageRepository.interface";
 import { success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { PageErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import {
+  mockBaseRepository,
+  mockGeneralPageRepository,
+} from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/GeneralPageMapper", () => ({
   GeneralPageMapper: {
@@ -24,34 +27,16 @@ describe("GeneralPageService - updateGeneralPageData", () => {
   } as any;
 
   let generalPageService: GeneralPageService;
-  let mockGeneralPageRepository: jest.Mocked<GeneralPageRepository>;
+
+  beforeAll(() => {
+    generalPageService = new GeneralPageService(
+      mockGeneralPageRepository,
+      mockBaseRepository,
+    );
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGeneralPageRepository = {
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    generalPageService = new GeneralPageService(mockGeneralPageRepository);
   });
 
   it("should return a success Result containing true", async () => {
@@ -88,12 +73,12 @@ describe("GeneralPageService - updateGeneralPageData", () => {
     }
   });
 
-  it("should return failure Result if RepositoryErrorNew('Udpate Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (GeneralPageMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockPageEntity,
     );
     mockGeneralPageRepository.updateGeneralPageData.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+      new RepositoryError("Update Failed"),
     );
 
     const result = await generalPageService.updateGeneralPageData(mockPageDTO);
@@ -108,7 +93,7 @@ describe("GeneralPageService - updateGeneralPageData", () => {
     }
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (GeneralPageMapper.toUpdatedEntity as jest.Mock).mockReturnValue(
       mockPageEntity,
     );

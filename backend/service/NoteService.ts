@@ -5,7 +5,7 @@ import * as common from "../domain/common/types";
 import { pageID } from "../domain/common/IDs";
 import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
 import { ZodError } from "zod";
 
@@ -37,14 +37,14 @@ export class NoteService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: NoteErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -86,9 +86,8 @@ export class NoteService {
           message: NoteErrorMessages.validateNewNote,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -130,9 +129,8 @@ export class NoteService {
           message: NoteErrorMessages.validateNoteToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({

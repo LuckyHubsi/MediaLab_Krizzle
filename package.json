@@ -12,7 +12,10 @@
     "lint": "expo lint"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "testMatch": [
+      "**/*.test.ts"
+    ]
   },
   "dependencies": {
     "@10play/tentap-editor": "^0.6.3",

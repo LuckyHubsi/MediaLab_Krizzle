@@ -7,7 +7,7 @@ import { ServiceErrorType } from "@/shared/error/ServiceError";
 import { failure, Result, success } from "@/shared/result/Result";
 import { ZodError } from "zod";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 
 /**
  * FolderService encapsulates all folder-related application logic.
@@ -41,7 +41,7 @@ export class FolderService {
           message: FolderErrorMessages.validateNewFolder,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Insert Failed"
       ) {
         return failure({
@@ -67,10 +67,7 @@ export class FolderService {
       const folders = await this.folderRepo.getAllFolders();
       return success(folders.map(FolderMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: FolderErrorMessages.loadingAllFolders,
@@ -99,14 +96,14 @@ export class FolderService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: FolderErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -145,7 +142,7 @@ export class FolderService {
           message: FolderErrorMessages.validateFolderToUpdate,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Update Failed"
       ) {
         return failure({
@@ -181,7 +178,7 @@ export class FolderService {
           message: FolderErrorMessages.validateFolderToDelete,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Delete Failed"
       ) {
         return failure({

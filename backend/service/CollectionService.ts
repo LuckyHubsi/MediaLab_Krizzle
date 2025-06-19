@@ -21,7 +21,7 @@ import * as FileSystem from "expo-file-system";
 import { Item } from "@/backend/domain/entity/Item";
 import { selectImageValuesByPageIdQuery } from "../repository/query/ItemQuery";
 import { ZodError } from "zod";
-import { RepositoryErrorNew } from "../util/error/RepositoryError";
+import { RepositoryError } from "../util/error/RepositoryError";
 import {
   CategoryErrorMessages,
   CollectionErrorMessages,
@@ -66,14 +66,14 @@ export class CollectionService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: CollectionErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -175,9 +175,8 @@ export class CollectionService {
           message: CollectionErrorMessages.validateNewCollection,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -210,10 +209,7 @@ export class CollectionService {
         );
       return success(categories.map(CollectionCategoryMapper.toDTO));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: CategoryErrorMessages.loadingAllCategories,
@@ -258,9 +254,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateNewCollectionCat,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -309,9 +304,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -345,6 +339,7 @@ export class CollectionService {
         await this.categoryRepo.deleteCategory(brandedCategoryID, txn);
         await this.generalPageRepo.updateDateModified(brandedPageID, txn);
       });
+      await this.deleteCollectionCategoryImages(brandedCategoryID);
       return success(true);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -353,9 +348,8 @@ export class CollectionService {
           message: CategoryErrorMessages.validateCategoryToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -368,6 +362,30 @@ export class CollectionService {
           message: CategoryErrorMessages.unknown,
         });
       }
+    }
+  }
+
+  /**
+   * Deletes all image files from the file system tied to a collection category.
+   *
+   * @param categoryId - the collection category ID to be deleted.
+   * @returns Promise resolving to void.
+   * @throws Rethrows error
+   */
+  async deleteCollectionCategoryImages(categoryId: number): Promise<void> {
+    try {
+      const brandedCategoryID = collectionCategoryID.parse(categoryId);
+
+      const imageValues =
+        await this.itemRepo.getImageValuesByCategoryID(brandedCategoryID);
+
+      for (const imgValue of imageValues) {
+        if (imgValue) {
+          await this.deleteImageFile(imgValue);
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -397,44 +415,6 @@ export class CollectionService {
   }
 
   /**
-   * Deletes all image files from the file system tied to a collection.
-   *
-   * @param pageId - the collection pageID to be deleted.
-   * @returns Promise resolving to void.
-   * @throws Rethrows error
-   */
-  async deleteCollectionImages(pageId: number): Promise<void> {
-    try {
-      const brandedPageID = pageID.parse(pageId);
-
-      const attributes =
-        await this.attributeRepo.getPreviewAttributes(brandedPageID);
-      const imageAttributeIds: number[] = [];
-
-      attributes.forEach((attr) => {
-        if (attr.type === AttributeType.Image) {
-          imageAttributeIds.push(attr.attributeID);
-        }
-      });
-
-      if (imageAttributeIds.length === 0) return;
-
-      const imageValues = await this.baseRepo.fetchAll<{ value: string }>(
-        selectImageValuesByPageIdQuery,
-        [pageId],
-      );
-
-      for (const imgValue of imageValues) {
-        if (imgValue.value) {
-          await this.deleteImageFile(imgValue.value);
-        }
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
    * Fetches an item and its values.
    *
    * @param itemId - A number representing the itemID.
@@ -450,14 +430,14 @@ export class CollectionService {
     } catch (error) {
       if (
         error instanceof ZodError ||
-        (error instanceof RepositoryErrorNew && error.type === "Not Found")
+        (error instanceof RepositoryError && error.type === "Not Found")
       ) {
         return failure({
           type: "Not Found",
           message: ItemErrorMessages.notFound,
         });
       } else if (
-        error instanceof RepositoryErrorNew &&
+        error instanceof RepositoryError &&
         error.type === "Fetch Failed"
       ) {
         return failure({
@@ -558,9 +538,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateNewItem,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Insert Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Insert Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -624,9 +603,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateItemToDelete,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Delete Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Delete Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -749,9 +727,8 @@ export class CollectionService {
           message: ItemErrorMessages.validateItemToUpdate,
         });
       } else if (
-        (error instanceof RepositoryErrorNew &&
-          error.type === "Update Failed") ||
-        (error instanceof RepositoryErrorNew &&
+        (error instanceof RepositoryError && error.type === "Update Failed") ||
+        (error instanceof RepositoryError &&
           error.type === "Transaction Failed")
       ) {
         return failure({
@@ -789,10 +766,7 @@ export class CollectionService {
 
       return success(ItemMapper.toItemsDTO(previewItems, attributes));
     } catch (error) {
-      if (
-        error instanceof RepositoryErrorNew &&
-        error.type === "Fetch Failed"
-      ) {
+      if (error instanceof RepositoryError && error.type === "Fetch Failed") {
         return failure({
           type: "Retrieval Failed",
           message: ItemErrorMessages.loadingAllItems,

@@ -1,11 +1,11 @@
-import { NoteRepository } from "@/backend/repository/interfaces/NoteRepository.interface";
 import { NoteService } from "../../NoteService";
 import { string50000 } from "@/backend/domain/common/types";
 import { success } from "@/shared/result/Result";
 import { pageID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
 import { NoteErrorMessages } from "@/shared/error/ErrorMessages";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
+import { mockNoteRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/domain/common/IDs", () => {
   const actual = jest.requireActual("@/backend/domain/common/IDs");
@@ -28,57 +28,22 @@ jest.mock("@/backend/domain/common/types", () => {
 });
 
 describe("NoteService - updateNoteContent", () => {
-  const mockFolderEntity = {
-    folderID: 1,
-    folderName: "Test Folder",
-  } as any;
-
-  const mockFolderDTO = {
-    folderID: 1,
-    folderName: "Test Folder",
-  } as any;
-
   let noteService: NoteService;
-  let mockNoteRepository: jest.Mocked<NoteRepository>;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockNoteRepository = {
-      insertNote: jest.fn(),
-      updateContent: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-      getAllFolderPagesSortedByModified: jest.fn(),
-      getAllFolderPagesSortedByCreated: jest.fn(),
-      getAllFolderPagesSortedByAlphabet: jest.fn(),
-      getAllPagesSortedByModified: jest.fn(),
-      getAllPagesSortedByCreated: jest.fn(),
-      getAllPagesSortedByAlphabet: jest.fn(),
-      getAllPinnedPages: jest.fn(),
-      getAllArchivedPages: jest.fn(),
-      getByPageID: jest.fn(),
-      getByPageId: jest.fn(),
-      updateGeneralPageData: jest.fn(),
-      insertPage: jest.fn(),
-      deletePage: jest.fn(),
-      updatePin: jest.fn(),
-      updateArchive: jest.fn(),
-      updateDateModified: jest.fn(),
-      updateParentID: jest.fn(),
-    };
+  beforeAll(() => {
     noteService = new NoteService(mockNoteRepository);
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should return a success Result containing undefined/void", async () => {
-    mockNoteRepository.updateContent.mockResolvedValue(true);
+    mockNoteRepository.executeTransaction.mockResolvedValue(true);
 
     const result = await noteService.updateNoteContent(1, "content");
 
     expect(result).toEqual(success(undefined));
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledWith(1, "content");
     expect(pageID.parse as jest.Mock).toHaveBeenCalledWith(1);
     expect(string50000.parse as jest.Mock).toHaveBeenCalledWith("content");
   });
@@ -100,7 +65,7 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(0);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(0);
   });
 
   it("should return failure Result if ZodError is thrown pt.2", async () => {
@@ -120,14 +85,14 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(0);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(0);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(0);
   });
 
-  it("should return failure Result if RepositoryErrorNew('Udpate Failed') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Udpate Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
-    mockNoteRepository.updateContent.mockRejectedValue(
-      new RepositoryErrorNew("Update Failed"),
+    mockNoteRepository.executeTransaction.mockRejectedValue(
+      new RepositoryError("Update Failed"),
     );
 
     const result = await noteService.updateNoteContent(1, "content");
@@ -142,13 +107,13 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(1);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(1);
   });
 
-  it("should return failure Result if other Error besides ZodError or RepositoryErrorNew('Update Failed') is thrown", async () => {
+  it("should return failure Result if other Error besides ZodError or RepositoryError('Update Failed') is thrown", async () => {
     (string50000.parse as jest.Mock).mockImplementation(() => "content");
     (pageID.parse as jest.Mock).mockImplementation(() => 1);
-    mockNoteRepository.updateContent.mockRejectedValue(new Error());
+    mockNoteRepository.executeTransaction.mockRejectedValue(new Error());
 
     const result = await noteService.updateNoteContent(1, "content");
 
@@ -162,6 +127,6 @@ describe("NoteService - updateNoteContent", () => {
     }
     expect(string50000.parse as jest.Mock).toHaveBeenCalledTimes(1);
     expect(pageID.parse as jest.Mock).toHaveBeenCalledTimes(1);
-    expect(mockNoteRepository.updateContent).toHaveBeenCalledTimes(1);
+    expect(mockNoteRepository.executeTransaction).toHaveBeenCalledTimes(1);
   });
 });

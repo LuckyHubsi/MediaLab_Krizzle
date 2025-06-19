@@ -1,11 +1,11 @@
 import { FolderMapper } from "@/backend/util/mapper/FolderMapper";
 import { FolderService } from "../../FolderService";
-import { FolderRepository } from "@/backend/repository/interfaces/FolderRepository.interface";
 import { success } from "@/shared/result/Result";
-import { RepositoryErrorNew } from "@/backend/util/error/RepositoryError";
+import { RepositoryError } from "@/backend/util/error/RepositoryError";
 import { FolderErrorMessages } from "@/shared/error/ErrorMessages";
 import { folderID } from "@/backend/domain/common/IDs";
 import { ZodError } from "zod";
+import { mockFolderRepository } from "../ServiceTest.setup";
 
 jest.mock("@/backend/util/mapper/FolderMapper", () => ({
   FolderMapper: {
@@ -31,23 +31,13 @@ describe("folderService - getFolder", () => {
   } as any;
 
   let folderService: FolderService;
-  let mockFolderRepository: jest.Mocked<FolderRepository>;
+
+  beforeAll(() => {
+    folderService = new FolderService(mockFolderRepository);
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFolderRepository = {
-      getAllFolders: jest.fn(),
-      getFolderByID: jest.fn(),
-      insertFolder: jest.fn(),
-      deleteFolderByID: jest.fn(),
-      updateFolderByID: jest.fn(),
-      executeQuery: jest.fn(),
-      fetchFirst: jest.fn(),
-      fetchAll: jest.fn(),
-      executeTransaction: jest.fn(),
-      getLastInsertId: jest.fn(),
-    };
-    folderService = new FolderService(mockFolderRepository);
   });
 
   it("should return a success Result containing a FolderDTO", async () => {
@@ -64,10 +54,10 @@ describe("folderService - getFolder", () => {
     );
   });
 
-  it("should return failure Result if RepositoryErrorNew('Not Found') is thrown", async () => {
+  it("should return failure Result if RepositoryError('Not Found') is thrown", async () => {
     (folderID.parse as jest.Mock).mockReturnValue(1);
     mockFolderRepository.getFolderByID.mockRejectedValue(
-      new RepositoryErrorNew("Not Found"),
+      new RepositoryError("Not Found"),
     );
 
     const result = await folderService.getFolder(1);
@@ -101,7 +91,7 @@ describe("folderService - getFolder", () => {
     }
   });
 
-  it("should return failure Result if any Error besides RepositoryErrorNew('Fetch Failed') is thrown", async () => {
+  it("should return failure Result if any Error besides RepositoryError('Fetch Failed') is thrown", async () => {
     (folderID.parse as jest.Mock).mockReturnValue(1);
     mockFolderRepository.getFolderByID.mockRejectedValue(new Error());
 
