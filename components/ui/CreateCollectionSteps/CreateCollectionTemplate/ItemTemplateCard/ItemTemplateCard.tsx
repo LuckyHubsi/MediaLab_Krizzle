@@ -139,7 +139,7 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
             <>
               <View
                 accessible={true}
-                accessibilityLabel="Input required"
+                accessibilityLabel="Field 1. Input required"
                 accessibilityRole="text"
                 style={{ display: "flex", flexDirection: "row" }}
               >
