@@ -554,6 +554,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                     accessibilityRole="button"
                     accessibilityLabel={`Move ${widgetTitle || "widget"} to ${selectedFolder?.title || "selected folder"}`}
                     accessibilityHint="Double tap to confirm the move"
+                    disabled={selectedFolder === null ? true : false}
                     onPress={async () => {
                       const moveResult =
                         await generalPageService.updateFolderID(
