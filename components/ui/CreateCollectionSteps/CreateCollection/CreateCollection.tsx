@@ -256,15 +256,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                       ref={headerRef}
                       accessible={true}
                       accessibilityRole="header"
-                      accessibilityLabel="Add Template. Create a Template for your Collection Items."
-                      importantForAccessibility="yes"
                     >
-                      <ThemedText
-                        fontSize="l"
-                        fontWeight="bold"
-                        accessibilityElementsHidden
-                        importantForAccessibility="no-hide-descendants"
-                      >
+                      <ThemedText fontSize="l" fontWeight="bold">
                         Create Collection
                       </ThemedText>
                     </View>
@@ -404,15 +397,8 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                     ref={headerRef}
                     accessible={true}
                     accessibilityRole="header"
-                    accessibilityLabel="Add Template. Create a Template for your Collection Items."
-                    importantForAccessibility="yes"
                   >
-                    <ThemedText
-                      fontSize="l"
-                      fontWeight="bold"
-                      accessibilityElementsHidden
-                      importantForAccessibility="no-hide-descendants"
-                    >
+                    <ThemedText fontSize="l" fontWeight="bold">
                       Create Collection
                     </ThemedText>
                   </View>
