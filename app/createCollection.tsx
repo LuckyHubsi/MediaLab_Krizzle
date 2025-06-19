@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ui/ThemedView/ThemedView";
 import CreateCollection, {
@@ -11,7 +11,7 @@ import { ItemTemplateDTO } from "@/shared/dto/ItemTemplateDTO";
 import { CollectionCategoryDTO } from "@/shared/dto/CollectionCategoryDTO";
 import { AttributeDTO } from "@/shared/dto/AttributeDTO";
 import { GradientBackground } from "@/components/ui/GradientBackground/GradientBackground";
-import { Platform } from "react-native";
+import { findNodeHandle, Platform, View } from "react-native";
 import { PageType } from "@/shared/enum/PageType";
 import { AttributeType } from "@/shared/enum/AttributeType";
 import { useServices } from "@/context/ServiceContext";
@@ -19,6 +19,7 @@ import { Colors } from "@/constants/Colors";
 import { EnrichedError } from "@/shared/error/ServiceError";
 import { ErrorPopup } from "@/components/Modals/ErrorModal/ErrorModal";
 import { useSnackbar } from "@/components/ui/Snackbar/Snackbar";
+import { AccessibilityInfo } from "react-native";
 
 /**
  * CollectionTemplateScreen is a screen that allows users to create a new collection
@@ -32,8 +33,30 @@ export default function CollectionTemplateScreen() {
 
   const [errors, setErrors] = useState<EnrichedError[]>([]);
   const [showError, setShowError] = useState(false);
+  const templateHeaderRef = useRef(null);
+  const widgetHeaderRef = useRef(null);
 
   const { showSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (step === "template") {
+      const delay = setTimeout(() => {
+        const node = findNodeHandle(templateHeaderRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300); // give the DOM time to render first
+      return () => clearTimeout(delay);
+    } else if (step === "create") {
+      const delay = setTimeout(() => {
+        const node = findNodeHandle(widgetHeaderRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300); // give the DOM time to render first
+      return () => clearTimeout(delay);
+    }
+  }, [step]);
 
   // Initial state for collection data
   const [collectionData, setCollectionData] = useState<CollectionData>({
@@ -154,6 +177,7 @@ export default function CollectionTemplateScreen() {
           data={collectionData}
           setData={setCollectionData}
           onNext={() => setStep("template")}
+          headerRef={widgetHeaderRef}
         />
       )}
       {step === "template" && (
@@ -162,6 +186,7 @@ export default function CollectionTemplateScreen() {
           setData={setCollectionData}
           onBack={() => setStep("create")}
           onNext={createCollection}
+          headerRef={templateHeaderRef}
         />
       )}
 

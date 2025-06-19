@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useRef } from "react";
 import {
   ScrollView,
   View,
@@ -40,6 +40,7 @@ interface CreateCollectionTemplateProps {
   setData: React.Dispatch<React.SetStateAction<CollectionData>>;
   onBack?: () => void;
   onNext?: () => void;
+  headerRef?: React.RefObject<View>;
 }
 
 const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
@@ -47,6 +48,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
   setData,
   onBack,
   onNext,
+  headerRef,
 }) => {
   const colorScheme = useActiveColorScheme();
   const { showSnackbar } = useSnackbar();
@@ -323,9 +325,22 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                   </IconTopRight>
                   <CardText>
                     <CardHeader>
-                      <ThemedText fontSize="l" fontWeight="bold">
-                        Add Template
-                      </ThemedText>
+                      <View
+                        ref={headerRef}
+                        accessible={true}
+                        accessibilityRole="header"
+                        accessibilityLabel="Add Template. Create a Template for your Collection Items."
+                        importantForAccessibility="yes"
+                      >
+                        <ThemedText
+                          fontSize="l"
+                          fontWeight="bold"
+                          accessibilityElementsHidden
+                          importantForAccessibility="no-hide-descendants"
+                        >
+                          Add Template
+                        </ThemedText>
+                      </View>
                     </CardHeader>
                     <ThemedText
                       fontSize="s"
@@ -492,9 +507,22 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 </IconTopRight>
                 <CardText>
                   <CardHeader>
-                    <ThemedText fontSize="l" fontWeight="bold">
-                      Add Template
-                    </ThemedText>
+                    <View
+                      ref={headerRef}
+                      accessible={true}
+                      accessibilityRole="header"
+                      accessibilityLabel="Add Template. Create a Template for your Collection Items."
+                      importantForAccessibility="yes"
+                    >
+                      <ThemedText
+                        fontSize="l"
+                        fontWeight="bold"
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                      >
+                        Add Template
+                      </ThemedText>
+                    </View>
                   </CardHeader>
                   <ThemedText
                     fontSize="s"

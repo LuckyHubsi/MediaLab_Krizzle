@@ -57,6 +57,7 @@ interface CreateCollectionProps {
   setData: React.Dispatch<React.SetStateAction<any>>;
   onNext?: () => void;
   onBack?: () => void;
+  headerRef?: React.RefObject<View>;
 }
 export type CollectionData = {
   title: string;
@@ -78,6 +79,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
   setData,
   onBack,
   onNext,
+  headerRef,
 }) => {
   // Services and hooks
   const { tagService } = useServices();
@@ -236,9 +238,22 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                 </IconTopRight>
                 <View style={{ alignItems: "center", gap: 20 }}>
                   <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
-                    <ThemedText fontSize="l" fontWeight="bold">
-                      Create Collection
-                    </ThemedText>
+                    <View
+                      ref={headerRef}
+                      accessible={true}
+                      accessibilityRole="header"
+                      accessibilityLabel="Add Template. Create a Template for your Collection Items."
+                      importantForAccessibility="yes"
+                    >
+                      <ThemedText
+                        fontSize="l"
+                        fontWeight="bold"
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                      >
+                        Create Collection
+                      </ThemedText>
+                    </View>
                     <ThemedText
                       fontSize="s"
                       fontWeight="light"
@@ -361,9 +376,22 @@ const CreateCollection: FC<CreateCollectionProps> = ({
               </IconTopRight>
               <View style={{ alignItems: "center", gap: 20 }}>
                 <View style={{ alignSelf: "flex-start", marginLeft: 5 }}>
-                  <ThemedText fontSize="l" fontWeight="bold">
-                    Create Collection
-                  </ThemedText>
+                  <View
+                    ref={headerRef}
+                    accessible={true}
+                    accessibilityRole="header"
+                    accessibilityLabel="Add Template. Create a Template for your Collection Items."
+                    importantForAccessibility="yes"
+                  >
+                    <ThemedText
+                      fontSize="l"
+                      fontWeight="bold"
+                      accessibilityElementsHidden
+                      importantForAccessibility="no-hide-descendants"
+                    >
+                      Create Collection
+                    </ThemedText>
+                  </View>
                   <ThemedText
                     fontSize="s"
                     fontWeight="light"
