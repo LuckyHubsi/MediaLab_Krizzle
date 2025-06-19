@@ -356,7 +356,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const tagText =
       selectedTag !== "All" && typeof selectedTag === "object"
-        ? `tag labelled "${selectedTag.tag_label}"`
+        ? `tag "${selectedTag.tag_label}"`
         : "";
 
     const queryText = searchQuery ? `search query "${searchQuery}"` : "";
@@ -366,19 +366,17 @@ export default function HomeScreen() {
 
     const pinnedMessage =
       filteredPinnedWidgets.length > 0
-        ? `${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in pinned widgets.`
-        : "";
+        ? `Pinned Widgets: ${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in.`
+        : `Pinned Widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}.`;
 
     const recentMessage =
       filteredWidgets.length > 0
-        ? `${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in recent widgets.`
-        : "";
+        ? `Recent widgets: ${filteredWidgets.length} result${filteredWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""}.`
+        : `Recent widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}`;
 
     const fullAnnouncement = `${pinnedMessage} ${recentMessage}`;
 
-    if (fullAnnouncement.length! <= 0) {
-      setFilterAnnouncement(fullAnnouncement);
-    }
+    setFilterAnnouncement(fullAnnouncement);
   }, [
     searchQuery,
     selectedTag,
