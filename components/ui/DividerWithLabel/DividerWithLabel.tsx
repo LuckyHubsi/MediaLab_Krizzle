@@ -27,7 +27,14 @@ export const DividerWithLabel = ({
 }: DividerProps) => {
   const colorScheme = useActiveColorScheme();
   return (
-    <DividerContainer>
+    <DividerContainer
+      accessible={true}
+      accessibilityLabel={label}
+      accessibilityHint={
+        label === "optional" ? "The input fields below are optional" : ""
+      }
+      accessibilityRole="text"
+    >
       <DividerLine colorScheme={colorScheme} />
       <LabelWrapper>
         {iconName && (

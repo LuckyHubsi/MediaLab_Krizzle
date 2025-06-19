@@ -417,6 +417,7 @@ export default function EditWidgetScreen() {
                         setPopupType("color");
                         setPopupVisible(true);
                       }}
+                      type="color"
                     />
                   </View>
 
@@ -429,6 +430,7 @@ export default function EditWidgetScreen() {
                         setPopupType("icon");
                         setPopupVisible(true);
                       }}
+                      type="icon"
                     />
                   </View>
                 </View>
@@ -541,6 +543,7 @@ export default function EditWidgetScreen() {
                         setPopupType("color");
                         setPopupVisible(true);
                       }}
+                      type="color"
                     />
                   </View>
 
@@ -553,6 +556,7 @@ export default function EditWidgetScreen() {
                         setPopupType("icon");
                         setPopupVisible(true);
                       }}
+                      type="icon"
                     />
                   </View>
                 </View>

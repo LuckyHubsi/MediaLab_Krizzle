@@ -347,6 +347,7 @@ export default function CreateNoteScreen() {
                         setPopupType("color");
                         setPopupVisible(true);
                       }}
+                      type="color"
                     />
                   </View>
 
@@ -359,6 +360,7 @@ export default function CreateNoteScreen() {
                         setPopupType("icon");
                         setPopupVisible(true);
                       }}
+                      type="icon"
                     />
                   </View>
                 </View>
@@ -467,6 +469,7 @@ export default function CreateNoteScreen() {
                         setPopupType("color");
                         setPopupVisible(true);
                       }}
+                      type="color"
                     />
                   </View>
 
@@ -479,6 +482,7 @@ export default function CreateNoteScreen() {
                         setPopupType("icon");
                         setPopupVisible(true);
                       }}
+                      type="icon"
                     />
                   </View>
                 </View>

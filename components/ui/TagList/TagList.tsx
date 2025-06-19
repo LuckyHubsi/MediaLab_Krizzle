@@ -97,7 +97,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onSelect, onPress }) => {
               key={tag.tagID}
               activeOpacity={0.7}
               accessible={true}
-              accessibilityRole="button"
+              accessibilityRole="radio"
               accessibilityLabel={`Filter by tag ${tag.tag_label}`}
               accessibilityState={{ selected: isActive(tag) }}
             >

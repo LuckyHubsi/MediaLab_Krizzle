@@ -18,6 +18,7 @@ interface ChooseCardProps {
   selectedColor?: string;
   selectedIcon?: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
+  type?: "color" | "icon";
 }
 
 export const ChooseCard: React.FC<ChooseCardProps> = ({
@@ -25,11 +26,18 @@ export const ChooseCard: React.FC<ChooseCardProps> = ({
   selectedColor,
   selectedIcon,
   onPress,
+  type,
 }) => {
   const colorScheme = useActiveColorScheme() ?? "light";
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={onPress}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={`${type === "icon" ? "Choose an icon" : "Choose a color"}`}
+      accessibilityHint={`opens a modal with different options. ${label.includes("choose") ? "" : `Currently chosen: ${label}`}`}
+    >
       <StyledChooseCard colorScheme={colorScheme}>
         {/* Edit Button (Pencil Icon) */}
         <EditButton>

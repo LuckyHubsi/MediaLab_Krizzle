@@ -42,7 +42,11 @@ export const TagPicker: React.FC<TagPickerProps> = ({
   return (
     <Container>
       <HeaderRow>
-        <ThemedText fontSize="regular" fontWeight="regular">
+        <ThemedText
+          fontSize="regular"
+          fontWeight="regular"
+          accessibilityRole="header"
+        >
           Choose a Tag
         </ThemedText>
         <EditTextContainer>
@@ -51,6 +55,10 @@ export const TagPicker: React.FC<TagPickerProps> = ({
             fontWeight="regular"
             colorVariant="greyScale"
             onPress={onViewAllPress}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Edit Tags"
+            accessibilityHint="Opens the Tag Management page"
           >
             Edit Tags
             <BackIcon
@@ -61,7 +69,13 @@ export const TagPicker: React.FC<TagPickerProps> = ({
         </EditTextContainer>
       </HeaderRow>
 
-      <TagScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <TagScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        accessible={true}
+        accessibilityRole="radiogroup"
+        accessibilityLabel="Tag Selection Section"
+      >
         {tags.map((tag) => {
           const isSelected = selectedTag?.tagID === tag.tagID;
           return (
@@ -80,6 +94,10 @@ export const TagPicker: React.FC<TagPickerProps> = ({
                 marginRight: 4,
                 justifyContent: "center",
               }}
+              accessible={true}
+              accessibilityRole="radio"
+              accessibilityLabel={`Tag ${tag.tag_label}`}
+              accessibilityState={{ selected: isSelected }}
             >
               <TagPill isSelected={isSelected} colorScheme={colorScheme}>
                 {isSelected && (
@@ -102,7 +120,13 @@ export const TagPicker: React.FC<TagPickerProps> = ({
           );
         })}
         {tags.length === 0 && (
-          <TouchableOpacity onPress={() => onViewAllPress()}>
+          <TouchableOpacity
+            onPress={() => onViewAllPress()}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit Tags`}
+            accessibilityHint="Opens the Tag Management page for adding your first tag."
+          >
             <TagPill onPress={onViewAllPress} colorScheme={colorScheme}>
               <MaterialIcons
                 name="edit"

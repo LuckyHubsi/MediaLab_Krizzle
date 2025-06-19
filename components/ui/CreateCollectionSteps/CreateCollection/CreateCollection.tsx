@@ -321,6 +321,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                       setPopupType("color");
                       setPopupVisible(true);
                     }}
+                    type="color"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -332,6 +333,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                       setPopupType("icon");
                       setPopupVisible(true);
                     }}
+                    type="icon"
                   />
                 </View>
               </TwoColumnRow>
@@ -444,6 +446,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                       setPopupType("color");
                       setPopupVisible(true);
                     }}
+                    type="color"
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -455,6 +458,7 @@ const CreateCollection: FC<CreateCollectionProps> = ({
                       setPopupType("icon");
                       setPopupVisible(true);
                     }}
+                    type="icon"
                   />
                 </View>
               </TwoColumnRow>

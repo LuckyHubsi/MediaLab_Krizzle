@@ -2,6 +2,7 @@ import React from "react";
 import { Container, TextAlignRight } from "./TitleCard.styles";
 import { ThemedText } from "@/components/ThemedText";
 import Textfield from "../Textfield/Textfield";
+import { View } from "react-native";
 
 /**
  * Component for displaying a title input card in the create/edit widget flow.
@@ -27,12 +28,18 @@ export const TitleCard: React.FC<TitleCardProps> = ({
 }) => {
   return (
     <Container>
-      <ThemedText fontSize="regular">Title</ThemedText>
-      <TextAlignRight>
-        <ThemedText fontSize="s" colorVariant="red">
-          * required
-        </ThemedText>
-      </TextAlignRight>
+      <View
+        accessible={true}
+        accessibilityLabel="Title. Input required."
+        nativeID="Title"
+      >
+        <ThemedText fontSize="regular">Title</ThemedText>
+        <TextAlignRight>
+          <ThemedText fontSize="s" colorVariant="red">
+            * required
+          </ThemedText>
+        </TextAlignRight>
+      </View>
       <Textfield
         showTitle={false}
         textfieldIcon="text-fields"
@@ -42,6 +49,7 @@ export const TitleCard: React.FC<TitleCardProps> = ({
         onChangeText={onChangeText}
         hasNoInputError={hasNoInputError}
         maxLength={30}
+        optNativeID="Title"
       />
     </Container>
   );

@@ -62,16 +62,22 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
       animationType="fade"
       visible={visible}
       onRequestClose={onClose}
+      accessible={false}
     >
       <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose}>
-        <Backdrop>
+        <Backdrop accessible={false}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <TouchableOpacity activeOpacity={1} onPress={() => {}}>
-              <Content colorScheme={colorScheme}>
-                <ThemedText fontSize="regular" fontWeight="semibold">
+            <TouchableOpacity activeOpacity={1} accessible={false}>
+              <Content colorScheme={colorScheme} accessible={false}>
+                <ThemedText
+                  fontSize="regular"
+                  fontWeight="semibold"
+                  accessibilityElementsHidden={true}
+                  importantForAccessibility="no-hide-descendants"
+                >
                   {type === "color" ? "Choose a Color" : "Choose an Icon"}
                 </ThemedText>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -96,6 +102,12 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                             } else {
                               onSelect(item.value);
                             }
+                          }}
+                          accessible={true}
+                          accessibilityLabel={label}
+                          accessibilityRole="radio"
+                          accessibilityState={{
+                            selected: isSelected,
                           }}
                         >
                           <ItemCircle
@@ -127,12 +139,7 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                                 color={
                                   isSelected ? "#fff" : Colors[colorScheme].text
                                 }
-                                accessibilityLabel={item.value as string}
-                                accessibilityHint="Icon"
-                                accessibilityRole="imagebutton"
-                                accessibilityState={{
-                                  selected: isSelected,
-                                }}
+                                accessible={false}
                               />
                             )}
                           </ItemCircle>
@@ -153,7 +160,12 @@ export const ChoosePopup: React.FC<ChoosePopupProps> = ({
                     })}
                   </ItemsGrid>
                 </ScrollView>
-                <DoneButton onPress={() => onDone()}>
+                <DoneButton
+                  onPress={() => onDone()}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Confirm selection"
+                >
                   <ThemedText colorVariant="white" fontWeight="semibold">
                     Done
                   </ThemedText>

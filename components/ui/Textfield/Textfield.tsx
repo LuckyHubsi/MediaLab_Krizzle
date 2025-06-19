@@ -26,6 +26,7 @@ import { useSnackbar } from "../Snackbar/Snackbar";
  * @param multiline - Whether the input field supports multiple lines (default: false).
  * @param hasDuplicateTitle - Whether to show an error message for duplicate titles (default: false).
  * @param isRequired - Whether the input field is required (default: false).
+ * @param optNativeID - USed when showTitle is set to false - changes the nativeID of the label.
  */
 
 interface TextfieldProps {
@@ -41,6 +42,7 @@ interface TextfieldProps {
   multiline?: boolean;
   hasDuplicateTitle?: boolean;
   isRequired?: boolean;
+  optNativeID?: string;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -56,6 +58,7 @@ const Textfield: FC<TextfieldProps> = ({
   hasDuplicateTitle,
   multiline = false,
   isRequired = false,
+  optNativeID = null,
 }) => {
   const colorScheme = useActiveColorScheme();
   const { whenSnackbarComplete } = useSnackbar();
@@ -133,7 +136,7 @@ const Textfield: FC<TextfieldProps> = ({
           maxLength={maxLength}
           multiline={multiline}
           accessible={true}
-          accessibilityLabelledBy={title}
+          accessibilityLabelledBy={optNativeID ? optNativeID : title}
         />
       </InputWrapper>
       {hasNoInputError && (
