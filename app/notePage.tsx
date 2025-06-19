@@ -304,6 +304,10 @@ export default function NotesScreen() {
                         setErrors((prev) =>
                           prev.filter((error) => error.source !== "pinning"),
                         );
+
+                        AccessibilityInfo.announceForAccessibility(
+                          `${noteData?.pinned ? "Unpinned Note Widget" : "Pinned Note Widget"}`,
+                        );
                       } else {
                         // set all errors to the previous errors plus add the new error
                         // define the id and the source and set its read status to false
@@ -419,6 +423,8 @@ export default function NotesScreen() {
                 setErrors((prev) =>
                   prev.filter((error) => error.source !== "widget:delete"),
                 );
+
+                AccessibilityInfo.announceForAccessibility("Note Deleted");
                 router.replace("/");
               } else {
                 // set all errors to the previous errors plus add the new error
