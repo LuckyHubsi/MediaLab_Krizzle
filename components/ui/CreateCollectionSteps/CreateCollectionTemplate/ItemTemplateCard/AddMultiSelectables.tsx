@@ -148,6 +148,7 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
         <AddMultiSelectableButton
           colorScheme={colorScheme}
           onPress={handleAddButtonClick}
+          accessibilityRole="button"
         >
           <MaterialIcons
             name="add-circle"
