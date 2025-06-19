@@ -395,7 +395,13 @@ export default function CollectionScreen() {
         />
         <CustomStyledHeader
           title={collectionTitle || "Collection"}
-          backBehavior={routing === "goArchive" ? "goArchive" : "goHome"}
+          backBehavior={
+            routing === "goArchive"
+              ? "goArchive"
+              : collection?.parentID === null
+                ? "goHome"
+                : "goFolder"
+          }
           iconName={selectedIcon || undefined}
           onIconPress={() => {}}
           iconName2="more-horiz"
@@ -405,6 +411,7 @@ export default function CollectionScreen() {
           }
           isTransparent={true}
           headerRef={headerRef}
+          param={`${collection?.parentID}`}
         />
 
         <View style={{ paddingHorizontal: 20 }}>

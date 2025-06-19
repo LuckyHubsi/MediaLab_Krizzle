@@ -380,7 +380,11 @@ export default function FoldersScreen() {
                       onPress={() => {
                         router.push({
                           pathname: "/folderPage",
-                          params: { folderId: item.id, title: item.title },
+                          params: {
+                            folderId: item.id,
+                            title: item.title,
+                            routing: "goFolder",
+                          },
                         });
                       }}
                       onLongPress={() => {

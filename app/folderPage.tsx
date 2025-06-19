@@ -429,6 +429,7 @@ export default function FolderScreen() {
           iconName="more-horiz"
           onIconPress={() => setShowFolderModal(true)}
           headerRef={headerRef}
+          backBehavior="goFolders"
         />
         <ThemedView>
           {widgets.length === 0 && pinnedWidgets.length === 0 ? (

@@ -97,6 +97,15 @@ export const CustomStyledHeader: React.FC<HeaderProps> = ({
         router.back();
         router.setParams({ lastCreatedTag: param });
         break;
+      case "goFolders":
+        router.replace("/folders");
+        break;
+      case "goFolder":
+        router.replace({
+          pathname: "/folderPage",
+          params: { folderId: param, routing: routing },
+        });
+        break;
       default:
         navigation.goBack();
     }
