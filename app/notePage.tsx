@@ -389,6 +389,9 @@ export default function NotesScreen() {
       <SelectFolderModal
         widgetTitle={title}
         widgetId={pageId}
+        initialSelectedFolderId={
+          noteData?.parentID ? noteData.parentID : undefined
+        }
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
         onMoved={(success: boolean) => {

@@ -737,6 +737,9 @@ export default function CollectionScreen() {
       <SelectFolderModal
         widgetTitle={title}
         widgetId={pageId}
+        initialSelectedFolderId={
+          collection?.parentID ? collection.parentID : undefined
+        }
         onClose={() => setShowFolderSelectionModal(false)}
         visible={showFolderSelectionModal}
         onMoved={(success: boolean) => {

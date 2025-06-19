@@ -13,5 +13,5 @@ export type GeneralPageModel = {
   pinned: 0 | 1; // indicates whether the page is pinned (1) or not (0)
   tagID?: number | null; // the tagID that is saved as an FK or null if none
   tag_label?: string; // the label of the associated tag
-  parentID: number | null; // the id of the parent folder
+  parent_folderID: number | null; // the id of the parent folder
 };
