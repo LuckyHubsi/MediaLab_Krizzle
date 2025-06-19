@@ -365,9 +365,11 @@ export default function HomeScreen() {
     const filterInfo = [queryText, tagText].filter(Boolean).join(connector);
 
     const pinnedMessage =
-      filteredPinnedWidgets.length > 0
-        ? `Pinned Widgets: ${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in.`
-        : `Pinned Widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}.`;
+      pinnedWidgets.length <= 0
+        ? ""
+        : filteredPinnedWidgets.length > 0
+          ? `Pinned Widgets: ${filteredPinnedWidgets.length} result${filteredPinnedWidgets.length > 1 ? "s" : ""} found${filterInfo ? ` for ${filterInfo}` : ""} in.`
+          : `Pinned Widgets: No entries found${filterInfo ? ` for ${filterInfo}` : ""}.`;
 
     const recentMessage =
       filteredWidgets.length > 0
