@@ -543,6 +543,8 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                     colorVariant="cancel"
                     fontWeight="bold"
                     accessible={false}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
                   >
                     Cancel
                   </ThemedText>
