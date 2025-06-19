@@ -893,7 +893,12 @@ export default function FolderScreen() {
         initialSelectedFolderId={Number(folderId)}
         visible={showFolderSelectionModal}
         onClose={() => setShowFolderSelectionModal(false)}
-        onMoved={() => setShouldReload(true)}
+        onMoved={() => {
+          setShouldReload(true);
+          AccessibilityInfo.announceForAccessibility(
+            "Successfully moved widget",
+          );
+        }}
       />
 
       <ErrorPopup
