@@ -15,16 +15,21 @@ import { Colors } from "@/constants/Colors";
 type AddButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
   isDisabled?: boolean;
+  label?: string;
 };
 
 export const AddButton: React.FC<AddButtonProps> = ({
   onPress,
   isDisabled = false,
+  label = "",
 }) => {
   return (
     <StyledButtonContainer
       onPress={isDisabled ? undefined : onPress}
       isDisabled={isDisabled}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={label}
     >
       <MaterialIcons name="add" size={40} color={Colors.white} />
     </StyledButtonContainer>

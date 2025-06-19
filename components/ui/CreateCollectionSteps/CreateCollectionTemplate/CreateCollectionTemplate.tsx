@@ -363,7 +363,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                 </Card>
 
                 <ItemCountContainer>
-                  <ItemCount colorScheme={colorScheme}>
+                  <ItemCount
+                    colorScheme={colorScheme}
+                    accessible={true}
+                    accessibilityRole="none"
+                  >
                     <ThemedText
                       colorVariant={cards.length < 10 ? "primary" : "red"}
                     >
@@ -373,11 +377,16 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                       colorVariant={
                         colorScheme === "light" ? "grey" : "lightGrey"
                       }
+                      accessibilityLabel="out of 10 possible fields"
                     >
                       /10 Fields
                     </ThemedText>
                   </ItemCount>
-                  <ItemCount colorScheme={colorScheme}>
+                  <ItemCount
+                    colorScheme={colorScheme}
+                    accessible={true}
+                    accessibilityRole="none"
+                  >
                     <ThemedText
                       colorVariant={previewCount <= 2 ? "primary" : "red"}
                     >
@@ -387,6 +396,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                       colorVariant={
                         colorScheme === "light" ? "grey" : "lightGrey"
                       }
+                      accessibilityLabel="out of 3 possible preview fields"
                     >
                       /3 Preview
                     </ThemedText>
@@ -552,7 +562,11 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               </Card>
 
               <ItemCountContainer>
-                <ItemCount colorScheme={colorScheme}>
+                <ItemCount
+                  colorScheme={colorScheme}
+                  accessible={true}
+                  accessibilityRole="none"
+                >
                   <ThemedText
                     colorVariant={cards.length < 10 ? "primary" : "red"}
                   >
@@ -562,11 +576,16 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     colorVariant={
                       colorScheme === "light" ? "grey" : "lightGrey"
                     }
+                    accessibilityLabel="out of 10 possible fields"
                   >
                     /10 Fields
                   </ThemedText>
                 </ItemCount>
-                <ItemCount colorScheme={colorScheme}>
+                <ItemCount
+                  colorScheme={colorScheme}
+                  accessible={true}
+                  accessibilityRole="none"
+                >
                   <ThemedText
                     colorVariant={previewCount <= 2 ? "primary" : "red"}
                   >
@@ -576,6 +595,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     colorVariant={
                       colorScheme === "light" ? "grey" : "lightGrey"
                     }
+                    accessibilityLabel="out of 3 possible preview fields"
                   >
                     /3 Preview
                   </ThemedText>
@@ -606,6 +626,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
               <ThemedText
                 colorVariant="greyScale"
                 style={{ marginLeft: 10, marginTop: 10 }}
+                accessibilityRole="header"
               >
                 Your Additional Fields:
               </ThemedText>
@@ -669,6 +690,7 @@ const CreateCollectionTemplate: FC<CreateCollectionTemplateProps> = ({
                     setHasClickedNext(false);
                   }}
                   isDisabled={otherCards.length >= 9}
+                  label="Add A Field"
                 />
               </View>
             </ScrollView>

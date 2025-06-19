@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import {
   AddMultiSelectableButton,
   AddMultiSelectablesContainer,
@@ -8,7 +8,13 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
-import { TouchableOpacity } from "react-native";
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Textfield from "@/components/ui/Textfield/Textfield";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 
@@ -34,6 +40,22 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   errorMessage,
 }) => {
   const colorScheme = useActiveColorScheme();
+  const textfieldRefs = useRef<Array<TextInput | null>>([]);
+
+  useEffect(() => {
+    if (options.length === 0) return;
+
+    const lastInput = textfieldRefs.current[options.length - 1];
+    if (lastInput) {
+      // Set accessibility focus too
+      const nodeHandle = findNodeHandle(lastInput);
+      if (nodeHandle) {
+        setTimeout(() => {
+          AccessibilityInfo.setAccessibilityFocus(nodeHandle);
+        }, 100); // Delay is important to let layout stabilize
+      }
+    }
+  }, [options.length]);
 
   /**
    * Function to handle the click of the "Add" button, adding a new selectable item.
@@ -63,11 +85,13 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
   const handleRemoveTextfield = (indexToRemove: number) => {
     const updated = options.filter((_, index) => index !== indexToRemove);
     onOptionsChange(updated);
+
+    textfieldRefs.current.splice(indexToRemove, 1);
   };
 
   return (
     <AddMultiSelectablesContainer>
-      {options.length > 0 && <ThemedText>Add up to 20 Selectables</ThemedText>}
+      <ThemedText>Add up to 20 Selectables</ThemedText>
       {options.map((textfieldValue, index) => (
         <SelectablesContainer key={index}>
           <TextfieldWrapper>
@@ -79,23 +103,35 @@ const AddMultiSelectables: FC<AddMultiSelectablesProps> = ({
               value={textfieldValue}
               onChangeText={(text) => handleInputChange(index, text)}
               maxLength={30}
+              optionalRef={(input: any) => {
+                textfieldRefs.current[index] = input; // keep list in sync
+              }}
             />
           </TextfieldWrapper>
 
           <TouchableOpacity
             onPress={() => handleRemoveTextfield(index)}
             style={{
-              width: 48,
-              height: 48,
               justifyContent: "center",
               alignItems: "center",
             }}
+            accessibilityRole="button"
+            accessibilityLabel={`Remove selectable ${textfieldValue ? `${textfieldValue}` : "empty selectable"}`}
           >
-            <MaterialIcons
-              name="delete"
-              size={24}
-              color={Colors[colorScheme].negative}
-            />
+            <View
+              style={{
+                height: 48,
+                width: 48,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <MaterialIcons
+                name="delete"
+                size={24}
+                color={Colors[colorScheme].negative}
+              />
+            </View>
           </TouchableOpacity>
         </SelectablesContainer>
       ))}

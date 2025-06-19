@@ -43,6 +43,8 @@ interface TextfieldProps {
   hasDuplicateTitle?: boolean;
   isRequired?: boolean;
   optNativeID?: string;
+  extraInfo?: string;
+  optionalRef?: any;
 }
 
 const Textfield: FC<TextfieldProps> = ({
@@ -59,6 +61,8 @@ const Textfield: FC<TextfieldProps> = ({
   multiline = false,
   isRequired = false,
   optNativeID = null,
+  extraInfo = "",
+  optionalRef,
 }) => {
   const colorScheme = useActiveColorScheme();
   const { whenSnackbarComplete } = useSnackbar();
@@ -111,6 +115,7 @@ const Textfield: FC<TextfieldProps> = ({
             fontSize="s"
             fontWeight="light"
             colorVariant={colorScheme === "light" ? "grey" : "lightGrey"}
+            accessibilityLabel={`max. ${maxLength} characters ${extraInfo}`}
           >
             max. {maxLength} chars
           </ThemedText>
@@ -137,6 +142,7 @@ const Textfield: FC<TextfieldProps> = ({
           multiline={multiline}
           accessible={true}
           accessibilityLabelledBy={optNativeID ? optNativeID : title}
+          ref={optionalRef}
         />
       </InputWrapper>
       {hasNoInputError && (

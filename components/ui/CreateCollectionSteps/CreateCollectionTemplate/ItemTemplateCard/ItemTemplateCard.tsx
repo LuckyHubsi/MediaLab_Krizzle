@@ -18,6 +18,7 @@ import TemplateRating from "./TemplateRating";
 import AddMultiSelectables from "./AddMultiSelectables";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import CustomPicker from "@/components/ui/CustomPicker/CustomPicker";
+import { View } from "react-native";
 
 /**
  * Component for rendering a card in the item template creation process.
@@ -136,10 +137,17 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         <CardTitle>
           {isTitleCard ? (
             <>
-              <ThemedText>Field 1 </ThemedText>
-              <ThemedText fontSize="s" colorVariant="red">
-                * required
-              </ThemedText>
+              <View
+                accessible={true}
+                accessibilityLabel="Input required"
+                accessibilityRole="text"
+                style={{ display: "flex", flexDirection: "row" }}
+              >
+                <ThemedText>Field 1 </ThemedText>
+                <ThemedText fontSize="s" colorVariant="red">
+                  * required
+                </ThemedText>
+              </View>
             </>
           ) : isExisting ? (
             <>
@@ -154,7 +162,13 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         </CardTitle>
 
         {/* Preview toggle button */}
-        <CardPreview onPress={onPreviewToggle}>
+        <CardPreview
+          onPress={onPreviewToggle}
+          accessible={true}
+          accessibilityRole="togglebutton"
+          accessibilityLabel="field in item preview"
+          accessibilityState={{ checked: isPreview }}
+        >
           <ThemedText
             colorVariant={
               isPreview
@@ -206,6 +220,8 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
               }))}
             placeholder={{ label: "Select item", value: "" }}
             colorScheme={colorScheme}
+            accessibilityLabel="Field type dropdown menu"
+            accessibilityLabelledBy={`Field ${fieldCount}`}
           />
         </AndroidPickerWrapper>
       )}
@@ -225,13 +241,14 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
         placeholderText={
           isTitleCard
             ? `E.g. "Title" or "Name"`
-            : `Add a label to your ${itemType}`
+            : `Add a label for your ${itemType} field`
         }
         title={""}
         value={title || ""}
         onChangeText={(text) => onTitleChange?.(text)}
         hasNoInputError={hasNoInputError}
         maxLength={30}
+        extraInfo="for your field label"
       />
 
       {/* Show rating icons if item type is rating */}
@@ -257,7 +274,9 @@ const ItemTemplateCard: FC<ItemTemplateCardProps> = ({
           </>
         )}
 
-      {!isTitleCard && <RemoveButton onPress={onRemove} />}
+      {!isTitleCard && (
+        <RemoveButton onPress={onRemove} label={`Field ${fieldCount}`} />
+      )}
     </TemplateSelectCard>
   );
 };

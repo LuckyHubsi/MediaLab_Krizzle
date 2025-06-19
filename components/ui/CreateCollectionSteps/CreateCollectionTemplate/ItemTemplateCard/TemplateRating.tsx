@@ -62,7 +62,13 @@ const TemplateRating: React.FC<TemplateRatingProps> = ({
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <IconContainer>
           {iconArray.map((icon) => (
-            <TouchableOpacity key={icon} onPress={() => onRatingChange(icon)}>
+            <TouchableOpacity
+              key={icon}
+              onPress={() => onRatingChange(icon)}
+              accessibilityRole="radio"
+              accessibilityLabel={`${icon}`}
+              accessibilityState={{ selected: rating === icon }}
+            >
               <MaterialIcons
                 name={icon}
                 size={28}

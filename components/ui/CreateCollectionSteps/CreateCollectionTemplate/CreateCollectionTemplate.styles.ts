@@ -51,10 +51,11 @@ export const SelectablesContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  min-height: fit-content;
 `;
 
 export const TextfieldWrapper = styled.View`
-  width: 90%;
+  flex: 1;
 `;
 
 export const CardHeader = styled.View`

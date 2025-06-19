@@ -14,13 +14,19 @@ import { useActiveColorScheme } from "@/context/ThemeContext";
 
 type RemoveButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
+  label?: string;
 };
 
-const RemoveButton: React.FC<RemoveButtonProps> = ({ onPress }) => {
+const RemoveButton: React.FC<RemoveButtonProps> = ({ onPress, label = "" }) => {
   const colorScheme = useActiveColorScheme();
 
   return (
-    <StyledButtonContainer onPress={onPress} colorScheme={colorScheme}>
+    <StyledButtonContainer
+      onPress={onPress}
+      colorScheme={colorScheme}
+      accessibilityRole="button"
+      accessibilityLabel={`Remove ${label}`}
+    >
       <MaterialIcons
         name="delete"
         size={24}
