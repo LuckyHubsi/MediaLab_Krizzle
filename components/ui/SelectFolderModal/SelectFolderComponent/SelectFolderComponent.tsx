@@ -42,6 +42,10 @@ const SelectFolderComponent: React.FC<SelectFolderComponentProps> = ({
         marginBottom: 15,
         alignItems: "center",
       }}
+      accessibilityRole="radio"
+      accessibilityLabel={`Folder: ${title}`}
+      accessibilityHint="Activating selects this folder"
+      accessibilityState={{ selected: selected }}
     >
       <FolderContainer>
         <Folder selected={selected}>

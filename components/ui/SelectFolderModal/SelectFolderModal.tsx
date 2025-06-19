@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useActiveColorScheme } from "@/context/ThemeContext";
 import {
   ButtonContainer,
@@ -8,7 +8,9 @@ import {
   StyledModalContent,
 } from "./SelectFolderModal.styles";
 import {
+  AccessibilityInfo,
   Dimensions,
+  findNodeHandle,
   Keyboard,
   Modal,
   TouchableOpacity,
@@ -73,6 +75,9 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
   const screenWidth = Dimensions.get("window").width - modalPadding;
   const itemMargin = 10;
   const itemSize = (screenWidth - itemMargin * (numColumns + 1)) / numColumns;
+  const [foldersLoaded, setFoldersLoaded] = useState(false);
+  const moveButtonRef = useRef<View>(null);
+  const focusRef = useRef<View>(null);
 
   /**
    * Handles the submission of a new or edited folder name.
@@ -204,6 +209,12 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
     } catch (error) {
       console.error("Error saving folder:", error);
     } finally {
+      setTimeout(() => {
+        const node = findNodeHandle(moveButtonRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300);
       setNewFolderName("");
       setEditingFolder(null);
       setEditFolderMode(false);
@@ -211,6 +222,19 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
       Keyboard.dismiss();
     }
   };
+
+  useEffect(() => {
+    if (internalVisible) {
+      const timeout = setTimeout(() => {
+        const node = findNodeHandle(focusRef.current);
+        if (node) {
+          AccessibilityInfo.setAccessibilityFocus(node);
+        }
+      }, 300); // Give the modal time to mount
+
+      return () => clearTimeout(timeout);
+    }
+  }, [internalVisible]);
 
   /**
    * Represents a folder in the modal.
@@ -238,6 +262,7 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
           const folderResult = await folderService.getAllFolders();
           if (folderResult.success) {
             setFolders(folderResult.value ?? []);
+            setFoldersLoaded(true);
 
             if (initialSelectedFolderId) {
               const matching = folderResult.value?.find(
@@ -377,12 +402,18 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               flex: 1,
               justifyContent: "flex-end",
             }}
+            accessible={false}
           >
             <TouchableWithoutFeedback
               onPress={() => {
                 setInternalVisible(false);
                 onClose();
               }}
+              accessible={true}
+              importantForAccessibility="yes"
+              accessibilityLabel="Close select Folder Modal"
+              accessibilityHint="Activating closes the modal again. Move to the next items to explore"
+              accessibilityRole="button"
             >
               <View style={{ flex: 1 }} />
             </TouchableWithoutFeedback>
@@ -391,21 +422,43 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
               colorScheme={colorScheme}
               modalPadding={modalPadding}
             >
-              {folders.length !== 0 ? (
-                <ThemedText>
-                  Move{" "}
-                  <ThemedText fontWeight="semibold">{widgetTitle}</ThemedText>{" "}
-                  to
-                  {selectedFolder && (
-                    <ThemedText colorVariant="primary" fontWeight="semibold">
-                      {` ${selectedFolder.title}`}
-                    </ThemedText>
-                  )}
-                </ThemedText>
-              ) : (
-                <ThemedText>You don't have any Folders yet.</ThemedText>
+              {folders.length !== 0 && (
+                <View
+                  ref={focusRef}
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLabel={`Move Page ${widgetTitle} to Folder ${selectedFolder?.title ?? "none selected"}`}
+                  importantForAccessibility="yes"
+                >
+                  {/* Optional visual rendering below, not for screen reader */}
+                  <ThemedText accessible={false}>
+                    Move{" "}
+                    <ThemedText fontWeight="semibold" accessible={false}>
+                      {widgetTitle}
+                    </ThemedText>{" "}
+                    to{" "}
+                    {selectedFolder && (
+                      <ThemedText
+                        colorVariant="primary"
+                        fontWeight="semibold"
+                        accessible={false}
+                      >
+                        {selectedFolder.title}
+                      </ThemedText>
+                    )}
+                  </ThemedText>
+                </View>
               )}
-
+              {foldersLoaded && internalVisible && folders.length === 0 && (
+                <ThemedText
+                  accessibilityLiveRegion="polite"
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLabel="No folders found. Please add a folder to continue."
+                >
+                  You don't have any Folders yet.
+                </ThemedText>
+              )}
               {folders.length !== 0 && (
                 <>
                   <FlatList
@@ -429,6 +482,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                               alignItems: "center",
                               marginBottom: itemMargin,
                             }}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel="Add new folder"
+                            accessibilityHint="Opens the input field for a new folder"
                           >
                             <View
                               style={{
@@ -477,13 +534,26 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                     onClose();
                   }}
                   colorScheme={colorScheme}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel"
+                  accessibilityHint="Closes the modal"
                 >
-                  <ThemedText colorVariant="cancel" fontWeight="bold">
+                  <ThemedText
+                    colorVariant="cancel"
+                    fontWeight="bold"
+                    accessible={false}
+                  >
                     Cancel
                   </ThemedText>
                 </CancelButton>
                 {folders.length !== 0 ? (
                   <NextButton
+                    ref={moveButtonRef}
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Move ${widgetTitle || "widget"} to ${selectedFolder?.title || "selected folder"}`}
+                    accessibilityHint="Double tap to confirm the move"
                     onPress={async () => {
                       const moveResult =
                         await generalPageService.updateFolderID(
@@ -534,6 +604,10 @@ const SelectFolderModal: FC<SelectFolderModalProps> = ({
                     }}
                     colorScheme={colorScheme}
                     selectedFolder={true}
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityLabel="Add new folder"
+                    accessibilityHint="Opens the input field for a new folder"
                   >
                     <ThemedText colorVariant="white" fontWeight="bold">
                       Add Folder
